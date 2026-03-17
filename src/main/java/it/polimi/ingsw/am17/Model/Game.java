@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.GameCard;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +14,12 @@ public class Game implements Subject {
     private List<Player> players;
     private int currentEra;
     private List<OfferingCard> offeringCards;
+    private GameRow upperRow;
+    private GameRow lowerRow;
+    private Deck deck;
+    private BuildingDeck buildingDeckEra1;
+    private BuildingDeck buildingDeckEra2;
+    private BuildingDeck buildingDeckEra3;
 
     public Game(int numPlayers)
     {
@@ -49,7 +57,28 @@ public class Game implements Subject {
     }
     public void start()
     {
+        this.started = true;
+        this.currentEra = 1;
+        Collections.shuffle(players);
+        offeringCards = null; // va fatto metodo per parsare le carte dal json
 
+        deck = new Deck();
+        buildingDeckEra1 = new BuildingDeck(numPlayers);
+        buildingDeckEra2 = new BuildingDeck(numPlayers);
+        buildingDeckEra3 = new BuildingDeck(numPlayers);
+
+        for (int i = 0; i < numPlayers+1; i++) {
+            lowerRow.addCard(deck.Draw());
+        }
+        for (int i = 0; i < numPlayers+4; i++) {
+            upperRow.addCard(deck.Draw());
+        }
+        var buildingCard = buildingDeckEra1.drawAll();
+
+        for(GameCard card : buildingCard)
+        {
+            upperRow.addCard(card);
+        }
     }
     public void end()
     {
