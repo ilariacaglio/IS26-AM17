@@ -34,18 +34,30 @@ class OfferingCardTest {
 
     @Test
     void getFoodBonus() {
+        for (OfferingCard offeringCard : offeringCards) {
+            System.out.println(offeringCard.getFoodBonus());
+        }
     }
 
     @Test
     void getNumCardsLower() {
+        for (OfferingCard offeringCard : offeringCards) {
+            System.out.println(offeringCard.getNumCardsLower());
+        }
     }
 
     @Test
     void getMinPlayers() {
+        for (OfferingCard offeringCard : offeringCards) {
+            System.out.println(offeringCard.getMinPlayers());
+        }
     }
 
     @Test
     void getNumCardsUpper() {
+        for (OfferingCard offeringCard : offeringCards) {
+            System.out.println(offeringCard.getNumCardsUpper());
+        }
     }
 
     @Test
