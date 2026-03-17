@@ -6,4 +6,9 @@ public class CharacterCard extends TribesCard {
     public int getMinPlayer() {
         return minPlayer;
     }
+
+    public CharacterCard(int era, int minPlayer){
+        super(era);
+        this.minPlayer = minPlayer;
+    }
 }

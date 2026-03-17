@@ -11,4 +11,10 @@ public class Builder extends CharacterCard {
     public int getPointBonus() {
         return pointBonus;
     }
+
+    public Builder(int era, int minPlayers, int pointsBonus, int foodReduction) {
+        super(era, minPlayers);
+        this.pointBonus = pointsBonus;
+        this.foodReduction = foodReduction;
+    }
 }
