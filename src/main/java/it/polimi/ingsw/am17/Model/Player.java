@@ -55,7 +55,7 @@ public class Player implements Subject{
     public void setOfferingCard(OfferingCard offeringCard) {
         //controllare che l'input sia valido
     }
-    public void freeOfferingCard(OfferingCard card){}
+    public void freeOfferingCard(){}
     public void playTurn(List<GameCard> cards){}
 
     @Override
