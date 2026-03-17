@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Model;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -16,8 +17,9 @@ class OfferingCardTest {
     void setUp() {
 
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-        offeringCards = mapper.readValue(new File("offeringCards.json"), OfferingCard.class);
-        print(offeringCards);
+        offeringCards = mapper.readValue(getClass().getClassLoader()
+                .getResourceAsStream("offeringCards.json"), new TypeReference<List<OfferingCard>>() {});
+        System.out.println(offeringCards);
     }
 
     @AfterEach
