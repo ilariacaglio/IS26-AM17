@@ -7,6 +7,14 @@ public class OfferingCard implements Subject {
     private int numCardsUpper;
     private int numCardsLower;
 
+    public OfferingCard(int minPlayers, char orderLetter, int foodBonus, int numCardsUpper, int numCardsLower) {
+        this.minPlayers = minPlayers;
+        this.orderLetter = orderLetter;
+        this.foodBonus = foodBonus;
+        this.numCardsUpper = numCardsUpper;
+        this.numCardsLower = numCardsLower;
+    }
+
     public char getOrderLetter() {
         return orderLetter;
     }
