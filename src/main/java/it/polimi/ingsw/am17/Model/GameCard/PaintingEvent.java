@@ -1,5 +1,9 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Model.Player;
+
+import java.util.List;
+
 public class PaintingEvent extends EventCard {
     private int pointsLow;
     private int pointsMax;
@@ -21,4 +25,15 @@ public class PaintingEvent extends EventCard {
     public int getPointsMax() {
         return pointsMax;
     }
+
+    public PaintingEvent(int pointsLow, int pointsMax, int numLow, int numMax, boolean Final, int era) {
+        super(Final, era);
+        this.pointsLow = pointsLow;
+        this.pointsMax = pointsMax;
+        this.numLow = numLow;
+        this.numMax = numMax;
+    }
+
+    @Override
+    public void computeScore(List<Player> list){}
 }
