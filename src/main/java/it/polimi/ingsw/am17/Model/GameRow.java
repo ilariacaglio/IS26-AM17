@@ -16,5 +16,5 @@ public class GameRow extends CardRow {
         cardList.remove(card);
     }
 
-
+//SBAGLIATO: EQUALS DA FARE IN OGNI CARTA
 }
