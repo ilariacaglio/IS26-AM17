@@ -27,7 +27,9 @@ class OfferingCardTest {
 
     @Test
     void getOrderLetter() {
-
+        for (OfferingCard offeringCard : offeringCards) {
+            System.out.println(offeringCard.getOrderLetter());
+        }
     }
 
     @Test
