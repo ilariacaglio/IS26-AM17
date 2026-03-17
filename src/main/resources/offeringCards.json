@@ -1,0 +1,23 @@
+[
+  {
+    "minPlayers": 2,
+    "orderLetter": "A",
+    "foodBonus": 5,
+    "numCardsUpper": 10,
+    "numCardsLower": 8
+  },
+  {
+    "minPlayers": 3,
+    "orderLetter": "B",
+    "foodBonus": 7,
+    "numCardsUpper": 12,
+    "numCardsLower": 6
+  },
+  {
+    "minPlayers": 4,
+    "orderLetter": "C",
+    "foodBonus": 3,
+    "numCardsUpper": 8,
+    "numCardsLower": 10
+  }
+]
