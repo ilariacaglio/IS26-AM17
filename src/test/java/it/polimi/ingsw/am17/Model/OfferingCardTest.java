@@ -6,16 +6,18 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 class OfferingCardTest {
-    OfferingCard offeringCard;
+    static List<OfferingCard> offeringCards;
 
     @BeforeEach
     void setUp() {
 
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-        offeringCard = mapper.readValue(new File("offeringCard.json"), OfferingCard.class);
+        offeringCards = mapper.readValue(new File("offeringCards.json"), OfferingCard.class);
+        print(offeringCards);
     }
 
     @AfterEach
