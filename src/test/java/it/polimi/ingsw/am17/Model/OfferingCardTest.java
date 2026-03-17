@@ -6,10 +6,8 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.File;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 class OfferingCardTest {
     static List<OfferingCard> offeringCards;
 
@@ -18,7 +16,8 @@ class OfferingCardTest {
 
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         offeringCards = mapper.readValue(getClass().getClassLoader()
-                .getResourceAsStream("offeringCards.json"), new TypeReference<List<OfferingCard>>() {});
+                .getResourceAsStream("offeringCards.json"), new TypeReference<>() {
+        });
         System.out.println(offeringCards);
     }
 
@@ -28,6 +27,7 @@ class OfferingCardTest {
 
     @Test
     void getOrderLetter() {
+
     }
 
     @Test
