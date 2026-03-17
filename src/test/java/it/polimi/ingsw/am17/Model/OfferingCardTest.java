@@ -5,15 +5,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.*;
 class OfferingCardTest {
+    OfferingCard offeringCard;
 
     @BeforeEach
     void setUp() {
 
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-
-
+        offeringCard = mapper.readValue(new File("offeringCard.json"), OfferingCard.class);
     }
 
     @AfterEach
