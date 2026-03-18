@@ -129,45 +129,28 @@ public class Game extends Subject {
     }
     public void changeEra(){
         if(currentEra == 3) {
-            //search building card in lowerRow
-            List<GameCard> buildingCards = new ArrayList<>();
-            for (GameCard card : lowerRow.getCards()) {
-                if (card instanceof BuildingCard)
-                    buildingCards.add(card);
-            }
-
-            //remove buildingCard card in lowerRow
-            for (GameCard card : buildingCards) {
-                lowerRow.removeCard(card);
-            }
-        }
-        //search building card in upperRow
-        List<GameCard> buildingCards = new ArrayList<>();
-        for(GameCard card : lowerRow.getCards()){
-            if(card instanceof BuildingCard)
-                buildingCards.add(card);
-        }
-
-        //remove buildingCard card in upperRow
-        for (GameCard card : buildingCards){
-            upperRow.removeCard(card);
+            //remove all card from lowerBuildingRow
+            lowerBuildingRow = new GameRow();
         }
 
         //add buildingCard card in lowerRow
-        for (GameCard card : buildingCards){
-            lowerRow.addCard(card);
+        for (GameCard card : upperBuildingRow.getCards()){
+            lowerBuildingRow.addCard(card);
         }
+
+        //remove buildingCard card in upperRow
+        upperBuildingRow = new GameRow();
 
         //add buildingCard card in upperRow
         switch (currentEra){
             case 2:
                 for (GameCard card : buildingDeckEra2.drawAll()){
-                    lowerRow.addCard(card);
+                    upperBuildingRow.addCard(card);
                 }
                 break;
             case 3:
                 for (GameCard card : buildingDeckEra3.drawAll()){
-                    lowerRow.addCard(card);
+                    upperBuildingRow.addCard(card);
                 }
                 break;
             default:
