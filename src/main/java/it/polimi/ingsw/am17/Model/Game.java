@@ -27,27 +27,31 @@ public class Game extends Subject {
     private int currentPlayerIndex = 0;
     private char currentTurnLetter = 'a';
 
-    public Game(int numPlayers)
-    {
+    public Game(int numPlayers) {
         Random r = new Random();
         this.id = r.nextInt();
         this.numPlayers = numPlayers;
     }
+
 
     public int getNumPlayers()
     {
         return  numPlayers;
     }
 
+
     public List<Player> getPlayers() {
         return players;
     }
+
+
     public Player getNextPlayer()
     {
         return players.get(currentPlayerIndex++);
     }
-    public void addPlayer(Player p)
-    {
+
+
+    public void addPlayer(Player p) {
 
         if(players.stream().count() < numPlayers && numPlayers > 0){
             p.setColor(Color.values()[(int) players.stream().count()]);
@@ -57,12 +61,15 @@ public class Game extends Subject {
             throw new IllegalStateException("The game lobby is full. Cannot add more players.");
         }
     }
+
+
     public boolean isStarted()
     {
         return started;
     }
-    public void start()
-    {
+
+
+    public void start() {
         lowerBuildingRow = new GameRow();
         upperBuildingRow = new GameRow();
         lowerRow = new GameRow();
@@ -90,12 +97,14 @@ public class Game extends Subject {
             upperBuildingRow.addCard(card);
         }
     }
-    public void end()
-    {
+
+
+    public void end() {
 
     }
-    public Player getNextTurn()
-    {
+
+
+    public Player getNextTurn() {
         for(Player player : players)
         {
             if(player.getOfferingCard().getOrderLetter() == currentTurnLetter) {
@@ -105,6 +114,8 @@ public class Game extends Subject {
         }
         throw new IllegalStateException("There is no player with the current turn letter");
     }
+
+
     public void endTurn(){
         lowerRow = new GameRow();
         for(GameCard card : upperRow.getCards())
@@ -127,6 +138,8 @@ public class Game extends Subject {
         if(newEra)
             changeEra();
     }
+
+
     public void changeEra(){
         if(currentEra == 3) {
             //remove all card from lowerBuildingRow
@@ -160,6 +173,7 @@ public class Game extends Subject {
 
     }
 
+
     public void resolveEvent(){
         for(GameCard card : lowerRow.getCards())
         {
@@ -169,19 +183,24 @@ public class Game extends Subject {
             }
         }
     }
+
+
     public int getId(){
         return id;
     }
+
 
     @Override
     public void attach(Observer observer) {
 
     }
 
+
     @Override
     public void detach(Observer observer) {
 
     }
+
 
     @Override
     public void notifyObserver() {
