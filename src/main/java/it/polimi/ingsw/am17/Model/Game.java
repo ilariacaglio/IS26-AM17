@@ -1,12 +1,10 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.EventCard;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Game extends Subject {
     private int id;
@@ -111,17 +109,66 @@ public class Game extends Subject {
 
         for (int i = 0; i < numPlayers+4; i++) {
             GameCard c = deck.Draw();
-            if(c.getEra() != currentEra)
+            if(c.getEra() != currentEra) {
                 newEra = true;
+                currentEra++;
+            }
             upperRow.addCard(deck.Draw());
         }
 
         if(newEra)
             changeEra();
     }
-    public void changeEra(
+    public void changeEra(){
+        if(currentEra == 3) {
+            //search building card in lowerRow
+            List<GameCard> buildingCards = new ArrayList<>();
+            for (GameCard card : lowerRow.getCards()) {
+                if (card instanceof BuildingCard)
+                    buildingCards.add(card);
+            }
 
-    ){}
+            //remove buildingCard card in lowerRow
+            for (GameCard card : buildingCards) {
+                lowerRow.removeCard(card);
+            }
+        }
+        //search building card in upperRow
+        List<GameCard> buildingCards = new ArrayList<>();
+        for(GameCard card : lowerRow.getCards()){
+            if(card instanceof BuildingCard)
+                buildingCards.add(card);
+        }
+
+        //remove buildingCard card in upperRow
+        for (GameCard card : buildingCards){
+            upperRow.removeCard(card);
+        }
+
+        //add buildingCard card in lowerRow
+        for (GameCard card : buildingCards){
+            lowerRow.addCard(card);
+        }
+
+        //add buildingCard card in upperRow
+        switch (currentEra){
+            case 2:
+                for (GameCard card : buildingDeckEra2.drawAll()){
+                    lowerRow.addCard(card);
+                }
+                break;
+            case 3:
+                for (GameCard card : buildingDeckEra3.drawAll()){
+                    lowerRow.addCard(card);
+                }
+                break;
+            default:
+                throw new IllegalStateException("We are in a wrong era");
+        }
+
+
+    }
+
     public void resolveEvent(){
         for(GameCard card : lowerRow.getCards())
         {
