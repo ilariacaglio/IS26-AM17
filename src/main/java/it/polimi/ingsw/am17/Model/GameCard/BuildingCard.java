@@ -2,7 +2,7 @@ package it.polimi.ingsw.am17.Model.GameCard;
 
 import it.polimi.ingsw.am17.Model.Player;
 
-public class BuildingCard extends GameCard{
+public abstract class BuildingCard extends GameCard{
     private final int foodCost;
     private final int bonusPoints;
 
@@ -17,8 +17,7 @@ public class BuildingCard extends GameCard{
     }
 
     // apply building effect to player
-    public void resolveEffect(Player player) {
-    }
+    public abstract void resolveEffect(Player player);
 
     public int getBonusPoints() {
         return bonusPoints;
