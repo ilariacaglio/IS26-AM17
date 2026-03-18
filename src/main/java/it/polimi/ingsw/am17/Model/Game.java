@@ -95,6 +95,7 @@ public class Game extends Subject {
                 return player;
             }
         }
+        throw new IllegalStateException("There is no player with the current turn letter");
     }
     public void endTurn(){}
     public void changeEra(
