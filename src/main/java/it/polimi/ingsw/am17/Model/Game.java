@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class Game implements Subject {
+public class Game extends Subject {
     private int id;
     private int numPlayers;
     private boolean started;
@@ -20,6 +20,8 @@ public class Game implements Subject {
     private BuildingDeck buildingDeckEra1;
     private BuildingDeck buildingDeckEra2;
     private BuildingDeck buildingDeckEra3;
+
+    private char currentTurnLetter = 'a';
 
     public Game(int numPlayers)
     {
@@ -84,9 +86,15 @@ public class Game implements Subject {
     {
 
     }
-    public void getNextTurn()
+    public Player getNextTurn()
     {
-
+        for(Player player : players)
+        {
+            if(player.getOfferingCard().getOrderLetter() == currentTurnLetter) {
+                currentTurnLetter++;
+                return player;
+            }
+        }
     }
     public void endTurn(){}
     public void changeEra(
