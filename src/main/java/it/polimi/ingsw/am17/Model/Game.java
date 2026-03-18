@@ -21,6 +21,7 @@ public class Game extends Subject {
     private BuildingDeck buildingDeckEra2;
     private BuildingDeck buildingDeckEra3;
 
+    private int currentPlayerIndex = 0;
     private char currentTurnLetter = 'a';
 
     public Game(int numPlayers)
@@ -40,7 +41,7 @@ public class Game extends Subject {
     }
     public Player getNextPlayer()
     {
-        return null;
+        return players.get(currentPlayerIndex++);
     }
     public void addPlayer(Player p)
     {
