@@ -1,8 +1,8 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
 public class BuildingCard extends GameCard{
-    private int foodCost;
-    private int bonusPoints;
+    private final int foodCost;
+    private final int bonusPoints;
 
     public BuildingCard(int era, int foodCost, int bonusPoints) {
         super(era);
