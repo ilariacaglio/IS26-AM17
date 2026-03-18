@@ -10,4 +10,7 @@ public class BuildingCard extends GameCard{
         this.bonusPoints = bonusPoints;
     }
 
+    public int getFoodCost() {
+        return foodCost;
+    }
 }
