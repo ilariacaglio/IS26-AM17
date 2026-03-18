@@ -190,6 +190,18 @@ public class Game extends Subject {
     }
 
 
+    public void addCardToUpperRow(GameCard card)
+    {
+        upperRow.addCard(card);
+    }
+
+
+    public void addCardToLowerRow(GameCard card)
+    {
+        lowerRow.addCard(card);
+    }
+
+
     @Override
     public void attach(Observer observer) {
 
