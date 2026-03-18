@@ -16,6 +16,10 @@ public class Game extends Subject {
     private GameRow upperRow;
     private GameRow lowerRow;
     private Deck deck;
+
+    private GameRow upperBuildingRow;
+    private GameRow lowerBuildingRow;
+
     private BuildingDeck buildingDeckEra1;
     private BuildingDeck buildingDeckEra2;
     private BuildingDeck buildingDeckEra3;
@@ -59,6 +63,10 @@ public class Game extends Subject {
     }
     public void start()
     {
+        lowerBuildingRow = new GameRow();
+        upperBuildingRow = new GameRow();
+        lowerRow = new GameRow();
+        upperRow = new GameRow();
         this.started = true;
         this.currentEra = 1;
         Collections.shuffle(players);
@@ -79,7 +87,7 @@ public class Game extends Subject {
 
         for(GameCard card : buildingCard)
         {
-            upperRow.addCard(card);
+            upperBuildingRow.addCard(card);
         }
     }
     public void end()
