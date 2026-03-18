@@ -99,7 +99,26 @@ public class Game extends Subject {
         }
         throw new IllegalStateException("There is no player with the current turn letter");
     }
-    public void endTurn(){}
+    public void endTurn(){
+        lowerRow = new GameRow();
+        for(GameCard card : upperRow.getCards())
+        {
+            lowerRow.addCard(card);
+        }
+        upperRow = new GameRow();
+
+        boolean newEra = false;
+
+        for (int i = 0; i < numPlayers+4; i++) {
+            GameCard c = deck.Draw();
+            if(c.getEra() != currentEra)
+                newEra = true;
+            upperRow.addCard(deck.Draw());
+        }
+
+        if(newEra)
+            changeEra();
+    }
     public void changeEra(
 
     ){}
