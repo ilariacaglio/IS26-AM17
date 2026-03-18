@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.EventCard;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 
 import java.util.Collection;
@@ -102,7 +103,15 @@ public class Game extends Subject {
     public void changeEra(
 
     ){}
-    public void resolveEvent(){}
+    public void resolveEvent(){
+        for(GameCard card : lowerRow.getCards())
+        {
+            if(card instanceof EventCard eventCard)
+            {
+                eventCard.computeScore(players);
+            }
+        }
+    }
     public int getId(){
         return id;
     }
