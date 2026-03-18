@@ -10,6 +10,4 @@ public class BuildingCard extends GameCard{
         this.bonusPoints = bonusPoints;
     }
 
-
-    public void buyBuilding(){}
 }
