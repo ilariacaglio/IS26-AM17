@@ -1,5 +1,8 @@
 package it.polimi.ingsw.am17.Model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class OfferingCard implements Subject {
     private final int minPlayers;
     private final char orderLetter;
@@ -7,7 +10,12 @@ public class OfferingCard implements Subject {
     private final int numCardsUpper;
     private final int numCardsLower;
 
-    public OfferingCard(int minPlayers, char orderLetter, int foodBonus, int numCardsUpper, int numCardsLower) {
+    @JsonCreator
+    public OfferingCard(@JsonProperty("minPlayers") int minPlayers,
+    @JsonProperty("orderLetter") char orderLetter,
+    @JsonProperty("foodBonus") int foodBonus,
+    @JsonProperty("numCardsUpper") int numCardsUpper,
+    @JsonProperty("numCardsLower") int numCardsLower) {
         this.minPlayers = minPlayers;
         this.orderLetter = orderLetter;
         this.foodBonus = foodBonus;
