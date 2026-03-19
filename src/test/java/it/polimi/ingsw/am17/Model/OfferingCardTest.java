@@ -59,16 +59,4 @@ class OfferingCardTest {
             System.out.println(offeringCard.getNumCardsUpper());
         }
     }
-
-    @Test
-    void attach() {
-    }
-
-    @Test
-    void detach() {
-    }
-
-    @Test
-    void notifyObserver() {
-    }
 }

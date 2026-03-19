@@ -3,7 +3,7 @@ package it.polimi.ingsw.am17.Model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class OfferingCard implements Subject {
+public class OfferingCard {
     private final int minPlayers;
     private final char orderLetter;
     private final int foodBonus;
@@ -41,20 +41,5 @@ public class OfferingCard implements Subject {
 
     public int getNumCardsUpper() {
         return numCardsUpper;
-    }
-
-    @Override
-    public void attach(Observer observer) {
-
-    }
-
-    @Override
-    public void detach(Observer observer) {
-
-    }
-
-    @Override
-    public void notifyObserver() {
-
     }
 }
