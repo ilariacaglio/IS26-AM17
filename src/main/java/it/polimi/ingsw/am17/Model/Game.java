@@ -31,6 +31,10 @@ public class Game extends Subject {
         Random r = new Random();
         this.id = r.nextInt();
         this.numPlayers = numPlayers;
+        lowerBuildingRow = new GameRow();
+        upperBuildingRow = new GameRow();
+        lowerRow = new GameRow();
+        upperRow = new GameRow();
     }
 
 
@@ -70,10 +74,6 @@ public class Game extends Subject {
 
 
     public void start() {
-        lowerBuildingRow = new GameRow();
-        upperBuildingRow = new GameRow();
-        lowerRow = new GameRow();
-        upperRow = new GameRow();
         this.started = true;
         this.currentEra = 1;
         Collections.shuffle(players);
