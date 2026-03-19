@@ -190,16 +190,32 @@ public class Game extends Subject {
     }
 
 
-    public void addCardToUpperRow(GameCard card)
+    public void removeCardFromRow(GameCard card)
     {
-        upperRow.addCard(card);
+        //check if card is building
+        if(! (card instanceof BuildingCard)) {
+
+            //check if a row contains the card, if so removes it
+            if (upperRow.getCards().contains(card))
+                upperRow.removeCard(card);
+            else if (lowerRow.getCards().contains(card))
+                lowerRow.removeCard(card);
+            else //if no row contains the card throw exception
+                throw new IllegalStateException("No card row contains this card");
+        } else
+        {
+
+            //check if a row contains the card, if so removes it
+            if (upperBuildingRow.getCards().contains(card))
+                upperBuildingRow.removeCard(card);
+            else if (lowerBuildingRow.getCards().contains(card)) {
+                lowerBuildingRow.removeCard(card);
+            }else //if no row contains the card throw exception
+                throw new IllegalStateException("No building row contains this card");
+        }
     }
 
 
-    public void addCardToLowerRow(GameCard card)
-    {
-        lowerRow.addCard(card);
-    }
 
 
     @Override
