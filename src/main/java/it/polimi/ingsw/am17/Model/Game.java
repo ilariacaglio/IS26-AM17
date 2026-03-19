@@ -7,8 +7,8 @@ import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 import java.util.*;
 
 public class Game extends Subject {
-    private int id;
-    private int numPlayers;
+    private final int id;
+    private final int numPlayers;
     private boolean started;
     private List<Player> players;
     private int currentEra;
