@@ -4,7 +4,7 @@ import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 import java.util.List;
 
-public class Player implements Subject{
+public class Player extends Subject{
     private final String nickname;
     private int pp;
     private int food;
@@ -51,7 +51,6 @@ public class Player implements Subject{
     }
 
     public void setOfferingCard(OfferingCard offeringCard) {
-        //controllo input nel controller
         this.offeringCard = offeringCard;
     }
 
@@ -60,7 +59,6 @@ public class Player implements Subject{
     }
 
     //to fix
-    //mi servono dei metodi nel game per modificare le rows
     public void playTurn(List<GameCard> cards){
         for(GameCard card : cards){
             //metodi del game per modificare le rows
@@ -68,25 +66,7 @@ public class Player implements Subject{
         }
     }
 
-    //to fix
     public void buyBuilding(BuildingCard card){
-        //manca metodo get nella card
         addFood(card.getFoodCost()*(-1));
-    }
-
-    //non servono probabilmente
-    @Override
-    public void attach(Observer observer) {
-
-    }
-
-    @Override
-    public void detach(Observer observer) {
-
-    }
-
-    @Override
-    public void notifyObserver() {
-
     }
 }
