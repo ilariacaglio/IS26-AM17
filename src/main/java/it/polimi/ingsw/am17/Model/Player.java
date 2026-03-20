@@ -9,7 +9,7 @@ public class Player extends Subject{
     private int pp;
     private int food;
     private final Color color;
-    private final PlayerRow playerRow;
+    private final CardRow playerRow;
     private OfferingCard offeringCard;
 
     public Player(String nickname, Color color)
@@ -71,5 +71,9 @@ public class Player extends Subject{
 
     public void buyBuilding(BuildingCard card){
         addFood(card.getFoodCost()*(-1));
+    }
+
+    public List<GameCard> getPlayerCards(){
+        return playerRow.getCards();
     }
 }
