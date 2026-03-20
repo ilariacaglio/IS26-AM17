@@ -1,0 +1,51 @@
+[
+  {
+    "minPlayers": 5,
+    "orderLetter": "A",
+    "foodBonus": 2,
+    "numCardsUpper": 0,
+    "numCardsLower": 0
+  },
+  {
+    "minPlayers": 2,
+    "orderLetter": "B",
+    "foodBonus": 0,
+    "numCardsUpper": 0,
+    "numCardsLower": 1
+  },
+  {
+    "minPlayers": 2,
+    "orderLetter": "C",
+    "foodBonus": 0,
+    "numCardsUpper": 1,
+    "numCardsLower": 0
+  },
+  {
+    "minPlayers": 3,
+    "orderLetter": "D",
+    "foodBonus": 0,
+    "numCardsUpper": 0,
+    "numCardsLower": 2
+  },
+  {
+    "minPlayers": 2,
+    "orderLetter": "E",
+    "foodBonus": 0,
+    "numCardsUpper": 1,
+    "numCardsLower": 1
+  },
+  {
+    "minPlayers": 2,
+    "orderLetter": "F",
+    "foodBonus": 0,
+    "numCardsUpper": 2,
+    "numCardsLower": 0
+  },
+  {
+    "minPlayers": 4,
+    "orderLetter": "G",
+    "foodBonus": 0,
+    "numCardsUpper": 2,
+    "numCardsLower": 1
+  }
+]
