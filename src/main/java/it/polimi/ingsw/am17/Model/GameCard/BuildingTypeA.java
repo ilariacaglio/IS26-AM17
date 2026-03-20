@@ -3,9 +3,9 @@ package it.polimi.ingsw.am17.Model.GameCard;
 import it.polimi.ingsw.am17.Model.Player;
 
 /**
- * Implements +25pp building
- * SINGLETON
+ * Gives +25 pp.
  * Final effect
+ * SINGLETON
  */
 public class BuildingTypeA extends BuildingCard {
     public BuildingTypeA() {

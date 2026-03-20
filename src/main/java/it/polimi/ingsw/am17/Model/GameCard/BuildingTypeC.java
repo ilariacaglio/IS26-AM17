@@ -4,12 +4,12 @@ import it.polimi.ingsw.am17.Model.OfferingCard;
 import it.polimi.ingsw.am17.Model.Player;
 
 /**
- * Allows to get one more card from the upper row.
- * Game effect
- * SINGLETON
+ * Gives extra points for each character of given type.
+ * Final effect
+ * MULTIPLE
  */
-public class BuildingTypeB extends BuildingCard {
-    public BuildingTypeB() {
+public class BuildingTypeC extends BuildingCard {
+    public BuildingTypeC() {
         super(3, 9, 3);
     }
 
