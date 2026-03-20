@@ -1,75 +1,79 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
-
 import java.util.List;
 
-enum Color{
-    RED,
-    BLUE,
-    GREEN,
-    PURPLE,
-    YELLOW,
-    PINK,
-}
-public class Player implements Subject{
-    private String nickname;
+public class Player extends Subject{
+    private final String nickname;
     private int pp;
     private int food;
-    private Color color;
-    private PlayerRow row;
+    private final Color color;
+    private final CardRow playerRow;
     private OfferingCard offeringCard;
 
-    public void addPp(int quantity){}
-    public void addFood(int quantity) {}
+    public Player(String nickname, Color color)
+    {
+        this.nickname = nickname;
+        this.color = color;
+        playerRow = new PlayerRow();
+    }
 
+    public void addPp(int quantity){
+        this.pp+=quantity;
+    }
+
+    public void addFood(int quantity) {
+        this.food+=quantity;
+    }
 
     public OfferingCard getOfferingCard() {
         return offeringCard;
     }
+
     public int getPp()
     {
         return pp;
     }
+
     public int getFood()
     {
         return food;
     }
+
     public Color getColor()
     {
         return color;
     }
-    public void setColor(Color color) {
-        this.color = color;
-    }
-    public void setNickname(String nickname)
-    {
-        this.nickname = nickname;
-    }
+
     public String getNickname()
     {
         return nickname;
     }
 
-
     public void setOfferingCard(OfferingCard offeringCard) {
-        //controllare che l'input sia valido
-    }
-    public void freeOfferingCard(){}
-    public void playTurn(List<GameCard> cards){}
-
-    @Override
-    public void attach(Observer observer) {
-
+        this.offeringCard = offeringCard;
     }
 
-    @Override
-    public void detach(Observer observer) {
-
+    public void freeOfferingCard() {
+        this.offeringCard = null;
     }
 
-    @Override
-    public void notifyObserver() {
+    public void playTurn(List<GameCard> cards, Game game){
+        for(GameCard card : cards){
+            if(card instanceof BuildingCard){
+                buyBuilding((BuildingCard) card);
+            }
+            game.removeCardFromRow(card);
+            playerRow.addCard(card);
+        }
+    }
 
+    public void buyBuilding(BuildingCard card){
+        addFood(card.getFoodCost()*(-1));
+    }
+
+    public List<GameCard> getPlayerCards(){
+        return playerRow.getCards();
     }
 }
