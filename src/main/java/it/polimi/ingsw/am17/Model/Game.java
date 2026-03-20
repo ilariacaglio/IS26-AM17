@@ -1,15 +1,14 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
+import it.polimi.ingsw.am17.Model.GameCard.EventCard;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-public class Game implements Subject {
-    private int id;
-    private int numPlayers;
+public class Game extends Subject {
+    private final int id;
+    private final int numPlayers;
     private boolean started;
     private List<Player> players;
     private int currentEra;
@@ -17,31 +16,46 @@ public class Game implements Subject {
     private GameRow upperRow;
     private GameRow lowerRow;
     private Deck deck;
+
+    private GameRow upperBuildingRow;
+    private GameRow lowerBuildingRow;
+
     private BuildingDeck buildingDeckEra1;
     private BuildingDeck buildingDeckEra2;
     private BuildingDeck buildingDeckEra3;
 
-    public Game(int numPlayers)
-    {
+    private int currentPlayerIndex = 0;
+    private char currentTurnLetter = 'a';
+
+    public Game(int numPlayers) {
         Random r = new Random();
         this.id = r.nextInt();
         this.numPlayers = numPlayers;
+        lowerBuildingRow = new GameRow();
+        upperBuildingRow = new GameRow();
+        lowerRow = new GameRow();
+        upperRow = new GameRow();
     }
+
 
     public int getNumPlayers()
     {
         return  numPlayers;
     }
 
+
     public List<Player> getPlayers() {
         return players;
     }
+
+
     public Player getNextPlayer()
     {
-        return null;
+        return players.get(currentPlayerIndex++);
     }
-    public void addPlayer(Player p)
-    {
+
+
+    public void addPlayer(Player p) {
 
         if(players.stream().count() < numPlayers && numPlayers > 0){
             p.setColor(Color.values()[(int) players.stream().count()]);
@@ -51,12 +65,15 @@ public class Game implements Subject {
             throw new IllegalStateException("The game lobby is full. Cannot add more players.");
         }
     }
+
+
     public boolean isStarted()
     {
         return started;
     }
-    public void start()
-    {
+
+
+    public void start() {
         this.started = true;
         this.currentEra = 1;
         Collections.shuffle(players);
@@ -77,35 +94,141 @@ public class Game implements Subject {
 
         for(GameCard card : buildingCard)
         {
-            upperRow.addCard(card);
+            upperBuildingRow.addCard(card);
         }
     }
-    public void end()
-    {
+
+
+    public void end() {
 
     }
-    public void getNextTurn()
-    {
+
+
+    public Player getNextTurn() {
+        for(Player player : players)
+        {
+            if(player.getOfferingCard().getOrderLetter() == currentTurnLetter) {
+                currentTurnLetter++;
+                return player;
+            }
+        }
+        throw new IllegalStateException("There is no player with the current turn letter");
+    }
+
+
+    public void endTurn(){
+        lowerRow = new GameRow();
+        for(GameCard card : upperRow.getCards())
+        {
+            lowerRow.addCard(card);
+        }
+        upperRow = new GameRow();
+
+        boolean newEra = false;
+
+        for (int i = 0; i < numPlayers+4; i++) {
+            GameCard c = deck.Draw();
+            if(c.getEra() != currentEra) {
+                newEra = true;
+                currentEra++;
+            }
+            upperRow.addCard(deck.Draw());
+        }
+
+        if(newEra)
+            changeEra();
+    }
+
+
+    public void changeEra(){
+        if(currentEra == 3) {
+            //remove all card from lowerBuildingRow
+            lowerBuildingRow = new GameRow();
+        }
+
+        //add buildingCard card in lowerRow
+        for (GameCard card : upperBuildingRow.getCards()){
+            lowerBuildingRow.addCard(card);
+        }
+
+        //remove buildingCard card in upperRow
+        upperBuildingRow = new GameRow();
+
+        //add buildingCard card in upperRow
+        switch (currentEra){
+            case 2:
+                for (GameCard card : buildingDeckEra2.drawAll()){
+                    upperBuildingRow.addCard(card);
+                }
+                break;
+            case 3:
+                for (GameCard card : buildingDeckEra3.drawAll()){
+                    upperBuildingRow.addCard(card);
+                }
+                break;
+            default:
+                throw new IllegalStateException("We are in a wrong era");
+        }
+
 
     }
-    public void endTurn(){}
-    public void changeEra(
 
-    ){}
-    public void resolveEvent(){}
+
+    public void resolveEvent(){
+        for(GameCard card : lowerRow.getCards())
+        {
+            if(card instanceof EventCard eventCard)
+            {
+                eventCard.computeScore(players);
+            }
+        }
+    }
+
+
     public int getId(){
         return id;
     }
+
+
+    public void removeCardFromRow(GameCard card)
+    {
+        //check if card is building
+        if(! (card instanceof BuildingCard)) {
+
+            //check if a row contains the card, if so removes it
+            if (upperRow.getCards().contains(card))
+                upperRow.removeCard(card);
+            else if (lowerRow.getCards().contains(card))
+                lowerRow.removeCard(card);
+            else //if no row contains the card throw exception
+                throw new IllegalStateException("No card row contains this card");
+        } else
+        {
+
+            //check if a row contains the card, if so removes it
+            if (upperBuildingRow.getCards().contains(card))
+                upperBuildingRow.removeCard(card);
+            else if (lowerBuildingRow.getCards().contains(card)) {
+                lowerBuildingRow.removeCard(card);
+            }else //if no row contains the card throw exception
+                throw new IllegalStateException("No building row contains this card");
+        }
+    }
+
+
+
 
     @Override
     public void attach(Observer observer) {
 
     }
 
+
     @Override
     public void detach(Observer observer) {
 
     }
+
 
     @Override
     public void notifyObserver() {
