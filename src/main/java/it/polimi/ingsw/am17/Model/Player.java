@@ -9,13 +9,14 @@ public class Player extends Subject{
     private int pp;
     private int food;
     private final Color color;
-    private final PlayerRow playerRow = new PlayerRow();
+    private final PlayerRow playerRow;
     private OfferingCard offeringCard;
 
     public Player(String nickname, Color color)
     {
         this.nickname = nickname;
         this.color = color;
+        playerRow = new PlayerRow();
     }
 
     public void addPp(int quantity){
@@ -58,10 +59,12 @@ public class Player extends Subject{
         this.offeringCard = null;
     }
 
-    //to fix
-    public void playTurn(List<GameCard> cards){
+    public void playTurn(List<GameCard> cards, Game game){
         for(GameCard card : cards){
-            //metodi del game per modificare le rows
+            if(card instanceof BuildingCard){
+                buyBuilding((BuildingCard) card);
+            }
+            game.removeCardFromRow(card);
             playerRow.addCard(card);
         }
     }
