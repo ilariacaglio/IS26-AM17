@@ -17,5 +17,33 @@ public class FoodEvent extends EventCard{
     }
 
     @Override
-    public void computeScore(List<Player> list){}
+    public void computeScore(List<Player> list){
+        for(int i=0; i<list.size(); i++){
+            int size = list.get(i).getPlayerCards().size();
+            int food = list.get(i).getFood();
+            int foodPrice = size;
+
+            long numBinder = list.get(i).getPlayerCards().stream()
+                    .filter(c -> c instanceof Binder)
+                    .count();
+
+            if(numBinder!=0){
+                foodPrice = Math.toIntExact(foodPrice - (3 * numBinder));
+            }
+
+            if(food<foodPrice){
+                int remaining = foodPrice - food;
+
+                int lostPp= pointLost*remaining;
+
+                list.get(i).removePp(lostPp);
+                list.get(i).removeFood(food);
+            }
+
+            else{
+                list.get(i).removeFood(foodPrice);
+            }
+
+        }
+    }
 }
