@@ -35,5 +35,19 @@ public class PaintingEvent extends EventCard {
     }
 
     @Override
-    public void computeScore(List<Player> list){}
+    public void computeScore(List<Player> list){
+        for (int i = 0; i<list.size(); i++){
+            long numArtist = list.get(i).getPlayerCards().stream()
+                    .filter(c-> c instanceof Artist)
+                    .count();
+
+            if(numArtist>=numLow){
+                int pointsGain = Math.toIntExact(numArtist * pointsLow);
+                list.get(i).addPp(pointsGain);
+            }
+            else {
+                list.get(i).removePp(pointsMax);
+            }
+        }
+    }
 }
