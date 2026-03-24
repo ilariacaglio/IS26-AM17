@@ -1,8 +1,10 @@
 package it.polimi.ingsw.am17.Model;
 
-import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
-import it.polimi.ingsw.am17.Model.GameCard.GameCard;
+import it.polimi.ingsw.am17.Model.GameCard.*;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Player extends Subject{
     private final String nickname;
@@ -16,7 +18,7 @@ public class Player extends Subject{
     {
         this.nickname = nickname;
         this.color = color;
-        playerRow = new PlayerRow();
+        playerRow = new CardRow();
     }
 
     public void addPp(int quantity){
@@ -75,5 +77,53 @@ public class Player extends Subject{
 
     public List<GameCard> getPlayerCards(){
         return playerRow.getCards();
+    }
+
+    public void calculateFinalPoints(){
+        boolean iconPresent;
+        // add pp of builders
+        int pointsBuilders = playerRow.getCards().stream()
+                    .filter(g -> g instanceof Builder)
+                    .mapToInt(g -> ((Builder) g).getPointBonus())
+                    .sum();
+        addFood(pointsBuilders);
+        // add pp of inventors and icons
+        List<Inventor> inventorsList = playerRow.getCards().stream()
+                    .filter(g -> g instanceof Inventor)
+                    .map(g -> (Inventor)g)
+                    .toList();
+        Set<Inventor> inventorIcons = new HashSet<>();
+        for(Inventor inventor : inventorsList){
+            iconPresent = false;
+            for (Inventor i: inventorIcons){
+                if(inventor.getIcon().equals(i.getIcon())){
+                    iconPresent = true;
+                }
+            }
+            if(!iconPresent){
+                inventorIcons.add(inventor);
+            }
+        }
+        addPp(inventorsList.size()*inventorIcons.size());
+        // add 10 point for artist couples
+        int numArtists = (int) playerRow.getCards().stream()
+                .filter(g -> g instanceof Artist)
+                .count();
+        int numCouples = Math.floorDiv(numArtists,2);
+        addFood(numCouples*10);
+        // points of buildings
+        List<BuildingCard> buildingsList = playerRow.getCards().stream()
+                .filter(g -> g instanceof BuildingCard)
+                .map (g -> (BuildingCard)g)
+                .toList();
+        int cardPoints = buildingsList.stream()
+                .mapToInt(c -> c.getPointsCost())
+                .sum();
+        addPp(cardPoints);
+        // final effects of buildings
+        for (BuildingCard card : buildingsList) {
+            // 25 extra points
+            // creo le carte building che mi servono e poi equals
+        }
     }
 }
