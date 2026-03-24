@@ -58,7 +58,6 @@ public class Game extends Subject {
     public void addPlayer(Player p) {
 
         if(players.stream().count() < numPlayers && numPlayers > 0){
-            p.setColor(Color.values()[(int) players.stream().count()]);
             players.add(p);
         }
         else {
