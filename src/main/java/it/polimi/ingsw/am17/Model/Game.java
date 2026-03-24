@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.Builder;
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.EventCard;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
@@ -51,6 +52,14 @@ public class Game extends Subject {
 
     public Player getNextPlayer()
     {
+        if(currentPlayerIndex == 0)
+        {
+            players.sort(Comparator.comparing(p -> p.getOfferingCard().getOrderLetter()));
+        }
+        if(currentPlayerIndex >= players.size())
+        {
+            throw new IllegalStateException("current player is higher then number of player");
+        }
         return players.get(currentPlayerIndex++);
     }
 
@@ -155,6 +164,9 @@ public class Game extends Subject {
 
         if(newEra)
             changeEra();
+
+        currentTurnLetter = 'a';
+        currentPlayerIndex = 0;
     }
 
 
