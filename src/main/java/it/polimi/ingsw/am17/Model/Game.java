@@ -99,6 +99,25 @@ public class Game extends Subject {
 
 
     public void end() {
+        for(GameCard card : upperRow.getCards())
+        {
+            if(card instanceof EventCard eventCard) {
+                eventCard.computeScore(players);
+            }
+        }
+
+        for(GameCard card : lowerRow.getCards())
+        {
+            if(card instanceof EventCard eventCard) {
+                eventCard.computeScore(players);
+            }
+        }
+
+        for(Player player : players)
+        {
+            //call player to add its point
+            //player.calcuteFinalPoint();
+        }
 
     }
 
