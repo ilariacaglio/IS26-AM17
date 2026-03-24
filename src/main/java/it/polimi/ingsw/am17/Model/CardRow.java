@@ -16,9 +16,6 @@ public class CardRow {
         cardList.add(card);
     }
 
-    public void showCards()
-    {}
-
     public List<GameCard> getCards() {
         return cardList;
     }
