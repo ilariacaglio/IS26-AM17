@@ -36,6 +36,7 @@ public class Game extends Subject {
         upperBuildingRow = new GameRow();
         lowerRow = new GameRow();
         upperRow = new GameRow();
+        players = new ArrayList<Player>(numPlayers);
     }
 
 
