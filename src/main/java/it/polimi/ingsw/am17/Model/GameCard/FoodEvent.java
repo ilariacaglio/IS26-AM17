@@ -28,7 +28,7 @@ public class FoodEvent extends EventCard{
                     .count();
 
             if(numBinder!=0){
-                foodPrice = Math.toIntExact(foodPrice - (3 * numBinder));
+                foodPrice = Math.toIntExact((foodPrice - (3 * numBinder)));
             }
 
             if(food<foodPrice){
@@ -36,12 +36,12 @@ public class FoodEvent extends EventCard{
 
                 int lostPp= pointLost*remaining;
 
-                list.get(i).removePp(lostPp);
-                list.get(i).removeFood(food);
+                list.get(i).addPp(lostPp*(-1));
+                list.get(i).addFood(food*(-1));
             }
 
             else{
-                list.get(i).removeFood(foodPrice);
+                list.get(i).addFood(foodPrice*(-1));
             }
 
         }
