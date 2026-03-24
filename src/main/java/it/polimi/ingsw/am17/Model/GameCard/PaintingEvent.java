@@ -41,12 +41,12 @@ public class PaintingEvent extends EventCard {
                     .filter(c-> c instanceof Artist)
                     .count();
 
-            if(numArtist>=numLow){
-                int pointsGain = Math.toIntExact(numArtist * pointsLow);
+            if(numArtist>=numMax){
+                int pointsGain = Math.toIntExact(numArtist * pointsMax);
                 list.get(i).addPp(pointsGain);
             }
             else {
-                list.get(i).removePp(pointsMax);
+                list.get(i).addPp(pointsLow*(-1));
             }
         }
     }
