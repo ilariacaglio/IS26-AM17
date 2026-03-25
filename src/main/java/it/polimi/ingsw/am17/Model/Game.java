@@ -262,6 +262,10 @@ public class Game extends Subject {
         return upperBuildingRow.getCards().size();
     }
 
+    public char getCurrentTurnLetter()
+    {
+        return currentTurnLetter;
+    }
 
 
     @Override
