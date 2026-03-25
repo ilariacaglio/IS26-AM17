@@ -5,6 +5,7 @@ import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.EventCard;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 
+import javax.smartcardio.Card;
 import java.util.*;
 
 public class Game extends Subject {
@@ -270,6 +271,22 @@ public class Game extends Subject {
     public int getCurrentEra()
     {
         return currentEra;
+    }
+    public CardRow getUpperRow()
+    {
+        return upperRow;
+    }
+    public CardRow getLowerRow()
+    {
+        return lowerRow;
+    }
+    public CardRow getUpperBuildingRow()
+    {
+        return upperBuildingRow;
+    }
+    public CardRow getLowerBuildingRow()
+    {
+        return lowerBuildingRow;
     }
 
     @Override
