@@ -1,9 +1,11 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.Builder;
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.EventCard;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 
+import javax.smartcardio.Card;
 import java.util.*;
 
 public class Game extends Subject {
@@ -35,6 +37,7 @@ public class Game extends Subject {
         upperBuildingRow = new GameRow();
         lowerRow = new GameRow();
         upperRow = new GameRow();
+        players = new ArrayList<Player>(numPlayers);
     }
 
 
@@ -51,6 +54,14 @@ public class Game extends Subject {
 
     public Player getNextPlayer()
     {
+        if(currentPlayerIndex == 0)
+        {
+            players.sort(Comparator.comparing(p -> p.getOfferingCard().getOrderLetter()));
+        }
+        if(currentPlayerIndex >= players.size())
+        {
+            throw new IllegalStateException("current player is higher then number of player");
+        }
         return players.get(currentPlayerIndex++);
     }
 
@@ -58,7 +69,6 @@ public class Game extends Subject {
     public void addPlayer(Player p) {
 
         if(players.stream().count() < numPlayers && numPlayers > 0){
-            p.setColor(Color.values()[(int) players.stream().count()]);
             players.add(p);
         }
         else {
@@ -100,6 +110,25 @@ public class Game extends Subject {
 
 
     public void end() {
+        for(GameCard card : upperRow.getCards())
+        {
+            if(card instanceof EventCard eventCard) {
+                eventCard.computeScore(players);
+            }
+        }
+
+        for(GameCard card : lowerRow.getCards())
+        {
+            if(card instanceof EventCard eventCard) {
+                eventCard.computeScore(players);
+            }
+        }
+
+        for(Player player : players)
+        {
+            //call player to add its point
+            //player.calcuteFinalPoint();
+        }
 
     }
 
@@ -137,6 +166,9 @@ public class Game extends Subject {
 
         if(newEra)
             changeEra();
+
+        currentTurnLetter = 'a';
+        currentPlayerIndex = 0;
     }
 
 
@@ -215,8 +247,47 @@ public class Game extends Subject {
         }
     }
 
+    /// only to use for testing
+    public int getLowerRowSize()
+    {
+        return lowerRow.getCards().size();
+    }
+    /// only to use for testing
+    public int getUpperRowSize()
+    {
+        return upperRow.getCards().size();
+    }
+    /// only to use for testing
+    public int getUpperBuildingRowSize()
+    {
+        return upperBuildingRow.getCards().size();
+    }
 
+    public char getCurrentTurnLetter()
+    {
+        return currentTurnLetter;
+    }
 
+    public int getCurrentEra()
+    {
+        return currentEra;
+    }
+    public CardRow getUpperRow()
+    {
+        return upperRow;
+    }
+    public CardRow getLowerRow()
+    {
+        return lowerRow;
+    }
+    public CardRow getUpperBuildingRow()
+    {
+        return upperBuildingRow;
+    }
+    public CardRow getLowerBuildingRow()
+    {
+        return lowerBuildingRow;
+    }
 
     @Override
     public void attach(Observer observer) {
