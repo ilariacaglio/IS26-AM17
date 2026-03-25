@@ -91,17 +91,18 @@ public class Player{
     public List<GameCard> getPlayerBuildingCards(){return playerBuildingRow.getCards();}
 
     public void calculateFinalPoints(){
-        //trovare modo per togliere instanceof
         boolean iconPresent;
         // add pp of builders
         int pointsBuilders = playerTribeRow.getCards().stream()
-                    .filter(g -> g instanceof Builder)
+                    .map(g->(TribesCard) g)
+                    .filter(g ->g.getCardType().equals(CardType.BUILDER))
                     .mapToInt(g -> ((Builder) g).getPointBonus())
                     .sum();
         addFood(pointsBuilders);
         // add pp of inventors and icons
         List<Inventor> inventorsList = playerTribeRow.getCards().stream()
-                    .filter(g -> g instanceof Inventor)
+                    .map(g->(TribesCard) g)
+                    .filter(g ->g.getCardType().equals(CardType.INVENTOR))
                     .map(g -> (Inventor)g)
                     .toList();
         Set<Inventor> inventorIcons = new HashSet<>();
@@ -119,7 +120,8 @@ public class Player{
         addPp(inventorsList.size()*inventorIcons.size());
         // add 10 point for artist couples
         int numArtists = (int) playerTribeRow.getCards().stream()
-                .filter(g -> g instanceof Artist)
+                .map(g->(TribesCard) g)
+                .filter(g ->g.getCardType().equals(CardType.ARTIST))
                 .count();
         int numCouples = Math.floorDiv(numArtists,2);
         addFood(numCouples*10);
