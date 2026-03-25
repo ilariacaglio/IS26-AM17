@@ -111,7 +111,7 @@ public class GameTest {
         if(currentEra == 2)
         {
             //new lower building row contains old upper building row
-            assertTrue(game.getLowerBuildingRow().getCards().contains(oldBuildingRow));
+            assertTrue(game.getLowerBuildingRow().getCards().containsAll(oldBuildingRow.getCards()));
             //check if the new upper building row has only cards with the correct era
             for(GameCard card : game.getUpperBuildingRow().getCards())
                 assertEquals(2, card.getEra());
