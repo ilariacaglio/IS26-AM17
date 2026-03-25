@@ -74,7 +74,7 @@ public class GameTest {
         Player p = game.getNextTurn();
         // check that the player returned has the current letter
         assertEquals(p.getOfferingCard().getOrderLetter(),currentLetter);
-        // check exception+++++
+        // check exception
         p = game.getNextTurn();
         p = game.getNextTurn();
         assertThrows(IllegalStateException.class, () -> game.getNextTurn());
