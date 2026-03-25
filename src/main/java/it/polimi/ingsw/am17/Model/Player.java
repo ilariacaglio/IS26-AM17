@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Model;
 
 import it.polimi.ingsw.am17.Model.GameCard.*;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,14 +64,19 @@ public class Player extends Subject{
         this.offeringCard = null;
     }
 
-    public void playTurn(List<GameCard> cards, Game game){
-        //trovare modo per togliere instanceof
-        for(GameCard card : cards){
-            if(card instanceof BuildingCard){
-                buyBuilding((BuildingCard) card);
+    public void playTurn(List<TribesCard> tribeCards, List<BuildingCard> buildingCards, Game game){
+        if(!tribeCards.equals(Collections.emptyList())){
+            for(TribesCard card : tribeCards){
+                game.removeCardFromRow(card);
+                playerTribeRow.addCard(card);
             }
-            game.removeCardFromRow(card);
-            playerTribeRow.addCard(card);
+        }
+        if(!buildingCards.equals(Collections.emptyList())){
+            for(BuildingCard card : buildingCards){
+                buyBuilding((BuildingCard) card);
+                game.removeCardFromRow(card);
+                playerTribeRow.addCard(card);
+            }
         }
     }
 
