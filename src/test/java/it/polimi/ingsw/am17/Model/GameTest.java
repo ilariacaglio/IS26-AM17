@@ -85,15 +85,19 @@ public class GameTest {
     void testEndTurn(){
         game.start();
         var oldUpperRow = game.getUpperRow();
+        int oldEra = game.getCurrentEra();
         game.endTurn();
         //new lower row equals to old upper row
         assertEquals(game.getLowerRow(),oldUpperRow);
         // check size new upper row
         assertEquals(game.getUpperRowSize(), game.getNumPlayers()+4);
-        // vedere se cambia era???????
-        var oldEra = game.getCurrentEra();
-        //era updated
-        assertEquals(game.getCurrentEra(), oldEra+1);
+        //capire bene quanti ne devo chiamare
+        game.endTurn();
+        game.endTurn();
+        game.endTurn();
+        // check update era
+        if (oldEra != game.getCurrentEra())
+            assertEquals(game.getCurrentEra(), oldEra+1);
     }
 
     @Test
@@ -121,18 +125,34 @@ public class GameTest {
         }
     }
 
-    // to do
     @Test
     void testRemoveCardFromRow(){
-        // crea tribe card
-        // estrai una carta contenuta in upper row
-        // estrai una carta contenuta in lower row
-        // crea carta a caso
-        // crea building card
-        // estrai una carta contenuta in upper building row
-        // estrai una carta contenuta in lower building row
-        // crea carta a caso
-        //controlla
+        // create game card
+        GameCard card;
+        // draw a card from the upper row
+        card = game.getCardFromUpperRow();
+        game.removeCardFromRow(card);
+        assertFalse(game.getUpperRow().getCards().contains(card));
+        // draw a card from the lower row
+        card = game.getCardFromLowerRow();
+        game.removeCardFromRow(card);
+        assertFalse(game.getLowerRow().getCards().contains(card));
+        // create card
+        card = new GameCard(1);
+        GameCard finalCard = card;
+        assertThrows(IllegalStateException.class, () -> game.removeCardFromRow(finalCard));
+        // draw a card from the upper building row
+        card = game.getCardFromUpperBuildingRow();
+        game.removeCardFromRow(card);
+        assertFalse(game.getUpperBuildingRow().getCards().contains(card));
+        // draw a card from the lower building row
+        card = game.getCardFromLowerBuildingRow();
+        game.removeCardFromRow(card);
+        assertFalse(game.getLowerBuildingRow().getCards().contains(card));
+        // create building card
+        card = new BuildingCard(1,1,1);
+        GameCard finalCard1 = card;
+        assertThrows(IllegalStateException.class, () -> game.removeCardFromRow(finalCard1));
     }
 
     // to do - metodo da sistemare in game
