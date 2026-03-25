@@ -1,13 +1,15 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
+import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
     Game game;
@@ -16,7 +18,7 @@ public class GameTest {
         game = new Game(3);
     }
 
-    //to do
+    //to do - metodo da sistemare nel game
     @Test
     void testGetNextPlayer(){
 
@@ -47,44 +49,101 @@ public class GameTest {
     void testStart(){
         game.start();
         //check if the game has started
-        assertEquals(game.isStarted(),true);
-        //controlla currentEra
-        //size lower row
-        //size upper row
-        //size upper building row
+        assertTrue(game.isStarted());
+        //check currentEra
+        assertEquals(game.getCurrentEra(),1);
+        //check size lower row
+        assertEquals(game.getLowerRowSize(), game.getNumPlayers()+1);
+        //check size upper row
+        assertEquals(game.getUpperRowSize(), game.getNumPlayers()+4);
+        //check size upper building row
+        if(game.getNumPlayers()>2){
+            assertEquals(game.getUpperBuildingRowSize(), 2);
+        }
+        else {
+            assertEquals(game.getUpperBuildingRowSize(), 1);
+        }
     }
 
-    //to do
     @Test
     void testGetNextTurn(){
+        game.start();
         // get current turn letter
+        var currentLetter = game.getCurrentTurnLetter();
         //call method
-        // verifiy that the player returned has the new current letter
+        Player p = game.getNextTurn();
+        // check that the player returned has the current letter
+        assertEquals(Optional.of(p.getOfferingCard().getOrderLetter()),currentLetter);
         // check exception
+        p = game.getNextTurn();
+        p = game.getNextTurn();
+        assertThrows(IllegalStateException.class, () -> game.getNextTurn());
     }
 
-    //to do
+    //to do -- to fix
     @Test
     void testEndTurn(){
-        //nuova lower row uguale a vecchia upper row
-        // check size nuova upper row
+        game.start();
+        var oldUpperRow = game.getUpperRow();
+        game.endTurn();
+        //new lower row equals to old upper row
+        assertEquals(game.getLowerRow(),oldUpperRow);
+        // check size new upper row
+        assertEquals(game.getUpperRowSize(), game.getNumPlayers()+4);
         // vedere se cambia era???????
+        var oldEra = game.getCurrentEra();
+        //era updated
+        assertEquals(game.getCurrentEra(), oldEra+1);
     }
 
     @Test
     void testChangeEra(){
-
-
+        game.start();
+        var oldBuildingRow = game.getUpperBuildingRow();
+        int currentEra = game.getCurrentEra();
+        if(currentEra !=2 && currentEra != 3)
+            assertThrows(IllegalStateException.class, () -> game.changeEra());
+        game.changeEra();
+        if(currentEra == 2)
+        {
+            //new lower building row contains old upper building row
+            assertTrue(game.getLowerBuildingRow().contains(oldBuildingRow));
+            //check if the new upper building row has only cards with the correct era
+            for(BuildingCard card : game.getUpperBuildingRow())
+                assertEquals(2, card.getEra());
+        }
+        else if (currentEra == 3) {
+            //new lower building row equals to old upper building row
+            assertEquals(game.getLowerBuildingRow(),oldBuildingRow);
+            //check if the new upper building row has only cards with the correct era
+            for(BuildingCard card : game.getUpperBuildingRow())
+                assertEquals(3, card.getEra());
+        }
     }
 
+    // to do
     @Test
     void testRemoveCardFromRow(){
+        // crea tribe card
+        // estrai una carta contenuta in upper row
+        // estrai una carta contenuta in lower row
+        // crea carta a caso
+        // crea building card
+        // estrai una carta contenuta in upper building row
+        // estrai una carta contenuta in lower building row
+        // crea carta a caso
+        //controlla
+    }
 
+    // to do - metodo da sistemare in game
+    @Test
+    void testResolveEvent(){
 
     }
 
+    // to do
     @Test
-    void testResolveEvent(){
+    void testEndGame(){
 
     }
 
