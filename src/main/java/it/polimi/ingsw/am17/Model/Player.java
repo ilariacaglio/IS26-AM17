@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Player extends Subject{
+public class Player{
     private final String nickname;
     private int pp;
     private int food;
