@@ -16,8 +16,8 @@ public class RitualEvent extends EventCard {
         return pointMin;
     }
 
-    public RitualEvent(boolean Final, int era, int pointMax, int pointMin){
-        super(Final, era);
+    public RitualEvent(boolean Final, int era, int pointMax, int pointMin,CardType cardType){
+        super(Final, era, cardType);
         this.pointMax = pointMax;
         this.pointMin = pointMin;
     }

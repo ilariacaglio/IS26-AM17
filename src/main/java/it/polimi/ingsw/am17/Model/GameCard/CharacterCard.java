@@ -7,8 +7,8 @@ public class CharacterCard extends TribesCard {
         return minPlayer;
     }
 
-    public CharacterCard(int era, int minPlayer){
-        super(era);
+    public CharacterCard(int era, int minPlayer, CardType cardType) {
+        super(era,  cardType);
         this.minPlayer = minPlayer;
     }
 }
