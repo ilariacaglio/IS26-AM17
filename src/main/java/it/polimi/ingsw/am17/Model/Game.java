@@ -247,17 +247,17 @@ public class Game extends Subject {
     }
 
     /// only to use for testing
-    int getLowerRowSize()
+    public int getLowerRowSize()
     {
         return lowerRow.getCards().size();
     }
     /// only to use for testing
-    int getUpperRowSize()
+    public int getUpperRowSize()
     {
         return upperRow.getCards().size();
     }
     /// only to use for testing
-    int getUpperBuildingRowSize()
+    public int getUpperBuildingRowSize()
     {
         return upperBuildingRow.getCards().size();
     }
@@ -267,6 +267,10 @@ public class Game extends Subject {
         return currentTurnLetter;
     }
 
+    public int getCurrentEra()
+    {
+        return currentEra;
+    }
 
     @Override
     public void attach(Observer observer) {
