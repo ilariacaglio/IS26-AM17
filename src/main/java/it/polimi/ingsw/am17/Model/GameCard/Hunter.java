@@ -9,8 +9,8 @@ public class Hunter extends CharacterCard {
         return withIcon;
     }
 
-    public Hunter(int era, int minPlayer, boolean withIcon) {
-        super(era, minPlayer);
+    public Hunter(int era, int minPlayer, boolean withIcon,CardType cardType) {
+        super(era, minPlayer, cardType);
         this.withIcon = withIcon;
 
     }
