@@ -288,6 +288,15 @@ public class Game extends Subject {
     {
         return lowerBuildingRow;
     }
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+    public int getPlayersSize() {
+        return players.size();
+    }
+    public List<Player> getPlayersList(){
+        return players;
+    }
 
     @Override
     public void attach(Observer observer) {
