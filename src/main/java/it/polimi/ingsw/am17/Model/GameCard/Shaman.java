@@ -8,8 +8,8 @@ public class Shaman extends CharacterCard {
         return stars;
     }
 
-    public Shaman(int era, int minPlayer, int stars){
-        super(era, minPlayer);
+    public Shaman(int era, int minPlayer, int stars,CardType cardType){
+        super(era, minPlayer, cardType);
         this.stars = stars;
     }
 }

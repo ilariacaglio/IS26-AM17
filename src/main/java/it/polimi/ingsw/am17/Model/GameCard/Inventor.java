@@ -7,8 +7,8 @@ public class Inventor extends CharacterCard {
         return icon;
     }
 
-    public  Inventor(int era, int minPlayers, String icon){
-        super(era, minPlayers);
+    public  Inventor(int era, int minPlayers, String icon,CardType cardType){
+        super(era, minPlayers, cardType);
         this.icon = icon;
     }
 }

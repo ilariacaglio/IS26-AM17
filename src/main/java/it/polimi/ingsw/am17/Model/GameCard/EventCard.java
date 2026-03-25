@@ -7,9 +7,9 @@ import java.util.List;
 public class EventCard extends TribesCard{
     private boolean Final;
 
-    public EventCard(boolean Final, int era) {
+    public EventCard(boolean Final, int era,CardType cardType) {
         this.Final = Final;
-        super(era);
+        super(era,cardType);
     }
 
     public void computeScore(List<Player> list){}

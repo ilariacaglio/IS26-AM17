@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
 public class Binder extends CharacterCard{
-    public Binder(int era, int minPlayers){
-        super(era, minPlayers);
+    public Binder(int era, int minPlayers,CardType cardType){
+        super(era, minPlayers,cardType);
     }
 }

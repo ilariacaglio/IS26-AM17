@@ -11,9 +11,9 @@ public class HuntingEvent extends EventCard {
         return pointEarned;
     }
 
-    public HuntingEvent(int pointEarned, boolean Final, int era){
+    public HuntingEvent(int pointEarned, boolean Final, int era, CardType cardType){
         this.pointEarned = pointEarned;
-        super(Final, era);
+        super(Final, era, cardType);
     }
 
     @Override

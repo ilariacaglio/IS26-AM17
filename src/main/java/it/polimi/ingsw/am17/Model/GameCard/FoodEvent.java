@@ -11,8 +11,8 @@ public class FoodEvent extends EventCard{
         return pointLost;
     }
 
-    public FoodEvent(int pointLost, boolean Final, int era){
-        super(Final, era);
+    public FoodEvent(int pointLost, boolean Final, int era,CardType cardType){
+        super(Final, era,cardType);
         this.pointLost = pointLost;
     }
 

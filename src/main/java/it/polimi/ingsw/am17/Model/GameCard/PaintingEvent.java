@@ -26,8 +26,8 @@ public class PaintingEvent extends EventCard {
         return pointsMax;
     }
 
-    public PaintingEvent(int pointsLow, int pointsMax, int numLow, int numMax, boolean Final, int era) {
-        super(Final, era);
+    public PaintingEvent(int pointsLow, int pointsMax, int numLow, int numMax, boolean Final, int era, CardType cardType) {
+        super(Final, era, cardType);
         this.pointsLow = pointsLow;
         this.pointsMax = pointsMax;
         this.numLow = numLow;
