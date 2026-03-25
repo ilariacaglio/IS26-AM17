@@ -161,7 +161,7 @@ public class GameTest {
 
     }
 
-    // to do
+    // to do - non so come testarlo
     @Test
     void testEndGame(){
 
