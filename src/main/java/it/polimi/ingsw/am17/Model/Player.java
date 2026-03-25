@@ -11,14 +11,16 @@ public class Player extends Subject{
     private int pp;
     private int food;
     private final Color color;
-    private final CardRow playerRow;
+    private final CardRow playerTribeRow;
+    private final CardRow playerBuildingRow;
     private OfferingCard offeringCard;
 
-    public Player(String nickname, Color color)
+    public Player(String nickname, Color color, CardRow playerBuildingRow)
     {
         this.nickname = nickname;
         this.color = color;
-        playerRow = new CardRow();
+        this.playerBuildingRow = new CardRow();
+        this.playerTribeRow = new CardRow();
     }
 
     public void addPp(int quantity){
@@ -62,12 +64,13 @@ public class Player extends Subject{
     }
 
     public void playTurn(List<GameCard> cards, Game game){
+        //trovare modo per togliere instanceof
         for(GameCard card : cards){
             if(card instanceof BuildingCard){
                 buyBuilding((BuildingCard) card);
             }
             game.removeCardFromRow(card);
-            playerRow.addCard(card);
+            playerTribeRow.addCard(card);
         }
     }
 
@@ -75,20 +78,23 @@ public class Player extends Subject{
         addFood(card.getFoodCost()*(-1));
     }
 
-    public List<GameCard> getPlayerCards(){
-        return playerRow.getCards();
+    public List<GameCard> getPlayerTribeCards(){
+        return playerTribeRow.getCards();
     }
 
+    public List<GameCard> getPlayerBuildingCards(){return playerBuildingRow.getCards();}
+
     public void calculateFinalPoints(){
+        //trovare modo per togliere instanceof
         boolean iconPresent;
         // add pp of builders
-        int pointsBuilders = playerRow.getCards().stream()
+        int pointsBuilders = playerTribeRow.getCards().stream()
                     .filter(g -> g instanceof Builder)
                     .mapToInt(g -> ((Builder) g).getPointBonus())
                     .sum();
         addFood(pointsBuilders);
         // add pp of inventors and icons
-        List<Inventor> inventorsList = playerRow.getCards().stream()
+        List<Inventor> inventorsList = playerTribeRow.getCards().stream()
                     .filter(g -> g instanceof Inventor)
                     .map(g -> (Inventor)g)
                     .toList();
@@ -106,24 +112,22 @@ public class Player extends Subject{
         }
         addPp(inventorsList.size()*inventorIcons.size());
         // add 10 point for artist couples
-        int numArtists = (int) playerRow.getCards().stream()
+        int numArtists = (int) playerTribeRow.getCards().stream()
                 .filter(g -> g instanceof Artist)
                 .count();
         int numCouples = Math.floorDiv(numArtists,2);
         addFood(numCouples*10);
         // points of buildings
-        List<BuildingCard> buildingsList = playerRow.getCards().stream()
-                .filter(g -> g instanceof BuildingCard)
+        List<BuildingCard> buildingsList = playerBuildingRow.getCards().stream()
                 .map (g -> (BuildingCard)g)
                 .toList();
         int cardPoints = buildingsList.stream()
-                .mapToInt(c -> c.getPointsCost())
+                .mapToInt(c -> c.getBonusPoints())
                 .sum();
         addPp(cardPoints);
         // final effects of buildings
         for (BuildingCard card : buildingsList) {
-            // 25 extra points
-            // creo le carte building che mi servono e poi equals
+            card.resolveEffect(this);
         }
     }
 }
