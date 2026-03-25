@@ -15,7 +15,7 @@ public class Player extends Subject{
     private final CardRow playerBuildingRow;
     private OfferingCard offeringCard;
 
-    public Player(String nickname, Color color, CardRow playerBuildingRow)
+    public Player(String nickname, Color color)
     {
         this.nickname = nickname;
         this.color = color;
