@@ -246,6 +246,21 @@ public class Game extends Subject {
         }
     }
 
+    /// only to use for testing
+    int getLowerRowSize()
+    {
+        return lowerRow.getCards().size();
+    }
+    /// only to use for testing
+    int getUpperRowSize()
+    {
+        return upperRow.getCards().size();
+    }
+    /// only to use for testing
+    int getUpperBuildingRowSize()
+    {
+        return upperBuildingRow.getCards().size();
+    }
 
 
 
