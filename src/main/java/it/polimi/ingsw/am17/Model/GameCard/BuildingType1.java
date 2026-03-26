@@ -13,7 +13,7 @@ public class BuildingType1 extends BuildingCard {
     }
 
     @Override
-    public void resolveEffect(Player player) {
-        player.addPp(25);
+    public int getFinalPoints () {
+        return 25;
     }
 }
