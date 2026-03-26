@@ -1,8 +1,10 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-public class BuildingCard extends GameCard{
-    private int foodCost;
-    private int bonusPoints;
+import it.polimi.ingsw.am17.Model.Player;
+
+public class BuildingCard extends GameCard {
+    private final int foodCost;
+    private final int bonusPoints;
 
     public BuildingCard(int era, int foodCost, int bonusPoints) {
         super(era);
@@ -10,6 +12,15 @@ public class BuildingCard extends GameCard{
         this.bonusPoints = bonusPoints;
     }
 
+    public int getFoodCost() {
+        return foodCost;
+    }
 
-    public void buyBuilding(){}
+    public int getBonusPoints() {
+        return bonusPoints;
+    }
+
+    public int finalPoints() { return 0; } // get points from
+    public int foodDiscount() { return 0; }
+    public int
 }
