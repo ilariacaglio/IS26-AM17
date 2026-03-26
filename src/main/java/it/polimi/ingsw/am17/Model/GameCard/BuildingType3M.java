@@ -18,13 +18,14 @@ public class BuildingType3M extends BuildingCard {
     }
 
     @Override
-    public void resolveEffect(Player player) {
+    public int getFinalPoints(CardRow playerTribeRow) {
         CardRow playerRow = player.getCardRow();
         int count = 0;
         for (GameCard card : playerRow.getCards()) {
-            if card is of class characterType {
-                count++;
-            }
+            // TODO: implement with attribute check
+//            if card is of class characterType {
+//                count++;
+//            }
         }
 
         player.addPp(count * pointsFromEachCharacter);
