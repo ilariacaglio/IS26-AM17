@@ -12,6 +12,7 @@ public class Game extends Subject {
     private final List<Player> players;
     private int currentEra;
     private List<OfferingCard> offeringCards;
+    private final List<Character> offeringCardLetters;
     private GameRow upperRow;
     private GameRow lowerRow;
     private Deck deck;
@@ -35,6 +36,7 @@ public class Game extends Subject {
         lowerRow = new GameRow();
         upperRow = new GameRow();
         players = new ArrayList<Player>(numPlayers);
+        offeringCardLetters = new ArrayList<Character>();
     }
 
 
@@ -48,14 +50,11 @@ public class Game extends Subject {
     }
 
 
-    //non possibile provare perchè manca offering card
     public Player getNextPlayer() {
-        if(currentPlayerIndex == 0)
-        {
+        if(currentPlayerIndex == 0) {
             players.sort(Comparator.comparing(p -> p.getOfferingCard().getOrderLetter()));
         }
-        if(currentPlayerIndex >= players.size())
-        {
+        if(currentPlayerIndex >= players.size()) {
             throw new IllegalStateException("current player is higher then number of player");
         }
         return players.get(currentPlayerIndex++);
@@ -63,7 +62,7 @@ public class Game extends Subject {
 
 
     public void addPlayer(Player p) {
-        if(players.stream().count() < numPlayers && numPlayers > 0){
+        if(numPlayers > 0 && players.size() < numPlayers){
             players.add(p);
         }
         else {
@@ -82,6 +81,10 @@ public class Game extends Subject {
         this.currentEra = 1;
         Collections.shuffle(players);
         offeringCards = null; // va fatto metodo per parsare le carte dal json
+
+        for(OfferingCard c: offeringCards){
+            offeringCardLetters.add(c.getOrderLetter());
+        }
 
         deck = new Deck();
         buildingDeckEra1 = new BuildingDeck(numPlayers);
