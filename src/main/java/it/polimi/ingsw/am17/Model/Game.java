@@ -48,6 +48,7 @@ public class Game extends Subject {
     }
 
 
+    //non possibile provare perchè manca offering card
     public Player getNextPlayer() {
         if(currentPlayerIndex == 0)
         {
@@ -75,7 +76,7 @@ public class Game extends Subject {
         return started;
     }
 
-
+    //non possibile provare perchè mancano building cards
     public void start() {
         this.started = true;
         this.currentEra = 1;
@@ -120,7 +121,8 @@ public class Game extends Subject {
         }
     }
 
-
+    //currentturnLetter ++ è sbagliato perchè se mancano lettere va in crash
+    //sono solo in fila le offering cards?
     public Player getNextTurn() {
         for(Player player : players) {
             if(player.getOfferingCard().getOrderLetter() == currentTurnLetter) {
@@ -131,7 +133,7 @@ public class Game extends Subject {
         throw new IllegalStateException("There is no player with the current turn letter");
     }
 
-
+    //non possibile provare perchè deck è null
     public void endTurn(){
         lowerRow = new GameRow();
         for(GameCard card : upperRow.getCards()) {
@@ -147,7 +149,7 @@ public class Game extends Subject {
                 newEra = true;
                 currentEra++;
             }
-            upperRow.addCard(deck.Draw());
+            upperRow.addCard(c);
         }
 
         if(newEra)
@@ -157,7 +159,7 @@ public class Game extends Subject {
         currentPlayerIndex = 0;
     }
 
-
+    //non possibile provare perchè buildingdeck null
     public void changeEra(){
         if(currentEra == 3) {
             //remove all card from lowerBuildingRow
@@ -203,6 +205,7 @@ public class Game extends Subject {
         return id;
     }
 
+    //non possibile provare perchè liste vuote
     public void removeBuildingCardFromRow(BuildingCard card){
         //check if a row contains the card, if so removes it
         if (upperBuildingRow.getCards().contains(card))
@@ -213,6 +216,7 @@ public class Game extends Subject {
             throw new IllegalStateException("No card row contains this card");
     }
 
+    //non possibile provare perchè liste vuote
     public void removeTribeCardFromRow(TribesCard card) {
         //check if a row contains the card, if so removes it
         if (upperBuildingRow.getCards().contains(card))
@@ -270,6 +274,10 @@ public class Game extends Subject {
     /// only to use for testing
     public List<Player> getPlayersList(){
         return players;
+    }
+    /// only to use for testing
+    public void setCurrentEra(int currentEra) {
+        this.currentEra = currentEra;
     }
 
     @Override
