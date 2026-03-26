@@ -198,7 +198,6 @@ public class GameTest {
     }
 
     //non possibile provare perchè liste vuote
-    //fai test separati
     @Test
     void testRemoveBuildingCardFromRow(){
         BuildingCard card;
@@ -217,7 +216,6 @@ public class GameTest {
     }
 
     //non possibile provare perchè liste vuote
-    //fai test separati
     @Test
     void testRemoveTribeCardFromRow(){
         // create game card
