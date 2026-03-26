@@ -1,9 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
-import it.polimi.ingsw.am17.Model.GameCard.Builder;
-import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
-import it.polimi.ingsw.am17.Model.GameCard.EventCard;
-import it.polimi.ingsw.am17.Model.GameCard.GameCard;
+import it.polimi.ingsw.am17.Model.GameCard.*;
 
 import javax.smartcardio.Card;
 import java.util.*;
@@ -12,7 +9,7 @@ public class Game extends Subject {
     private final int id;
     private final int numPlayers;
     private boolean started;
-    private List<Player> players;
+    private final List<Player> players;
     private int currentEra;
     private List<OfferingCard> offeringCards;
     private GameRow upperRow;
@@ -41,8 +38,7 @@ public class Game extends Subject {
     }
 
 
-    public int getNumPlayers()
-    {
+    public int getNumPlayers() {
         return  numPlayers;
     }
 
@@ -52,8 +48,7 @@ public class Game extends Subject {
     }
 
 
-    public Player getNextPlayer()
-    {
+    public Player getNextPlayer() {
         if(currentPlayerIndex == 0)
         {
             players.sort(Comparator.comparing(p -> p.getOfferingCard().getOrderLetter()));
@@ -67,7 +62,6 @@ public class Game extends Subject {
 
 
     public void addPlayer(Player p) {
-
         if(players.stream().count() < numPlayers && numPlayers > 0){
             players.add(p);
         }
@@ -77,8 +71,7 @@ public class Game extends Subject {
     }
 
 
-    public boolean isStarted()
-    {
+    public boolean isStarted() {
         return started;
     }
 
@@ -102,40 +95,34 @@ public class Game extends Subject {
         }
         var buildingCard = buildingDeckEra1.drawAll();
 
-        for(GameCard card : buildingCard)
-        {
+        for(GameCard card : buildingCard) {
             upperBuildingRow.addCard(card);
         }
     }
 
 
     public void end() {
-        for(GameCard card : upperRow.getCards())
-        {
+        for(GameCard card : upperRow.getCards()) {
             if(card instanceof EventCard eventCard) {
                 eventCard.computeScore(players);
             }
         }
 
-        for(GameCard card : lowerRow.getCards())
-        {
+        for(GameCard card : lowerRow.getCards()) {
             if(card instanceof EventCard eventCard) {
                 eventCard.computeScore(players);
             }
         }
 
-        for(Player player : players)
-        {
+        for(Player player : players) {
             //call player to add its point
-            //player.calcuteFinalPoint();
+            player.calculateFinalPoints();
         }
-
     }
 
 
     public Player getNextTurn() {
-        for(Player player : players)
-        {
+        for(Player player : players) {
             if(player.getOfferingCard().getOrderLetter() == currentTurnLetter) {
                 currentTurnLetter++;
                 return player;
@@ -147,8 +134,7 @@ public class Game extends Subject {
 
     public void endTurn(){
         lowerRow = new GameRow();
-        for(GameCard card : upperRow.getCards())
-        {
+        for(GameCard card : upperRow.getCards()) {
             lowerRow.addCard(card);
         }
         upperRow = new GameRow();
@@ -201,16 +187,12 @@ public class Game extends Subject {
             default:
                 throw new IllegalStateException("We are in a wrong era");
         }
-
-
     }
 
 
     public void resolveEvent(){
-        for(GameCard card : lowerRow.getCards())
-        {
-            if(card instanceof EventCard eventCard)
-            {
+        for(GameCard card : lowerRow.getCards()) {
+            if(card instanceof EventCard eventCard) {
                 eventCard.computeScore(players);
             }
         }
@@ -221,79 +203,71 @@ public class Game extends Subject {
         return id;
     }
 
+    public void removeBuildingCardFromRow(BuildingCard card){
+        //check if a row contains the card, if so removes it
+        if (upperBuildingRow.getCards().contains(card))
+            upperBuildingRow.removeCard(card);
+        else if (lowerBuildingRow.getCards().contains(card))
+            lowerBuildingRow.removeCard(card);
+        else //if no row contains the card throw exception
+            throw new IllegalStateException("No card row contains this card");
+    }
 
-    public void removeCardFromRow(GameCard card)
-    {
-        //check if card is building
-        if(! (card instanceof BuildingCard)) {
-
-            //check if a row contains the card, if so removes it
-            if (upperRow.getCards().contains(card))
-                upperRow.removeCard(card);
-            else if (lowerRow.getCards().contains(card))
-                lowerRow.removeCard(card);
-            else //if no row contains the card throw exception
-                throw new IllegalStateException("No card row contains this card");
-        } else
-        {
-
-            //check if a row contains the card, if so removes it
-            if (upperBuildingRow.getCards().contains(card))
-                upperBuildingRow.removeCard(card);
-            else if (lowerBuildingRow.getCards().contains(card)) {
-                lowerBuildingRow.removeCard(card);
-            }else //if no row contains the card throw exception
-                throw new IllegalStateException("No building row contains this card");
-        }
+    public void removeTribeCardFromRow(TribesCard card) {
+        //check if a row contains the card, if so removes it
+        if (upperBuildingRow.getCards().contains(card))
+            upperBuildingRow.removeCard(card);
+        else if (lowerBuildingRow.getCards().contains(card))
+            lowerBuildingRow.removeCard(card);
+        else //if no row contains the card throw exception
+            throw new IllegalStateException("No building row contains this card");
     }
 
     /// only to use for testing
-    public int getLowerRowSize()
-    {
+    public int getLowerRowSize() {
         return lowerRow.getCards().size();
     }
     /// only to use for testing
-    public int getUpperRowSize()
-    {
+    public int getUpperRowSize() {
         return upperRow.getCards().size();
     }
     /// only to use for testing
-    public int getUpperBuildingRowSize()
-    {
+    public int getUpperBuildingRowSize() {
         return upperBuildingRow.getCards().size();
     }
-
-    public char getCurrentTurnLetter()
-    {
+    /// only to use for testing
+    public char getCurrentTurnLetter() {
         return currentTurnLetter;
     }
-
-    public int getCurrentEra()
-    {
+    /// only to use for testing
+    public int getCurrentEra() {
         return currentEra;
     }
-    public CardRow getUpperRow()
-    {
+    /// only to use for testing
+    public CardRow getUpperRow() {
         return upperRow;
     }
-    public CardRow getLowerRow()
-    {
+    /// only to use for testing
+    public CardRow getLowerRow() {
         return lowerRow;
     }
-    public CardRow getUpperBuildingRow()
-    {
+    /// only to use for testing
+    public CardRow getUpperBuildingRow() {
         return upperBuildingRow;
     }
-    public CardRow getLowerBuildingRow()
-    {
+    /// only to use for testing
+    public CardRow getLowerBuildingRow() {
         return lowerBuildingRow;
     }
+    /// only to use for testing
     public int getCurrentPlayerIndex() {
         return currentPlayerIndex;
     }
+    /// only to use for testing
     public int getPlayersSize() {
         return players.size();
     }
+    /// only to use for testing
     public List<Player> getPlayersList(){
         return players;
     }
