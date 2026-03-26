@@ -17,6 +17,6 @@ public class BuildingType4 extends BuildingCard {
     public int getFinalPoints(CardRow playerTribeRow) {
         int numOfSets = 0;
         // TODO: count sets of 6 different characters
-        player.addPp(6 * numOfSets);
+        return 6 * numOfSets;
     }
 }
