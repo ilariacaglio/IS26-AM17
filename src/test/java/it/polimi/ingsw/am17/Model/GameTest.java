@@ -18,10 +18,17 @@ public class GameTest {
         game = new Game(3);
     }
 
-    //to do - metodo da sistemare nel game
     @Test
     void testGetNextPlayer(){
-
+        //get currentPlayerIndex
+        int currentPlayerIndex = game.getCurrentPlayerIndex() + 1;
+        //call method
+        Player p = game.getNextPlayer();
+        //check if the player has the current position in the players list
+        assertEquals(p, game.getPlayers().get(currentPlayerIndex));
+        //if currentPlayerIndex > players.size() check if exception thrown
+        p = game.getNextPlayer();
+        assertThrows(IllegalStateException.class,() -> game.getNextPlayer());
     }
 
     @Test
@@ -154,18 +161,4 @@ public class GameTest {
         GameCard finalCard1 = card;
         assertThrows(IllegalStateException.class, () -> game.removeCardFromRow(finalCard1));
     }
-
-    // to do - metodo da sistemare in game
-    @Test
-    void testResolveEvent(){
-
-    }
-
-    // to do - non so come testarlo
-    @Test
-    void testEndGame(){
-
-    }
-
 }
-
