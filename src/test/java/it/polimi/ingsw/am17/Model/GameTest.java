@@ -19,25 +19,27 @@ public class GameTest {
         game = new Game(3);
     }
 
-    //non possibile provare perchè manca offering card
     @Test
     void testGetNextPlayer(){
         Player p1 = new Player("player1",Color.BLACK);
         Player p2 = new Player("player2",Color.RED);
         Player p3 = new Player("player3",Color.YELLOW);
+        //sorted list: [p2,p1.p3]
+        p1.setOfferingCard(new OfferingCard(2,'C',1,1,0));
+        p2.setOfferingCard(new OfferingCard(2,'A',1,1,0));
+        p3.setOfferingCard(new OfferingCard(2,'D',1,1,0));
         game.addPlayer(p1);
         game.addPlayer(p2);
         game.addPlayer(p3);
-        //get currentPlayerIndex
-        int currentPlayerIndex = game.getCurrentPlayerIndex() + 1;
-        //System.out.println("currentPlayerIndex: " + currentPlayerIndex);
         //call method
         Player p = game.getNextPlayer();
-        //check if the player has the current position in the players list
-        assertEquals(p, game.getPlayers().get(currentPlayerIndex));
+        //check if the player has the lowest letter in the list
+        assertEquals(p2, p);
+        p = game.getNextPlayer();
+        assertEquals(p1, p);
+        p = game.getNextPlayer();
+        assertEquals(p3, p);
         //if currentPlayerIndex > players.size() check if exception thrown
-        game.getNextPlayer();
-        game.getNextPlayer();
         assertThrows(IllegalStateException.class,() -> game.getNextPlayer());
     }
 
