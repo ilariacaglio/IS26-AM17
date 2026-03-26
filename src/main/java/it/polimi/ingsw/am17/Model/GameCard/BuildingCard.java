@@ -20,7 +20,9 @@ public class BuildingCard extends GameCard {
         return bonusPoints;
     }
 
-    public int finalPoints() { return 0; } // get points from
-    public int foodDiscount() { return 0; }
-    public int
+    // effects implemented
+    public int getFinalPoints() { return 0; }
+    public int getFoodDiscount() { return 0; }
+    public int getFoodBonus() { return 0; }
+    public void playExtraCard(Player player) { return; }
 }
