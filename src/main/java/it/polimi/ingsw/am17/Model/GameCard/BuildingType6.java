@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Model.CardRow;
 import it.polimi.ingsw.am17.Model.Player;
 
 /**
@@ -13,7 +14,8 @@ public class BuildingType6 extends BuildingCard {
     }
 
     @Override
-    public void resolveEffect(Player player) {
-        // TODO: depends on how's the logic to get points at the end of the game
+    public int getFinalPoints(CardRow playerTribeRow) {
+        // TODO: get builders points and return them (not doubled)
+        return -99999;
     }
 }
