@@ -161,15 +161,17 @@ public class GameTest {
     }
 
     //non possibile provare perchè buildingdeck null
-    //dividere nei 3 scenari
     @Test
-    void testChangeEra(){
-        //game.start();
+    void testChangeEra_currentEraIs1() {
+        game.start();
+        assertThrows(IllegalStateException.class, () -> game.changeEra());
+    }
+
+    //non possibile provare perchè buildingdeck null
+    @Test
+    void testChangeEra_currentEraIs2(){
+        game.start();
         var oldBuildingRow = game.getUpperBuildingRow();
-        int currentEra = game.getCurrentEra();
-        System.out.println("Current Era: "+currentEra);
-        if(currentEra !=2 && currentEra != 3)
-            assertThrows(IllegalStateException.class, () -> game.changeEra());
         game.setCurrentEra(2);
         game.changeEra();
         //new lower building row contains old upper building row
@@ -177,6 +179,15 @@ public class GameTest {
         //check if the new upper building row has only cards with the correct era
         for(GameCard card : game.getUpperBuildingRow().getCards())
             assertEquals(2, card.getEra());
+    }
+
+    //non possibile provare perchè buildingdeck null
+    @Test
+    void testChangeEra_currentEraIs3(){
+        game.start();
+        game.setCurrentEra(2);
+        game.changeEra();
+        var oldBuildingRow = game.getUpperBuildingRow();
         game.setCurrentEra(3);
         game.changeEra();
         //new lower building row equals to old upper building row
