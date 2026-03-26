@@ -14,8 +14,8 @@ public class BuildingType6 extends BuildingCard {
     }
 
     @Override
-    public int getFinalPoints(CardRow playerTribeRow) {
+    public int FinalPoints(CardRow playerTribeRow) {
         // TODO: get builders points and return them (not doubled)
-        return -99999;
+        return 0;
     }
 }

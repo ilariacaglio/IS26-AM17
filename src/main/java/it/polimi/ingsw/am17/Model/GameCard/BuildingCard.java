@@ -22,8 +22,9 @@ public class BuildingCard extends GameCard {
     }
 
     // effects implemented
-    public int getFinalPoints(CardRow playerTribeRow) { return 0; }
-    public int getFoodDiscount(CardRow playerTribeRow) { return 0; }
-    public int getFoodBonus(CardRow playerTribeRow) { return 0; }
+    public int FinalPoints(CardRow playerTribeRow) { return 0; }
+    public int FoodDiscount(CardRow playerTribeRow) { return 0; }
+    public int FoodBonus(CardRow playerTribeRow) { return 0; }
+    public int PointsBonus(CardRow playerTribeRow) { return 0; }
     public void playExtraCard(Player player) { return; }
 }

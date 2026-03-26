@@ -14,7 +14,7 @@ public class BuildingType5 extends BuildingCard {
     }
 
     @Override
-    public int getFoodBonus(CardRow playerCards) {
+    public int FoodBonus(CardRow playerCards) {
         int numArtists = 0;
         // TODO: count numArtists
 

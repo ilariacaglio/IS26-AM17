@@ -18,7 +18,7 @@ public class BuildingType3M extends BuildingCard {
     }
 
     @Override
-    public int getFinalPoints(CardRow playerTribeRow) {
+    public int FinalPoints(CardRow playerTribeRow) {
         CardRow playerRow = player.getCardRow();
         int count = 0;
         for (GameCard card : playerRow.getCards()) {

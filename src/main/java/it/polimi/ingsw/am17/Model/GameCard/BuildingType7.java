@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Model.CardRow;
 import it.polimi.ingsw.am17.Model.Player;
 
 /**
@@ -13,10 +14,18 @@ public class BuildingType7 extends BuildingCard {
     }
 
     @Override
-    public void resolveEffect(Player player) {
+    public int FoodBonus(CardRow playerTribeRow) {
         int numHunters = 0;
-        // TODO: get numHunters and make sure it's called during event?
-        player.addFood(numHunters);
-        player.addPp(numHunters);
+        // TODO
+        return numHunters;
     }
+
+    @Override
+    public int getBonusPoints() {
+        int numHunters = 0;
+        // TODO
+        return numHunters;
+    }
+
+    // NOTE: counts two times! Can I share that calculation? No because different methods...
 }

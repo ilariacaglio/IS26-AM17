@@ -14,7 +14,7 @@ public class BuildingType4 extends BuildingCard {
     }
 
     @Override
-    public int getFinalPoints(CardRow playerTribeRow) {
+    public int FinalPoints(CardRow playerTribeRow) {
         int numOfSets = 0;
         // TODO: count sets of 6 different characters
         return 6 * numOfSets;
