@@ -1,13 +1,14 @@
 package it.polimi.ingsw.am17.Model;
 
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
+import it.polimi.ingsw.am17.Model.GameCard.CardType;
 import it.polimi.ingsw.am17.Model.GameCard.GameCard;
+import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +28,7 @@ public class GameTest {
         //check if the player has the current position in the players list
         assertEquals(p, game.getPlayers().get(currentPlayerIndex));
         //if currentPlayerIndex > players.size() check if exception thrown
-        p = game.getNextPlayer();
+        game.getNextPlayer();
         assertThrows(IllegalStateException.class,() -> game.getNextPlayer());
     }
 
@@ -82,8 +83,8 @@ public class GameTest {
         // check that the player returned has the current letter
         assertEquals(p.getOfferingCard().getOrderLetter(),currentLetter);
         // check exception
-        p = game.getNextTurn();
-        p = game.getNextTurn();
+        game.getNextTurn();
+        game.getNextTurn();
         assertThrows(IllegalStateException.class, () -> game.getNextTurn());
     }
 
@@ -133,32 +134,37 @@ public class GameTest {
     }
 
     @Test
-    void testRemoveCardFromRow(){
-        // create game card
-        GameCard card;
-        // draw a card from the upper row
-        card = game.getUpperRow().getCards().getFirst();
-        game.removeCardFromRow(card);
-        assertFalse(game.getUpperRow().getCards().contains(card));
-        // draw a card from the lower row
-        card = game.getLowerRow().getCards().getFirst();
-        game.removeCardFromRow(card);
-        assertFalse(game.getLowerRow().getCards().contains(card));
-        // create card
-        card = new GameCard(1);
-        GameCard finalCard = card;
-        assertThrows(IllegalStateException.class, () -> game.removeCardFromRow(finalCard));
+    void testRemoveBuildingCardFromRow(){
+        BuildingCard card;
         // draw a card from the upper building row
-        card = game.getUpperBuildingRow().getCards().getFirst();
-        game.removeCardFromRow(card);
+        card = (BuildingCard) game.getUpperBuildingRow().getCards().getFirst();
+        game.removeBuildingCardFromRow(card);
         assertFalse(game.getUpperBuildingRow().getCards().contains(card));
         // draw a card from the lower building row
-        card = game.getLowerBuildingRow().getCards().getFirst();
-        game.removeCardFromRow(card);
+        card = (BuildingCard) game.getLowerBuildingRow().getCards().getFirst();
+        game.removeBuildingCardFromRow(card);
         assertFalse(game.getLowerBuildingRow().getCards().contains(card));
         // create building card
         card = new BuildingCard(1,1,1);
-        GameCard finalCard1 = card;
-        assertThrows(IllegalStateException.class, () -> game.removeCardFromRow(finalCard1));
+        BuildingCard finalCard = card;
+        assertThrows(IllegalStateException.class, () -> game.removeBuildingCardFromRow(finalCard));
+    }
+
+    @Test
+    void testRemoveTribeCardFromRow(){
+        // create game card
+        TribesCard card;
+        // draw a card from the upper row
+        card = (TribesCard) game.getUpperRow().getCards().getFirst();
+        game.removeTribeCardFromRow(card);
+        assertFalse(game.getUpperRow().getCards().contains(card));
+        // draw a card from the lower row
+        card = (TribesCard) game.getLowerRow().getCards().getFirst();
+        game.removeTribeCardFromRow(card);
+        assertFalse(game.getLowerRow().getCards().contains(card));
+        // create card
+        card = new TribesCard(1, CardType.ARTIST);
+        TribesCard finalCard = card;
+        assertThrows(IllegalStateException.class, () -> game.removeTribeCardFromRow(finalCard));
     }
 }
