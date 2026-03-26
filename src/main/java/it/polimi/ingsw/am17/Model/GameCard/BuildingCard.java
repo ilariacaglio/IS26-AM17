@@ -26,5 +26,7 @@ public class BuildingCard extends GameCard {
     public int FoodDiscount(CardRow playerTribeRow) { return 0; }
     public int FoodBonus(CardRow playerTribeRow) { return 0; }
     public int PointsBonus(CardRow playerTribeRow) { return 0; }
+    public int StarBonus(CardRow playerTribeRow) { return 0; }
+    public boolean isShieldFromRitualEvent() { return false; }
     public void playExtraCard(Player player) { return; }
 }
