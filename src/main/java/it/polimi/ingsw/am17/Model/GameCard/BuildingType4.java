@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Model.CardRow;
 import it.polimi.ingsw.am17.Model.Player;
 
 /**
@@ -13,7 +14,7 @@ public class BuildingType4 extends BuildingCard {
     }
 
     @Override
-    public void resolveEffect(Player player) {
+    public int getFinalPoints(CardRow playerTribeRow) {
         int numOfSets = 0;
         // TODO: count sets of 6 different characters
         player.addPp(6 * numOfSets);

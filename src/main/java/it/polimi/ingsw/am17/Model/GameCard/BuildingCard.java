@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Model.CardRow;
 import it.polimi.ingsw.am17.Model.Player;
 
 public class BuildingCard extends GameCard {
@@ -21,8 +22,8 @@ public class BuildingCard extends GameCard {
     }
 
     // effects implemented
-    public int getFinalPoints() { return 0; }
-    public int getFoodDiscount() { return 0; }
-    public int getFoodBonus() { return 0; }
+    public int getFinalPoints(CardRow playerTribeRow) { return 0; }
+    public int getFoodDiscount(CardRow playerTribeRow) { return 0; }
+    public int getFoodBonus(CardRow playerTribeRow) { return 0; }
     public void playExtraCard(Player player) { return; }
 }

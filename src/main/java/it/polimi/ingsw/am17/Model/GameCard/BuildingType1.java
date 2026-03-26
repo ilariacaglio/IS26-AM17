@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Model.CardRow;
 import it.polimi.ingsw.am17.Model.Player;
 
 /**
@@ -13,7 +14,7 @@ public class BuildingType1 extends BuildingCard {
     }
 
     @Override
-    public int getFinalPoints () {
+    public int getFinalPoints (CardRow playerTribeRow) {
         return 25;
     }
 }

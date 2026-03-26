@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Model.CardRow;
 import it.polimi.ingsw.am17.Model.Player;
 
 /**
@@ -13,7 +14,7 @@ public class BuildingType5 extends BuildingCard {
     }
 
     @Override
-    public void resolveEffect(Player player) {
+    public void getBonusFood(CardRow playerCards) {
         int numArtists = 0;
         // TODO: count numArtists
 
