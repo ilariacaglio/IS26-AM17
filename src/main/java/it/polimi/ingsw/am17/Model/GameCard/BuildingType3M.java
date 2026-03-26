@@ -28,6 +28,6 @@ public class BuildingType3M extends BuildingCard {
 //            }
         }
 
-        player.addPp(count * pointsFromEachCharacter);
+        return count * pointsFromEachCharacter;
     }
 }
