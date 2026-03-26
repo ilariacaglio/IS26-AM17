@@ -14,10 +14,10 @@ public class BuildingType5 extends BuildingCard {
     }
 
     @Override
-    public void getBonusFood(CardRow playerCards) {
+    public int getFoodBonus(CardRow playerCards) {
         int numArtists = 0;
         // TODO: count numArtists
 
-        player.addFood(numArtists);
+        return numArtists;
     }
 }
