@@ -79,10 +79,10 @@ public class GameTest {
         //check size upper building row
         assertEquals(2,game.getUpperBuildingRowSize());
         //check if decks are not null
-//        assertNotNull(game.getDeck());
-//        assertNotNull(game.getBuildingDeckEra1());
-//        assertNotNull(game.getBuildingDeckEra2());
-//        assertNotNull(game.getBuildingDeckEra3());
+        assertNotNull(game.getDeck());
+        assertNotNull(game.getBuildingDeckEra1());
+        assertNotNull(game.getBuildingDeckEra2());
+        assertNotNull(game.getBuildingDeckEra3());
     }
 
     //non possibile provare perchè mancano building cards
@@ -101,10 +101,10 @@ public class GameTest {
         //check size upper building row
         assertEquals(1,game.getUpperBuildingRowSize());
         //check if decks are not null
-//        assertNotNull(game.getDeck());
-//        assertNotNull(game.getBuildingDeckEra1());
-//        assertNotNull(game.getBuildingDeckEra2());
-//        assertNotNull(game.getBuildingDeckEra3());
+        assertNotNull(game.getDeck());
+        assertNotNull(game.getBuildingDeckEra1());
+        assertNotNull(game.getBuildingDeckEra2());
+        assertNotNull(game.getBuildingDeckEra3());
     }
 
     @Test

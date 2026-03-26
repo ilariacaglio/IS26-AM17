@@ -282,6 +282,22 @@ public class Game extends Subject {
     public void setCurrentEra(int currentEra) {
         this.currentEra = currentEra;
     }
+    /// only to use for testing
+    public Deck getDeck(){
+        return deck;
+    }
+    /// only to use for testing
+    public BuildingDeck getBuildingDeckEra1(){
+        return buildingDeckEra1;
+    }
+    /// only to use for testing
+    public BuildingDeck getBuildingDeckEra2(){
+        return buildingDeckEra2;
+    }
+    /// only to use for testing
+    public BuildingDeck getBuildingDeckEra3(){
+        return buildingDeckEra3;
+    }
 
     @Override
     public void attach(Observer observer) {
