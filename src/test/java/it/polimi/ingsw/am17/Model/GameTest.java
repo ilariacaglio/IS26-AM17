@@ -24,7 +24,7 @@ public class GameTest {
         Player p1 = new Player("player1",Color.BLACK);
         Player p2 = new Player("player2",Color.RED);
         Player p3 = new Player("player3",Color.YELLOW);
-        //sorted list: [p2,p1.p3]
+        //sorted list: [p2,p1,p3]
         p1.setOfferingCard(new OfferingCard(2,'C',1,1,0));
         p2.setOfferingCard(new OfferingCard(2,'A',1,1,0));
         p3.setOfferingCard(new OfferingCard(2,'D',1,1,0));
