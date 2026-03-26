@@ -140,10 +140,9 @@ public class GameTest {
     }
 
     //non possibile provare perchè deck è null
-    //fare due test separati per scenario change era e non change era
     @Test
     void testEndTurn(){
-        //game.start();
+        game.start();
         var oldUpperRow = game.getUpperRow();
         int oldEra = game.getCurrentEra();
         game.endTurn();
@@ -151,13 +150,14 @@ public class GameTest {
         assertEquals(game.getLowerRow(),oldUpperRow);
         // check size new upper row
         assertEquals(game.getUpperRowSize(), game.getNumPlayers()+4);
-        //capire bene quanti ne devo chiamare
-        game.endTurn();
-        game.endTurn();
-        game.endTurn();
-        // check update era
-        if (oldEra != game.getCurrentEra())
-            assertEquals(game.getCurrentEra(), oldEra+1);
+        //check update era
+        int maxTurns = 10;
+        int numTurns = 0;
+        while (game.getCurrentEra() == oldEra && numTurns < maxTurns) {
+            game.endTurn();
+            numTurns++;
+        }
+        assertEquals(game.getCurrentEra(), oldEra+1);
     }
 
     //non possibile provare perchè buildingdeck null
