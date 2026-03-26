@@ -11,3 +11,5 @@ public class BuildingType13M extends BuildingCard {
     public BuildingType13M() {
         super(2, 7, 4);
     }
+    // TODO
+}

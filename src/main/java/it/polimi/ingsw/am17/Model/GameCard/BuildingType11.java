@@ -9,5 +9,5 @@ public class BuildingType11 extends BuildingCard {
     public BuildingType11() {
         super(2, 6, 4);
     }
-
+    // TODO
 }

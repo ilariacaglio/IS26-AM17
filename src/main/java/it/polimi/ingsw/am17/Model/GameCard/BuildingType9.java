@@ -12,8 +12,5 @@ public class BuildingType9 extends BuildingCard {
         super(2, 6, 4);
     }
 
-    @Override
-    public void resolveEffect(Player player) {
-        // come cazzo lo faccio OOP
-    }
+    // TODO
 }
