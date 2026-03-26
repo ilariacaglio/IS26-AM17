@@ -14,7 +14,7 @@ public class BuildingType2 extends BuildingCard {
     }
 
     @Override
-    public void resolveEffect(Player player) {
+    public void playExtraCard(Player player) {
         OfferingCard pseudoOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
         // TODO: make sure the player has not his offering card anymore and that this is called before the game stops considering new turns.
         player.setOfferingCard(pseudoOfferingCard);
