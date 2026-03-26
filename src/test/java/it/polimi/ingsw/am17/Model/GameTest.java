@@ -118,15 +118,24 @@ public class GameTest {
         game.addPlayer(p1);
         game.addPlayer(p2);
         game.addPlayer(p3);
-        // get current turn letter
-        var currentLetter = game.getCurrentTurnLetter();
+        //set offering card list (only for testing)
+        List<Character> charList = new ArrayList<>();
+        charList.add('A');
+        charList.add('B');
+        charList.add('C');
+        charList.add('D');
+        game.setOfferingCardLetters(charList);
         //call method
         Player p = game.getNextTurn();
-        // check that the player returned has the current letter
-        assertEquals(p.getOfferingCard().getOrderLetter(),currentLetter);
+        // check that the player returned has the lowest letter
+        assertEquals('A',p.getOfferingCard().getOrderLetter());
+        p = game.getNextTurn();
+        // check that the player returned has the lowest letter
+        assertEquals('C',p.getOfferingCard().getOrderLetter());
+        p = game.getNextTurn();
+        // check that the player returned has the lowest letter
+        assertEquals('D',p.getOfferingCard().getOrderLetter());
         // check exception
-        game.getNextTurn();
-        game.getNextTurn();
         assertThrows(IllegalStateException.class, () -> game.getNextTurn());
     }
 

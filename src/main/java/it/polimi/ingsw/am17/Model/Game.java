@@ -25,7 +25,7 @@ public class Game extends Subject {
     private BuildingDeck buildingDeckEra3;
 
     private int currentPlayerIndex = 0;
-    private char currentTurnLetter = 'a';
+    private int currentTurnLetterIndex = 0;
 
     public Game(int numPlayers) {
         Random r = new Random();
@@ -124,16 +124,17 @@ public class Game extends Subject {
         }
     }
 
-    //currentturnLetter ++ è sbagliato perchè se mancano lettere va in crash
-    //sono solo in fila le offering cards?
     public Player getNextTurn() {
-        for(Player player : players) {
-            if(player.getOfferingCard().getOrderLetter() == currentTurnLetter) {
-                currentTurnLetter++;
-                return player;
+        while(currentTurnLetterIndex < offeringCardLetters.size()){
+            for(Player player : players) {
+                if(player.getOfferingCard().getOrderLetter() == offeringCardLetters.get(currentTurnLetterIndex)) {
+                    currentTurnLetterIndex++;
+                    return player;
+                }
             }
+            currentTurnLetterIndex++;
         }
-        throw new IllegalStateException("There is no player with the current turn letter");
+        throw new IllegalStateException("There is no next player");
     }
 
     //non possibile provare perchè deck è null
@@ -158,7 +159,7 @@ public class Game extends Subject {
         if(newEra)
             changeEra();
 
-        currentTurnLetter = 'a';
+        currentTurnLetterIndex = 0;
         currentPlayerIndex = 0;
     }
 
@@ -243,8 +244,8 @@ public class Game extends Subject {
         return upperBuildingRow.getCards().size();
     }
     /// only to use for testing
-    public char getCurrentTurnLetter() {
-        return currentTurnLetter;
+    public int getCurrentTurnLetterIndex() {
+        return currentTurnLetterIndex;
     }
     /// only to use for testing
     public int getCurrentEra() {
@@ -297,6 +298,10 @@ public class Game extends Subject {
     /// only to use for testing
     public BuildingDeck getBuildingDeckEra3(){
         return buildingDeckEra3;
+    }
+    /// only to use for testing
+    public void setOfferingCardLetters(List<Character> offeringCardLetters) {
+        this.offeringCardLetters.addAll(offeringCardLetters);
     }
 
     @Override
