@@ -75,7 +75,7 @@ public class Player{
             for(BuildingCard card : buildingCards){
                 buyBuilding((BuildingCard) card);
                 game.removeCardFromRow(card);
-                playerTribeRow.addCard(card);
+                playerBuildingRow.addCard(card);
             }
         }
     }
