@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import java.util.List;
+
 /**
  * Gives extra points for each character of given type.
  * Final effect

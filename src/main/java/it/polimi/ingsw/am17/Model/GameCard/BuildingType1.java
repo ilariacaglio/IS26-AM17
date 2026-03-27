@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import java.util.List;
+
 /**
  * Gives +25 pp.
  * Final effect
