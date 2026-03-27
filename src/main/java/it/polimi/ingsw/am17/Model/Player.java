@@ -135,7 +135,7 @@ public class Player{
         addPp(cardPoints);
         // final effects of buildings
         for (BuildingCard card : buildingsList) {
-            card.resolveEffect(this);
+            this.addPp(card.FinalPoints(this.getPlayerTribeCards()));
         }
     }
 }

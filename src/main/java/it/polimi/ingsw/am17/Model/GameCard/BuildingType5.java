@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import it.polimi.ingsw.am17.Model.CardRow;
-import it.polimi.ingsw.am17.Model.Player;
+import java.util.List;
 
 /**
  * Get one food during PaintingEvent for each artist
@@ -14,7 +13,7 @@ public class BuildingType5 extends BuildingCard {
     }
 
     @Override
-    public int FoodBonus(CardRow playerCards) {
+    public int FoodBonus(List<GameCard> playerCards) {
         int numArtists = 0;
         // TODO: count numArtists
 

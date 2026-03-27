@@ -1,7 +1,8 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import it.polimi.ingsw.am17.Model.CardRow;
 import it.polimi.ingsw.am17.Model.Player;
+
+import java.util.List;
 
 public class BuildingCard extends GameCard {
     private final int foodCost;
@@ -22,11 +23,11 @@ public class BuildingCard extends GameCard {
     }
 
     // effects implemented
-    public int FinalPoints(CardRow playerTribeRow) { return 0; }
-    public int FoodDiscount(CardRow playerTribeRow) { return 0; }
-    public int FoodBonus(CardRow playerTribeRow) { return 0; }
-    public int PointsBonus(CardRow playerTribeRow) { return 0; }
-    public int StarBonus(CardRow playerTribeRow) { return 0; }
+    public int FinalPoints(List<GameCard> playerTribeRow) { return 0; }
+    public int FoodDiscount(List<GameCard> playerTribeRow) { return 0; }
+    public int FoodBonus(List<GameCard> playerTribeRow) { return 0; }
+    public int PointsBonus(List<GameCard> playerTribeRow) { return 0; }
+    public int StarBonus(List<GameCard> playerTribeRow) { return 0; }
     public boolean isShieldFromRitualEvent() { return false; }
     public void playExtraCard(Player player) { return; }
 }

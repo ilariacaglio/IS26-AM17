@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import it.polimi.ingsw.am17.Model.CardRow;
-import it.polimi.ingsw.am17.Model.Player;
+import java.util.List;
 
 /**
  * Get +1 extra food and +1 pp for each hunter during hunterEvent
@@ -14,7 +13,7 @@ public class BuildingType7 extends BuildingCard {
     }
 
     @Override
-    public int FoodBonus(CardRow playerTribeRow) {
+    public int FoodBonus(List<GameCard> playerTribeRow) {
         int numHunters = 0;
         // TODO
         return numHunters;

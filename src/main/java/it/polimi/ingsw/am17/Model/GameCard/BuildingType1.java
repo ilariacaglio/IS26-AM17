@@ -1,8 +1,5 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import it.polimi.ingsw.am17.Model.CardRow;
-import it.polimi.ingsw.am17.Model.Player;
-
 /**
  * Gives +25 pp.
  * Final effect
@@ -14,7 +11,7 @@ public class BuildingType1 extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(CardRow playerTribeRow) {
+    public int FinalPoints(List<GameCard> playerTribeRow) {
         return 25;
     }
 }

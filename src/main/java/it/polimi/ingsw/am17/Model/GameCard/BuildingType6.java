@@ -1,8 +1,5 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import it.polimi.ingsw.am17.Model.CardRow;
-import it.polimi.ingsw.am17.Model.Player;
-
 /**
  * Get double the points from Builders
  * Final effect
@@ -14,7 +11,7 @@ public class BuildingType6 extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(CardRow playerTribeRow) {
+    public int FinalPoints(List<GameCard> playerTribeRow) {
         // TODO: get builders points and return them (not doubled)
         return 0;
     }

@@ -1,8 +1,5 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import it.polimi.ingsw.am17.Model.CardRow;
-import it.polimi.ingsw.am17.Model.Player;
-
 /**
  * Gives extra points for each character of given type.
  * Final effect
@@ -19,7 +16,7 @@ public class BuildingType3M extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(CardRow playerTribeRow) {
+    public int FinalPoints(List<GameCard> playerTribeRow) {
         // TODO: implement with attribute check
 
         int characterCount = 0;

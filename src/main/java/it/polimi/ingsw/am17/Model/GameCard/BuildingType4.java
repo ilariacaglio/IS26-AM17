@@ -1,8 +1,5 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import it.polimi.ingsw.am17.Model.CardRow;
-import it.polimi.ingsw.am17.Model.Player;
-
 /**
  * Get 6 points for each 6 different set of characters.
  * Final effect
@@ -14,7 +11,7 @@ public class BuildingType4 extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(CardRow playerTribeRow) {
+    public int FinalPoints(List<GameCard> playerTribeRow) {
         int numOfSets = 0;
         // TODO: count sets of 6 different characters
         return 6 * numOfSets;
