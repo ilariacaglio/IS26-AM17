@@ -2,6 +2,8 @@ package it.polimi.ingsw.am17.Model.GameCard;
 
 import java.util.List;
 
+import static it.polimi.ingsw.am17.Model.GameCard.CardType.ARTIST;
+
 /**
  * Get one food during PaintingEvent for each artist
  * Event effect
@@ -12,11 +14,9 @@ public class BuildingType5 extends BuildingCard {
         super(2, 5, 6);
     }
 
-    @Override
-    public int FoodBonus(List<GameCard> playerCards) {
-        int numArtists = 0;
-        // TODO: count numArtists
 
-        return numArtists;
+    @Override
+    public int FoodBonus(List<CharacterCard> playerCharacterCards) {
+        return (int) playerCharacterCards.stream().filter(card -> card.getCardType() == ARTIST).count();
     }
 }
