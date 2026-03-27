@@ -18,10 +18,8 @@ public class BuildingType3M extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(List<GameCard> playerTribeRow) {
-        // TODO: implement with attribute check
-
-        int characterCount = 0;
+    public int FinalPoints(List<CharacterCard> playerCharacterCards) {
+        int characterCount = (int) playerCharacterCards.stream().filter(card -> card.getCardType() == characterType).count();
         return characterCount * pointsFromEachCharacter;
     }
 }
