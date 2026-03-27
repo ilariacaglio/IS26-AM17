@@ -24,7 +24,7 @@ public class BuildingCard extends GameCard {
 
     // effects implemented
     public int FinalPoints(List<CharacterCard> playerCharacterCards) { return 0; }
-    public int FoodDiscount(List<GameCard> playerTribeRow) { return 0; }
+    public int FoodDiscount(List<CharacterCard> playerCharacterCards) { return 0; }
     public int FoodBonus(List<CharacterCard> playerCharacterCards) { return 0; }
     public int PointsBonus(List<GameCard> playerTribeRow) { return 0; }
     public int StarBonus(List<GameCard> playerTribeRow) { return 0; }

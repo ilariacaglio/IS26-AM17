@@ -2,14 +2,23 @@ package it.polimi.ingsw.am17.Model.GameCard;
 
 import it.polimi.ingsw.am17.Model.Player;
 
+import java.util.List;
+
 /**
- * Save food for each character type when FoodEvent
+ * Save 1 food for each character type when FoodEvent
  * Event effect
  * MULTIPLE
  */
 public class BuildingType13M extends BuildingCard {
-    public BuildingType13M() {
-        super(2, 7, 4);
+    private final CardType characterType;
+
+    public BuildingType13M(int era, int foodCost, int bonusPoints, CardType characterType, int pointsFromEachCharacter) {
+        super(era, foodCost, bonusPoints);
+        this.characterType = characterType;
     }
-    // TODO
+
+    @Override
+    public int FoodDiscount(List<CharacterCard> playerCharacterCards) {
+        return (int) playerCharacterCards.stream().filter(card -> card.getCardType() == characterType).count();
+    }
 }
