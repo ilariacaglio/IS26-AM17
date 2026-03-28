@@ -5,14 +5,14 @@ import it.polimi.ingsw.am17.Model.Player;
 import java.util.List;
 
 /**
- * Save 1 food for each character type when FoodEvent
+ * Save 1 food for each characterType when FoodEvent
  * Event effect
  * MULTIPLE
  */
 public class BuildingType13M extends BuildingCard {
     private final CardType characterType;
 
-    public BuildingType13M(int era, int foodCost, int bonusPoints, CardType characterType, int pointsFromEachCharacter) {
+    public BuildingType13M(int era, int foodCost, int bonusPoints, CardType characterType) {
         super(era, foodCost, bonusPoints);
         this.characterType = characterType;
     }
