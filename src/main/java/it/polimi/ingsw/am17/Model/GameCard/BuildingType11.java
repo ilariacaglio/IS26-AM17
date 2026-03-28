@@ -9,7 +9,7 @@ import it.polimi.ingsw.am17.Model.Player;
  */
 public class BuildingType11 extends BuildingCard {
     public BuildingType11() {
-        super(2, 6, 4);
+        super(1, 3, 3);
     }
 
     @Override
