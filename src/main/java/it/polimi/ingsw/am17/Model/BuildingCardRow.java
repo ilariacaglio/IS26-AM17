@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BuildingCardRow {
-    private List<BuildingCard> cardList;
+    private final List<BuildingCard> cardList;
 
     public BuildingCardRow(){
         cardList = new ArrayList<>();
