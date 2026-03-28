@@ -8,8 +8,8 @@ import java.util.List;
  * MULTIPLE
  */
 public class BuildingType3M extends BuildingCard {
-    private int pointsFromEachCharacter; // amount from each characterType
-    private CardType characterType;
+    private final int pointsFromEachCharacter; // amount from each characterType
+    private final CardType characterType;
 
     public BuildingType3M(int foodCost, int bonusPoints, CardType characterType, int pointsFromEachCharacter) {
         super(3, foodCost, bonusPoints);
