@@ -1,12 +1,18 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-public class TribesCard extends GameCard {
+public class TribesCard {
     private final CardType cardType;
+    private int era;
+
     public CardType getCardType() {
         return cardType;
     }
+    public int getEra() {
+        return era;
+    }
+
     public TribesCard(int era,CardType cardType){
-        super(era);
         this.cardType=cardType;
+        this.era=era;
     }
 }
