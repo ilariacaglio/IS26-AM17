@@ -1,0 +1,20 @@
+[
+  {
+    "era": 1,
+    "foodCost": 4,
+    "bonusPoints": 4,
+    "characterType": "BINDER"
+  },
+  {
+    "era": 1,
+    "foodCost": 5,
+    "bonusPoints": 3,
+    "characterType": "ARTIST"
+  },
+  {
+    "era": 2,
+    "foodCost": 7,
+    "bonusPoints": 4,
+    "characterType": "INVENTOR"
+  }
+]
