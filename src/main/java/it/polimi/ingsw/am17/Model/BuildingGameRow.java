@@ -2,20 +2,15 @@ package it.polimi.ingsw.am17.Model;
 
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.NoSuchElementException;
 
 public class BuildingGameRow extends BuildingCardRow {
-    private List<BuildingCard> cardList;
 
-    public BuildingGameRow(){
-        cardList = new ArrayList<>();
+    public void removeCard(BuildingCard card) throws NoSuchElementException {
+        if(getCards().contains(card)){
+            getCards().remove(card);
+        }
+        else { throw new NoSuchElementException("Card not found"); }
     }
-
-    public void removeCard(BuildingCard card){
-        cardList.remove(card);
-    }
-
-    public List<BuildingCard> getCardList(){ return cardList; }
 
 }

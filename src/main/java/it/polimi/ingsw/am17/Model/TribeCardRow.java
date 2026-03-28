@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TribeCardRow {
-    private List<TribesCard> cardList;
+    private final List<TribesCard> cardList;
 
     public TribeCardRow(){
         cardList = new ArrayList<>();
