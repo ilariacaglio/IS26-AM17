@@ -9,8 +9,11 @@ import java.util.Objects;
  * SINGLETON
  */
 public class BuildingType10 extends BuildingCard {
+    private static final int era = 1;
+    private static final int foodCost = 3;
+    private static final int bonusPoints = 4;
     public BuildingType10() {
-        super(1, 3, 4);
+        super(era, foodCost, bonusPoints);
     }
 
     @Override

@@ -8,8 +8,11 @@ import java.util.List;
  * SINGLETON
  */
 public class BuildingType6 extends BuildingCard {
+    private static final int era = 2;
+    private static final int foodCost = 5;
+    private static final int bonusPoints = 4;
     public BuildingType6() {
-        super(2, 5, 6);
+        super(era, foodCost, bonusPoints);
     }
 
     @Override

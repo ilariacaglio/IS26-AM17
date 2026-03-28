@@ -11,7 +11,6 @@ import java.util.List;
  */
 public class BuildingType13M extends BuildingCard {
     private final CardType characterType;
-
     public BuildingType13M(int era, int foodCost, int bonusPoints, CardType characterType) {
         super(era, foodCost, bonusPoints);
         this.characterType = characterType;

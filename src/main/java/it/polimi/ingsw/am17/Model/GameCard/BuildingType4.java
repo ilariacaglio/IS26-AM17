@@ -11,8 +11,11 @@ import java.util.stream.Collectors;
  * SINGLETON
  */
 public class BuildingType4 extends BuildingCard {
+    private static final int era = 2;
+    private static final int foodCost = 5;
+    private static final int bonusPoints = 6;
     public BuildingType4() {
-        super(2, 5, 6);
+        super(era, foodCost, bonusPoints);
     }
 
     @Override

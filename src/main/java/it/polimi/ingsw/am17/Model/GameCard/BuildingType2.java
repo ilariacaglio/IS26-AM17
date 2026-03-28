@@ -9,8 +9,11 @@ import it.polimi.ingsw.am17.Model.Player;
  * SINGLETON
  */
 public class BuildingType2 extends BuildingCard {
+    private static final int era = 3;
+    private static final int foodCost = 10;
+    private static final int bonusPoints = 0;
     public BuildingType2() {
-        super(3, 9, 3);
+        super(era, foodCost, bonusPoints);
     }
 
     @Override

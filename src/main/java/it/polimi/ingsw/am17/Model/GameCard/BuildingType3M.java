@@ -10,9 +10,9 @@ import java.util.List;
 public class BuildingType3M extends BuildingCard {
     private final int pointsFromEachCharacter; // amount from each characterType
     private final CardType characterType;
-
+    private static final int era = 3;
     public BuildingType3M(int foodCost, int bonusPoints, CardType characterType, int pointsFromEachCharacter) {
-        super(3, foodCost, bonusPoints);
+        super(era, foodCost, bonusPoints);
         this.characterType = characterType;
         this.pointsFromEachCharacter = pointsFromEachCharacter;
     }
