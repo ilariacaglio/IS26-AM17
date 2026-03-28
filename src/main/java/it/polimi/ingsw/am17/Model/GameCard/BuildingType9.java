@@ -2,6 +2,8 @@ package it.polimi.ingsw.am17.Model.GameCard;
 
 import it.polimi.ingsw.am17.Model.Player;
 
+import java.util.List;
+
 /**
  * Adds 3 stars when counting for the RitualEvent
  * Event effect
@@ -12,5 +14,8 @@ public class BuildingType9 extends BuildingCard {
         super(2, 6, 4);
     }
 
-    // TODO
+    @Override
+    public int StarBonus(List<CharacterCard> characterCards) {
+        return 3;
+    }
 }
