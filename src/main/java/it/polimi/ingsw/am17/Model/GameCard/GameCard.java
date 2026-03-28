@@ -1,3 +1,4 @@
+//will be eliminated
 package it.polimi.ingsw.am17.Model.GameCard;
 
 import java.util.Objects;
