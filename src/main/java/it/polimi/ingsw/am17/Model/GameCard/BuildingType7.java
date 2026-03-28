@@ -9,21 +9,17 @@ import java.util.List;
  */
 public class BuildingType7 extends BuildingCard {
     public BuildingType7() {
-        super(2, 5, 6);
+        super(2, 7, 2);
     }
 
     @Override
-    public int FoodBonus(List<GameCard> playerTribeRow) {
-        int numHunters = 0;
-        // TODO
-        return numHunters;
+    public int FoodBonus(List<CharacterCard> playerCharacterCards) {
+        return (int) playerCharacterCards.stream().filter(characterCard -> characterCard.getCardType() == CardType.HUNTER).count();
     }
 
     @Override
-    public int getBonusPoints() {
-        int numHunters = 0;
-        // TODO
-        return numHunters;
+    public int PointsBonus(List<CharacterCard> playerCharacterCards) {
+        return (int) playerCharacterCards.stream().filter(characterCard -> characterCard.getCardType() == CardType.HUNTER).count();
     }
 
     // NOTE: counts two times! Can I share that calculation? No because different methods...

@@ -25,9 +25,9 @@ public class BuildingCard extends GameCard {
     // effects implemented
     public int FinalPoints(List<CharacterCard> playerCharacterCards) { return 0; }
     public int FoodDiscount(List<CharacterCard> playerCharacterCards) { return 0; }
-    public int FoodBonus(List<CharacterCard> playerCharacterCards) { return 0; }
-    public int PointsBonus(List<GameCard> playerTribeRow) { return 0; }
-    public int StarBonus(List<GameCard> playerTribeRow) { return 0; }
-    public boolean isShieldFromRitualEvent() { return false; }
+    public int FoodBonus(List<CharacterCard> playerCharacterCards) { return 0; } // EventEffect: PaintingEvent
+    public int PointsBonus(List<CharacterCard> playerCharacterCards) { return 0; }
+    public int StarBonus(List<GameCard> playerTribeRow) { return 0; } // EventEffect: returns true if a
+    public boolean isShieldFromRitualEvent() { return false; } // EventEffect: returns true if a player should not lose points from rituals
     public void playExtraCard(Player player) { return; }
 }
