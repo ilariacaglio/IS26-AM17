@@ -14,7 +14,6 @@ public class BuildingType5 extends BuildingCard {
         super(2, 5, 6);
     }
 
-
     @Override
     public int FoodBonus(List<CharacterCard> playerCharacterCards) {
         return (int) playerCharacterCards.stream().filter(card -> card.getCardType() == ARTIST).count();
