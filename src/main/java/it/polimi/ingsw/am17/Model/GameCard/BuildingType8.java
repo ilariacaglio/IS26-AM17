@@ -7,7 +7,8 @@ package it.polimi.ingsw.am17.Model.GameCard;
  */
 public class BuildingType8 extends BuildingCard {
     public BuildingType8() {
-        super(2, 6, 4);
+        super(2, 7, 0);
     }
-    // TODO
+    public boolean DoubleRitualEventPoints() { return true; } // Tribes effect
+
 }
