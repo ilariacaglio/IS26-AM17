@@ -4,12 +4,13 @@ import it.polimi.ingsw.am17.Model.Player;
 
 import java.util.List;
 
-public class BuildingCard extends GameCard {
+public class BuildingCard {
     private final int foodCost;
     private final int bonusPoints;
+    private final int era;
 
     public BuildingCard(int era, int foodCost, int bonusPoints) {
-        super(era);
+        this.era = era;
         this.foodCost = foodCost;
         this.bonusPoints = bonusPoints;
     }
