@@ -9,5 +9,9 @@ public class BuildingType12 extends BuildingCard {
     public BuildingType12() {
         super(2, 6, 4);
     }
-    // TODO
+
+    @Override
+    public boolean isShieldFromRitualEvent() {
+        return true;
+    }
 }
