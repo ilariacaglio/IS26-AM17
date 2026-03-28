@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import java.util.List;
+
 /**
  * Get double the points from Builders
  * Final effect
@@ -11,8 +13,7 @@ public class BuildingType6 extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(List<GameCard> playerTribeRow) {
-        // TODO: get builders points and return them (not doubled)
-        return 0;
+    public int FinalPoints(List<CharacterCard> playerCharacterCards) {
+        return (int) playerCharacterCards.stream().filter(characterCard -> characterCard.getCardType() == CardType.BUILDER).count();
     }
 }
