@@ -7,7 +7,7 @@ package it.polimi.ingsw.am17.Model.GameCard;
  */
 public class BuildingType12 extends BuildingCard {
     public BuildingType12() {
-        super(2, 6, 4);
+        super(1, 5, 2);
     }
 
     @Override
