@@ -10,5 +10,8 @@ public enum CardType {
     RITUAL_EVENT,
     HUNTING_EVENT,
     PAINTING_EVENT,
-    FOOD_EVENT
+    FOOD_EVENT;
+    public boolean isCharacter() {
+        return !this.name().endsWith("_EVENT");
+    }
 }
