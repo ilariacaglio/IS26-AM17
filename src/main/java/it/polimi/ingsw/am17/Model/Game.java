@@ -52,7 +52,10 @@ public class Game extends Subject {
     public Player getNextPlayer() {
         if(currentPlayerIndex == 0) {
             players.sort(Comparator.comparing(p -> p.getOfferingCard().getOrderLetter()));
-            //mettere offering cards a null?
+            // set player offering card to null
+            for(Player p: players) {
+                p.freeOfferingCard();;
+            }
         }
         if(currentPlayerIndex >= players.size()) {
             throw new IllegalStateException("current player is higher then number of player");
