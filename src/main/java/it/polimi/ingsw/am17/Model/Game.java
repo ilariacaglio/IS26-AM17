@@ -13,12 +13,12 @@ public class Game extends Subject {
     private int currentEra;
     private List<OfferingCard> offeringCards;
     private final List<Character> offeringCardLetters;
-    private GameRow upperRow;
-    private GameRow lowerRow;
+    private TribeGameRow upperRow;
+    private TribeGameRow lowerRow;
     private Deck deck;
 
-    private GameRow upperBuildingRow;
-    private GameRow lowerBuildingRow;
+    private BuildingGameRow upperBuildingRow;
+    private BuildingGameRow lowerBuildingRow;
 
     private BuildingDeck buildingDeckEra1;
     private BuildingDeck buildingDeckEra2;
@@ -31,10 +31,10 @@ public class Game extends Subject {
         Random r = new Random();
         this.id = r.nextInt();
         this.numPlayers = numPlayers;
-        lowerBuildingRow = new GameRow();
-        upperBuildingRow = new GameRow();
-        lowerRow = new GameRow();
-        upperRow = new GameRow();
+        lowerBuildingRow = new BuildingGameRow();
+        upperBuildingRow = new BuildingGameRow();
+        lowerRow = new TribeGameRow();
+        upperRow = new TribeGameRow();
         players = new ArrayList<Player>(numPlayers);
         offeringCardLetters = new ArrayList<Character>();
     }
@@ -99,22 +99,22 @@ public class Game extends Subject {
         }
         var buildingCard = buildingDeckEra1.drawAll();
 
-        for(GameCard card : buildingCard) {
+        for(BuildingCard card : buildingCard) {
             upperBuildingRow.addCard(card);
         }
     }
 
 
     public void end() {
-        for(GameCard card : upperRow.getCards()) {
-            if(card instanceof EventCard eventCard) {
-                eventCard.computeScore(players);
+        for(TribesCard card : upperRow.getCards()) {
+            if(!card.getCardType().isCharacter()) {
+                ((EventCard)card).computeScore(players);
             }
         }
 
-        for(GameCard card : lowerRow.getCards()) {
-            if(card instanceof EventCard eventCard) {
-                eventCard.computeScore(players);
+        for(TribesCard card : lowerRow.getCards()) {
+            if(!card.getCardType().isCharacter()) {
+                ((EventCard)card).computeScore(players);
             }
         }
 
@@ -139,16 +139,16 @@ public class Game extends Subject {
 
     //non possibile provare perchè deck è null
     public void endTurn(){
-        lowerRow = new GameRow();
-        for(GameCard card : upperRow.getCards()) {
+        lowerRow = new TribeGameRow();
+        for(TribesCard card : upperRow.getCards()) {
             lowerRow.addCard(card);
         }
-        upperRow = new GameRow();
+        upperRow = new TribeGameRow();
 
         boolean newEra = false;
 
         for (int i = 0; i < numPlayers+4; i++) {
-            GameCard c = deck.Draw();
+            TribesCard c = deck.Draw();
             if(c.getEra() != currentEra) {
                 newEra = true;
                 currentEra++;
@@ -167,26 +167,26 @@ public class Game extends Subject {
     public void changeEra(){
         if(currentEra == 3) {
             //remove all card from lowerBuildingRow
-            lowerBuildingRow = new GameRow();
+            lowerBuildingRow = new BuildingGameRow();
         }
 
         //add buildingCard card in lowerRow
-        for (GameCard card : upperBuildingRow.getCards()){
+        for (BuildingCard card : upperBuildingRow.getCards()){
             lowerBuildingRow.addCard(card);
         }
 
         //remove buildingCard card in upperRow
-        upperBuildingRow = new GameRow();
+        upperBuildingRow = new BuildingGameRow();
 
         //add buildingCard card in upperRow
         switch (currentEra){
             case 2:
-                for (GameCard card : buildingDeckEra2.drawAll()){
+                for (BuildingCard card : buildingDeckEra2.drawAll()){
                     upperBuildingRow.addCard(card);
                 }
                 break;
             case 3:
-                for (GameCard card : buildingDeckEra3.drawAll()){
+                for (BuildingCard card : buildingDeckEra3.drawAll()){
                     upperBuildingRow.addCard(card);
                 }
                 break;
@@ -197,13 +197,12 @@ public class Game extends Subject {
 
 
     public void resolveEvent(){
-        for(GameCard card : lowerRow.getCards()) {
-            if(card instanceof EventCard eventCard) {
-                eventCard.computeScore(players);
+        for(TribesCard card : lowerRow.getCards()) {
+            if(!card.getCardType().isCharacter()) {
+                ((EventCard)card).computeScore(players);
             }
         }
     }
-
 
     public int getId(){
         return id;
@@ -223,10 +222,10 @@ public class Game extends Subject {
     //non possibile provare perchè liste vuote
     public void removeTribeCardFromRow(TribesCard card) {
         //check if a row contains the card, if so removes it
-        if (upperBuildingRow.getCards().contains(card))
-            upperBuildingRow.removeCard(card);
-        else if (lowerBuildingRow.getCards().contains(card))
-            lowerBuildingRow.removeCard(card);
+        if (upperRow.getCards().contains(card))
+            upperRow.removeCard(card);
+        else if (lowerRow.getCards().contains(card))
+            lowerRow.removeCard(card);
         else //if no row contains the card throw exception
             throw new IllegalStateException("No building row contains this card");
     }
@@ -252,19 +251,19 @@ public class Game extends Subject {
         return currentEra;
     }
     /// only to use for testing
-    public CardRow getUpperRow() {
+    public TribeGameRow getUpperRow() {
         return upperRow;
     }
     /// only to use for testing
-    public CardRow getLowerRow() {
+    public TribeGameRow getLowerRow() {
         return lowerRow;
     }
     /// only to use for testing
-    public CardRow getUpperBuildingRow() {
+    public BuildingGameRow getUpperBuildingRow() {
         return upperBuildingRow;
     }
     /// only to use for testing
-    public CardRow getLowerBuildingRow() {
+    public BuildingGameRow getLowerBuildingRow() {
         return lowerBuildingRow;
     }
     /// only to use for testing
