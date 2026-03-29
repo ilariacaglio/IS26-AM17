@@ -62,16 +62,24 @@ public class Player{
     }
 
     public void playTurn(List<TribesCard> tribeCards, List<BuildingCard> buildingCards, Game game){
+        int numHunters;
         if(!tribeCards.equals(Collections.emptyList())){
             for(TribesCard card : tribeCards){
-                //aggiungere extra food in base ai cacciatori?
                 game.removeTribeCardFromRow(card);
+                //if the player has picked a hunter he gains one food for every hunter he already has
+                if(card.getCardType().equals(CardType.HUNTER) && ((Hunter)card).isWithIcon())
+                {
+                    //count hunter cards
+                    numHunters = (int) playerTribeRow.getCards().stream()
+                            .filter(c->c.getCardType().equals(CardType.HUNTER))
+                            .count();
+                    addFood(numHunters);
+                }
                 playerTribeRow.addCard(card);
             }
         }
         if(!buildingCards.equals(Collections.emptyList())){
             for(BuildingCard card : buildingCards){
-                //aggiungere riduzione costo in base ai costruttori?
                 buyBuilding((BuildingCard) card);
                 game.removeBuildingCardFromRow(card);
                 playerBuildingRow.addCard(card);
@@ -80,7 +88,18 @@ public class Player{
     }
 
     public void buyBuilding(BuildingCard card){
-        addFood(card.getFoodCost()*(-1));
+        int foodCost = calculateBuildingCost(card);
+        addFood(foodCost*(-1));
+    }
+
+    public int calculateBuildingCost(BuildingCard card){
+        //sum of the food discount of every builder card
+        int foodDiscount = playerTribeRow.getCards().stream()
+                .filter(c->c.getCardType().equals(CardType.BUILDER))
+                .map(c-> ((Builder)c).getFoodReduction())
+                .reduce(0, Integer::sum);
+        //return the price of the building card
+        return card.getFoodCost()-foodDiscount;
     }
 
     public List<TribesCard> getPlayerTribeCards(){
@@ -129,7 +148,6 @@ public class Player{
         addPp(cardPoints);
         // final effects of buildings
         var characterList = playerTribeRow.getCards().stream()
-                .filter(c -> c.getCardType().isCharacter())
                 .map(c-> (CharacterCard)c).toList();
         for (BuildingCard card : buildingsList) {
             this.addPp(card.FinalPoints(characterList));
