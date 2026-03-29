@@ -5,6 +5,8 @@ import it.polimi.ingsw.am17.Model.GameCard.*;
 import javax.smartcardio.Card;
 import java.util.*;
 
+import static it.polimi.ingsw.am17.Utility.OfferingCardParser.loadOfferingCards;
+
 public class Game extends Subject {
     private final int id;
     private final int numPlayers;
@@ -83,7 +85,7 @@ public class Game extends Subject {
         this.started = true;
         this.currentEra = 1;
         Collections.shuffle(players);
-        offeringCards = null; // va fatto metodo per parsare le carte dal json
+        offeringCards = loadOfferingCards(numPlayers);
 
         for(OfferingCard c: offeringCards){
             offeringCardLetters.add(c.getOrderLetter());
