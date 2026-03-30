@@ -37,7 +37,7 @@ public class PaintingEvent extends EventCard {
     @Override
     public void computeScore(List<Player> list){
         for (int i = 0; i<list.size(); i++){
-            long numArtist = list.get(i).getPlayerCards().stream()
+            long numArtist = list.get(i).getPlayerTribeCards().stream()
                     .filter(c-> c instanceof Artist)
                     .count();
 
