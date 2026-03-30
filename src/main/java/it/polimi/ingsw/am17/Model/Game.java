@@ -12,18 +12,18 @@ public class Game extends Subject {
     private boolean started;
     private final List<Player> players;
     private int currentEra;
-    private List<OfferingCard> offeringCards;
+    private final List<OfferingCard> offeringCards;
     private final List<Character> offeringCardLetters;
     private TribeGameRow upperRow;
     private TribeGameRow lowerRow;
-    private Deck deck;
+    private final Deck deck;
 
     private BuildingGameRow upperBuildingRow;
     private BuildingGameRow lowerBuildingRow;
 
-    private BuildingDeck buildingDeckEra1;
-    private BuildingDeck buildingDeckEra2;
-    private BuildingDeck buildingDeckEra3;
+    private final BuildingDeck buildingDeckEra1;
+    private final BuildingDeck buildingDeckEra2;
+    private final BuildingDeck buildingDeckEra3;
 
     private int currentPlayerIndex = 0;
     private int currentTurnLetterIndex = 0;
@@ -37,7 +37,15 @@ public class Game extends Subject {
         lowerRow = new TribeGameRow();
         upperRow = new TribeGameRow();
         players = new ArrayList<Player>(numPlayers);
+        deck = new Deck();
+        buildingDeckEra1 = new BuildingDeck(numPlayers,1);
+        buildingDeckEra2 = new BuildingDeck(numPlayers,2);
+        buildingDeckEra3 = new BuildingDeck(numPlayers,3);
+        offeringCards = loadOfferingCards(numPlayers);
         offeringCardLetters = new ArrayList<Character>();
+        for(OfferingCard c: offeringCards){
+            offeringCardLetters.add(c.getOrderLetter());
+        }
     }
 
 
@@ -84,17 +92,6 @@ public class Game extends Subject {
         this.started = true;
         this.currentEra = 1;
         Collections.shuffle(players);
-        offeringCards = loadOfferingCards(numPlayers);
-
-        for(OfferingCard c: offeringCards){
-            offeringCardLetters.add(c.getOrderLetter());
-        }
-
-        deck = new Deck();
-        buildingDeckEra1 = new BuildingDeck(numPlayers,1);
-        buildingDeckEra2 = new BuildingDeck(numPlayers,2);
-        buildingDeckEra3 = new BuildingDeck(numPlayers,3);
-
         for (int i = 0; i < numPlayers+1; i++) {
             lowerRow.addCard(deck.Draw());
         }
