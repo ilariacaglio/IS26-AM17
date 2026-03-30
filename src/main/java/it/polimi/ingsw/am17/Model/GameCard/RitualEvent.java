@@ -31,6 +31,7 @@ public class RitualEvent extends EventCard {
                     .mapToInt(c -> ((Shaman)c).getStars())
                     .sum();
         }
+        // call bonusstars from buildings around here
 
         int max = stars[0];
         int min = stars[0];
@@ -50,8 +51,10 @@ public class RitualEvent extends EventCard {
             else{
                 if(stars[i] == max){
                     list.get(i).addPp(pointMax);
+                    // call DoublePoints from buildings around here
                 }
                 if(stars[i] == min){
+                    // call is shield from buildings around here
                     list.get(i).addPp(pointMin*(-1));
                 }
             }
