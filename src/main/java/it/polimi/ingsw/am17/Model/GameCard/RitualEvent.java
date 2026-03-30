@@ -25,8 +25,7 @@ public class RitualEvent extends EventCard {
     public void computeScore(List<Player> list){
         int[] stars = new int[list.size()];
 
-        for(int i = 0; i < list.size(); i++){
-            stars[i] = list.get(i).getPlayerCards().stream()
+        for(int i = 0; i < list.size(); i++){            stars[i] = list.get(i).getPlayerTribeCards().stream()
                     .filter(c -> c instanceof Shaman)
                     .mapToInt(c -> ((Shaman)c).getStars())
                     .sum();
