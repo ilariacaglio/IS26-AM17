@@ -19,7 +19,7 @@ public class HuntingEvent extends EventCard {
     @Override
     public void computeScore(List<Player> list){
         for(int i=0; i<list.size(); i++){
-            long numHunter = list.get(i).getPlayerCards().stream()
+            long numHunter = list.get(i).getPlayerTribeCards().stream()
                     .filter(c -> c instanceof Hunter)
                     .count();
 
