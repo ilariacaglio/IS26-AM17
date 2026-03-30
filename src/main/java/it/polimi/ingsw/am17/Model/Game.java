@@ -2,7 +2,6 @@ package it.polimi.ingsw.am17.Model;
 
 import it.polimi.ingsw.am17.Model.GameCard.*;
 
-import javax.smartcardio.Card;
 import java.util.*;
 
 import static it.polimi.ingsw.am17.Utility.OfferingCardParser.loadOfferingCards;
@@ -92,9 +91,9 @@ public class Game extends Subject {
         }
 
         deck = new Deck();
-        buildingDeckEra1 = new BuildingDeck(numPlayers);
-        buildingDeckEra2 = new BuildingDeck(numPlayers);
-        buildingDeckEra3 = new BuildingDeck(numPlayers);
+        buildingDeckEra1 = new BuildingDeck(numPlayers,1);
+        buildingDeckEra2 = new BuildingDeck(numPlayers,2);
+        buildingDeckEra3 = new BuildingDeck(numPlayers,3);
 
         for (int i = 0; i < numPlayers+1; i++) {
             lowerRow.addCard(deck.Draw());
