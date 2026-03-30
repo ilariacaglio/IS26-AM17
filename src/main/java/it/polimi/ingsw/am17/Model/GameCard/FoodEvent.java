@@ -19,11 +19,11 @@ public class FoodEvent extends EventCard{
     @Override
     public void computeScore(List<Player> list){
         for (Player player : list) {
-            int size = player.getPlayerCards().size();
+            int size = player.getPlayerTribeCards().size();
             int food = player.getFood();
             int foodPrice = size;
 
-            long numBinder = player.getPlayerCards().stream()
+            long numBinder = player.getPlayerTribeCards().stream()
                     .filter(c -> c instanceof Binder)
                     .count();
 
