@@ -12,7 +12,7 @@ public class OfferingCardParser {
         ObjectMapper mapper = new ObjectMapper();
         try (InputStream stream = OfferingCardParser.class.getResourceAsStream("/offeringCards.json");) {
             if (stream == null) {
-                throw new IllegalArgumentException("offering_cards.json not found");
+                throw new IllegalArgumentException("offeringCards.json not found");
             }
             var cardList = mapper.readValue(stream, new TypeReference<List<OfferingCard>>() {});
             return cardList.stream()
