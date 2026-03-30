@@ -18,10 +18,8 @@ public class BuildingCard {
     public int getFoodCost() {
         return foodCost;
     }
-
-    public int getBonusPoints() {
-        return bonusPoints;
-    }
+    public int getEra() { return era; }
+    public int getBonusPoints() { return bonusPoints; }
 
     // effects implemented
     public int FinalPoints(List<CharacterCard> characterCards) { return 0; }
