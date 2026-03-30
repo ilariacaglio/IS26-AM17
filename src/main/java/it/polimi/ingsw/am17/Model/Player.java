@@ -98,7 +98,7 @@ public class Player{
                     .filter(g ->g.getCardType().equals(CardType.BUILDER))
                     .mapToInt(g -> ((Builder) g).getPointBonus())
                     .sum();
-        addFood(pointsBuilders);
+        addFood(pointsBuilders); // TODO: addPoints??
         // add pp of inventors and icons
         List<Inventor> inventorsList = playerTribeRow.getCards().stream()
                     .map(g->(TribesCard) g)
@@ -124,7 +124,7 @@ public class Player{
                 .filter(g ->g.getCardType().equals(CardType.ARTIST))
                 .count();
         int numCouples = Math.floorDiv(numArtists,2);
-        addFood(numCouples*10);
+        addFood(numCouples*10); // TODO: addPoints??
         // points of buildings
         List<BuildingCard> buildingsList = playerBuildingRow.getCards().stream()
                 .map (g -> (BuildingCard)g)
