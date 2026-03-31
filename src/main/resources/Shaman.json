@@ -1,0 +1,67 @@
+[
+  {
+    "era": 1,
+    "stars": 1,
+    "minPlayers": 4
+  },
+  {
+    "era": 1,
+    "stars": 2,
+    "minPlayers": 5
+  },
+  {
+    "era": 1,
+    "stars": 1,
+    "minPlayers": 2
+  },
+  {
+    "era": 1,
+    "stars": 2,
+    "minPlayers": 2
+  },
+  {
+    "era": 2,
+    "stars": 2,
+    "minPlayers": 5
+  },
+  {
+    "era": 2,
+    "stars": 1,
+    "minPlayers": 5
+  },
+  {
+    "era": 2,
+    "stars": 2,
+    "minPlayers": 2
+  },
+  {
+    "era": 2,
+    "stars": 2,
+    "minPlayers": 2
+  },
+  {
+    "era": 3,
+    "stars": 2,
+    "minPlayers": 3
+  },
+  {
+    "era": 3,
+    "stars": 2,
+    "minPlayers": 4
+  },
+  {
+    "era": 3,
+    "stars": 2,
+    "minPlayers": 2
+  },
+  {
+    "era": 3,
+    "stars": 3,
+    "minPlayers": 2
+  },
+  {
+    "era": 3,
+    "stars": 3,
+    "minPlayers": 2
+  }
+]
