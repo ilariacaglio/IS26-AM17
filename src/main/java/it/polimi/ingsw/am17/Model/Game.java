@@ -1,48 +1,55 @@
 package it.polimi.ingsw.am17.Model;
 
-import it.polimi.ingsw.am17.Model.GameCard.Builder;
-import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
-import it.polimi.ingsw.am17.Model.GameCard.EventCard;
-import it.polimi.ingsw.am17.Model.GameCard.GameCard;
+import it.polimi.ingsw.am17.Model.GameCard.*;
 
-import javax.smartcardio.Card;
 import java.util.*;
+
+import static it.polimi.ingsw.am17.Utility.OfferingCardParser.loadOfferingCards;
 
 public class Game extends Subject {
     private final int id;
     private final int numPlayers;
     private boolean started;
-    private List<Player> players;
+    private final List<Player> players;
     private int currentEra;
-    private List<OfferingCard> offeringCards;
-    private GameRow upperRow;
-    private GameRow lowerRow;
-    private Deck deck;
+    private final List<OfferingCard> offeringCards;
+    private final List<Character> offeringCardLetters;
+    private TribeGameRow upperRow;
+    private TribeGameRow lowerRow;
+    private final Deck deck;
 
-    private GameRow upperBuildingRow;
-    private GameRow lowerBuildingRow;
+    private BuildingGameRow upperBuildingRow;
+    private BuildingGameRow lowerBuildingRow;
 
-    private BuildingDeck buildingDeckEra1;
-    private BuildingDeck buildingDeckEra2;
-    private BuildingDeck buildingDeckEra3;
+    private final BuildingDeck buildingDeckEra1;
+    private final BuildingDeck buildingDeckEra2;
+    private final BuildingDeck buildingDeckEra3;
 
     private int currentPlayerIndex = 0;
-    private char currentTurnLetter = 'a';
+    private int currentTurnLetterIndex = 0;
 
     public Game(int numPlayers) {
         Random r = new Random();
         this.id = r.nextInt();
         this.numPlayers = numPlayers;
-        lowerBuildingRow = new GameRow();
-        upperBuildingRow = new GameRow();
-        lowerRow = new GameRow();
-        upperRow = new GameRow();
+        lowerBuildingRow = new BuildingGameRow();
+        upperBuildingRow = new BuildingGameRow();
+        lowerRow = new TribeGameRow();
+        upperRow = new TribeGameRow();
         players = new ArrayList<Player>(numPlayers);
+        deck = new Deck();
+        buildingDeckEra1 = new BuildingDeck(numPlayers,1);
+        buildingDeckEra2 = new BuildingDeck(numPlayers,2);
+        buildingDeckEra3 = new BuildingDeck(numPlayers,3);
+        offeringCards = loadOfferingCards(numPlayers);
+        offeringCardLetters = new ArrayList<Character>();
+        for(OfferingCard c: offeringCards){
+            offeringCardLetters.add(c.getOrderLetter());
+        }
     }
 
 
-    public int getNumPlayers()
-    {
+    public int getNumPlayers() {
         return  numPlayers;
     }
 
@@ -51,15 +58,15 @@ public class Game extends Subject {
         return players;
     }
 
-
-    public Player getNextPlayer()
-    {
-        if(currentPlayerIndex == 0)
-        {
+    public Player getNextPlayer() {
+        if(currentPlayerIndex == 0) {
             players.sort(Comparator.comparing(p -> p.getOfferingCard().getOrderLetter()));
+            // set player offering card to null
+            for(Player p: players) {
+                p.freeOfferingCard();;
+            }
         }
-        if(currentPlayerIndex >= players.size())
-        {
+        if(currentPlayerIndex >= players.size()) {
             throw new IllegalStateException("current player is higher then number of player");
         }
         return players.get(currentPlayerIndex++);
@@ -67,8 +74,7 @@ public class Game extends Subject {
 
 
     public void addPlayer(Player p) {
-
-        if(players.stream().count() < numPlayers && numPlayers > 0){
+        if(numPlayers > 0 && players.size() < numPlayers){
             players.add(p);
         }
         else {
@@ -77,23 +83,15 @@ public class Game extends Subject {
     }
 
 
-    public boolean isStarted()
-    {
+    public boolean isStarted() {
         return started;
     }
 
-
+    //non possibile provare perchè mancano building cards
     public void start() {
         this.started = true;
         this.currentEra = 1;
         Collections.shuffle(players);
-        offeringCards = null; // va fatto metodo per parsare le carte dal json
-
-        deck = new Deck();
-        buildingDeckEra1 = new BuildingDeck(numPlayers);
-        buildingDeckEra2 = new BuildingDeck(numPlayers);
-        buildingDeckEra3 = new BuildingDeck(numPlayers);
-
         for (int i = 0; i < numPlayers+1; i++) {
             lowerRow.addCard(deck.Draw());
         }
@@ -102,191 +100,208 @@ public class Game extends Subject {
         }
         var buildingCard = buildingDeckEra1.drawAll();
 
-        for(GameCard card : buildingCard)
-        {
+        for(BuildingCard card : buildingCard) {
             upperBuildingRow.addCard(card);
         }
     }
 
 
     public void end() {
-        for(GameCard card : upperRow.getCards())
-        {
-            if(card instanceof EventCard eventCard) {
-                eventCard.computeScore(players);
+        for(TribesCard card : upperRow.getCards()) {
+            if(!card.getCardType().isCharacter()) {
+                ((EventCard)card).computeScore(players);
             }
         }
 
-        for(GameCard card : lowerRow.getCards())
-        {
-            if(card instanceof EventCard eventCard) {
-                eventCard.computeScore(players);
+        for(TribesCard card : lowerRow.getCards()) {
+            if(!card.getCardType().isCharacter()) {
+                ((EventCard)card).computeScore(players);
             }
         }
 
-        for(Player player : players)
-        {
+        for(Player player : players) {
             //call player to add its point
-            //player.calcuteFinalPoint();
+            player.calculateFinalPoints();
         }
-
     }
-
 
     public Player getNextTurn() {
-        for(Player player : players)
-        {
-            if(player.getOfferingCard().getOrderLetter() == currentTurnLetter) {
-                currentTurnLetter++;
-                return player;
+        while(currentTurnLetterIndex < offeringCardLetters.size()){
+            for(Player player : players) {
+                if(player.getOfferingCard().getOrderLetter() == offeringCardLetters.get(currentTurnLetterIndex)) {
+                    currentTurnLetterIndex++;
+                    return player;
+                }
             }
+            currentTurnLetterIndex++;
         }
-        throw new IllegalStateException("There is no player with the current turn letter");
+        throw new IllegalStateException("There is no next player");
     }
 
-
+    //non possibile provare perchè deck è null
     public void endTurn(){
-        lowerRow = new GameRow();
-        for(GameCard card : upperRow.getCards())
-        {
+        lowerRow = new TribeGameRow();
+        for(TribesCard card : upperRow.getCards()) {
             lowerRow.addCard(card);
         }
-        upperRow = new GameRow();
+        upperRow = new TribeGameRow();
 
         boolean newEra = false;
 
         for (int i = 0; i < numPlayers+4; i++) {
-            GameCard c = deck.Draw();
+            TribesCard c = deck.Draw();
             if(c.getEra() != currentEra) {
                 newEra = true;
                 currentEra++;
             }
-            upperRow.addCard(deck.Draw());
+            upperRow.addCard(c);
         }
 
         if(newEra)
             changeEra();
 
-        currentTurnLetter = 'a';
+        currentTurnLetterIndex = 0;
         currentPlayerIndex = 0;
     }
 
-
+    //non possibile provare perchè buildingdeck null
     public void changeEra(){
         if(currentEra == 3) {
             //remove all card from lowerBuildingRow
-            lowerBuildingRow = new GameRow();
+            lowerBuildingRow = new BuildingGameRow();
         }
 
         //add buildingCard card in lowerRow
-        for (GameCard card : upperBuildingRow.getCards()){
+        for (BuildingCard card : upperBuildingRow.getCards()){
             lowerBuildingRow.addCard(card);
         }
 
         //remove buildingCard card in upperRow
-        upperBuildingRow = new GameRow();
+        upperBuildingRow = new BuildingGameRow();
 
         //add buildingCard card in upperRow
         switch (currentEra){
             case 2:
-                for (GameCard card : buildingDeckEra2.drawAll()){
+                for (BuildingCard card : buildingDeckEra2.drawAll()){
                     upperBuildingRow.addCard(card);
                 }
                 break;
             case 3:
-                for (GameCard card : buildingDeckEra3.drawAll()){
+                for (BuildingCard card : buildingDeckEra3.drawAll()){
                     upperBuildingRow.addCard(card);
                 }
                 break;
             default:
                 throw new IllegalStateException("We are in a wrong era");
         }
-
-
     }
 
 
     public void resolveEvent(){
-        for(GameCard card : lowerRow.getCards())
-        {
-            if(card instanceof EventCard eventCard)
-            {
-                eventCard.computeScore(players);
+        for(TribesCard card : lowerRow.getCards()) {
+            if(!card.getCardType().isCharacter()) {
+                ((EventCard)card).computeScore(players);
             }
         }
     }
-
 
     public int getId(){
         return id;
     }
 
+    //non possibile provare perchè liste vuote
+    public void removeBuildingCardFromRow(BuildingCard card){
+        //check if a row contains the card, if so removes it
+        if (upperBuildingRow.getCards().contains(card))
+            upperBuildingRow.removeCard(card);
+        else if (lowerBuildingRow.getCards().contains(card))
+            lowerBuildingRow.removeCard(card);
+        else //if no row contains the card throw exception
+            throw new IllegalStateException("No card row contains this card");
+    }
 
-    public void removeCardFromRow(GameCard card)
-    {
-        //check if card is building
-        if(! (card instanceof BuildingCard)) {
-
-            //check if a row contains the card, if so removes it
-            if (upperRow.getCards().contains(card))
-                upperRow.removeCard(card);
-            else if (lowerRow.getCards().contains(card))
-                lowerRow.removeCard(card);
-            else //if no row contains the card throw exception
-                throw new IllegalStateException("No card row contains this card");
-        } else
-        {
-
-            //check if a row contains the card, if so removes it
-            if (upperBuildingRow.getCards().contains(card))
-                upperBuildingRow.removeCard(card);
-            else if (lowerBuildingRow.getCards().contains(card)) {
-                lowerBuildingRow.removeCard(card);
-            }else //if no row contains the card throw exception
-                throw new IllegalStateException("No building row contains this card");
-        }
+    //non possibile provare perchè liste vuote
+    public void removeTribeCardFromRow(TribesCard card) {
+        //check if a row contains the card, if so removes it
+        if (upperRow.getCards().contains(card))
+            upperRow.removeCard(card);
+        else if (lowerRow.getCards().contains(card))
+            lowerRow.removeCard(card);
+        else //if no row contains the card throw exception
+            throw new IllegalStateException("No building row contains this card");
     }
 
     /// only to use for testing
-    public int getLowerRowSize()
-    {
+    public int getLowerRowSize() {
         return lowerRow.getCards().size();
     }
     /// only to use for testing
-    public int getUpperRowSize()
-    {
+    public int getUpperRowSize() {
         return upperRow.getCards().size();
     }
     /// only to use for testing
-    public int getUpperBuildingRowSize()
-    {
+    public int getUpperBuildingRowSize() {
         return upperBuildingRow.getCards().size();
     }
-
-    public char getCurrentTurnLetter()
-    {
-        return currentTurnLetter;
+    /// only to use for testing
+    public int getCurrentTurnLetterIndex() {
+        return currentTurnLetterIndex;
     }
-
-    public int getCurrentEra()
-    {
+    /// only to use for testing
+    public int getCurrentEra() {
         return currentEra;
     }
-    public CardRow getUpperRow()
-    {
+    /// only to use for testing
+    public TribeGameRow getUpperRow() {
         return upperRow;
     }
-    public CardRow getLowerRow()
-    {
+    /// only to use for testing
+    public TribeGameRow getLowerRow() {
         return lowerRow;
     }
-    public CardRow getUpperBuildingRow()
-    {
+    /// only to use for testing
+    public BuildingGameRow getUpperBuildingRow() {
         return upperBuildingRow;
     }
-    public CardRow getLowerBuildingRow()
-    {
+    /// only to use for testing
+    public BuildingGameRow getLowerBuildingRow() {
         return lowerBuildingRow;
+    }
+    /// only to use for testing
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+    /// only to use for testing
+    public int getPlayersSize() {
+        return players.size();
+    }
+    /// only to use for testing
+    public List<Player> getPlayersList(){
+        return players;
+    }
+    /// only to use for testing
+    public void setCurrentEra(int currentEra) {
+        this.currentEra = currentEra;
+    }
+    /// only to use for testing
+    public Deck getDeck(){
+        return deck;
+    }
+    /// only to use for testing
+    public BuildingDeck getBuildingDeckEra1(){
+        return buildingDeckEra1;
+    }
+    /// only to use for testing
+    public BuildingDeck getBuildingDeckEra2(){
+        return buildingDeckEra2;
+    }
+    /// only to use for testing
+    public BuildingDeck getBuildingDeckEra3(){
+        return buildingDeckEra3;
+    }
+    /// only to use for testing
+    public void setOfferingCardLetters(List<Character> offeringCardLetters) {
+        this.offeringCardLetters.addAll(offeringCardLetters);
     }
 
     @Override
