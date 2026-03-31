@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.Player;
 
@@ -27,6 +28,7 @@ public class PaintingEvent extends EventCard {
         return pointsMax;
     }
 
+    @JsonCreator
     public PaintingEvent(
             @JsonProperty("pointsLow") int pointsLow,
             @JsonProperty("pointsMax") int pointsMax,

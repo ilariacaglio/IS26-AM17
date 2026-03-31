@@ -1,4 +1,5 @@
 package it.polimi.ingsw.am17.Model.GameCard;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Shaman extends CharacterCard {
@@ -8,6 +9,7 @@ public class Shaman extends CharacterCard {
         return stars;
     }
 
+    @JsonCreator
     public Shaman(
             @JsonProperty("era") int era,
             @JsonProperty("stars") int minPlayer,

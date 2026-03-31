@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.Player;
 
@@ -17,6 +18,7 @@ public class RitualEvent extends EventCard {
         return pointMin;
     }
 
+    @JsonCreator
     public RitualEvent(@JsonProperty("Final") boolean Final,
                        @JsonProperty("era") int era,
                        @JsonProperty("pointMax") int pointMax,

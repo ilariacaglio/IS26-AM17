@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class BuildingType3M extends BuildingCard {
     private final int pointsFromEachCharacter; // amount from each characterType
     private final CardType characterType;
     private static final int era = 3;
+    @JsonCreator
     public BuildingType3M(
             @JsonProperty("foodCost") int foodCost,
             @JsonProperty("bonusPoints") int bonusPoints,

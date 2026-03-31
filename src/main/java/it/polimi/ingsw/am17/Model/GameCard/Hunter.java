@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Hunter extends CharacterCard {
@@ -9,6 +10,7 @@ public class Hunter extends CharacterCard {
         return withIcon;
     }
 
+    @JsonCreator
     public Hunter(
             @JsonProperty("era") int era,
             @JsonProperty("minPlayers") int minPlayers,

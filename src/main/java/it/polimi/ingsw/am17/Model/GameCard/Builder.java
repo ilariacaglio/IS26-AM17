@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Builder extends CharacterCard {
@@ -14,6 +15,7 @@ public class Builder extends CharacterCard {
         return pointBonus;
     }
 
+    @JsonCreator
     public Builder(
             @JsonProperty("era") int era,
             @JsonProperty("minPlayers") int minPlayers,

@@ -2,7 +2,7 @@ package it.polimi.ingsw.am17.Model.GameCard;
 
 public class TribesCard {
     private final CardType cardType;
-    private int era;
+    private final int era;
 
     public CardType getCardType() {
         return cardType;

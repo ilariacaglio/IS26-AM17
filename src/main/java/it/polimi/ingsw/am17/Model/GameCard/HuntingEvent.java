@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.Player;
 
@@ -12,6 +13,7 @@ public class HuntingEvent extends EventCard {
         return pointEarned;
     }
 
+    @JsonCreator
     public HuntingEvent(
             @JsonProperty("pointEarned") int pointEarned,
             @JsonProperty("Final") boolean Final,
