@@ -5,15 +5,15 @@ import it.polimi.ingsw.am17.Model.Player;
 import java.util.List;
 
 public class HuntingEvent extends EventCard {
-    private int pointEarned;
+    private final int pointEarned;
 
     public int getPointEarned() {
         return pointEarned;
     }
 
-    public HuntingEvent(int pointEarned, boolean Final, int era, CardType cardType){
+    public HuntingEvent(int pointEarned, boolean Final, int era){
         this.pointEarned = pointEarned;
-        super(Final, era, cardType);
+        super(Final, era, CardType.HUNTING_EVENT);
     }
 
     @Override
