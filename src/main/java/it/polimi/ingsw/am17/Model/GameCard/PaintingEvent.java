@@ -1,14 +1,16 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.Player;
 
 import java.util.List;
 
 public class PaintingEvent extends EventCard {
-    private int pointsLow;
-    private int pointsMax;
-    private int numLow;
-    private int numMax;
+    private final int pointsLow;
+    private final int pointsMax;
+    private final int numLow;
+    private final int numMax;
 
     public int getNumLow() {
         return numLow;
@@ -26,8 +28,15 @@ public class PaintingEvent extends EventCard {
         return pointsMax;
     }
 
-    public PaintingEvent(int pointsLow, int pointsMax, int numLow, int numMax, boolean Final, int era, CardType cardType) {
-        super(Final, era, cardType);
+    @JsonCreator
+    public PaintingEvent(
+            @JsonProperty("pointsLow") int pointsLow,
+            @JsonProperty("pointsMax") int pointsMax,
+            @JsonProperty("numLow") int numLow,
+            @JsonProperty("numMax") int numMax,
+            @JsonProperty("Final") boolean Final,
+            @JsonProperty("era") int era) {
+        super(Final, era, CardType.PAINTING_EVENT);
         this.pointsLow = pointsLow;
         this.pointsMax = pointsMax;
         this.numLow = numLow;

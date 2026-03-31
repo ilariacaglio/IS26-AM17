@@ -1,0 +1,77 @@
+[
+  {
+    "era":1,
+    "minPlayers": 3,
+    "withIcon": false
+  },
+  {
+    "era":1,
+    "minPlayers": 3,
+    "withIcon": false
+  },
+  {
+    "era":1,
+    "minPlayers": 2,
+    "withIcon": true
+  },
+  {
+    "era":1,
+    "minPlayers": 2,
+    "withIcon": true
+  },
+  {
+    "era":1,
+    "minPlayers": 2,
+    "withIcon": false
+  },
+  {
+    "era":2,
+    "minPlayers": 5,
+    "withIcon": false
+  },
+  {
+    "era":2,
+    "minPlayers": 4,
+    "withIcon": true
+  },
+  {
+    "era":2,
+    "minPlayers": 3,
+    "withIcon": true
+  },
+  {
+    "era":2,
+    "minPlayers": 2,
+    "withIcon": false
+  },
+  {
+    "era":2,
+    "minPlayers": 2,
+    "withIcon": true
+  },
+  {
+    "era":2,
+    "minPlayers": 2,
+    "withIcon": false
+  },
+  {
+    "era":3,
+    "minPlayers": 5,
+    "withIcon": true
+  },
+  {
+    "era":3,
+    "minPlayers": 2,
+    "withIcon": true
+  },
+  {
+    "era":3,
+    "minPlayers": 2,
+    "withIcon": false
+  },
+  {
+    "era":3,
+    "minPlayers": 2,
+    "withIcon": false
+  }
+]

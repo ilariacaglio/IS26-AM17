@@ -1,0 +1,20 @@
+[
+  {
+    "Final": true,
+    "era": 3,
+    "pointMax": 15,
+    "pointMin": 7
+  },
+  {
+    "Final": false,
+    "era": 2,
+    "pointMax": 10,
+    "pointMin": 5
+  },
+  {
+    "Final": false,
+    "era": 1,
+    "pointMax": 5,
+    "pointMin": 3
+  }
+]

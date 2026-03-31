@@ -1,0 +1,17 @@
+[
+  {
+    "Final": true,
+    "era": 3,
+    "pointLost": 3
+  },
+  {
+    "Final": false,
+    "era": 2,
+    "pointLost": 2
+  },
+  {
+    "Final": false,
+    "era": 1,
+    "pointLost": 1
+  }
+]

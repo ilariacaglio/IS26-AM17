@@ -1,17 +1,21 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Hunter extends CharacterCard {
-    private boolean withIcon;
+    private final boolean withIcon;
 
     public boolean isWithIcon() {
         return withIcon;
     }
 
-    public Hunter(int era, int minPlayer, boolean withIcon,CardType cardType) {
-        super(era, minPlayer, cardType);
+    @JsonCreator
+    public Hunter(
+            @JsonProperty("era") int era,
+            @JsonProperty("minPlayers") int minPlayers,
+            @JsonProperty("withIcon") boolean withIcon) {
+        super(era, minPlayers, CardType.HUNTER);
         this.withIcon = withIcon;
-
     }
 }
