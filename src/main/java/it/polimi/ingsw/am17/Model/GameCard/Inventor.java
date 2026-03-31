@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Inventor extends CharacterCard {
     private final InventorIconType icon;
 
@@ -7,7 +9,10 @@ public class Inventor extends CharacterCard {
         return icon;
     }
 
-    public  Inventor(int era, int minPlayers, InventorIconType icon) {
+    public  Inventor(
+            @JsonProperty("era") int era,
+            @JsonProperty("minPlayers") int minPlayers,
+            @JsonProperty("icon") InventorIconType icon) {
         super(era, minPlayers, CardType.INVENTOR);
         this.icon = icon;
     }

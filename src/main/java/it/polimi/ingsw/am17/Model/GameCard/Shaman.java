@@ -1,5 +1,5 @@
 package it.polimi.ingsw.am17.Model.GameCard;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Shaman extends CharacterCard {
     private final int stars;
@@ -8,7 +8,10 @@ public class Shaman extends CharacterCard {
         return stars;
     }
 
-    public Shaman(int era, int minPlayer, int stars){
+    public Shaman(
+            @JsonProperty("era") int era,
+            @JsonProperty("stars") int minPlayer,
+            @JsonProperty("minPlayers") int stars){
         super(era, minPlayer, CardType.SHAMAN);
         this.stars = stars;
     }
