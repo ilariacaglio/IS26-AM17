@@ -26,7 +26,11 @@ public class Player{
     }
 
     public void addFood(int quantity) {
-        this.food+=quantity;
+        int newAmount = food + quantity;
+        if (newAmount < 0) {
+            throw new IllegalStateException("Not enough food: requested change " + quantity + " having " + food);
+        }
+        this.food = newAmount;
     }
 
     public OfferingCard getOfferingCard() {
