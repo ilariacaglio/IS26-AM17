@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static it.polimi.ingsw.am17.Utility.BuildingCardParser.buildingCard13MParser;
-import static it.polimi.ingsw.am17.Utility.BuildingCardParser.buildingCard3MParser;
+import static it.polimi.ingsw.am17.Utility.CardParser.buildingCard13MParser;
+import static it.polimi.ingsw.am17.Utility.CardParser.buildingCard3MParser;
 
 public class BuildingDeck {
     private final List<BuildingCard> buildingCards;

@@ -24,21 +24,21 @@ public class HuntingEvent extends EventCard {
 
     @Override
     public void computeScore(List<Player> list){
-        for(int i=0; i<list.size(); i++){
-            long numHunter = list.get(i).getPlayerCards().stream()
-                    .filter(c -> c instanceof Hunter)
-                    .count();
-
-            if(numHunter!=0){
-                int gainFood = Math.toIntExact(numHunter);
-                int gainPp = Math.toIntExact(pointEarned * numHunter);
-
-                list.get(i).addFood(gainFood);
-                list.get(i).addPp(gainPp);
-
-            }
-
-
-        }
+//        for(int i=0; i<list.size(); i++){
+//            long numHunter = list.get(i).getPlayerCards().stream()
+//                    .filter(c -> c instanceof Hunter)
+//                    .count();
+//
+//            if(numHunter!=0){
+//                int gainFood = Math.toIntExact(numHunter);
+//                int gainPp = Math.toIntExact(pointEarned * numHunter);
+//
+//                list.get(i).addFood(gainFood);
+//                list.get(i).addPp(gainPp);
+//
+//            }
+//
+//
+//        }
     }
 }
