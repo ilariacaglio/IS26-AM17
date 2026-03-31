@@ -11,39 +11,52 @@ public class FoodEvent extends EventCard{
         return pointLost;
     }
 
-    public FoodEvent(int pointLost, boolean Final, int era,CardType cardType){
-        super(Final, era,cardType);
+    public FoodEvent(int pointLost, boolean Final, int era){
+        super(Final, era, CardType.FOOD_EVENT);
         this.pointLost = pointLost;
     }
 
-//    @Override
-//    public void computeScore(List<Player> list){
-//        for (Player player : list) {
-//            int size = player.getPlayerCards().size();
-//            int food = player.getFood();
-//            int foodPrice = size;
-//
-//            long numBinder = player.getPlayerCards().stream()
-//                    .filter(c -> c instanceof Binder)
-//                    .count();
-//
-//            if (numBinder != 0) {
-//                foodPrice = Math.toIntExact((foodPrice - (3 * numBinder)));
-//            }
-//
-//            // TODO: get buildings, check buildings
-//
-//            if (food < foodPrice) {
-//                int remaining = foodPrice - food;
-//
-//                int lostPp = pointLost * remaining;
-//
-//                player.addPp(lostPp * (-1));
-//                player.addFood(food * (-1));
-//            } else {
-//                player.addFood(foodPrice * (-1));
-//            }
-//
-//        }
-//    }
+    @Override
+    public void computeScore(List<Player> list){
+        for (Player player : list) {
+            int food = player.getFood();
+            //count number of Binder
+            long numBinder = player.getPlayerTribeCards().stream()
+                    .filter(c -> c.getCardType().equals(CardType.BINDER))
+                    .count();
+            //count foodDiscount given by BuildingCard
+            int foodDiscount =0;
+
+            List<CharacterCard> characterList = player.getPlayerTribeCards().stream()
+                    .map(c-> (CharacterCard)c)
+                    .toList();
+
+            for(BuildingCard c: player.getPlayerBuildingCards()){
+                foodDiscount= foodDiscount + c.FoodDiscount(characterList);
+            }
+            //count totalDiscount given by numBinder and foodDiscount
+            int totalDiscount = Math.toIntExact((3*numBinder) + foodDiscount);
+            //count totalCards, witch are all the player cards
+            int totalCards = player.getPlayerTribeCards().size();
+            //find foodPrice, witch is what the player has to pay
+            int foodPrice = totalCards - totalDiscount;
+            //if foodPrice<0, the player doesn't lose pp nor food
+            if(foodPrice<=0){
+                player.addPp(0);
+                player.addFood(0);
+            }//if food is not enough, player loses pp and all the food he has
+            else if ((food < foodPrice) && (foodPrice>0)) {
+                int remaining = foodPrice - food;
+
+                int lostPp = pointLost * remaining;
+
+                player.addPp(lostPp * (-1));
+                player.addFood(food * (-1));
+            } //if food is enough
+            else {
+                player.addFood(foodPrice * (-1));
+            }
+
+        }
+    }
 }
