@@ -1,0 +1,102 @@
+[
+  {
+    "era":1,
+    "minPlayers": 2,
+    "icon":"FLINT"
+  },
+  {
+    "era":3,
+    "minPlayers": 2,
+    "icon":"IDOL"
+  },
+  {
+    "era":3,
+    "minPlayers": 2,
+    "icon":"HOOK"
+  },
+  {
+    "era":3,
+    "minPlayers": 2,
+    "icon":"NECKLACE"
+  },
+  {
+    "era":3,
+    "minPlayers": 2,
+    "icon":"BREAD"
+  },
+  {
+    "era":3,
+    "minPlayers": 4,
+    "icon":"NECKLACE"
+  },
+  {
+    "era":3,
+    "minPlayers": 3,
+    "icon":"FLINT"
+  },
+  {
+    "era":3,
+    "minPlayers": 3,
+    "icon":"CANOE"
+  },
+  {
+    "era":2,
+    "minPlayers": 2,
+    "icon":"IDOL"
+  },
+  {
+    "era":2,
+    "minPlayers": 2,
+    "icon":"LEATHER"
+  },
+  {
+    "era":2,
+    "minPlayers": 2,
+    "icon":"FLUTE"
+  },
+  {
+    "era":2,
+    "minPlayers": 2,
+    "icon":"ROPE"
+  },
+  {
+    "era":2,
+    "minPlayers": 2,
+    "icon":"MORTAR"
+  },
+  {
+    "era":2,
+    "minPlayers": 4,
+    "icon":"HOOK"
+  },
+  {
+    "era": 1,
+    "minPlayers": 2,
+    "icon": "CANOE"
+  },
+  {
+    "era": 1,
+    "minPlayers": 2,
+    "icon": "BREAD"
+  },
+  {
+    "era": 1,
+    "minPlayers": 2,
+    "icon": "LEATHER"
+  },
+  {
+    "era": 1,
+    "minPlayers": 4,
+    "icon": "ROPE"
+  },
+  {
+    "era": 1,
+    "minPlayers": 4,
+    "icon": "MORTAR"
+  },
+  {
+    "era": 1,
+    "minPlayers": 4,
+    "icon": "FLUTE"
+  }
+]
