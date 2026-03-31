@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Deck {
     private List<TribesCard> tribesCards;
-    public GameCard Draw(){
+    public TribesCard Draw(){
         return null;
     }
 }

@@ -177,7 +177,7 @@ public class GameTest {
         //new lower building row contains old upper building row
         assertTrue(game.getLowerBuildingRow().getCards().containsAll(oldBuildingRow.getCards()));
         //check if the new upper building row has only cards with the correct era
-        for(GameCard card : game.getUpperBuildingRow().getCards())
+        for(BuildingCard card : game.getUpperBuildingRow().getCards())
             assertEquals(2, card.getEra());
     }
 
@@ -193,7 +193,7 @@ public class GameTest {
         //new lower building row equals to old upper building row
         assertEquals(game.getLowerBuildingRow(),oldBuildingRow);
         //check if the new upper building row has only cards with the correct era
-        for(GameCard card : game.getUpperBuildingRow().getCards())
+        for(BuildingCard card : game.getUpperBuildingRow().getCards())
             assertEquals(3, card.getEra());
     }
 
