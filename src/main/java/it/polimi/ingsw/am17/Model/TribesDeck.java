@@ -5,6 +5,9 @@ import java.util.List;
 
 public class TribesDeck {
     private List<TribesCard> tribesCards;
+    public TribesDeck() {
+
+    }
     public TribesCard Draw(){
         return null;
     }

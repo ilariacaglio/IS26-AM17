@@ -16,7 +16,7 @@ public class Game extends Subject {
     private final List<Character> offeringCardLetters;
     private TribeGameRow upperRow;
     private TribeGameRow lowerRow;
-    private final Deck deck;
+    private final TribesDeck deck;
 
     private BuildingGameRow upperBuildingRow;
     private BuildingGameRow lowerBuildingRow;
@@ -37,7 +37,7 @@ public class Game extends Subject {
         lowerRow = new TribeGameRow();
         upperRow = new TribeGameRow();
         players = new ArrayList<Player>(numPlayers);
-        deck = new Deck();
+        deck = new TribesDeck();
         buildingDeckEra1 = new BuildingDeck(numPlayers,1);
         buildingDeckEra2 = new BuildingDeck(numPlayers,2);
         buildingDeckEra3 = new BuildingDeck(numPlayers,3);
@@ -284,7 +284,7 @@ public class Game extends Subject {
         this.currentEra = currentEra;
     }
     /// only to use for testing
-    public Deck getDeck(){
+    public TribesDeck getDeck(){
         return deck;
     }
     /// only to use for testing
