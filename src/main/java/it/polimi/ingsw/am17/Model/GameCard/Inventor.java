@@ -1,14 +1,14 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
 public class Inventor extends CharacterCard {
-    private String icon;
+    private final InventorIconType icon;
 
-    public String getIcon() {
+    public InventorIconType getIcon() {
         return icon;
     }
 
-    public  Inventor(int era, int minPlayers, String icon,CardType cardType){
-        super(era, minPlayers, cardType);
+    public  Inventor(int era, int minPlayers, InventorIconType icon) {
+        super(era, minPlayers, CardType.INVENTOR);
         this.icon = icon;
     }
 }
