@@ -1,0 +1,26 @@
+[
+  {
+    "Final": false,
+    "era": 3,
+    "pointsLow": 2,
+    "pointsMax": 3,
+    "numLow": 2,
+    "numMax": 3
+  },
+  {
+    "Final": false,
+    "era": 2,
+    "pointsLow": 2,
+    "pointsMax": 2,
+    "numLow": 1,
+    "numMax": 2
+  },
+  {
+    "Final": false,
+    "era": 1,
+    "pointsLow": 2,
+    "pointsMax": 1,
+    "numLow": 0,
+    "numMax": 1
+  }
+]
