@@ -74,7 +74,7 @@ public class Game extends Subject {
 
 
     public void addPlayer(Player p) {
-        if(numPlayers > 0 && players.size() < numPlayers){
+        if(numPlayers > 1 && players.size() < numPlayers){
             players.add(p);
         }
         else {
