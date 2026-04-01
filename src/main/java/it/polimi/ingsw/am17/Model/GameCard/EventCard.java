@@ -14,4 +14,5 @@ public class EventCard extends TribesCard{
 
     public void computeScore(List<Player> list){}
 
+    public boolean isFinal() {return Final;}
 }

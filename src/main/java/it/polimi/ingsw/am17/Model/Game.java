@@ -4,7 +4,7 @@ import it.polimi.ingsw.am17.Model.GameCard.*;
 
 import java.util.*;
 
-import static it.polimi.ingsw.am17.Utility.OfferingCardParser.loadOfferingCards;
+import static it.polimi.ingsw.am17.Utility.CardParser.loadOfferingCards;
 
 public class Game extends Subject {
     private final int id;
@@ -37,7 +37,7 @@ public class Game extends Subject {
         lowerRow = new TribeGameRow();
         upperRow = new TribeGameRow();
         players = new ArrayList<Player>(numPlayers);
-        deck = new TribesDeck();
+        deck = new TribesDeck(numPlayers);
         buildingDeckEra1 = new BuildingDeck(numPlayers,1);
         buildingDeckEra2 = new BuildingDeck(numPlayers,2);
         buildingDeckEra3 = new BuildingDeck(numPlayers,3);
@@ -74,7 +74,7 @@ public class Game extends Subject {
 
 
     public void addPlayer(Player p) {
-        if(numPlayers > 0 && players.size() < numPlayers){
+        if(numPlayers > 1 && players.size() < numPlayers){
             players.add(p);
         }
         else {
