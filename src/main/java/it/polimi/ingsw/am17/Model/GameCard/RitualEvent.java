@@ -29,39 +29,80 @@ public class RitualEvent extends EventCard {
     }
     @Override
     public void computeScore(List<Player> list){
-//        int[] stars = new int[list.size()];
-//
-//        for(int i = 0; i < list.size(); i++){
-//            stars[i] = list.get(i).getPlayerCards().stream()
-//                    .filter(c -> c instanceof Shaman)
-//                    .mapToInt(c -> ((Shaman)c).getStars())
-//                    .sum();
-//        }
-//
-//        int max = stars[0];
-//        int min = stars[0];
-//
-//        for(int i = 1; i < stars.length; i++){
-//            if(stars[i] > max){ max = stars[i]; }
-//            if(stars[i] < min){ min = stars[i]; }
-//        }
-//
-//        boolean allEqual = (max == min);
-//
-//        for(int i = 0; i < list.size(); i++){
-//            if(allEqual){
-//                list.get(i).addPp(pointMax);
-//                list.get(i).addPp(pointMin*(-1));
-//            }
-//            else{
-//                if(stars[i] == max){
-//                    list.get(i).addPp(pointMax);
-//                }
-//                if(stars[i] == min){
-//                    list.get(i).addPp(pointMin*(-1));
-//                }
-//            }
-//        }
-//
+        //array for counting stars of each player
+        int[] stars = new int[list.size()];
+        //counting stars icon for each player
+        for(int i=0; i<list.size(); i++){
+
+            int starBonus=0;
+
+            List<CharacterCard> characterList = list.get(i).getPlayerTribeCards().stream()
+                    .map(c-> (CharacterCard)c)
+                    .toList();
+
+            //additional stars given by BuildingType9
+            for(BuildingCard c: list.get(i).getPlayerBuildingCards()){
+                starBonus = starBonus + c.StarBonus(characterList);//BuildingType9
+            }
+            //count number of star icons
+            stars[i] = list.get(i).getPlayerTribeCards().stream()
+                    .filter(c -> c.getCardType().equals(CardType.SHAMAN))
+                    .mapToInt(c -> ((Shaman)c).getStars())
+                    .sum();
+            //add starBonus given by BuildingType9
+            stars[i] = stars[i] + starBonus;
+        }
+
+        int max = stars[0];
+        int min = stars[0];
+        //find players who have max and min number of stars
+        for(int i = 1; i < stars.length; i++){
+            if(stars[i] > max){ max = stars[i]; }
+            if(stars[i] < min){ min = stars[i]; }
+        }
+        //if max==min, it means that all players have the same stars number
+        boolean allEqual = (max == min);
+
+        //add Pp based on the number of the stars for each player
+        for(int i = 0; i < list.size(); i++){
+
+            boolean doublePoints=false;
+            boolean shield = false;
+
+            List<CharacterCard> characterList = list.get(i).getPlayerTribeCards().stream()
+                    .map(c-> (CharacterCard)c)
+                    .toList();
+            //check if buildingCards give advantages
+            for(BuildingCard c: list.get(i).getPlayerBuildingCards()){
+                doublePoints = c.isDoubleRitualEventPoints();//BuildingType8
+                shield = c.isShieldFromRitualEvent();//BuildingType12
+
+            }
+            //give or take Pp
+            if(allEqual){//give and then take Pp for each player
+                list.get(i).addPp(pointMax);
+                list.get(i).addPp(pointMin*(-1));
+                if(doublePoints){//if player has BuildingType8
+                    list.get(i).addPp(pointMax);
+                }
+            }
+            else{
+                if(stars[i] == max){
+                    list.get(i).addPp(pointMax);
+                    if(doublePoints){//if player has BuildingType8
+                        list.get(i).addPp(pointMax);
+                    }
+                }
+                if(stars[i] == min){
+                    if(shield){//protected from losing Pp by BuildingType12
+                        list.get(i).addPp(0);
+                    }
+                    else {
+                        list.get(i).addPp(pointMin * (-1));
+                    }
+                }
+            }
+        }
+
     }
 }
