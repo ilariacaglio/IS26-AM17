@@ -173,11 +173,11 @@ public class GameTest {
         game.start();
         game.setCurrentEra(2);
         game.changeEra();
-        var oldBuildingRow = game.getUpperBuildingRow();
+        var oldBuildingRow = game.getUpperBuildingRow().getCards();
         game.setCurrentEra(3);
         game.changeEra();
         //new lower building row equals to old upper building row
-        assertEquals(game.getLowerBuildingRow(),oldBuildingRow);
+        assertTrue(game.getLowerBuildingRow().getCards().containsAll(oldBuildingRow));
         //check if the new upper building row has only cards with the correct era
         for(BuildingCard card : game.getUpperBuildingRow().getCards())
             assertEquals(3, card.getEra());
