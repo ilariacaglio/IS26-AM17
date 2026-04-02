@@ -1,10 +1,12 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +20,34 @@ class BuildingType4Test {
     void setup()
     {
         building = new BuildingType4();
+    }
+
+    @Test
+    /**
+     * Run test of FinalPoints with different list of card generated randomly
+     * and check the return value is correct
+     */
+    void FinalPointTest()
+    {
+        for (int i = 0; i < 5; i++) {
+            int numHunter = r.nextInt(5);
+            int numBuilder = r.nextInt(5);
+            int numArtist = r.nextInt(5);
+            int numInv = r.nextInt(5);
+            int numSham = r.nextInt(5);
+            int numBind = r.nextInt(5);
+            List<CharacterCard> cc = createCharacterCardList(numHunter, numArtist, numBuilder, numInv, numSham, numBind);
+
+            int lowest = IntStream.of(numHunter, numBuilder, numArtist, numInv, numSham, numBind)
+                    .min()
+                    .getAsInt();
+
+            int fp = building.FinalPoints(cc);
+
+            assertEquals(lowest*6, fp);
+        }
+
+
     }
 
     /**
