@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.CardType;
 import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
 import org.junit.jupiter.api.AfterEach;
@@ -68,7 +69,8 @@ class PlayerTest {
         Game game = new Game(3);
         game.getUpperRow().addCard(tribeCard1);
         game.getUpperRow().addCard(tribeCard2);
-        player.playTurn(tribeCards, null, game);
+        List<BuildingCard> buildingCards = new ArrayList<>();
+        player.playTurn(tribeCards, buildingCards, game);
     }
 
     @Test
