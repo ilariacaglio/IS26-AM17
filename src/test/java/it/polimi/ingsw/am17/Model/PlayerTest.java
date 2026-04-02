@@ -82,15 +82,12 @@ class PlayerTest {
     }
 
     @Test
-    void buyBuilding() {
-    }
-
-    @Test
-    void getPlayerTribeCards() {
-    }
-
-    @Test
-    void getPlayerBuildingCards() {
+    void simpleBuildingPurchase() {
+        player.addFood(3);
+        BuildingCard buildingCard = new BuildingCard(1, 3, 0);
+        player.buyBuilding(buildingCard);
+        assertEquals(0, player.getFood());
+        assertEquals(buildingCard, player.getPlayerBuildingCards());
     }
 
     @Test
