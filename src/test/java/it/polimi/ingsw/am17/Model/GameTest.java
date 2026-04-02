@@ -167,7 +167,6 @@ public class GameTest {
             assertEquals(2, card.getEra());
     }
 
-    //failed
     @Test
     void testChangeEra_currentEraIs3(){
         game.start();
@@ -183,14 +182,18 @@ public class GameTest {
             assertEquals(3, card.getEra());
     }
 
-    //failed
     @Test
     void testRemoveBuildingCardFromRow(){
+        game.start();
         BuildingCard card;
         // draw a card from the upper building row
         card = (BuildingCard) game.getUpperBuildingRow().getCards().getFirst();
         game.removeBuildingCardFromRow(card);
         assertFalse(game.getUpperBuildingRow().getCards().contains(card));
+        //play turns to insert elements in lower building row
+        game.endTurn();
+        game.endTurn();
+        game.endTurn();
         // draw a card from the lower building row
         card = (BuildingCard) game.getLowerBuildingRow().getCards().getFirst();
         game.removeBuildingCardFromRow(card);
@@ -201,9 +204,10 @@ public class GameTest {
         assertThrows(IllegalStateException.class, () -> game.removeBuildingCardFromRow(finalCard));
     }
 
-    //failed
+
     @Test
     void testRemoveTribeCardFromRow(){
+        game.start();
         // create game card
         TribesCard card;
         // draw a card from the upper row
