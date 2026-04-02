@@ -2,10 +2,12 @@ package it.polimi.ingsw.am17.Model.GameCard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BuildingCardTest {
+    Random r = new Random();
     /**
      * Generate and return a list of CharacterCard with number of cards as specified
      * @param hunter number of hunter you want to have in the list
@@ -27,7 +29,7 @@ class BuildingCardTest {
             cc.add(new CharacterCard(1, 1, CardType.ARTIST));
         }
         for (int i = 0; i < build; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.BUILDER));
+            cc.add(new Builder(1, 1, r.nextInt(5), r.nextInt(5)));
         }
         for (int i = 0; i < inv; i++) {
             cc.add(new CharacterCard(1, 1, CardType.INVENTOR));
