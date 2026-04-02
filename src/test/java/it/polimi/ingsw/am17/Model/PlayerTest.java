@@ -92,5 +92,11 @@ class PlayerTest {
 
     @Test
     void calculateFinalPoints() {
+        Game game = new Game(3);
+        game.addPlayer(player);
+        game.start();
+        for (TribesCard tribeCard : game.getUpperRow().getCards()) {
+            System.out.println(tribeCard.getCardType());
+        }
     }
 }
