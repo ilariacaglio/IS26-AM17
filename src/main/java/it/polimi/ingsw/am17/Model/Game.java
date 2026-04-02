@@ -25,8 +25,8 @@ public class Game extends Subject {
     private final BuildingDeck buildingDeckEra2;
     private final BuildingDeck buildingDeckEra3;
 
-    private int currentPlayerIndex = 0;
-    private int currentTurnLetterIndex = 0;
+    private int currentPlayerIndex;
+    private int currentTurnLetterIndex;
 
     public Game(int numPlayers) {
         Random r = new Random();
@@ -46,13 +46,13 @@ public class Game extends Subject {
         for(OfferingCard c: offeringCards){
             offeringCardLetters.add(c.getOrderLetter());
         }
+        currentPlayerIndex= 0;
+        currentTurnLetterIndex = 0;
     }
-
 
     public int getNumPlayers() {
         return  numPlayers;
     }
-
 
     public List<Player> getPlayers() {
         return players;
@@ -72,7 +72,6 @@ public class Game extends Subject {
         return players.get(currentPlayerIndex++);
     }
 
-
     public void addPlayer(Player p) {
         if(numPlayers > 1 && players.size() < numPlayers){
             players.add(p);
@@ -82,12 +81,10 @@ public class Game extends Subject {
         }
     }
 
-
     public boolean isStarted() {
         return started;
     }
 
-    //non possibile provare perchè mancano building cards
     public void start() {
         this.started = true;
         this.currentEra = 1;
@@ -104,7 +101,6 @@ public class Game extends Subject {
             upperBuildingRow.addCard(card);
         }
     }
-
 
     public void end() {
         for(TribesCard card : upperRow.getCards()) {
@@ -138,7 +134,6 @@ public class Game extends Subject {
         throw new IllegalStateException("There is no next player");
     }
 
-    //non possibile provare perchè deck è null
     public void endTurn(){
         lowerRow = new TribeGameRow();
         for(TribesCard card : upperRow.getCards()) {
@@ -164,7 +159,6 @@ public class Game extends Subject {
         currentPlayerIndex = 0;
     }
 
-    //non possibile provare perchè buildingdeck null
     public void changeEra(){
         if(currentEra == 3) {
             //remove all card from lowerBuildingRow
@@ -209,7 +203,6 @@ public class Game extends Subject {
         return id;
     }
 
-    //non possibile provare perchè liste vuote
     public void removeBuildingCardFromRow(BuildingCard card){
         //check if a row contains the card, if so removes it
         if (upperBuildingRow.getCards().contains(card))
@@ -220,7 +213,6 @@ public class Game extends Subject {
             throw new IllegalStateException("No card row contains this card");
     }
 
-    //non possibile provare perchè liste vuote
     public void removeTribeCardFromRow(TribesCard card) {
         //check if a row contains the card, if so removes it
         if (upperRow.getCards().contains(card))
