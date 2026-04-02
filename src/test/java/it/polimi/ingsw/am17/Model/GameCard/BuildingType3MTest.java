@@ -9,7 +9,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BuildingType3MTest {
+class BuildingType3MTest extends BuildingCardTest {
     BuildingType3M building;
     Random r = new Random();
     int pointsFromEachCharacter;
@@ -36,8 +36,10 @@ class BuildingType3MTest {
             int numHunter = r.nextInt(5);
             int numBuilder = r.nextInt(5);
             int numArtist = r.nextInt(5);
-            List<CharacterCard> cc = createCharacterCard(numHunter, numArtist, numBuilder);
-
+            int numBinder = r.nextInt(5);
+            int numShaman = r.nextInt(5);
+            int numInventor = r.nextInt(5);
+            List<CharacterCard> cc = createCharacterCardList(numHunter, numArtist, numBuilder, numInventor, numShaman, numBinder);
             int fp = building.FinalPoints(cc);
 
             assertEquals(numHunter*pointsFromEachCharacter, fp);
