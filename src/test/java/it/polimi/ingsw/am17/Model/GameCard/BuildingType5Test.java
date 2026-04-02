@@ -23,10 +23,10 @@ class BuildingType5Test extends BuildingCardTest{
     }
     @Test
     /**
-     * Run test of FinalPoints with different list of card generated randomly
+     * Run test of FoodBonus with different list of card generated randomly
      * and check the return value is correct
      */
-    void FinalPointTest()
+    void FoodBonusTest()
     {
         for (int i = 0; i < 5; i++) {
             int numHunter = r.nextInt(5);

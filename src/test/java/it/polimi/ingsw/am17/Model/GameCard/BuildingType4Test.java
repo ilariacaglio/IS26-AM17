@@ -15,7 +15,7 @@ public class BuildingType4Test extends BuildingCardTest {
     Random r = new Random();
     @BeforeEach
     /**
-     * Generate a BuildingType3M with random value and stores the value of pointsFromEachCharacter
+     * Generate a BuildingType4 with random value and stores the value of pointsFromEachCharacter
      */
     void setup()
     {
