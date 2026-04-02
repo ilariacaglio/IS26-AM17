@@ -32,7 +32,7 @@ class BuildingCardTest {
             cc.add(new Builder(1, 1, r.nextInt(5), r.nextInt(5)));
         }
         for (int i = 0; i < inv; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.INVENTOR));
+            cc.add(new Inventor(1, 1, InventorIconType.values()[r.nextInt(10)]));
         }
         for (int i = 0; i < sham; i++) {
             cc.add(new CharacterCard(1, 1, CardType.SHAMAN));
