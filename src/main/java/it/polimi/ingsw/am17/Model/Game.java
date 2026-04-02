@@ -55,7 +55,7 @@ public class Game extends Subject {
     }
 
     public List<Player> getPlayers() {
-        return players;
+        return Collections.unmodifiableList(players);
     }
 
     public Player getNextPlayer() {
