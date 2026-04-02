@@ -24,21 +24,36 @@ public class HuntingEvent extends EventCard {
 
     @Override
     public void computeScore(List<Player> list){
-//        for(int i=0; i<list.size(); i++){
-//            long numHunter = list.get(i).getPlayerCards().stream()
-//                    .filter(c -> c instanceof Hunter)
-//                    .count();
-//
-//            if(numHunter!=0){
-//                int gainFood = Math.toIntExact(numHunter);
-//                int gainPp = Math.toIntExact(pointEarned * numHunter);
-//
-//                list.get(i).addFood(gainFood);
-//                list.get(i).addPp(gainPp);
-//
-//            }
-//
-//
-//        }
+        for(Player player: list){
+           //count number of hunter
+           long numHunter = player.getPlayerTribeCards().stream()
+                   .filter(c -> c.getCardType().equals(CardType.HUNTER))
+                    .count();
+           //if player has hunter cards, they get food and PP
+           if(numHunter!=0){
+                int gainFood = Math.toIntExact(numHunter);
+                int gainPp = Math.toIntExact(pointEarned * numHunter);
+
+                player.addFood(gainFood);
+                player.addPp(gainPp);
+
+           }
+
+           int additionalFood=0;
+           int additionalPp=0;
+
+           List<CharacterCard> characterList = player.getPlayerTribeCards().stream()
+                    .map(c-> (CharacterCard)c)
+                    .toList();
+           //find additional food and PP given by buildingCard
+           for(BuildingCard c: player.getPlayerBuildingCards()){
+                additionalFood = additionalFood + c.FoodBonus(characterList);
+                additionalPp = additionalPp + c.PointsBonus(characterList);
+           }
+           //add additionalFood and additionalPp
+           player.addFood(additionalFood);
+           player.addPp(additionalPp);
+
+        }
     }
 }
