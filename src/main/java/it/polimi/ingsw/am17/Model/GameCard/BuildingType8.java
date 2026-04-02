@@ -12,6 +12,8 @@ public class BuildingType8 extends BuildingCard {
     public BuildingType8() {
         super(era, foodCost, bonusPoints);
     }
-    public boolean DoubleRitualEventPoints() { return true; } // Tribes effect
+
+    @Override
+    public boolean isDoubleRitualEventPoints() { return true; } // Tribes effect
 
 }

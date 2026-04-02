@@ -45,18 +45,32 @@ public class PaintingEvent extends EventCard {
 
     @Override
     public void computeScore(List<Player> list){
-//        for (int i = 0; i<list.size(); i++){
-//            long numArtist = list.get(i).getPlayerCards().stream()
-//                    .filter(c-> c instanceof Artist)
-//                    .count();
-//
-//            if(numArtist>=numMax){
-//                int pointsGain = Math.toIntExact(numArtist * pointsMax);
-//                list.get(i).addPp(pointsGain);
-//            }
-//            else {
-//                list.get(i).addPp(pointsLow*(-1));
-//            }
-//        }
+        for (Player player : list){
+            //count number of artists
+            long numArtist = player.getPlayerTribeCards().stream()
+                    .filter(c-> c.getCardType().equals(CardType.ARTIST))
+                    .count();
+            //assign PP based on number of artists
+            if(numArtist>=numMax){
+                int pointsGain = Math.toIntExact(numArtist * pointsMax);
+                player.addPp(pointsGain);
+            }
+            else {
+                player.addPp(pointsLow*(-1));
+            }
+
+            int additionalFood=0;
+
+            List<CharacterCard> characterList = player.getPlayerTribeCards().stream()
+                    .map(c-> (CharacterCard)c)
+                    .toList();
+            //find additional food given by buildingCard
+            for(BuildingCard c: player.getPlayerBuildingCards()){
+                additionalFood = additionalFood + c.FoodBonus(characterList);
+            }
+            //add additionalFood
+            player.addFood(additionalFood);
+        }
+        }
     }
-}
+
