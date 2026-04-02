@@ -20,15 +20,17 @@ public class BuildingType4 extends BuildingCard {
 
     @Override
     public int FinalPoints(List<CharacterCard> playerCharacterCards) {
+        // Group by character type and count occurrences
+        Map<CardType, Long> typeCounts = playerCharacterCards.stream()
+                .collect(Collectors.groupingBy(CharacterCard::getCardType, Collectors.counting()));
 
-        // Count how many cards of each character type with some stream magic
-        Map<CardType, Long> typeCount = playerCharacterCards.stream()
-                .collect(Collectors.groupingBy(
-                        CharacterCard::getCardType,
-                        Collectors.counting()
-                ));
+        // If not all 6 character types are present, return 0
+        if (typeCounts.size() < 6) {
+            return 0;
+        }
 
-        // Return the minimum of the types (so you're sure you have all the other characters, it's the same as the set of 6 characters) times the points
-        return 6 * Collections.min(typeCount.values()).intValue();
+        // Return 6 points for each complete set of 6 different character types
+        // The number of complete sets is determined by the character type with the fewest cards
+        return bonusPoints * Collections.min(typeCounts.values()).intValue();
     }
 }
