@@ -29,7 +29,7 @@ class BuildingType4Test {
      */
     void FinalPointTest()
     {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             int numHunter = r.nextInt(5);
             int numBuilder = r.nextInt(5);
             int numArtist = r.nextInt(5);
