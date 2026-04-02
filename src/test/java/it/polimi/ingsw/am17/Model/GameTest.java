@@ -127,15 +127,15 @@ public class GameTest {
         assertThrows(IllegalStateException.class, () -> game.getNextTurn());
     }
 
-    //failed
     @Test
     void testEndTurn(){
         game.start();
-        var oldUpperRow = game.getUpperRow();
+        var oldUpperRow = game.getUpperRow().getCards();
         int oldEra = game.getCurrentEra();
         game.endTurn();
         //new lower row equals to old upper row
-        assertEquals(game.getLowerRow(),oldUpperRow);
+        assertTrue(game.getLowerRow().getCards().containsAll(oldUpperRow) &&
+                oldUpperRow.containsAll(game.getLowerRow().getCards()));
         // check size new upper row
         assertEquals(game.getUpperRowSize(), game.getNumPlayers()+4);
         //check update era
