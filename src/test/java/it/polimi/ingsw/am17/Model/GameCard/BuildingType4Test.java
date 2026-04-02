@@ -60,7 +60,7 @@ class BuildingType4Test {
      * @param bind number of binder you want to have in the list
      * @return List<CharacterCard>
      */
-    private List<CharacterCard> createCharacterCardList(int hunter, int art, int build, int inv, int sham, int bind)
+    public static List<CharacterCard> createCharacterCardList(int hunter, int art, int build, int inv, int sham, int bind)
     {
         List<CharacterCard> cc = new ArrayList<>();
 
@@ -76,10 +76,10 @@ class BuildingType4Test {
         for (int i = 0; i < inv; i++) {
             cc.add(new CharacterCard(1, 1, CardType.INVENTOR));
         }
-        for (int i = 0; i < build; i++) {
+        for (int i = 0; i < sham; i++) {
             cc.add(new CharacterCard(1, 1, CardType.SHAMAN));
         }
-        for (int i = 0; i < build; i++) {
+        for (int i = 0; i < bind; i++) {
             cc.add(new CharacterCard(1, 1, CardType.BINDER));
         }
 
