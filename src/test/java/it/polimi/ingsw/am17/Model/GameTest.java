@@ -2,7 +2,6 @@ package it.polimi.ingsw.am17.Model;
 
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.CardType;
-import it.polimi.ingsw.am17.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,7 +78,7 @@ public class GameTest {
         //check size upper building row
         assertEquals(2,game.getUpperBuildingRowSize());
         //check if decks are not null
-        assertNotNull(game.getDeck());
+        assertNotNull(game.getTribesDeck());
         assertNotNull(game.getBuildingDeckEra1());
         assertNotNull(game.getBuildingDeckEra2());
         assertNotNull(game.getBuildingDeckEra3());
@@ -101,7 +100,7 @@ public class GameTest {
         //check size upper building row
         assertEquals(1,game.getUpperBuildingRowSize());
         //check if decks are not null
-        assertNotNull(game.getDeck());
+        assertNotNull(game.getTribesDeck());
         assertNotNull(game.getBuildingDeckEra1());
         assertNotNull(game.getBuildingDeckEra2());
         assertNotNull(game.getBuildingDeckEra3());
