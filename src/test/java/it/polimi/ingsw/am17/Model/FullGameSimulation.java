@@ -1,13 +1,11 @@
 package it.polimi.ingsw.am17.Model;
 
-import it.polimi.ingsw.am17.Model.GameCard.CharacterCard;
 import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class FullGameSimulation {
     Game game;
