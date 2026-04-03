@@ -11,21 +11,25 @@ public class FullGameSimulationTest {
     Game game;
     @Test
     void fullGameSimulation() {
+
+        // Game information for testing
         Player currentPlayer;
         int roundNumber = 1;
         int maxRoundNumber = 10;
         int numPlayers = 4;
+
+        // Setup and start game
         game = new Game(numPlayers);
-        //add players to game
         game.addPlayer(new Player("player1",Color.BLACK));
         game.addPlayer(new Player("player2",Color.RED));
         game.addPlayer(new Player("player3",Color.YELLOW));
         game.addPlayer(new Player("player4",Color.WHITE));
-        //start game
         game.start();
-        //turn one
-        //the players pick an offering card basing on the players list order
+
+
+        // players pick an offering card (in the list order)
         for(int i = 0; i < numPlayers; i++) {
+            // simply pick the i-th offeringCard
             game.getPlayers().get(i).setOfferingCard(game.getOfferingCards().get(i));
         }
         while(roundNumber <= maxRoundNumber) {
