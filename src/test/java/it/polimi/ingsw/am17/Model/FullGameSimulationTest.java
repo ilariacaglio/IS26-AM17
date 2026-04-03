@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class FullGameSimulationTest {
-    Game game;
     @Test
     void fullGameSimulation() {
 
@@ -18,13 +18,24 @@ public class FullGameSimulationTest {
         int maxRoundNumber = 10;
         int numPlayers = 4;
 
-        // Setup and start game
-        game = new Game(numPlayers);
+        // Set up and start the game
+        Game game = new Game(numPlayers);
         game.addPlayer(new Player("player1",Color.BLACK));
         game.addPlayer(new Player("player2",Color.RED));
         game.addPlayer(new Player("player3",Color.YELLOW));
         game.addPlayer(new Player("player4",Color.WHITE));
         game.start();
+
+        // ROUND 1
+
+        // Offering card selection
+        // TODO: double selection does not raise error!!
+        for (Player player : game.getPlayers()) {
+            Random rand = new Random();
+            OfferingCard offeringCard = game.getOfferingCards().get(rand.nextInt(game.getOfferingCards().size()));
+            System.out.println(player.getNickname() + " chooses offeringCard " + offeringCard.getOrderLetter());
+            player.setOfferingCard(game.getOfferingCards().get(0));
+        }
 
 
         // players pick an offering card (in the list order)
