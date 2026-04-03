@@ -259,6 +259,13 @@ public class Game extends Subject {
 
     }
 
+    /**
+     * Emulates a player action (picking cards).
+     * TODO: FoodBonusFromTurnOrder
+     * @param player
+     * @param characterCards TODO: check null
+     * @param buildingCards TODO: check null
+     */
     public void playerAction(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
@@ -289,6 +296,7 @@ public class Game extends Subject {
         upperRow.removeAll(characterCards); // if not present, no worries
         lowerRow.removeAll(characterCards); // if not present, no worries
 
+        currentOffering.setPlayer(null);
     }
 
     @Override

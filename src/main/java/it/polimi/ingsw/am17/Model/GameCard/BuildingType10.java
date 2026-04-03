@@ -17,7 +17,7 @@ public class BuildingType10 extends BuildingCard {
     }
 
     @Override
-    public int FoodBonus(List<CharacterCard> characterCards, CharacterCard newCard) {
+    public int FoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
 
         // if new card is inventor
         if (newCard.getCardType() == CardType.INVENTOR) {

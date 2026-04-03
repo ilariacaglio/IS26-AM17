@@ -89,6 +89,12 @@ public class Player{
     }
 
 
+    /**
+     * add cards to player (from playerAction)
+     * TODO: add FoodBonusFromCardAcquisition
+     * @param characterCards
+     * @param buildingCards
+     */
     public void addCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
 
         for(CharacterCard card : characterCards){
@@ -110,7 +116,6 @@ public class Player{
             }
             addBuilding(card);
         }
-
     }
 
     public int calculateBuildingCost(BuildingCard card) {
