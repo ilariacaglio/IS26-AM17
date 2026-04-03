@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FullGameSimulation {
+public class FullGameSimulationTest {
     Game game;
     @Test
     void fullGameSimulation() {
