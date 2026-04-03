@@ -66,7 +66,7 @@ public class PaintingEvent extends EventCard {
                     .toList();
             //find additional food given by buildingCard
             for(BuildingCard c: player.getPlayerBuildingCards()){
-                additionalFood = additionalFood + c.FoodBonus(characterList);
+                additionalFood = additionalFood + c.FoodBonusFromArtists(characterList);
             }
             //add additionalFood
             player.addFood(additionalFood);
