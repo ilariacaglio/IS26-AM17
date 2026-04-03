@@ -50,6 +50,11 @@ public class TribesDeck {
         return tribeCards.get(currIndex);
     }
 
+    /// only to use for testing
+    public List<TribesCard> getTribeCards() {
+        return tribeCards;
+    }
+
     private void ShuffleEra1(){
         int index = IntStream.range(0, tribeCards.size())
                 .map(i -> tribeCards.size() - 1 - i)
