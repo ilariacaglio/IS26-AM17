@@ -88,4 +88,45 @@ public class Player{
         buildingCards.add(card);
     }
 
+
+    public void addCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+
+        for(CharacterCard card : characterCards){
+
+            // get bonus food if hunter with icon
+            if (card.getCardType().equals(CardType.HUNTER) && ((Hunter)card).isWithIcon()) {
+                addFood(getNumberOfHunters());
+            }
+
+            addCharacter(card);
+        }
+
+        for (BuildingCard card : buildingCards){
+            int cost = calculateBuildingCost(card);
+            try {
+                addFood(-cost);
+            } catch (IllegalStateException e) {
+                throw new IllegalStateException("Not enough food to buy building cards");
+            }
+            addBuilding(card);
+        }
+
+    }
+
+    public int calculateBuildingCost(BuildingCard card) {
+        //sum of the food discount of every builder card
+        int foodDiscount = characterCards.stream()
+                .filter(c->c.getCardType().equals(CardType.BUILDER))
+                .map(c-> ((Builder)c).getFoodReduction())
+                .reduce(0, Integer::sum);
+
+        //return the price of the building card
+        return card.getFoodCost() - foodDiscount;
+    }
+
+    private int getNumberOfHunters() {
+        return (int) characterCards.stream()
+                .filter(c->c.getCardType().equals(CardType.HUNTER))
+                .count();
+    }
 }

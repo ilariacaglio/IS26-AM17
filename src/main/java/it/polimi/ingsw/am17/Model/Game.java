@@ -44,22 +44,27 @@ public class Game extends Subject {
         return currentEra != 0;
     }
 
+
+    /**
+     * @return leftmost offering card with player in the offering track.
+     */
+    private OfferingCard getNextOccupiedOfferingCard() {
+        return offeringCards.stream()
+                .min(Comparator.comparing(OfferingCard::getOrderLetter))
+                .filter(card -> card.getPlayer() != null)
+                .orElseThrow(() -> new IllegalStateException("No offering cards with players available"));
+    }
+
     /**
      * @return leftmost player in the offering track.
      */
     private Player getNextPlayer() {
-        OfferingCard nextPlayerOfferingCard = offeringCards.stream()
-                .min(Comparator.comparing(OfferingCard::getOrderLetter))
-                .filter(card -> card.getPlayer() != null)
-                .orElseThrow(() -> new IllegalStateException("No offering cards with players available"));
-
-        Player nextPlayer = nextPlayerOfferingCard.getPlayer();
-        nextPlayerOfferingCard.setPlayer(null);
-        return nextPlayer;
+        return getNextOccupiedOfferingCard().getPlayer();
     }
 
     /**
      * Adds a player to the game.
+     *
      * @param p player to add to the game
      */
     public void addPlayer(Player p) {
@@ -96,7 +101,7 @@ public class Game extends Subject {
                 throw new IllegalStateException("Invalid era");
         }
 
-        notifyObserver(GameState gameState); // TODO
+        // TODO: notifyObserver(GameState gameState);
     }
 
     private void moveDownBuildingCards() {
@@ -143,8 +148,6 @@ public class Game extends Subject {
         currentEra = 2;
         moveDownBuildingCards();
         upperBuildingRow = buildingDeck.drawEra2();
-
-
     }
 
     /**
@@ -176,10 +179,10 @@ public class Game extends Subject {
 
         // 2. 3. 4. Reorganize cards.
         lowerRow = upperRow;
-        for (int i = 0; i < numPlayers+4; i++) {
+        for (int i = 0; i < numPlayers + 4; i++) {
             try {
                 TribesCard c = tribesDeck.Draw();
-                if(c.getEra() != currentEra) nextEra();
+                if (c.getEra() != currentEra) nextEra();
                 upperRow.add(c);
             }
             // If the deck is empty, end the game. N.B. This is how we decided to handle game ending.
@@ -190,7 +193,7 @@ public class Game extends Subject {
             }
         }
 
-        notifyObserver(GameState gameState); // TODO
+        // TODO: notifyObserver(GameState gameState);
     }
 
     /**
@@ -218,7 +221,74 @@ public class Game extends Subject {
             player.calculateFinalPoints();
         }
 
-        notifyObserver(GameState gameState); // TODO
+        // TODO: notifyObserver(GameState gameState);
+    }
+
+    private void validateCardChoice(int numUpper, int numLower, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        List<CharacterCard> upperRowCharacterCards = upperRow.stream()
+                .filter(card -> card.getCardType().isCharacter())
+                .map(CharacterCard.class::cast)
+                .toList();
+        List<CharacterCard> lowerRowCharacterCards = upperRow.stream()
+                .filter(card -> card.getCardType().isCharacter())
+                .map(CharacterCard.class::cast)
+                .toList();
+
+
+        for (CharacterCard card : characterCards) {
+            if (upperRowCharacterCards.contains(card)) {
+                numUpper--;
+            } else if (lowerRowCharacterCards.contains(card)) {
+                numLower--;
+            } else {
+                throw new IllegalStateException("Illegal character selection. (Card not in any row)");
+            }
+        }
+        for (BuildingCard card : buildingCards) {
+            if (upperBuildingRow.contains(card)) {
+                numUpper--;
+            } else if (lowerBuildingRow.contains(card)) {
+                numLower--;
+            } else {
+                throw new IllegalStateException("Illegal building selection. (Card not in any row)");
+            }
+        }
+        if (numUpper != 0 || numLower != 0) {
+            throw new IllegalStateException("Illegal card selection. (Wrong number of cards)");
+        }
+
+    }
+
+    public void playerAction(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        // Get leftmost occupied offering card.
+        OfferingCard currentOffering = getNextOccupiedOfferingCard();
+
+        // Check if the player is current next player
+        if (player != currentOffering.getPlayer()) {
+            throw new IllegalStateException("It is not the player's turn.");
+        }
+
+        // check if cards selection is legal based on the offeringCard
+        int numUpper = currentOffering.getNumCardsUpper();
+        int numLower = currentOffering.getNumCardsLower();
+        validateCardChoice(numUpper, numLower, characterCards, buildingCards);
+
+        // selection legal: obtain cards
+        try {
+            player.addCards(characterCards, buildingCards);
+        } catch (IllegalStateException e) {
+            if (e.getMessage().equals("Not enough food to buy building cards")) {
+                throw new IllegalStateException("Not enough food to buy building cards");
+            }
+            else {
+                throw new IllegalStateException("unknown error");
+            }
+        }
+        upperBuildingRow.removeAll(buildingCards); // if not present, no worries
+        lowerBuildingRow.removeAll(buildingCards); // if not present, no worries
+        upperRow.removeAll(characterCards); // if not present, no worries
+        lowerRow.removeAll(characterCards); // if not present, no worries
+
     }
 
     @Override
@@ -236,13 +306,5 @@ public class Game extends Subject {
     @Override
     public void notifyObserver() {
 
-    }
-
-    public List<OfferingCard> getOfferingCards() {
-        return this.offeringCards;
-    }
-
-    public List<Player> getPlayers() {
-        return players;
     }
 }
