@@ -44,11 +44,14 @@ public class Game extends Subject {
     }
 
     public Player getNextPlayer() {
-        return players.stream()
-                .filter(player -> player.getOfferingCard() != null)
-                .sorted(Comparator.comparing(player -> player.getOfferingCard().getOrderLetter()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No player has an offering card assigned"));
+        OfferingCard nextPlayerOfferingCard = offeringCards.stream()
+                .min(Comparator.comparing(OfferingCard::getOrderLetter))
+                .filter(card -> card.getPlayer() != null)
+                .orElseThrow(() -> new IllegalStateException("No offering cards with players available"));
+
+        Player nextPlayer = nextPlayerOfferingCard.getPlayer();
+        nextPlayerOfferingCard.setPlayer(null);
+        return nextPlayer;
     }
 
     public void addPlayer(Player p) {
