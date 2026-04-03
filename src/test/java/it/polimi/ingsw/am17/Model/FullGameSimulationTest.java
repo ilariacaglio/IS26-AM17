@@ -15,7 +15,6 @@ public class FullGameSimulationTest {
         int roundNumber = 1;
         int maxRoundNumber = 10;
         int numPlayers = 4;
-        int pos;
         game = new Game(numPlayers);
         //add players to game
         game.addPlayer(new Player("player1",Color.BLACK));
