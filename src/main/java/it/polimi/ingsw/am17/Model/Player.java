@@ -57,54 +57,7 @@ public class Player{
         return nickname;
     }
 
-    public void setOfferingCard(OfferingCard offeringCard) {
-        this.offeringCard = offeringCard;
-    }
 
-    public void freeOfferingCard() {
-        this.offeringCard = null;
-    }
-
-    public void playTurn(List<TribesCard> tribeCards, List<BuildingCard> buildingCards, Game game){
-        int numHunters;
-        if(!tribeCards.equals(Collections.emptyList())){
-            for(TribesCard card : tribeCards){
-                game.removeTribeCardFromRow(card);
-                //if the player has picked a hunter he gains one food for every hunter he already has
-                if(card.getCardType().equals(CardType.HUNTER) && ((Hunter)card).isWithIcon())
-                {
-                    //count hunter cards
-                    numHunters = (int) playerTribeRow.getCards().stream()
-                            .filter(c->c.getCardType().equals(CardType.HUNTER))
-                            .count();
-                    addFood(numHunters);
-                }
-                playerTribeRow.addCard(card);
-            }
-        }
-        if(!buildingCards.equals(Collections.emptyList())){
-            for(BuildingCard card : buildingCards){
-                buyBuilding((BuildingCard) card);
-                game.removeBuildingCardFromRow(card);
-                playerBuildingRow.addCard(card);
-            }
-        }
-    }
-
-    public void buyBuilding(BuildingCard card){
-        int foodCost = calculateBuildingCost(card);
-        addFood(foodCost*(-1));
-    }
-
-    public int calculateBuildingCost(BuildingCard card){
-        //sum of the food discount of every builder card
-        int foodDiscount = playerTribeRow.getCards().stream()
-                .filter(c->c.getCardType().equals(CardType.BUILDER))
-                .map(c-> ((Builder)c).getFoodReduction())
-                .reduce(0, Integer::sum);
-        //return the price of the building card
-        return card.getFoodCost()-foodDiscount;
-    }
 
     public List<TribesCard> getPlayerTribeCards(){
         return playerTribeRow.getCards();
@@ -156,5 +109,13 @@ public class Player{
         for (BuildingCard card : buildingsList) {
             this.addPp(card.FinalPoints(characterList));
         }
+    }
+
+    public void addCharacter(TribesCard card) {
+        playerTribeRow.addCard(card);
+    }
+
+    public void addBuilding(BuildingCard card) {
+        playerBuildingRow.addCard(card);
     }
 }
