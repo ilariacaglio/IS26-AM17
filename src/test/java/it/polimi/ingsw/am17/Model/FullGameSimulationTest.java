@@ -10,16 +10,15 @@ import java.util.Random;
 
 public class FullGameSimulationTest {
     @Test
-    void fullGameSimulation() {
+    void fullGameSimulation() { // From Controller POV
 
         // Game information for testing
         Player currentPlayer;
-        int roundNumber = 1;
-        int maxRoundNumber = 10;
         int numPlayers = 4;
 
         // Set up and start the game
         Game game = new Game(numPlayers);
+        // TODO: check nick/color in addPlayer
         game.addPlayer(new Player("player1",Color.BLACK));
         game.addPlayer(new Player("player2",Color.RED));
         game.addPlayer(new Player("player3",Color.YELLOW));
@@ -29,7 +28,7 @@ public class FullGameSimulationTest {
         // ROUND 1
 
         // Offering card selection
-        // TODO: double selection does not raise error!!
+        // TODO: check offeringCard correctness
         for (Player player : game.getPlayers()) {
             Random rand = new Random();
             OfferingCard offeringCard = game.getOfferingCards().get(rand.nextInt(game.getOfferingCards().size()));
