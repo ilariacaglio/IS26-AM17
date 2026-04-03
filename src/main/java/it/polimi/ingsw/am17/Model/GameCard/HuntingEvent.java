@@ -47,7 +47,7 @@ public class HuntingEvent extends EventCard {
                     .toList();
            //find additional food and PP given by buildingCard
            for(BuildingCard c: player.getPlayerBuildingCards()){
-                additionalFood = additionalFood + c.FoodBonus(characterList);
+                additionalFood = additionalFood + c.FoodBonusFromHunters(characterList);
                 additionalPp = additionalPp + c.PointsBonus(characterList);
            }
            //add additionalFood and additionalPp
