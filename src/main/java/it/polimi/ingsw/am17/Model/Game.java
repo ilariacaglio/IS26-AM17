@@ -10,52 +10,44 @@ public class Game extends Subject {
     private final int id;
     private final int numPlayers;
     private boolean started;
-    private final List<Player> players;
     private int currentEra;
-    private final List<OfferingCard> offeringCards;
-    private final List<Character> offeringCardLetters;
-    private TribeGameRow upperRow;
-    private TribeGameRow lowerRow;
-    private final TribesDeck deck;
 
-    private BuildingGameRow upperBuildingRow;
-    private BuildingGameRow lowerBuildingRow;
+    private final List<Player> players;
+
+    private final List<OfferingCard> offeringCards;
+
+    private final TribesDeck tribesDeck;
+    private List<TribesCard> upperRow;
+    private List<TribesCard> lowerRow;
 
     private final BuildingDeck buildingDeckEra1;
     private final BuildingDeck buildingDeckEra2;
     private final BuildingDeck buildingDeckEra3;
+    private List<BuildingCard> upperBuildingRow;
+    private List<BuildingCard> lowerBuildingRow;
+
+
 
     private int currentPlayerIndex = 0;
     private int currentTurnLetterIndex = 0;
 
-    public Game(int numPlayers) {
-        Random r = new Random();
-        this.id = r.nextInt();
+    public Game(int id, int numPlayers) {
+        this.id = id;
         this.numPlayers = numPlayers;
-        lowerBuildingRow = new BuildingGameRow();
-        upperBuildingRow = new BuildingGameRow();
-        lowerRow = new TribeGameRow();
-        upperRow = new TribeGameRow();
-        players = new ArrayList<Player>(numPlayers);
-        deck = new TribesDeck(numPlayers);
-        buildingDeckEra1 = new BuildingDeck(numPlayers,1);
-        buildingDeckEra2 = new BuildingDeck(numPlayers,2);
-        buildingDeckEra3 = new BuildingDeck(numPlayers,3);
+        started = false;
+        currentEra = 1;
+        players = new ArrayList<>(numPlayers);
         offeringCards = loadOfferingCards(numPlayers);
-        offeringCardLetters = new ArrayList<Character>();
-        for(OfferingCard c: offeringCards){
-            offeringCardLetters.add(c.getOrderLetter());
-        }
-    }
 
+        tribesDeck = new TribesDeck(numPlayers);
+        upperRow = null;
+        lowerRow = null;
 
-    public int getNumPlayers() {
-        return  numPlayers;
-    }
-
-
-    public List<Player> getPlayers() {
-        return players;
+        buildingDeckEra1 = new BuildingDeck(numPlayers, 1);
+        buildingDeckEra2 = new BuildingDeck(numPlayers, 2);
+        buildingDeckEra3 = new BuildingDeck(numPlayers, 3);
+        upperBuildingRow = null;
+        lowerBuildingRow = null;
     }
 
     public Player getNextPlayer() {
@@ -74,12 +66,17 @@ public class Game extends Subject {
 
 
     public void addPlayer(Player p) {
-        if(numPlayers > 1 && players.size() < numPlayers){
-            players.add(p);
+        if (started) {
+            throw new IllegalStateException("The game has already started.");
         }
-        else {
-            throw new IllegalStateException("The game lobby is full. Cannot add more players.");
+        if (players.size() >= numPlayers) {
+            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
         }
+        if (players.contains(p)) {
+            throw new IllegalArgumentException("This player is already in the lobby.");
+        }
+
+        players.add(p);
     }
 
 
@@ -93,10 +90,10 @@ public class Game extends Subject {
         this.currentEra = 1;
         Collections.shuffle(players);
         for (int i = 0; i < numPlayers+1; i++) {
-            lowerRow.addCard(deck.Draw());
+            lowerRow.addCard(tribesDeck.Draw());
         }
         for (int i = 0; i < numPlayers+4; i++) {
-            upperRow.addCard(deck.Draw());
+            upperRow.addCard(tribesDeck.Draw());
         }
         var buildingCard = buildingDeckEra1.drawAll();
 
@@ -138,7 +135,7 @@ public class Game extends Subject {
         throw new IllegalStateException("There is no next player");
     }
 
-    //non possibile provare perchè deck è null
+    //non possibile provare perchè tribesDeck è null
     public void endTurn(){
         lowerRow = new TribeGameRow();
         for(TribesCard card : upperRow.getCards()) {
@@ -149,7 +146,7 @@ public class Game extends Subject {
         boolean newEra = false;
 
         for (int i = 0; i < numPlayers+4; i++) {
-            TribesCard c = deck.Draw();
+            TribesCard c = tribesDeck.Draw();
             if(c.getEra() != currentEra) {
                 newEra = true;
                 currentEra++;
@@ -284,8 +281,8 @@ public class Game extends Subject {
         this.currentEra = currentEra;
     }
     /// only to use for testing
-    public TribesDeck getDeck(){
-        return deck;
+    public TribesDeck getTribesDeck(){
+        return tribesDeck;
     }
     /// only to use for testing
     public BuildingDeck getBuildingDeckEra1(){
