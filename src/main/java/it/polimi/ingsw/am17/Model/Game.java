@@ -51,17 +51,12 @@ public class Game extends Subject {
     }
 
     public Player getNextPlayer() {
-        if(currentPlayerIndex == 0) {
-            players.sort(Comparator.comparing(p -> p.getOfferingCard().getOrderLetter()));
-            // set player offering card to null
-            for(Player p: players) {
-                p.freeOfferingCard();;
-            }
-        }
-        if(currentPlayerIndex >= players.size()) {
-            throw new IllegalStateException("current player is higher then number of player");
-        }
-        return players.get(currentPlayerIndex++);
+        return offeringCards.stream()
+                .filter(offeringCard -> offeringCard.getPlayer() != null)
+                .sorted(Comparator.comparing(OfferingCard::getOrderLetter))
+                .map(OfferingCard::getPlayer)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No player has an offering card assigned"));
     }
 
 
