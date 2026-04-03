@@ -220,7 +220,7 @@ public class Game extends Subject {
         else if (lowerRow.getCards().contains(card))
             lowerRow.removeCard(card);
         else //if no row contains the card throw exception
-            throw new IllegalStateException("No building row contains this card");
+            throw new IllegalStateException("No tribe row contains this card");
     }
 
     /// only to use for testing
@@ -294,6 +294,10 @@ public class Game extends Subject {
     /// only to use for testing
     public void setOfferingCardLetters(List<Character> offeringCardLetters) {
         this.offeringCardLetters.addAll(offeringCardLetters);
+    }
+    /// only to use for testing
+    public List<OfferingCard> getOfferingCards(){
+        return Collections.unmodifiableList(offeringCards);
     }
 
     @Override
