@@ -9,16 +9,15 @@ public class Player{
     private int pp;
     private int food;
     private final Color color;
-    private final TribeCardRow playerTribeRow;
-    private final BuildingCardRow playerBuildingRow;
-    private OfferingCard offeringCard;
+    private List<CharacterCard> characterCards;
+    private List<BuildingCard> buildingCards;
 
     public Player(String nickname, Color color)
     {
         this.nickname = nickname;
         this.color = color;
-        this.playerBuildingRow = new BuildingCardRow();
-        this.playerTribeRow = new TribeCardRow();
+        this.characterCards = new ArrayList<>();
+        this.buildingCards = new ArrayList<>();
     }
 
     public void addPp(int quantity){
@@ -33,89 +32,60 @@ public class Player{
         this.food = newAmount;
     }
 
-    public OfferingCard getOfferingCard() {
-        return offeringCard;
-    }
-
-    public int getPp()
-    {
-        return pp;
-    }
-
-    public int getFood()
-    {
-        return food;
-    }
-
-    public Color getColor()
-    {
-        return color;
-    }
-
-    public String getNickname()
-    {
-        return nickname;
-    }
-
-
-
-    public List<TribesCard> getPlayerTribeCards(){
-        return playerTribeRow.getCards();
-    }
-
-    public List<BuildingCard> getPlayerBuildingCards(){return playerBuildingRow.getCards();}
-
     public void calculateFinalPoints(){
         boolean iconPresent;
+
         // add pp of builders
-        int pointsBuilders = playerTribeRow.getCards().stream()
+        int pointsBuilders = characterCards.stream()
                     .filter(g ->g.getCardType().equals(CardType.BUILDER))
                     .mapToInt(g -> ((Builder) g).getPointBonus())
                     .sum();
+
         addPp(pointsBuilders);
+
         // add pp of inventors and icons
-        List<Inventor> inventorsList = playerTribeRow.getCards().stream()
-                    .filter(g ->g.getCardType().equals(CardType.INVENTOR))
-                    .map(g -> (Inventor)g)
-                    .toList();
-        Set<Inventor> inventorIcons = new HashSet<>();
-        for(Inventor inventor : inventorsList){
-            iconPresent = false;
-            for (Inventor i: inventorIcons){
-                if(inventor.getIcon().equals(i.getIcon())){
-                    iconPresent = true;
-                }
-            }
-            if(!iconPresent){
-                inventorIcons.add(inventor);
-            }
-        }
-        addPp(inventorsList.size()*inventorIcons.size());
-        // add 10 point for artist couples
-        int numArtists = (int) playerTribeRow.getCards().stream()
+        int inventorCount = (int) characterCards.stream()
+                .filter(c -> c.getCardType() == CardType.INVENTOR)
+                .count();
+
+        long uniqueIcons = characterCards.stream()
+                .filter(c -> c.getCardType() == CardType.INVENTOR)
+                .map(c -> ((Inventor) c).getIcon())
+                .distinct()
+                .count();
+
+        addPp((int) (inventorCount * uniqueIcons));
+
+        // add ten points for each artist couple
+        int numArtists = (int) characterCards.stream()
                 .filter(g ->g.getCardType().equals(CardType.ARTIST))
                 .count();
         int numCouples = Math.floorDiv(numArtists,2);
         addPp(numCouples*10);
+
         // points of buildings
-        List<BuildingCard> buildingsList = playerBuildingRow.getCards();
-        int cardPoints = buildingsList.stream()
+        int cardPoints = buildingCards.stream()
                 .mapToInt(BuildingCard::getBonusPoints)
                 .sum();
         addPp(cardPoints);
+
         // final effects of buildings
-        var characterList = playerTribeRow.getCards().stream()
-                .map(c-> (CharacterCard)c).toList();
-        for (BuildingCard card : buildingsList) {
-            this.addPp(card.FinalPoints(characterList));
+        for (BuildingCard card : buildingCards) {
+            this.addPp(card.FinalPoints(characterCards));
         }
     }
 
     public void addCharacter(TribesCard card) {
-        playerTribeRow.addCard(card);
+        if (card.getCardType().isEvent()) {
+            throw new IllegalArgumentException(
+                    "Cannot add an event card to the player's character list."
+            );
+        }
+        characterCards.add((CharacterCard) card);
     }
 
     public void addBuilding(BuildingCard card) {
-        playerBuildingRow.addCard(card);
+        buildingCards.add(card);
     }
+
 }
