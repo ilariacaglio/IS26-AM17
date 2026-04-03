@@ -37,12 +37,31 @@ public class FullGameSimulationTest {
             player.setOfferingCard(game.getOfferingCards().get(0));
         }
 
+        // Player turns
+        while(true) {
+            game.getNextPlayer();
 
-        // players pick an offering card (in the list order)
-        for(int i = 0; i < numPlayers; i++) {
-            // simply pick the i-th offeringCard
-            game.getPlayers().get(i).setOfferingCard(game.getOfferingCards().get(i));
+
+            // upper row pick
+            for (int i = 0; i < player.getOfferingCard().getNumCardsUpper(); i++) {
+                TribesCard tribesCard = game.getUpperRow().get(rand.nextInt(game.getOfferingCards().size()));
+
+            }
+
+            System.out.println(player.getNickname() + " chooses offeringCard " + offeringCard.getOrderLetter());
+            player.setOfferingCard(game.getOfferingCards().get(0));
         }
+        for (Player player : game.getPlayers().stream().sorted(Comparator.comparing(p -> p.getOfferingCard().getOrderLetter())).toList()) {
+
+            // Pick cards upper
+
+            Random rand = new Random();
+            OfferingCard offeringCard = game.getOfferingCards().get(rand.nextInt(game.getOfferingCards().size()));
+            System.out.println(player.getNickname() + " chooses offeringCard " + offeringCard.getOrderLetter());
+            player.setOfferingCard(game.getOfferingCards().get(0));
+        }
+
+
         while(roundNumber <= maxRoundNumber) {
             //the players play their turn by choosing a card from the game rows
             for (int i = 0; i < numPlayers; i++){
