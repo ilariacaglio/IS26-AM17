@@ -13,28 +13,24 @@ public class GameTest {
     Game game;
     @BeforeEach
     void setUp() {
-        game = new Game(3);
+        game = new Game(3,3);
     }
 
     @Test
-    void testAddPlayer(){
+    void testAddPlayer_Normal(){
         // player creation
-        Player p = new Player("player1",Color.BLACK);
+        Player p1 = new Player("player1",Color.BLACK);
         Player p2 = new Player("player2",Color.RED);
         Player p3 = new Player("player3",Color.YELLOW);
-        Player p4 = new Player("player4",Color.BLUE);
-        List<Player> players = new ArrayList<>();
         // add players to game
-        game.addPlayer(p);
+        game.addPlayer(p1);
         game.addPlayer(p2);
         game.addPlayer(p3);
-        // add players to list
-        players.add(p);
-        players.add(p2);
-        players.add(p3);
-        // check usual and unusual behavior
-        assertEquals(players,game.getPlayers());
-        assertThrows(IllegalStateException.class, () -> game.addPlayer(p4));
+        // check that every player is in the list and the size is 3
+        assertTrue(game.getPlayers().contains(p1));
+        assertTrue(game.getPlayers().contains(p2));
+        assertTrue(game.getPlayers().contains(p3));
+        assertEquals(3,game.getPlayers().size());
     }
 
     @Test

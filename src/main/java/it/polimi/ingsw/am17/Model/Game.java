@@ -23,6 +23,7 @@ public class Game extends Subject {
     private List<TribesCard> lowerRow;
 
     private final BuildingDeck buildingDeck;
+
     private List<BuildingCard> upperBuildingRow;
     private List<BuildingCard> lowerBuildingRow;
 
@@ -45,7 +46,6 @@ public class Game extends Subject {
     boolean isStarted() {
         return currentEra != 0;
     }
-
 
     /**
      * @return leftmost offering card with player in the offering track.
@@ -144,7 +144,7 @@ public class Game extends Subject {
             upperRow.add(tribesDeck.Draw());
         }
 
-        upperBuildingRow = buildingDeck.drawEra1();
+        upperBuildingRow = buildingDeck.drawAllEra1();
     }
 
     /**
@@ -205,10 +205,8 @@ public class Game extends Subject {
 
     /**
      * Ends the game.
-     * TODO: review
      */
     public void endGame() {
-
         // Solve events
         // Get all events from both rows. N.B. we solve the food events from BOTH rows at the end.
         List<EventCard> events = Stream.concat(lowerRow.stream(), upperRow.stream())
@@ -378,6 +376,11 @@ public class Game extends Subject {
 
         //GamseState = new GameState
         //notifyObserver
+    }
+
+    /// only for testing
+    protected List<Player> getPlayers(){
+        return players;
     }
 
     @Override
