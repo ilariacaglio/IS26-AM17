@@ -111,13 +111,14 @@ public class Game extends Subject {
     }
 
     private void moveDownBuildingCards() {
-        lowerBuildingRow = upperBuildingRow;
+        lowerBuildingRow = new ArrayList<>(upperBuildingRow);
+        upperBuildingRow.clear();
     }
 
     /**
      * Starts the game by entering the first era.
      */
-    public void era1() {
+    private void era1() {
         if (isStarted()) {
             throw new IllegalStateException("The game has already started.");
         }
@@ -135,7 +136,7 @@ public class Game extends Subject {
 
             if (drawnCard.getCardType().isCharacter()) {
                 lowerRow.add(drawnCard);
-            } else {
+            } else if (upperRow.size()< targetUpperRowSize) {
                 upperRow.add(drawnCard);
             }
         }
@@ -144,7 +145,7 @@ public class Game extends Subject {
             upperRow.add(tribesDeck.Draw());
         }
 
-        upperBuildingRow = buildingDeck.drawAllEra1();
+        upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
     }
 
     /**
@@ -153,7 +154,7 @@ public class Game extends Subject {
     private void era2() {
         currentEra = 2;
         moveDownBuildingCards();
-        upperBuildingRow = buildingDeck.drawAllEra2();
+        upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra2());
     }
 
     /**
@@ -163,7 +164,7 @@ public class Game extends Subject {
         currentEra = 3;
         lowerBuildingRow.clear();
         moveDownBuildingCards();
-        upperBuildingRow = buildingDeck.drawAllEra3();
+        upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
     }
 
     /**
@@ -185,7 +186,8 @@ public class Game extends Subject {
         );
 
         // 2. 3. 4. Reorganize cards.
-        lowerRow = upperRow;
+        lowerRow = new ArrayList<>(upperRow);
+        upperRow.clear();
         for (int i = 0; i < numPlayers + 4; i++) {
             try {
                 TribesCard c = tribesDeck.Draw();
@@ -206,7 +208,8 @@ public class Game extends Subject {
     /**
      * Ends the game.
      */
-    public void endGame() {
+    private void endGame() {
+        this.currentEra = -1; //put era to -1 to signal game has ended
         // Solve events
         // Get all events from both rows. N.B. we solve the food events from BOTH rows at the end.
         List<EventCard> events = Stream.concat(lowerRow.stream(), upperRow.stream())
@@ -381,6 +384,26 @@ public class Game extends Subject {
     /// only for testing
     protected List<Player> getPlayers(){
         return players;
+    }
+    /// only for testing
+    protected int getCurrentEra(){
+        return currentEra;
+    }
+    /// only for testing
+    protected List<TribesCard> getUpperRow(){
+        return upperRow;
+    }
+    ///only for testing
+    protected List<BuildingCard> getUpperBuildingRow(){
+        return upperBuildingRow;
+    }
+    ///only for testing
+    protected List<BuildingCard> getLowerBuildingRow(){
+        return lowerBuildingRow;
+    }
+    ///only for testing
+    protected List<TribesCard> getLowerRow(){
+        return lowerRow;
     }
 
     @Override
