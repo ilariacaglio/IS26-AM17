@@ -145,7 +145,6 @@ public class Player{
 
    public void solveFoodEvent(int pointLost)
    {
-       int food = this.food;
        //count number of Binder
        long numBinder = this.characterCards.stream()
                .filter(c -> c.getCardType().equals(CardType.BINDER))
