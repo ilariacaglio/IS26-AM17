@@ -33,24 +33,7 @@ public class RitualEvent extends EventCard {
         int[] stars = new int[list.size()];
         //counting stars icon for each player
         for(int i=0; i<list.size(); i++){
-
-            int starBonus=0;
-
-            List<CharacterCard> characterList = list.get(i).getPlayerTribeCards().stream()
-                    .map(c-> (CharacterCard)c)
-                    .toList();
-
-            //additional stars given by BuildingType9
-            for(BuildingCard c: list.get(i).getPlayerBuildingCards()){
-                starBonus = starBonus + c.StarBonus(characterList);//BuildingType9
-            }
-            //count number of star icons
-            stars[i] = list.get(i).getPlayerTribeCards().stream()
-                    .filter(c -> c.getCardType().equals(CardType.SHAMAN))
-                    .mapToInt(c -> ((Shaman)c).getStars())
-                    .sum();
-            //add starBonus given by BuildingType9
-            stars[i] = stars[i] + starBonus;
+            stars[i] = list.get(i).calculateStarPoints();
         }
 
         int max = stars[0];
@@ -66,18 +49,9 @@ public class RitualEvent extends EventCard {
         //add Pp based on the number of the stars for each player
         for(int i = 0; i < list.size(); i++){
 
-            boolean doublePoints=false;
-            boolean shield = false;
+            boolean doublePoints= list.get(i).hasDoubleRitualEventPoints();
+            boolean shield = list.get(i).hasShieldFromRitualEvent();
 
-            List<CharacterCard> characterList = list.get(i).getPlayerTribeCards().stream()
-                    .map(c-> (CharacterCard)c)
-                    .toList();
-            //check if buildingCards give advantages
-            for(BuildingCard c: list.get(i).getPlayerBuildingCards()){
-                doublePoints = c.isDoubleRitualEventPoints();//BuildingType8
-                shield = c.isShieldFromRitualEvent();//BuildingType12
-
-            }
             //give or take Pp
             if(allEqual){//give and then take Pp for each player
                 list.get(i).addPp(pointMax);

@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Model;
 import it.polimi.ingsw.am17.Model.GameCard.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static it.polimi.ingsw.am17.Utility.CardParser.loadOfferingCards;
@@ -13,6 +14,7 @@ public class Game extends Subject {
     private int currentEra;
 
     private final List<Player> players;
+    private Stack<Player> orderedPlayer;
 
     private final List<OfferingCard> offeringCards;
 
@@ -50,9 +52,9 @@ public class Game extends Subject {
      */
     private OfferingCard getNextOccupiedOfferingCard() {
         return offeringCards.stream()
-                .min(Comparator.comparing(OfferingCard::getOrderLetter))
                 .filter(card -> card.getPlayer() != null)
-                .orElseThrow(() -> new IllegalStateException("No offering cards with players available"));
+                .min(Comparator.comparing(OfferingCard::getOrderLetter))
+                .orElse(null);
     }
 
     /**
@@ -79,6 +81,10 @@ public class Game extends Subject {
         }
 
         players.add(p);
+
+        //if we reached the number of players for the game we start the game
+        if(players.size() == numPlayers)
+            nextEra();
     }
 
     /**
@@ -147,7 +153,7 @@ public class Game extends Subject {
     private void era2() {
         currentEra = 2;
         moveDownBuildingCards();
-        upperBuildingRow = buildingDeck.drawEra2();
+        upperBuildingRow = buildingDeck.drawAllEra2();
     }
 
     /**
@@ -157,6 +163,7 @@ public class Game extends Subject {
         currentEra = 3;
         lowerBuildingRow.clear();
         moveDownBuildingCards();
+        upperBuildingRow = buildingDeck.drawAllEra3();
     }
 
     /**
@@ -260,6 +267,54 @@ public class Game extends Subject {
     }
 
     /**
+     * check if the values are plausible and set player to offering card
+     * notify observer
+     * @param player player that chose the offering card
+     * @param offeringCard offering card picked
+     */
+    public void selectOfferingCard(Player player, OfferingCard offeringCard)
+    {
+        //check if is player turn
+        if(!player.equals(orderedPlayer.pop())) {
+            throw new IllegalStateException("It is not the player's turn.");
+        }
+
+        //check card is free
+        if(offeringCard == null || offeringCard.getPlayer() != null){
+            throw new IllegalStateException("The offering card was already selected");
+        }
+
+        //set player to offeringCard
+        offeringCard.setPlayer(player);
+
+        Player nextPlayer;
+        //notify observer
+        try {
+            nextPlayer = orderedPlayer.peek();
+        }catch (EmptyStackException e)
+        {
+            //order player stack for next turn
+            orderedPlayer = offeringCards.stream()
+                    .filter(card -> card.getPlayer() != null)
+                    .sorted(Comparator.comparing(OfferingCard::getOrderLetter))
+                    .map(OfferingCard::getPlayer)
+                    .collect(Collectors.toCollection(Stack::new));
+
+
+            //get first player to do player action
+            nextPlayer = getNextPlayer();
+
+            //gamestate should specify it s turn for player action
+            //GameState = new GameState ...
+            //notifyObserver(gameState)
+            return;
+        }
+
+        //GameState = new GameState ...
+        //notifyObserver(gameState)
+    }
+
+    /**
      * Emulates a player action (picking cards).
      * TODO: FoodBonusFromTurnOrder
      * @param player
@@ -297,6 +352,32 @@ public class Game extends Subject {
         lowerRow.removeAll(characterCards); // if not present, no worries
 
         currentOffering.setPlayer(null);
+
+        OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
+
+        //check everybody played his base turn
+        if(nextOfferingCard == null)
+        {
+            //if we have a buildingType2 in game do building action
+
+            for(Player p : players)
+            {
+                //check if a player has buildingType2
+                //Important: there is a singular buildingType2 per game
+
+                if(p.hasBuilding2()) {
+                    //set nextOfferingCard to BuildingType2 Offering Card
+                    nextOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
+                    nextOfferingCard.setPlayer(p);
+                    break;
+                }
+            }
+        }
+
+
+
+        //GamseState = new GameState
+        //notifyObserver
     }
 
     @Override

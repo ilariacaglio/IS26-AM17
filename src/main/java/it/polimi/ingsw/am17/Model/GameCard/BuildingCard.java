@@ -38,6 +38,6 @@ public class BuildingCard {
     public int PointsBonus(List<CharacterCard> characterCards) { return 0; }
     public int StarBonus(List<CharacterCard> characterCards) { return 0; } // EventEffect: returns true if a
     public boolean isShieldFromRitualEvent() { return false; } // EventEffect: returns true if a player should not lose points from rituals
-    public void playExtraCard(Player player) { return; }
+    public boolean playOneMoreMove() { return false; }
     public boolean isDoubleRitualEventPoints() { return false; } // Tribes effect
 }
