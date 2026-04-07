@@ -1,9 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
-import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
-import it.polimi.ingsw.am17.Model.GameCard.CardType;
-import it.polimi.ingsw.am17.Model.GameCard.GameCard;
-import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
+import it.polimi.ingsw.am17.Model.GameCard.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,221 +13,152 @@ public class GameTest {
     Game game;
     @BeforeEach
     void setUp() {
-        game = new Game(3);
+        game = new Game(3,3);
     }
 
     @Test
-    void testGetNextPlayer(){
-        Player p1 = new Player("player1",Color.BLACK);
-        Player p2 = new Player("player2",Color.RED);
-        Player p3 = new Player("player3",Color.YELLOW);
-        //sorted list: [p2,p1,p3]
-        p1.setOfferingCard(new OfferingCard(2,'C',1,1,0));
-        p2.setOfferingCard(new OfferingCard(2,'A',1,1,0));
-        p3.setOfferingCard(new OfferingCard(2,'D',1,1,0));
-        game.addPlayer(p1);
-        game.addPlayer(p2);
-        game.addPlayer(p3);
-        //call method
-        Player p = game.getNextPlayer();
-        //check if the player has the lowest letter in the list
-        assertEquals(p2, p);
-        p = game.getNextPlayer();
-        assertEquals(p1, p);
-        p = game.getNextPlayer();
-        assertEquals(p3, p);
-        //if currentPlayerIndex > players.size() check if exception thrown
-        assertThrows(IllegalStateException.class,() -> game.getNextPlayer());
-    }
-
-    @Test
-    void testAddPlayer(){
+    void testAddPlayer_withGameStart(){
         // player creation
-        Player p = new Player("player1",Color.BLACK);
-        Player p2 = new Player("player2",Color.RED);
-        Player p3 = new Player("player3",Color.YELLOW);
-        Player p4 = new Player("player4",Color.BLUE);
-        List<Player> players = new ArrayList<>();
-        // add players to game
-        game.addPlayer(p);
-        game.addPlayer(p2);
-        game.addPlayer(p3);
-        // add players to list
-        players.add(p);
-        players.add(p2);
-        players.add(p3);
-        // check usual and unusual behavior
-        assertEquals(players,game.getPlayers());
-        assertThrows(IllegalStateException.class, () -> game.addPlayer(p4));
-    }
-
-    //non possibile provare perchè mancano building cards
-    @Test
-    void testStart_3players(){
-        game.start();
-        //check if the game has started
-        assertTrue(game.isStarted());
-        //check currentEra
-        assertEquals(1, game.getCurrentEra());
-        //check size lower row
-        assertEquals(4,game.getLowerRowSize() );
-        //check size upper row
-        assertEquals( 7, game.getUpperRowSize());
-        //check size upper building row
-        assertEquals(2,game.getUpperBuildingRowSize());
-        //check if decks are not null
-        assertNotNull(game.getDeck());
-        assertNotNull(game.getBuildingDeckEra1());
-        assertNotNull(game.getBuildingDeckEra2());
-        assertNotNull(game.getBuildingDeckEra3());
-    }
-
-    //non possibile provare perchè mancano building cards
-    @Test
-    void testStart_2players(){
-        game = new Game(2);
-        game.start();
-        //check if the game has started
-        assertTrue(game.isStarted());
-        //check currentEra
-        assertEquals(1, game.getCurrentEra());
-        //check size lower row
-        assertEquals(3,game.getLowerRowSize() );
-        //check size upper row
-        assertEquals( 6, game.getUpperRowSize());
-        //check size upper building row
-        assertEquals(1,game.getUpperBuildingRowSize());
-        //check if decks are not null
-        assertNotNull(game.getDeck());
-        assertNotNull(game.getBuildingDeckEra1());
-        assertNotNull(game.getBuildingDeckEra2());
-        assertNotNull(game.getBuildingDeckEra3());
-    }
-
-    @Test
-    void testGetNextTurn(){
         Player p1 = new Player("player1",Color.BLACK);
         Player p2 = new Player("player2",Color.RED);
         Player p3 = new Player("player3",Color.YELLOW);
-        p1.setOfferingCard(new OfferingCard(2,'A',1,1,0));
-        p2.setOfferingCard(new OfferingCard(2,'C',1,1,0));
-        p3.setOfferingCard(new OfferingCard(2,'D',1,1,0));
+        // add players to game
         game.addPlayer(p1);
         game.addPlayer(p2);
         game.addPlayer(p3);
-        //set offering card list (only for testing)
-        List<Character> charList = new ArrayList<>();
-        charList.add('A');
-        charList.add('B');
-        charList.add('C');
-        charList.add('D');
-        game.setOfferingCardLetters(charList);
-        //call method
-        Player p = game.getNextTurn();
-        // check that the player returned has the lowest letter
-        assertEquals('A',p.getOfferingCard().getOrderLetter());
-        p = game.getNextTurn();
-        // check that the player returned has the lowest letter
-        assertEquals('C',p.getOfferingCard().getOrderLetter());
-        p = game.getNextTurn();
-        // check that the player returned has the lowest letter
-        assertEquals('D',p.getOfferingCard().getOrderLetter());
-        // check exception
-        assertThrows(IllegalStateException.class, () -> game.getNextTurn());
-    }
-
-    //non possibile provare perchè deck è null
-    @Test
-    void testEndTurn(){
-        game.start();
-        var oldUpperRow = game.getUpperRow();
-        int oldEra = game.getCurrentEra();
-        game.endTurn();
-        //new lower row equals to old upper row
-        assertEquals(game.getLowerRow(),oldUpperRow);
-        // check size new upper row
-        assertEquals(game.getUpperRowSize(), game.getNumPlayers()+4);
-        //check update era
-        int maxTurns = 10;
-        int numTurns = 0;
-        while (game.getCurrentEra() == oldEra && numTurns < maxTurns) {
-            game.endTurn();
-            numTurns++;
+        // check that every player is in the list and the size is 3
+        assertTrue(game.getPlayers().contains(p1));
+        assertTrue(game.getPlayers().contains(p2));
+        assertTrue(game.getPlayers().contains(p3));
+        assertEquals(3,game.getPlayers().size());
+        // check the game has started
+        //check current era updated to 1
+        assertEquals(1,game.getCurrentEra());
+        //check size of upper and lower tribe rows
+        assertEquals(4, game.getLowerRow().size());
+        assertEquals(7, game.getUpperRow().size());
+        //check that the lower row has only character cards
+        for (TribesCard c: game.getLowerRow()){
+            assertTrue(c.getCardType().isCharacter());
         }
-        assertEquals(game.getCurrentEra(), oldEra+1);
+        //check the upper building row
+        assertNotNull(game.getUpperBuildingRow());
+        assertFalse(game.getUpperBuildingRow().isEmpty());
     }
 
-    //non possibile provare perchè buildingdeck null
     @Test
-    void testChangeEra_currentEraIs1() {
-        game.start();
-        assertThrows(IllegalStateException.class, () -> game.changeEra());
+    void testAddPlayer_Duplicate(){
+        // player creation
+        Player p = new Player("player2",Color.RED);
+        // add player to game
+        game.addPlayer(p);
+        // check duplicate player
+        assertThrows(IllegalArgumentException.class, () -> game.addPlayer(p));
     }
 
-    //non possibile provare perchè buildingdeck null
     @Test
-    void testChangeEra_currentEraIs2(){
-        game.start();
-        var oldBuildingRow = game.getUpperBuildingRow();
-        game.setCurrentEra(2);
-        game.changeEra();
-        //new lower building row contains old upper building row
-        assertTrue(game.getLowerBuildingRow().getCards().containsAll(oldBuildingRow.getCards()));
-        //check if the new upper building row has only cards with the correct era
-        for(BuildingCard card : game.getUpperBuildingRow().getCards())
-            assertEquals(2, card.getEra());
+    void testAddPlayer_Exception(){
+        // add players to game
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        //this checks both started and overflow cases
+        assertThrows(IllegalStateException.class, () -> game.addPlayer(new Player("player4",Color.BLUE)));
     }
 
-    //non possibile provare perchè buildingdeck null
     @Test
-    void testChangeEra_currentEraIs3(){
-        game.start();
-        game.setCurrentEra(2);
-        game.changeEra();
-        var oldBuildingRow = game.getUpperBuildingRow();
-        game.setCurrentEra(3);
-        game.changeEra();
-        //new lower building row equals to old upper building row
-        assertEquals(game.getLowerBuildingRow(),oldBuildingRow);
-        //check if the new upper building row has only cards with the correct era
-        for(BuildingCard card : game.getUpperBuildingRow().getCards())
-            assertEquals(3, card.getEra());
+    void testEndRound_Normal(){
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        //the game should have started
+        List<TribesCard> oldUpperRow = new ArrayList<>(game.getUpperRow());
+        game.endRound();
+        //check that the lower row equals the old upper row
+        assertEquals(oldUpperRow.size(),game.getLowerRow().size());
+        for(TribesCard c: game.getLowerRow()){
+            assertTrue(oldUpperRow.contains(c));
+        }
+        //check that the new upper row has the right size
+        assertEquals(7,game.getUpperRow().size());
     }
 
-    //non possibile provare perchè liste vuote
     @Test
-    void testRemoveBuildingCardFromRow(){
-        BuildingCard card;
-        // draw a card from the upper building row
-        card = (BuildingCard) game.getUpperBuildingRow().getCards().getFirst();
-        game.removeBuildingCardFromRow(card);
-        assertFalse(game.getUpperBuildingRow().getCards().contains(card));
-        // draw a card from the lower building row
-        card = (BuildingCard) game.getLowerBuildingRow().getCards().getFirst();
-        game.removeBuildingCardFromRow(card);
-        assertFalse(game.getLowerBuildingRow().getCards().contains(card));
-        // create building card
-        card = new BuildingCard(1,1,1);
-        BuildingCard finalCard = card;
-        assertThrows(IllegalStateException.class, () -> game.removeBuildingCardFromRow(finalCard));
+    void testEndRound_ChangeEra_2(){
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        // play 2 rounds
+        game.endRound();
+        game.endRound();
+        //get upper building row value
+        List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
+        assertEquals(1,game.getCurrentEra());
+        //play one more round
+        game.endRound();
+        // check era changed to 2
+        assertEquals(2,game.getCurrentEra());
+        // check the building rows
+        assertEquals(oldUpperBuildingRow.size(),game.getLowerBuildingRow().size());
+        for(BuildingCard c: game.getLowerBuildingRow()){
+            assertTrue(oldUpperBuildingRow.contains(c));
+        }
+        assertNotNull(game.getUpperBuildingRow());
+        assertFalse(game.getUpperBuildingRow().isEmpty());
     }
 
-    //non possibile provare perchè liste vuote
     @Test
-    void testRemoveTribeCardFromRow(){
-        // create game card
-        TribesCard card;
-        // draw a card from the upper row
-        card = (TribesCard) game.getUpperRow().getCards().getFirst();
-        game.removeTribeCardFromRow(card);
-        assertFalse(game.getUpperRow().getCards().contains(card));
-        // draw a card from the lower row
-        card = (TribesCard) game.getLowerRow().getCards().getFirst();
-        game.removeTribeCardFromRow(card);
-        assertFalse(game.getLowerRow().getCards().contains(card));
-        // create card
-        card = new TribesCard(1, CardType.ARTIST);
-        TribesCard finalCard = card;
-        assertThrows(IllegalStateException.class, () -> game.removeTribeCardFromRow(finalCard));
+    void testEndRound_ChangeEra_3(){
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        //play turns
+        game.endRound();
+        game.endRound();
+        game.endRound();
+        game.endRound();
+        game.endRound();
+        game.endRound();
+        //get upper building row value
+        List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
+        assertEquals(2,game.getCurrentEra());
+        game.endRound();
+        // check era changed to 3
+        assertEquals(3,game.getCurrentEra());
+        // check the building rows
+        assertEquals(oldUpperBuildingRow.size(),game.getLowerBuildingRow().size());
+        for(BuildingCard c: game.getLowerBuildingRow()){
+            assertTrue(oldUpperBuildingRow.contains(c));
+        }
+        assertNotNull(game.getUpperBuildingRow());
+        assertFalse(game.getUpperBuildingRow().isEmpty());
     }
+
+    @Test
+    void testEndRound_EndGame(){
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        //play turns
+        game.endRound();
+        game.endRound();
+        assertEquals(1,game.getCurrentEra());
+        game.endRound();
+        assertEquals(2,game.getCurrentEra());
+        game.endRound();
+        game.endRound();
+        game.endRound();
+        assertEquals(2,game.getCurrentEra());
+        game.endRound();
+        assertEquals(3,game.getCurrentEra());
+        game.endRound();
+        game.endRound();
+        assertEquals(3,game.getCurrentEra());
+        game.endRound();
+        //check if the game has ended
+        assertEquals(-1, game.getCurrentEra());
+    }
+
+    // TODO selectOfferingCard
+    // TODO playerAction
 }
