@@ -115,12 +115,9 @@ public class GameTest {
         game.addPlayer(new Player("player2",Color.RED));
         game.addPlayer(new Player("player3",Color.YELLOW));
         //play turns
-        game.endRound();
-        game.endRound();
-        game.endRound();
-        game.endRound();
-        game.endRound();
-        game.endRound();
+        for(int i=0;i<6;i++){
+            game.endRound();
+        }
         //get upper building row value
         List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
         assertEquals(2,game.getCurrentEra());
