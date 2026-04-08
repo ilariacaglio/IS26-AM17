@@ -286,4 +286,9 @@ public class Player{
    {
        return food;
    }
+
+   /// only for testing
+    public String getNickname() {
+        return nickname;
+    }
 }

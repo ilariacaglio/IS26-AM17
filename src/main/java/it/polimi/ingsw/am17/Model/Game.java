@@ -405,6 +405,10 @@ public class Game extends Subject {
     protected List<TribesCard> getLowerRow(){
         return lowerRow;
     }
+    ///only for testing
+    protected List<OfferingCard> getOfferingCards(){
+        return offeringCards;
+    }
 
     @Override
     public void attach(Observer observer) {
