@@ -5,15 +5,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
     Game game;
+    int numPlayers = 3;
     @BeforeEach
     void setUp() {
-        game = new Game(3,3);
+        game = new Game(3,numPlayers);
     }
 
     @Test
@@ -159,6 +161,79 @@ public class GameTest {
         assertEquals(-1, game.getCurrentEra());
     }
 
-    // TODO selectOfferingCard
+    @Test
+    void testSelectOfferingCard_TurnError(){
+        // add players to game
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        // game starts
+        Player wrongPlayer = game.getPlayers().stream()
+                .filter(p-> !p.equals(game.getCurrentPlayer()))
+                .toList().getFirst();
+        // get offering card list
+        List<OfferingCard> offeringCardList = game.getOfferingCards();
+        assertThrows(IllegalStateException.class, ()->game.selectOfferingCard(wrongPlayer,offeringCardList.getFirst()));
+    }
+
+    @Test
+    void testSelectOfferingCard_Normal(){
+        // add players to game
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        // game starts
+        // get offering card list
+        List<OfferingCard> offeringCardList = game.getOfferingCards();
+        // get the current player before the method picks another one
+        Player currentPlayer = game.getCurrentPlayer();
+        //call method
+        game.selectOfferingCard(currentPlayer,offeringCardList.getFirst());
+        assertEquals(currentPlayer,offeringCardList.getFirst().getPlayer());
+    }
+
+    @Test
+    void testSelectOfferingCard_CardError(){
+        // add players to game
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        // game starts
+        // get offering card list
+        List<OfferingCard> offeringCardList = game.getOfferingCards();
+        // get the current player before the method picks another one
+        Player currentPlayer = game.getCurrentPlayer();
+        // call method
+        game.selectOfferingCard(currentPlayer,offeringCardList.getFirst());
+        // test card already picked error
+        Player finalCurrentPlayer =  game.getCurrentPlayer();
+        assertThrows(IllegalStateException.class, ()->game.selectOfferingCard(finalCurrentPlayer,offeringCardList.getFirst()));
+        // test card null error
+        assertThrows(IllegalStateException.class, ()->game.selectOfferingCard(finalCurrentPlayer,null));
+    }
+
+    @Test
+    void testSelectOfferingCard_EmptyStack(){
+        // add players to game
+        game.addPlayer(new Player("player1",Color.BLACK));
+        game.addPlayer(new Player("player2",Color.RED));
+        game.addPlayer(new Player("player3",Color.YELLOW));
+        // game starts
+        // get offering card list
+        List<OfferingCard> offeringCardList = game.getOfferingCards();
+        // every player picks an offering card
+        for(int i=0;i<numPlayers;i++){
+            game.selectOfferingCard(game.getCurrentPlayer(),offeringCardList.get(i));
+        }
+        // check the new order of the players
+        // returns the card with the lowest letter
+        OfferingCard firstCardTurn = offeringCardList.stream()
+                .filter(card -> card.getPlayer() != null)
+                .sorted(Comparator.comparing(OfferingCard::getOrderLetter))
+                .toList().getFirst();
+        //check that the current player has the card with the lowest letter
+        assertEquals(game.getCurrentPlayer(),firstCardTurn.getPlayer());
+    }
+
     // TODO playerAction
 }

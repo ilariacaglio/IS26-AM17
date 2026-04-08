@@ -127,6 +127,12 @@ public class Game extends Subject {
         this.currentEra = 1;
         Collections.shuffle(players); // TODO: check if already shuffled by controller
 
+        // Init players order stack
+        orderedPlayer = new Stack<>();
+        for (Player p : players) {
+            orderedPlayer.push(p);
+        }
+
         // Populate the rows
         int targetLowerRowSize = numPlayers + 1;
         int targetUpperRowSize = numPlayers + 4;
@@ -297,7 +303,7 @@ public class Game extends Subject {
             //order player stack for next turn
             orderedPlayer = offeringCards.stream()
                     .filter(card -> card.getPlayer() != null)
-                    .sorted(Comparator.comparing(OfferingCard::getOrderLetter))
+                    .sorted(Comparator.comparing(OfferingCard::getOrderLetter).reversed())
                     .map(OfferingCard::getPlayer)
                     .collect(Collectors.toCollection(Stack::new));
 
@@ -404,6 +410,14 @@ public class Game extends Subject {
     ///only for testing
     protected List<TribesCard> getLowerRow(){
         return lowerRow;
+    }
+    ///only for testing
+    protected List<OfferingCard> getOfferingCards(){
+        return offeringCards;
+    }
+    ///only for testing
+    protected Player getCurrentPlayer(){
+        return orderedPlayer.peek();
     }
 
     @Override
