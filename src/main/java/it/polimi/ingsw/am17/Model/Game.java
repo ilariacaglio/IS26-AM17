@@ -43,7 +43,11 @@ public class Game extends Subject {
     }
 
     boolean isStarted() {
-        return currentEra != 0;
+        return currentEra > 0;
+    }
+
+    boolean isEnded() {
+        return currentEra < 0;
     }
 
     /**
