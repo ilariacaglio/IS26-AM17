@@ -209,6 +209,18 @@ public class GameTest {
     }
 
     @Test
+    void testSelectOfferingCard_CardNotFound(){
+        // add players to game
+        game.addPlayer(new Player("player1", Color.BLACK));
+        game.addPlayer(new Player("player2", Color.RED));
+        game.addPlayer(new Player("player3", Color.YELLOW));
+        // game starts
+        // test offering card not if offeringCardList
+        assertThrows(IllegalStateException.class, () -> game.selectOfferingCard(game.getCurrentPlayer(),
+                new OfferingCard(5,'A',0,0,0)));
+    }
+
+    @Test
     void testSelectOfferingCard_EmptyStack() {
         // add players to game
         game.addPlayer(new Player("player1", Color.BLACK));
