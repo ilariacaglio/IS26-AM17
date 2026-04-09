@@ -46,9 +46,6 @@ public class ControllerSimulatorTest {
                 game.selectTribeCards(player, characterCards, buildingCards); // controller POV
             }
 
-            // endRound will end game if no cards are available
-            game.endRound();
-
         } while (!game.isEnded()); // game is ended
     }
 }

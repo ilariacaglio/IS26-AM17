@@ -73,7 +73,6 @@ public class GameTest {
         game.addPlayer(new Player("player3",Color.YELLOW));
         //the game should have started
         List<TribesCard> oldUpperRow = new ArrayList<>(game.getUpperRow());
-        game.endRound();
         //check that the lower row equals the old upper row
         assertEquals(oldUpperRow.size(),game.getLowerRow().size());
         for(TribesCard c: game.getLowerRow()){
@@ -89,13 +88,10 @@ public class GameTest {
         game.addPlayer(new Player("player2",Color.RED));
         game.addPlayer(new Player("player3",Color.YELLOW));
         // play 2 rounds
-        game.endRound();
-        game.endRound();
         //get upper building row value
         List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
         assertEquals(1,game.getCurrentEra());
         //play one more round
-        game.endRound();
         // check era changed to 2
         assertEquals(2,game.getCurrentEra());
         // check the building rows
@@ -113,16 +109,9 @@ public class GameTest {
         game.addPlayer(new Player("player2",Color.RED));
         game.addPlayer(new Player("player3",Color.YELLOW));
         //play turns
-        game.endRound();
-        game.endRound();
-        game.endRound();
-        game.endRound();
-        game.endRound();
-        game.endRound();
         //get upper building row value
         List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
         assertEquals(2,game.getCurrentEra());
-        game.endRound();
         // check era changed to 3
         assertEquals(3,game.getCurrentEra());
         // check the building rows
@@ -140,21 +129,11 @@ public class GameTest {
         game.addPlayer(new Player("player2",Color.RED));
         game.addPlayer(new Player("player3",Color.YELLOW));
         //play turns
-        game.endRound();
-        game.endRound();
         assertEquals(1,game.getCurrentEra());
-        game.endRound();
         assertEquals(2,game.getCurrentEra());
-        game.endRound();
-        game.endRound();
-        game.endRound();
         assertEquals(2,game.getCurrentEra());
-        game.endRound();
         assertEquals(3,game.getCurrentEra());
-        game.endRound();
-        game.endRound();
         assertEquals(3,game.getCurrentEra());
-        game.endRound();
         //check if the game has ended
         assertEquals(-1, game.getCurrentEra());
     }
