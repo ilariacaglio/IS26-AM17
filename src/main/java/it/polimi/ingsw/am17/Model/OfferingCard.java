@@ -13,7 +13,8 @@ public class OfferingCard {
     private final int foodBonus;
     private final int numCardsUpper;
     private final int numCardsLower;
-    private Player player;
+    private Player player; // this provides information for SelectTribeCards turn order
+    private Player lastPlayer; // this provides information for SelectOfferingCard turn order
 
     @JsonCreator
     public OfferingCard(@JsonProperty("minPlayers") int minPlayers,
@@ -34,6 +35,16 @@ public class OfferingCard {
         }
         else {
             this.player = player;
+        }
+    }
+
+    public void removePlayer() {
+        if (this.player == null) {
+            throw new IllegalStateException("Offering card already empty");
+        }
+        else {
+            lastPlayer = this.player;
+            this.player = null;
         }
     }
 
@@ -60,4 +71,9 @@ public class OfferingCard {
     public Player getPlayer() {
         return player;
     }
+
+    public Player getLastPlayer() {
+        return lastPlayer;
+    }
+
 }
