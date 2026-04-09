@@ -28,6 +28,7 @@ public class Game extends Subject {
     private List<BuildingCard> lowerBuildingRow;
 
     private final OfferingCard building2OfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
+    private final int[] turnFoodPoints;
 
     public Game(int id, int numPlayers) {
         this.id = id;
@@ -43,6 +44,18 @@ public class Game extends Subject {
         buildingDeck = new BuildingDeck(numPlayers);
         upperBuildingRow = new ArrayList<>();
         lowerBuildingRow = new ArrayList<>();
+
+        turnFoodPoints = getTurnFoodPoints();
+    }
+
+    private int[] getTurnFoodPoints() {
+        return switch (numPlayers) {
+            case 2 -> new int[]{1, -1};
+            case 3 -> new int[]{2, 0, -1};
+            case 4 -> new int[]{2, 1, 0, -1};
+            case 5 -> new int[]{3, 1, 0, 0, -1};
+            default -> throw new IllegalStateException("Wrong number of players");
+        };
     }
 
     boolean isStarted() {
@@ -126,6 +139,21 @@ public class Game extends Subject {
         upperBuildingRow.clear();
     }
 
+    private void initStack(){
+        // Init players order stack
+        orderedPlayer = new Stack<>();
+        for (Player p : players) {
+            orderedPlayer.push(p);
+        }
+    }
+
+    private void giveFoodToPlayers(){
+        int[] startingFood = {2, 3, 3, 4, 4};
+        for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
+            players.get(i).addFood(startingFood[i]);
+        }
+    }
+
     /**
      * Starts the game by entering the first era.
      */
@@ -138,11 +166,9 @@ public class Game extends Subject {
         this.currentEra = 1;
         Collections.shuffle(players); // TODO: check if already shuffled by controller
 
-        // Init players order stack
-        orderedPlayer = new Stack<>();
-        for (Player p : players) {
-            orderedPlayer.push(p);
-        }
+        initStack();
+
+        giveFoodToPlayers();
 
         // Populate the rows
         int targetLowerRowSize = numPlayers + 1;
@@ -184,10 +210,31 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
     }
 
+    private void turnOrderFoodBonus(){
+        int i=0;
+        for (Player p : orderedPlayer) {
+            //check if turnFood > 0
+            if(turnFoodPoints[i]<0){
+                //if not check if player can pay the food (food price is not higher than 1)
+                if( p.getFood()<1)
+                    p.addPp(-2);
+                else
+                    p.addFood(turnFoodPoints[i]);
+            }
+            else{
+                //check if player has food bonus from buildings
+                int foodFromBuilding = p.addFoodToTurnFood();
+                p.addFood(turnFoodPoints[i] + foodFromBuilding);
+            }
+            i++;
+        }
+    }
+
     /**
      * Ends the current round by solving events.
      */
-    public void endRound() {
+     void endRound() {
+        turnOrderFoodBonus();
         // Get events from the lower row.
         List<EventCard> events = lowerRow.stream()
                 .filter(card -> card.getCardType().isEvent())
@@ -219,9 +266,8 @@ public class Game extends Subject {
             }
         }
 
-        // TODO: check if this is useful when more turns are played
-        // set null buildingtype2 player
-        //building2OfferingCard.setPlayer(null);
+        // remove player from buildingType2 offering card
+         building2OfferingCard.setPlayer(null);
 
         // TODO: notifyObserver(GameState gameState);
     }
@@ -378,6 +424,11 @@ public class Game extends Subject {
         upperRow.removeAll(characterCards); // if not present, no worries
         lowerRow.removeAll(characterCards); // if not present, no worries
 
+        //if the player has the buildingType2 card set it to offering card
+        if(building2OfferingCard.getPlayer() == null) {
+            addPlayerToBT2OfferingCard(player);
+        }
+
         currentOffering.setPlayer(null);
 
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
@@ -385,25 +436,24 @@ public class Game extends Subject {
         //check everybody played his base turn
         if(nextOfferingCard == null)
         {
-            //if we have a buildingType2 in game do building action
-
-            for(Player p : players)
-            {
-                //check if a player has buildingType2
-                //Important: there is a singular buildingType2 per game
-
-                if(p.hasBuilding2()) {
-                    //set player to BuildingType2 Offering Card
-                    building2OfferingCard.setPlayer(p);
-                    break;
-                }
-            }
+            // the round has ended
+            endRound();
         }
-
-
 
         //GamseState = new GameState
         //notifyObserver
+    }
+
+
+    /**
+     * Checks if the player has the BuildingType2 card and sets it to buildingType2OfferingCard
+     * @param player the player to be set
+     */
+    private void addPlayerToBT2OfferingCard(Player player) {
+        //Important: there is a singular buildingType2 per game
+        if(player.hasBuilding2()) {
+            building2OfferingCard.setPlayer(player);
+        }
     }
 
     /// only for testing
