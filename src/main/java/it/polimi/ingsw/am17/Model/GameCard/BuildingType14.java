@@ -15,6 +15,9 @@ public class BuildingType14 extends BuildingCard {
     private static final int era = 1;
     private static final int foodCost = 6;
     private static final int bonusPoints = 4;
+    private final int numberOfCharacter = (int) Arrays.stream(CardType.values())
+            .filter(type -> !type.name().endsWith("_EVENT"))
+            .count();
     public BuildingType14() {
         super(era, foodCost, bonusPoints);
     }
@@ -22,21 +25,22 @@ public class BuildingType14 extends BuildingCard {
     @Override
     public int FoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
 
+        //create frequency array
+        int[] presenceByCharacterType = new int[numberOfCharacter];
 
-        int[] presenceByCharacterType = new int[6];
-
+        //Populate frequency array
         for(CharacterCard card : characterCards)
         {
             presenceByCharacterType[card.getCardType().ordinal()]++;
         }
 
-        //check min value of characterCards
+        //check min value of frequency array
         int minValueBefore = Arrays.stream(presenceByCharacterType).min().orElse(0);
 
-        //count the new card
+        //Increment the count for the specific type of the new card
         presenceByCharacterType[newCard.getCardType().ordinal()]++;
 
-        //check min value of characterCards with new card
+        //check new min value of frequency array
         int minValueAfter = Arrays.stream(presenceByCharacterType).min().orElse(0);
 
         if(minValueAfter > minValueBefore)
