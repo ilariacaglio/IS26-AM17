@@ -424,12 +424,12 @@ public class Game extends Subject {
         upperRow.removeAll(characterCards); // if not present, no worries
         lowerRow.removeAll(characterCards); // if not present, no worries
 
-        currentOffering.setPlayer(null);
-
         //if the player has the buildingType2 card set it to offering card
         if(building2OfferingCard.getPlayer() == null) {
             addPlayerToBT2OfferingCard(player);
         }
+
+        currentOffering.setPlayer(null);
 
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
 
