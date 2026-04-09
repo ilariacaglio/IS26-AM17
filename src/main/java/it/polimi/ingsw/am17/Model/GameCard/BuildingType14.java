@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -21,23 +22,26 @@ public class BuildingType14 extends BuildingCard {
     @Override
     public int FoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
 
-        // TODO: check if working
-        // Count how many cards of each character type with some stream magic
-        Map<CardType, Long> typeCount = characterCards.stream()
-                .collect(Collectors.groupingBy(
-                        CharacterCard::getCardType,
-                        Collectors.counting()
-                ));
 
-        // If you're missing any characterType different than the new one, you don't have a new set
-        for  (Map.Entry<CardType, Long> entry : typeCount.entrySet()) {
-            if (entry.getKey() != newCard.getCardType())
-                if (entry.getValue() == 0) {
-                    return 0;
-                }
+        int[] presenceByCharacterType = new int[6];
+
+        for(CharacterCard card : characterCards)
+        {
+            presenceByCharacterType[card.getCardType().ordinal()]++;
         }
 
-        // else you do and get the points
-        return 5;
+        //check min value of characterCards
+        int minValueBefore = Arrays.stream(presenceByCharacterType).min().orElse(0);
+
+        //count the new card
+        presenceByCharacterType[newCard.getCardType().ordinal()]++;
+
+        //check min value of characterCards with new card
+        int minValueAfter = Arrays.stream(presenceByCharacterType).min().orElse(0);
+
+        if(minValueAfter > minValueBefore)
+            return 5;
+        else
+            return 0;
     }
 }

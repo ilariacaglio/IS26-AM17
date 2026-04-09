@@ -81,6 +81,11 @@ public class Player{
                     "Cannot add an event card to the player's character list."
             );
         }
+        int foodFromBuildingType14 = 0;
+        for(BuildingCard buildingCard : buildingCards)
+        {
+            foodFromBuildingType14+= buildingCard.FoodBonusFromCardAcquisition(characterCards, (CharacterCard)card);
+        }
         characterCards.add((CharacterCard) card);
     }
 
