@@ -27,6 +27,8 @@ public class Game extends Subject {
     private List<BuildingCard> upperBuildingRow;
     private List<BuildingCard> lowerBuildingRow;
 
+    private final OfferingCard building2OfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
+
     public Game(int id, int numPlayers) {
         this.id = id;
         this.numPlayers = numPlayers;
@@ -51,10 +53,19 @@ public class Game extends Subject {
      * @return leftmost offering card with player in the offering track.
      */
     private OfferingCard getNextOccupiedOfferingCard() {
-        return offeringCards.stream()
+        OfferingCard offCard =  offeringCards.stream()
                 .filter(card -> card.getPlayer() != null)
                 .min(Comparator.comparing(OfferingCard::getOrderLetter))
                 .orElse(null);
+        if(offCard != null) {
+            return offCard;
+        }
+        else if(building2OfferingCard.getPlayer() == null){
+            return null;
+        }
+        else{
+            return building2OfferingCard;
+        }
     }
 
     /**
@@ -208,6 +219,10 @@ public class Game extends Subject {
             }
         }
 
+        // TODO: check if this is useful when more turns are played
+        // set null buildingtype2 player
+        //building2OfferingCard.setPlayer(null);
+
         // TODO: notifyObserver(GameState gameState);
     }
 
@@ -243,7 +258,7 @@ public class Game extends Subject {
                 .filter(card -> card.getCardType().isCharacter())
                 .map(CharacterCard.class::cast)
                 .toList();
-        List<CharacterCard> lowerRowCharacterCards = upperRow.stream()
+        List<CharacterCard> lowerRowCharacterCards = lowerRow.stream()
                 .filter(card -> card.getCardType().isCharacter())
                 .map(CharacterCard.class::cast)
                 .toList();
@@ -373,9 +388,8 @@ public class Game extends Subject {
                 //Important: there is a singular buildingType2 per game
 
                 if(p.hasBuilding2()) {
-                    //set nextOfferingCard to BuildingType2 Offering Card
-                    nextOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
-                    nextOfferingCard.setPlayer(p);
+                    //set player to BuildingType2 Offering Card
+                    building2OfferingCard.setPlayer(p);
                     break;
                 }
             }
