@@ -27,6 +27,11 @@ public class Game extends Subject {
     private List<BuildingCard> upperBuildingRow;
     private List<BuildingCard> lowerBuildingRow;
 
+    // Game State
+    // currentEra (indicates also if started/ended)
+    // roundPhase {Starting, OfferingCardSelection, TribesCardSelection}
+    // nextPlayer
+
     public Game(int id, int numPlayers) {
         this.id = id;
         this.numPlayers = numPlayers;
