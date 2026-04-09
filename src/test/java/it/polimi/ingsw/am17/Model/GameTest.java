@@ -160,5 +160,5 @@ public class GameTest {
     }
 
     // TODO selectOfferingCard
-    // TODO playerAction
+    // TODO selectTribeCards
 }

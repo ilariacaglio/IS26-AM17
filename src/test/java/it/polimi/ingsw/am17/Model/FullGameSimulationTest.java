@@ -45,7 +45,7 @@ public class FullGameSimulationTest {
             for (Player player : game.getPlayers()) {
                 List<CharacterCard> characterCards = new ArrayList<>();
                 List<BuildingCard> buildingCards = new ArrayList<>();
-                game.playerAction(player, characterCards, buildingCards); // controller POV
+                game.selectTribeCards(player, characterCards, buildingCards); // controller POV
             }
 
             // endRound will end game if no cards are available
