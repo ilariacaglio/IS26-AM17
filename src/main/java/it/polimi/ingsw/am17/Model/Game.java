@@ -190,10 +190,37 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
     }
 
+    private boolean isSelectTribeCardsPhaseEnded() {
+        if (getNextOccupiedOfferingCard() == null) {
+
+            // check if someone has a buildingType2
+            for (Player player : players)
+            {
+                if (player.hasBuilding2()) {
+
+                    // add pseudoOfferingCard to the player to pick the extra card
+                    OfferingCard pseudoOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
+                    pseudoOfferingCard.setPlayer(player);
+
+                    // N.B. buildingType2 is a singleton, I can stop this logic here.
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Ends the current round by solving events.
      */
-    public void endRound() {
+    private void endRound() {
+
+        // check if all players played their turn
+        if (!isSelectTribeCardsPhaseEnded()) {
+            throw new IllegalStateException("Some players still need to select tribe cards.");
+        }
+
         // Get events from the lower row.
         List<EventCard> events = lowerRow.stream()
                 .filter(card -> card.getCardType().isEvent())
@@ -312,6 +339,7 @@ public class Game extends Subject {
      * @param player
      * @param characterCards TODO: check null
      * @param buildingCards TODO: check null
+     * TODO: observer
      */
     public void selectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         // Get leftmost occupied offering card.
@@ -347,27 +375,14 @@ public class Game extends Subject {
 
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
 
-        //check everybody played his base turn
-        if(nextOfferingCard == null)
-        {
-            //if we have a buildingType2 in game do building action
-
-            for(Player p : players)
-            {
-                //check if a player has buildingType2
-                //Important: there is a singular buildingType2 per game
-
-                if(p.hasBuilding2()) {
-                    //set nextOfferingCard to BuildingType2 Offering Card
-                    nextOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
-                    nextOfferingCard.setPlayer(p);
-                    break;
-                }
-            }
+        // try ending the round
+        try {
+            endRound();
         }
-
-        //GamseState = new GameState
-        //notifyObserver
+        // catch error gracefully
+        catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /// only for testing
