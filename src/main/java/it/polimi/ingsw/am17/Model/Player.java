@@ -143,6 +143,20 @@ public class Player{
         return false;
     }
 
+    public int addFoodToTurnFood()
+    {
+        // if the player has building type 11 has an additional food point
+        int food = 0;
+        for(BuildingCard card : buildingCards){
+            food+= card.FoodBonusFromTurnOrder();
+        }
+        return food;
+    }
+
+    /**
+     * Calculate how much food player has to pay and removes it or removes pp
+     * @param pointLost number of point lost if player doesn't have enough food
+     */
    public void solveFoodEvent(int pointLost)
    {
        //count number of Binder

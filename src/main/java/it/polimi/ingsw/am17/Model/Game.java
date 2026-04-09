@@ -206,11 +206,18 @@ public class Game extends Subject {
     private void turnOrderFoodBonus(){
         int i=0;
         for (Player p : orderedPlayer) {
-            if(turnFoodPoints[i]<0 && p.getFood()<1){
-                p.addPp(-2);
+            //check if turnFood > 0
+            if(turnFoodPoints[i]<0){
+                //if not check if player can pay the food (food price is not higher then 1)
+                if( p.getFood()<1)
+                    p.addPp(-2);
+                else
+                    p.addFood(turnFoodPoints[i]);
             }
             else{
-                p.addFood(turnFoodPoints[i]);
+                //check if player has food bonus from buildings
+                int foodFromBuilding = p.addFoodToTurnFood();
+                p.addFood(turnFoodPoints[i] + foodFromBuilding);
             }
             i++;
         }
