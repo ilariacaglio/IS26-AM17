@@ -24,7 +24,7 @@ public class BuildingType13M extends BuildingCard {
     }
 
     @Override
-    public int FoodDiscount(List<CharacterCard> playerCharacterCards) {
+    public int GetFoodDiscountInFoodEvent(List<CharacterCard> playerCharacterCards) {
         return (int) playerCharacterCards.stream().filter(card -> card.getCardType() == characterType).count();
     }
 }

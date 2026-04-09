@@ -17,7 +17,7 @@ public class BuildingType1 extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(List<CharacterCard> playerCharacterCards) {
+    public int GetAdditionalFinalPoints(List<CharacterCard> playerCharacterCards) {
         return 25;
     }
 }

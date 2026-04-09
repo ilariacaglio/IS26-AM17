@@ -14,7 +14,7 @@ public class BuildingType12 extends BuildingCard {
     }
 
     @Override
-    public boolean isShieldFromRitualEvent() {
+    public boolean isShieldedFromRitualEvent() {
         return true;
     }
 }

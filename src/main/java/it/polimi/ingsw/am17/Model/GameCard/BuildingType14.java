@@ -23,7 +23,7 @@ public class BuildingType14 extends BuildingCard {
     }
 
     @Override
-    public int FoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
+    public int GetFoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
 
         //create frequency array
         int[] presenceByCharacterType = new int[numberOfCharacter];
