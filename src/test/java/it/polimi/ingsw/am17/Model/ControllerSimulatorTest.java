@@ -30,7 +30,7 @@ public class ControllerSimulatorTest {
         // clients are notified with the new state (player whose turn is, cards on the table...) TODO
 
         // ROUNDS
-        while (true) {
+        do {
             // 1. Offering card selection
             for (Player player : game.getPlayers()) {
                 Random rand = new Random();
@@ -49,7 +49,6 @@ public class ControllerSimulatorTest {
             // endRound will end game if no cards are available
             game.endRound();
 
-            if (game.getCurrentEra() == -1) break; // game is ended
-        }
+        } while (!game.isEnded()); // game is ended
     }
 }
