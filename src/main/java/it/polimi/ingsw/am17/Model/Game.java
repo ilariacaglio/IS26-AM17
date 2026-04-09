@@ -144,6 +144,12 @@ public class Game extends Subject {
             orderedPlayer.push(p);
         }
 
+        //give food to players
+        int[] startingFood = {2, 3, 3, 4, 4};
+        for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
+            players.get(i).addFood(startingFood[i]);
+        }
+
         // Populate the rows
         int targetLowerRowSize = numPlayers + 1;
         int targetUpperRowSize = numPlayers + 4;
