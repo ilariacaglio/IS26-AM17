@@ -91,6 +91,7 @@ public class Game extends Subject {
      * Goes to the next era.
      * If the game is not started, it starts.
      * Notifies the observers.
+     * TODO: observer
      */
     private void nextEra() {
         switch (currentEra) {
@@ -106,8 +107,6 @@ public class Game extends Subject {
             default:
                 throw new IllegalStateException("Invalid era");
         }
-
-        // TODO: notifyObserver(GameState gameState);
     }
 
     private void moveDownBuildingCards() {
@@ -169,6 +168,7 @@ public class Game extends Subject {
 
     /**
      * Ends the current round by solving events.
+     * TODO: observer
      */
     public void endRound() {
         // Get events from the lower row.
@@ -201,12 +201,11 @@ public class Game extends Subject {
                 }
             }
         }
-
-        // TODO: notifyObserver(GameState gameState);
     }
 
     /**
      * Ends the game.
+     * TODO: observer
      */
     private void endGame() {
         this.currentEra = -1; //put era to -1 to signal game has ended
@@ -228,8 +227,6 @@ public class Game extends Subject {
         for (Player player : players) {
             player.calculateFinalPoints();
         }
-
-        // TODO: notifyObserver(GameState gameState);
     }
 
     private void validateCardChoice(int numUpper, int numLower, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
@@ -318,6 +315,9 @@ public class Game extends Subject {
     /**
      * Emulates a player action (picking cards).
      * TODO: FoodBonusFromTurnOrder
+     * TODO: FoodBonusFromCardAcquisition
+     * TODO: Observer
+     * TODO: endRound at the end?
      * @param player
      * @param characterCards TODO: check null
      * @param buildingCards TODO: check null
@@ -374,11 +374,6 @@ public class Game extends Subject {
                 }
             }
         }
-
-
-
-        //GamseState = new GameState
-        //notifyObserver
     }
 
     /// only for testing
