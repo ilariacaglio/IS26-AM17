@@ -51,7 +51,7 @@ public class Game extends Subject {
     }
 
     /**
-     * @return leftmost offering card with player in the offering track.
+     * @return leftmost offering card with player in the offering track (or null).
      */
     private OfferingCard getNextOccupiedOfferingCard() {
         return offeringCards.stream()
@@ -62,13 +62,14 @@ public class Game extends Subject {
 
     /**
      * @return leftmost player in the offering track.
+     * TODO: check null
      */
     private Player getNextPlayerForTribesSelection() {
         return getNextOccupiedOfferingCard().getPlayer();
     }
 
     /**
-     * @return leftmost offering card with player in the offering track from last round.
+     * @return leftmost offering card with player in the offering track from last round (or null).
      */
     private OfferingCard getNextOccupiedOfferingCardFromPreviousRound() {
         return offeringCards.stream()
@@ -79,6 +80,7 @@ public class Game extends Subject {
 
     /**
      * @return leftmost player in the offering track from previous round (i.e. upmost player in turn order card).
+     * TODO: check null
      */
     private Player getNextPlayerForOfferingCardSelection() {
         return getNextOccupiedOfferingCardFromPreviousRound().getPlayer();
