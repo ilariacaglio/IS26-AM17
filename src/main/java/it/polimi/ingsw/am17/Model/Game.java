@@ -28,6 +28,7 @@ public class Game extends Subject {
     private List<BuildingCard> lowerBuildingRow;
 
     private final OfferingCard building2OfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
+    private final int[] turnFoodPoints;
 
     public Game(int id, int numPlayers) {
         this.id = id;
@@ -43,6 +44,18 @@ public class Game extends Subject {
         buildingDeck = new BuildingDeck(numPlayers);
         upperBuildingRow = new ArrayList<>();
         lowerBuildingRow = new ArrayList<>();
+
+        turnFoodPoints = getTurnFoodPoints();
+    }
+
+    private int[] getTurnFoodPoints() {
+        return switch (numPlayers) {
+            case 2 -> new int[]{1, -1};
+            case 3 -> new int[]{2, 0, -1};
+            case 4 -> new int[]{2, 1, 0, -1};
+            case 5 -> new int[]{3, 1, 0, 0, -1};
+            default -> throw new IllegalStateException("Wrong number of players");
+        };
     }
 
     boolean isStarted() {
@@ -190,10 +203,24 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
     }
 
+    private void turnOrderFoodBonus(){
+        int i=0;
+        for (Player p : orderedPlayer) {
+            if(turnFoodPoints[i]<0 && p.getFood()<1){
+                p.addPp(-2);
+            }
+            else{
+                p.addFood(turnFoodPoints[i]);
+            }
+            i++;
+        }
+    }
+
     /**
      * Ends the current round by solving events.
      */
     public void endRound() {
+        turnOrderFoodBonus();
         // Get events from the lower row.
         List<EventCard> events = lowerRow.stream()
                 .filter(card -> card.getCardType().isEvent())
