@@ -14,7 +14,6 @@ public class Game extends Subject {
     private int currentEra;
 
     private final List<Player> players;
-    private Stack<Player> orderedPlayer;
 
     private final List<OfferingCard> offeringCards;
 
@@ -60,9 +59,27 @@ public class Game extends Subject {
     /**
      * @return leftmost player in the offering track.
      */
-    private Player getNextPlayer() {
+    private Player getNextPlayerForTribesSelection() {
         return getNextOccupiedOfferingCard().getPlayer();
     }
+
+    /**
+     * @return leftmost offering card with player in the offering track from last round.
+     */
+    private OfferingCard getNextOccupiedOfferingCardFromPreviousRound() {
+        return offeringCards.stream()
+                .filter(card -> card.getLastPlayer() != null)
+                .min(Comparator.comparing(OfferingCard::getOrderLetter))
+                .orElse(null);
+    }
+
+    /**
+     * @return leftmost player in the offering track from previous round (i.e. upmost player in turn order card).
+     */
+    private Player getNextPlayerForOfferingCardSelection() {
+        return getNextOccupiedOfferingCardFromPreviousRound().getPlayer();
+    }
+
 
     /**
      * Adds a player to the game.
@@ -273,46 +290,14 @@ public class Game extends Subject {
      * @param player player that chose the offering card
      * @param offeringCard offering card picked
      */
-    public void selectOfferingCard(Player player, OfferingCard offeringCard)
-    {
-        //check if is player turn
-        if(!player.equals(orderedPlayer.pop())) {
+    public void selectOfferingCard(Player player, OfferingCard offeringCard) {
+
+        // Check if the player is current next player
+        if (player != getNextPlayerForOfferingCardSelection()) {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
-        //check card is free
-        if(offeringCard == null || offeringCard.getPlayer() != null){
-            throw new IllegalStateException("The offering card was already selected");
-        }
-
-        //set player to offeringCard
         offeringCard.setPlayer(player);
-
-        Player nextPlayer;
-        //notify observer
-        try {
-            nextPlayer = orderedPlayer.peek();
-        }catch (EmptyStackException e)
-        {
-            //order player stack for next turn
-            orderedPlayer = offeringCards.stream()
-                    .filter(card -> card.getPlayer() != null)
-                    .sorted(Comparator.comparing(OfferingCard::getOrderLetter))
-                    .map(OfferingCard::getPlayer)
-                    .collect(Collectors.toCollection(Stack::new));
-
-
-            //get first player to do player action
-            nextPlayer = getNextPlayer();
-
-            //gamestate should specify it s turn for player action
-            //GameState = new GameState ...
-            //notifyObserver(gameState)
-            return;
-        }
-
-        //GameState = new GameState ...
-        //notifyObserver(gameState)
     }
 
     /**
@@ -374,8 +359,6 @@ public class Game extends Subject {
                 }
             }
         }
-
-
 
         //GamseState = new GameState
         //notifyObserver
