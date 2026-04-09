@@ -70,22 +70,15 @@ class PlayerTest {
     }
 
     @Test
-    void testHasBuilding2()
+    void testHasBuilding2WithMoreBuilding2()
     {
         BuildingCard b = new BuildingCard(0, 0, 0);
         player.addBuilding(b);
         player.addBuilding(b);
         player.addBuilding(b);
-
-        assertFalse(player.hasBuilding2());
-
         BuildingType2 b2 = new BuildingType2();
         player.addBuilding(b2);
-
-        assertTrue(player.hasBuilding2());
-
         player.addBuilding(b2);
-
         player.addBuilding(b);
         player.addBuilding(b);
         player.addBuilding(b);
@@ -94,8 +87,31 @@ class PlayerTest {
     }
 
     @Test
-    void testFoodEvent()
+    void testHasBuilding2(){
+        BuildingCard b = new BuildingCard(0, 0, 0);
+        player.addBuilding(b);
+        player.addBuilding(b);
+        player.addBuilding(b);
+        BuildingType2 b2 = new BuildingType2();
+        player.addBuilding(b2);
+
+        assertTrue(player.hasBuilding2());
+    }
+
+
+    @Test
+    void testHasBuilding2WithNoBuilding2()
     {
+        BuildingCard b = new BuildingCard(0, 0, 0);
+        player.addBuilding(b);
+        player.addBuilding(b);
+        player.addBuilding(b);
+
+        assertFalse(player.hasBuilding2());
+    }
+
+    @Test
+    void testFoodEventWithoutCards() {
         //add food and points to player
         player.addFood(4);
         player.addPp(4);
@@ -104,6 +120,14 @@ class PlayerTest {
         player.solveFoodEvent(2);
         assertEquals(4, player.getFood());
         assertEquals(4, player.getPp());
+    }
+
+    @Test
+    void testFoodEvent()
+    {
+        //add food and points to player
+        player.addFood(4);
+        player.addPp(4);
 
         //add cart to player
         List<CharacterCard> cards = new ArrayList<>();
@@ -116,7 +140,21 @@ class PlayerTest {
         assertEquals(2, player.getFood());
         assertEquals(4, player.getPp());
 
-        player.addFood(2);
+    }
+
+
+    @Test
+    void testFoodEventWithBinderAndBuildings()
+    {
+        //add food and points to player
+        player.addFood(4);
+        player.addPp(4);
+
+        //add cart to player
+        List<CharacterCard> cards = new ArrayList<>();
+        cards.add(new Hunter(0, 0, false));
+        cards.add(new Hunter(0, 0, false));
+        player.addCards(cards, Collections.emptyList());
 
         List<BuildingCard> buildingCards = new ArrayList<>();
         buildingCards.add(new BuildingType13M(0, 0, 1, CardType.BUILDER));
@@ -131,10 +169,14 @@ class PlayerTest {
         assertEquals(4, player.getFood());
         assertEquals(4, player.getPp());
 
-        player = new Player("TestPlayer", Color.RED);
+    }
+
+    @Test
+    void testWithNoFoodAndNegativeRemainingPp()
+    {
         player.addPp(1);
 
-        cards = new ArrayList<>();
+        List<CharacterCard> cards = new ArrayList<>();
         cards.add(new Artist(0, 0));
         cards.add(new Artist(0, 0));
         player.addCards(cards, Collections.emptyList());
@@ -146,8 +188,7 @@ class PlayerTest {
     }
 
     @Test
-    void testHuntingEvent()
-    {
+    void testHuntingEventWithNoCards() {
         player.addPp(4);
         player.addFood(4);
 
@@ -155,6 +196,12 @@ class PlayerTest {
         player.solveHuntingEvent(2);
         assertEquals(4, player.getFood());
         assertEquals(4, player.getPp());
+    }
+
+    @Test
+    void testHuntingEventWithNoHunter() {
+        player.addPp(4);
+        player.addFood(4);
 
         List<CharacterCard> cards = new ArrayList<>();
         cards.add(new Binder(0, 0));
@@ -165,33 +212,56 @@ class PlayerTest {
         player.solveHuntingEvent(2);
         assertEquals(4, player.getFood());
         assertEquals(4, player.getPp());
+    }
+    @Test
+    void testHuntingEvent() {
+        player.addPp(4);
+        player.addFood(4);
+
+        List<CharacterCard> cards = new ArrayList<>();
+        cards.add(new Binder(0, 0));
+        cards.add(new Binder(0, 0));
+        player.addCards(cards, Collections.emptyList());
 
         cards.add(new Hunter(0, 0, false));
         cards.add(new Hunter(0, 0, false));
         player.addCards(cards, Collections.emptyList());
-
-        //test with hunter
-        player.solveHuntingEvent(2);
-        assertEquals(6, player.getFood());
-        assertEquals(8, player.getPp());
-
-        List<BuildingCard> bc = new ArrayList<>();
-        bc.add(new BuildingType7());
-        player.addCards(Collections.emptyList(), bc);
-
-        player.solveHuntingEvent(2);
-        assertEquals(10, player.getFood());
-        assertEquals(14, player.getPp());
     }
 
     @Test
-    void testPaintingEvent()
+    void testHuntingEventWithBuildings()
     {
+        player.addPp(4);
+        player.addFood(8);
+
+        List<CharacterCard> cards = new ArrayList<>();
+        cards.add(new Binder(0, 0));
+        cards.add(new Hunter(0, 0, false));
+        cards.add(new Hunter(0, 0, false));
+        cards.add(new Binder(0, 0));
+        List<BuildingCard> bc = new ArrayList<>();
+        bc.add(new BuildingType7());
+        player.addCards(cards, bc);
+
+        player.solveHuntingEvent(2);
+        //8-7+2*2 = 5
+        assertEquals(5, player.getFood());
+        //4+2*(2+1) = 10
+        assertEquals(10, player.getPp());
+    }
+
+    @Test
+    void testPaintingEventWithNoCards() {
         player.addPp(4);
 
         //test with no cards
         player.solvePaintingEvent(2, 3, 1);
         assertEquals(3, player.getPp());
+    }
+
+    @Test
+    void testPaintingEventWithNotEnoughArtists() {
+        player.addPp(4);
 
         List<CharacterCard> cards = new ArrayList<>();
         cards.add(new Binder(0, 0));
@@ -199,14 +269,73 @@ class PlayerTest {
         player.addCards(cards, Collections.emptyList());
 
         player.solvePaintingEvent(2, 3, 1);
-        assertEquals(2, player.getPp());
+        assertEquals(3, player.getPp());
+    }
 
-        cards = new ArrayList<>();
+    @Test
+    void testPaintingEvent()
+    {
+        player.addPp(4);
+
+        List<CharacterCard> cards = new ArrayList<>();
+        cards.add(new Binder(0, 0));
+        cards.add(new Binder(0, 0));
         cards.add(new Artist(0, 0));
         cards.add(new Artist(0, 0));
+
         player.addCards(cards, Collections.emptyList());
 
         player.solvePaintingEvent(2, 2, 1);
-        assertEquals(6, player.getPp());
+        assertEquals(8, player.getPp());
     }
+
+    @Test
+    void testCalculateStarPointsWithNoCards()
+    {
+        assertEquals(0, player.calculateStarPoints());
+    }
+
+    @Test
+    void testCalculateStarPointsWithNoShaman()
+    {
+        List<CharacterCard> cards = new ArrayList<>();
+        cards.add(new Binder(0, 0));
+        cards.add(new Binder(0, 0));
+        cards.add(new Artist(0, 0));
+        cards.add(new Artist(0, 0));
+        player.addCards(cards, Collections.emptyList());
+        assertEquals(0, player.calculateStarPoints());
+    }
+
+    @Test
+    void testCalculateStarPoints()
+    {
+        List<CharacterCard> cards = new ArrayList<>();
+        cards.add(new Shaman(0, 0, 2));
+        cards.add(new Shaman(0, 0, 3));
+        cards.add(new Artist(0, 0));
+        cards.add(new Artist(0, 0));
+        player.addCards(cards, Collections.emptyList());
+        assertEquals(5, player.calculateStarPoints());
+    }
+
+    @Test
+    void testCalculateStarPointsWithBuildings()
+    {
+        player.addFood(15);
+        List<CharacterCard> cards = new ArrayList<>();
+        cards.add(new Shaman(0, 0, 2));
+        cards.add(new Shaman(0, 0, 3));
+        cards.add(new Artist(0, 0));
+        cards.add(new Artist(0, 0));
+
+        List<BuildingCard> bc = new ArrayList<>();
+        bc.add(new BuildingType7());
+        bc.add(new BuildingType9());
+
+        player.addCards(cards, bc);
+
+        assertEquals(8, player.calculateStarPoints());
+    }
+
 }

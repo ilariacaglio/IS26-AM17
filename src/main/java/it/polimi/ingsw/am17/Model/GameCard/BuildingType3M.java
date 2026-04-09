@@ -26,7 +26,7 @@ public class BuildingType3M extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(List<CharacterCard> playerCharacterCards) {
+    public int GetAdditionalFinalPoints(List<CharacterCard> playerCharacterCards) {
         int characterCount = (int) playerCharacterCards.stream().filter(card -> card.getCardType() == characterType).count();
         return characterCount * pointsFromEachCharacter;
     }

@@ -19,7 +19,7 @@ public class BuildingType4 extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(List<CharacterCard> playerCharacterCards) {
+    public int GetAdditionalFinalPoints(List<CharacterCard> playerCharacterCards) {
         // Group by character type and count occurrences
         Map<CardType, Long> typeCounts = playerCharacterCards.stream()
                 .collect(Collectors.groupingBy(CharacterCard::getCardType, Collectors.counting()));

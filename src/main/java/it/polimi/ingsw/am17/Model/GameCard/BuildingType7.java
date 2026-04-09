@@ -16,12 +16,12 @@ public class BuildingType7 extends BuildingCard {
     }
 
     @Override
-    public int FoodBonusFromHunters(List<CharacterCard> playerCharacterCards) {
+    public int AddFoodPerHunterInHuntingEvent(List<CharacterCard> playerCharacterCards) {
         return (int) playerCharacterCards.stream().filter(characterCard -> characterCard.getCardType() == CardType.HUNTER).count();
     }
 
     @Override
-    public int PointsBonus(List<CharacterCard> playerCharacterCards) {
+    public int AddPointPerHunterInHuntingEvent(List<CharacterCard> playerCharacterCards) {
         return (int) playerCharacterCards.stream().filter(characterCard -> characterCard.getCardType() == CardType.HUNTER).count();
     }
 

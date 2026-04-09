@@ -30,7 +30,11 @@ public class OfferingCard {
     }
 
     public void setPlayer(Player player) {
-        if (this.player != null) {
+        if(player == null){
+            // remove player from offering card
+            this.player=null;
+        }
+        else if (this.player != null) {
             throw new IllegalStateException("Offering card already assigned to a player");
         }
         else {
