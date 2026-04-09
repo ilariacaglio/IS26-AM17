@@ -146,9 +146,16 @@ public class Game extends Subject {
             throw new IllegalStateException("The game has already started.");
         }
 
-        // Set era and shuffle players
         this.currentEra = 1;
-        Collections.shuffle(players); // TODO: check if already shuffled by controller
+
+        // Randomly select player turn card order using offeringCards
+        Collections.shuffle(players); // TODO: check if this works as intended
+        players.forEach(player -> {
+            Random rand = new Random();
+            OfferingCard randomOfferingCard = offeringCards.get(rand.nextInt(offeringCards.size()));
+            randomOfferingCard.setPlayer(player);
+            randomOfferingCard.removePlayer();
+        });
 
         // Populate the rows
         int targetLowerRowSize = numPlayers + 1;
