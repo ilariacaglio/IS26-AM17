@@ -47,6 +47,10 @@ public class Game extends Subject {
         return currentEra > 0;
     }
 
+    boolean isEnded() {
+        return currentEra < 0;
+    }
+
     /**
      * @return leftmost offering card with player in the offering track.
      */
