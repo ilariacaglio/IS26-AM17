@@ -269,6 +269,7 @@ public class Game extends Subject {
      * notify observer
      * @param player player that chose the offering card
      * @param offeringCard offering card picked
+     * TODO: observer
      */
     public void selectOfferingCard(Player player, OfferingCard offeringCard)
     {
