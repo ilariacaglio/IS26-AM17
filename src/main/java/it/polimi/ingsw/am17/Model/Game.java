@@ -444,6 +444,11 @@ public class Game extends Subject {
         //notifyObserver
     }
 
+
+    /**
+     * Checks if the player has the BuildingType2 card and sets it to buildingType2OfferingCard
+     * @param player the player to be set
+     */
     private void addPlayerToBT2OfferingCard(Player player) {
         //Important: there is a singular buildingType2 per game
         if(player.hasBuilding2()) {
