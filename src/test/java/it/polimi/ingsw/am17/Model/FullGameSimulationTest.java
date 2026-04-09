@@ -38,7 +38,7 @@ public class FullGameSimulationTest {
 //
 //            // 2. Player actions (pick character cards)
 //            for (Player player : game.getPlayers()) {
-//                game.playerAction(player, cards); // controller POV
+//                game.selectTribeCards(player, cards); // controller POV
 //            }
 //        }
     }

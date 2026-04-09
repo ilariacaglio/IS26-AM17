@@ -90,7 +90,7 @@ public class Player{
 
 
     /**
-     * add cards to player (from playerAction)
+     * add cards to player (from selectTribeCards)
      * TODO: add FoodBonusFromCardAcquisition
      * @param characterCards
      * @param buildingCards
