@@ -208,7 +208,7 @@ public class Game extends Subject {
         for (Player p : orderedPlayer) {
             //check if turnFood > 0
             if(turnFoodPoints[i]<0){
-                //if not check if player can pay the food (food price is not higher then 1)
+                //if not check if player can pay the food (food price is not higher than 1)
                 if( p.getFood()<1)
                     p.addPp(-2);
                 else
