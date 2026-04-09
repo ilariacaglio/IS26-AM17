@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Model.OfferingCard;
 import it.polimi.ingsw.am17.Model.Player;
 
 /**
@@ -16,7 +17,7 @@ public class BuildingType11 extends BuildingCard {
     }
 
     @Override
-    public int FoodBonus(Player player) {
-        return 0; // TODO: where is the logic for food from turn order?
+    public int FoodBonusFromTurnOrder(OfferingCard offeringCard) {
+        return 1;
     }
 }

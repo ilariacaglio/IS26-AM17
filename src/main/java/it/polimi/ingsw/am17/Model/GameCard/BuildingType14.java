@@ -19,7 +19,7 @@ public class BuildingType14 extends BuildingCard {
     }
 
     @Override
-    public int FoodBonus(List<CharacterCard> characterCards, CharacterCard newCard) {
+    public int FoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
 
         // TODO: check if working
         // Count how many cards of each character type with some stream magic

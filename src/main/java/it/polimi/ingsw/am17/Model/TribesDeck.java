@@ -45,9 +45,18 @@ public class TribesDeck {
         }
     }
 
-    public TribesCard Draw(){
+    public TribesCard Draw() {
+        if (currIndex + 1 >= tribeCards.size()) {
+            throw new IllegalStateException("No more cards left in the deck.");
+        }
+
         currIndex++;
         return tribeCards.get(currIndex);
+    }
+
+    /// only to use for testing
+    public List<TribesCard> getTribeCards() {
+        return tribeCards;
     }
 
     private void ShuffleEra1(){

@@ -14,4 +14,8 @@ public enum CardType {
     public boolean isCharacter() {
         return !this.name().endsWith("_EVENT");
     }
+
+    public boolean isEvent() {
+        return !isCharacter();
+    }
 }

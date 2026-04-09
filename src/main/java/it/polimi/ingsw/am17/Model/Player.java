@@ -9,16 +9,15 @@ public class Player{
     private int pp;
     private int food;
     private final Color color;
-    private final TribeCardRow playerTribeRow;
-    private final BuildingCardRow playerBuildingRow;
-    private OfferingCard offeringCard;
+    private List<CharacterCard> characterCards;
+    private List<BuildingCard> buildingCards;
 
     public Player(String nickname, Color color)
     {
         this.nickname = nickname;
         this.color = color;
-        this.playerBuildingRow = new BuildingCardRow();
-        this.playerTribeRow = new TribeCardRow();
+        this.characterCards = new ArrayList<>();
+        this.buildingCards = new ArrayList<>();
     }
 
     public void addPp(int quantity){
@@ -33,128 +32,258 @@ public class Player{
         this.food = newAmount;
     }
 
-    public OfferingCard getOfferingCard() {
-        return offeringCard;
-    }
-
-    public int getPp()
-    {
-        return pp;
-    }
-
-    public int getFood()
-    {
-        return food;
-    }
-
-    public Color getColor()
-    {
-        return color;
-    }
-
-    public String getNickname()
-    {
-        return nickname;
-    }
-
-    public void setOfferingCard(OfferingCard offeringCard) {
-        this.offeringCard = offeringCard;
-    }
-
-    public void freeOfferingCard() {
-        this.offeringCard = null;
-    }
-
-    public void playTurn(List<TribesCard> tribeCards, List<BuildingCard> buildingCards, Game game){
-        int numHunters;
-        if(!tribeCards.equals(Collections.emptyList())){
-            for(TribesCard card : tribeCards){
-                game.removeTribeCardFromRow(card);
-                //if the player has picked a hunter he gains one food for every hunter he already has
-                if(card.getCardType().equals(CardType.HUNTER) && ((Hunter)card).isWithIcon())
-                {
-                    //count hunter cards
-                    numHunters = (int) playerTribeRow.getCards().stream()
-                            .filter(c->c.getCardType().equals(CardType.HUNTER))
-                            .count();
-                    addFood(numHunters);
-                }
-                playerTribeRow.addCard(card);
-            }
-        }
-        if(!buildingCards.equals(Collections.emptyList())){
-            for(BuildingCard card : buildingCards){
-                buyBuilding((BuildingCard) card);
-                game.removeBuildingCardFromRow(card);
-                playerBuildingRow.addCard(card);
-            }
-        }
-    }
-
-    public void buyBuilding(BuildingCard card){
-        int foodCost = calculateBuildingCost(card);
-        addFood(foodCost*(-1));
-    }
-
-    public int calculateBuildingCost(BuildingCard card){
-        //sum of the food discount of every builder card
-        int foodDiscount = playerTribeRow.getCards().stream()
-                .filter(c->c.getCardType().equals(CardType.BUILDER))
-                .map(c-> ((Builder)c).getFoodReduction())
-                .reduce(0, Integer::sum);
-        //return the price of the building card
-        return card.getFoodCost()-foodDiscount;
-    }
-
-    public List<TribesCard> getPlayerTribeCards(){
-        return playerTribeRow.getCards();
-    }
-
-    public List<BuildingCard> getPlayerBuildingCards(){return playerBuildingRow.getCards();}
-
     public void calculateFinalPoints(){
         boolean iconPresent;
+
         // add pp of builders
-        int pointsBuilders = playerTribeRow.getCards().stream()
+        int pointsBuilders = characterCards.stream()
                     .filter(g ->g.getCardType().equals(CardType.BUILDER))
                     .mapToInt(g -> ((Builder) g).getPointBonus())
                     .sum();
+
         addPp(pointsBuilders);
+
         // add pp of inventors and icons
-        List<Inventor> inventorsList = playerTribeRow.getCards().stream()
-                    .filter(g ->g.getCardType().equals(CardType.INVENTOR))
-                    .map(g -> (Inventor)g)
-                    .toList();
-        Set<Inventor> inventorIcons = new HashSet<>();
-        for(Inventor inventor : inventorsList){
-            iconPresent = false;
-            for (Inventor i: inventorIcons){
-                if(inventor.getIcon().equals(i.getIcon())){
-                    iconPresent = true;
-                }
-            }
-            if(!iconPresent){
-                inventorIcons.add(inventor);
-            }
-        }
-        addPp(inventorsList.size()*inventorIcons.size());
-        // add 10 point for artist couples
-        int numArtists = (int) playerTribeRow.getCards().stream()
+        int inventorCount = (int) characterCards.stream()
+                .filter(c -> c.getCardType() == CardType.INVENTOR)
+                .count();
+
+        long uniqueIcons = characterCards.stream()
+                .filter(c -> c.getCardType() == CardType.INVENTOR)
+                .map(c -> ((Inventor) c).getIcon())
+                .distinct()
+                .count();
+
+        addPp((int) (inventorCount * uniqueIcons));
+
+        // add ten points for each artist couple
+        int numArtists = (int) characterCards.stream()
                 .filter(g ->g.getCardType().equals(CardType.ARTIST))
                 .count();
         int numCouples = Math.floorDiv(numArtists,2);
         addPp(numCouples*10);
+
         // points of buildings
-        List<BuildingCard> buildingsList = playerBuildingRow.getCards();
-        int cardPoints = buildingsList.stream()
+        int cardPoints = buildingCards.stream()
                 .mapToInt(BuildingCard::getBonusPoints)
                 .sum();
         addPp(cardPoints);
+
         // final effects of buildings
-        var characterList = playerTribeRow.getCards().stream()
-                .map(c-> (CharacterCard)c).toList();
-        for (BuildingCard card : buildingsList) {
-            this.addPp(card.FinalPoints(characterList));
+        for (BuildingCard card : buildingCards) {
+            this.addPp(card.FinalPoints(characterCards));
         }
     }
+
+    public void addCharacter(TribesCard card) {
+        if (card.getCardType().isEvent()) {
+            throw new IllegalArgumentException(
+                    "Cannot add an event card to the player's character list."
+            );
+        }
+        characterCards.add((CharacterCard) card);
+    }
+
+    public void addBuilding(BuildingCard card) {
+        buildingCards.add(card);
+    }
+
+
+    /**
+     * add cards to player (from playerAction)
+     * TODO: add FoodBonusFromCardAcquisition
+     * @param characterCards
+     * @param buildingCards
+     */
+    public void addCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+
+        for(CharacterCard card : characterCards){
+
+            // get bonus food if hunter with icon
+            if (card.getCardType().equals(CardType.HUNTER) && ((Hunter)card).isWithIcon()) {
+                addFood(getNumberOfHunters());
+            }
+
+            addCharacter(card);
+        }
+
+        for (BuildingCard card : buildingCards){
+            int cost = calculateBuildingCost(card);
+            try {
+                addFood(-cost);
+            } catch (IllegalStateException e) {
+                throw new IllegalStateException("Not enough food to buy building cards");
+            }
+            addBuilding(card);
+        }
+    }
+
+    public int calculateBuildingCost(BuildingCard card) {
+        //sum of the food discount of every builder card
+        int foodDiscount = characterCards.stream()
+                .filter(c->c.getCardType().equals(CardType.BUILDER))
+                .map(c-> ((Builder)c).getFoodReduction())
+                .reduce(0, Integer::sum);
+
+        //return the price of the building card
+        return card.getFoodCost() - foodDiscount;
+    }
+
+    private int getNumberOfHunters() {
+        return (int) characterCards.stream()
+                .filter(c->c.getCardType().equals(CardType.HUNTER))
+                .count();
+    }
+
+    public boolean hasBuilding2(){
+        for(BuildingCard b : buildingCards){
+           if(b.playOneMoreMove())
+               return true;
+        }
+        return false;
+    }
+
+   public void solveFoodEvent(int pointLost)
+   {
+       //count number of Binder
+       long numBinder = this.characterCards.stream()
+               .filter(c -> c.getCardType().equals(CardType.BINDER))
+               .count();
+       //count foodDiscount given by BuildingCard
+       int foodDiscount =0;
+
+       for(BuildingCard c: this.buildingCards){
+           foodDiscount += c.FoodDiscount(this.characterCards);
+       }
+       //count totalDiscount given by numBinder and foodDiscount
+       int totalDiscount = Math.toIntExact((3*numBinder) + foodDiscount);
+       //count totalCards, witch are all the player cards
+       int totalCards = this.characterCards.size();
+       //find foodPrice, witch is what the player has to pay
+       int foodPrice = totalCards - totalDiscount;
+       //if foodPrice<0, the player doesn't lose pp nor food
+       if(foodPrice<=0){
+           addPp(0);
+           addFood(0);
+       }//if food is not enough, player loses pp and all the food he has
+       else if (food < foodPrice) {
+           int remaining = foodPrice - food;
+
+           int lostPp = pointLost * remaining;
+
+           addPp(lostPp * (-1));
+           addFood(food * (-1));
+       } //if food is enough
+       else {
+           addFood(foodPrice * (-1));
+       }
+   }
+
+   public void solveHuntingEvent(int pointEarned)
+   {
+       //count number of hunter
+       long numHunter = this.characterCards.stream()
+               .filter(c -> c.getCardType().equals(CardType.HUNTER))
+               .count();
+       //if player has hunter cards, they get food and PP
+       if(numHunter!=0){
+           int gainFood = Math.toIntExact(numHunter);
+           int gainPp = Math.toIntExact(pointEarned * numHunter);
+
+           this.addFood(gainFood);
+           this.addPp(gainPp);
+
+       }
+
+       int additionalFood=0;
+       int additionalPp=0;
+
+       List<CharacterCard> characterList = this.characterCards.stream()
+               .map(c-> (CharacterCard)c)
+               .toList();
+       //find additional food and PP given by buildingCard
+       for(BuildingCard c: this.buildingCards){
+           additionalFood += c.FoodBonusFromHunters(characterList);
+           additionalPp += c.PointsBonus(characterList);
+       }
+       //add additionalFood and additionalPp
+       this.addFood(additionalFood);
+       this.addPp(additionalPp);
+   }
+
+   public void solvePaintingEvent(int numMax, int pointsMax, int pointsLow){
+       //count number of artists
+       int numArtist = (int) characterCards.stream()
+               .filter(c-> c.getCardType().equals(CardType.ARTIST))
+               .count();
+       //assign PP based on number of artists
+       if(numArtist>=numMax){
+           addPp(numArtist * pointsMax);
+       }
+       else {
+           addPp(pointsLow*(-1));
+       }
+
+       int additionalFood=0;
+
+
+       //find additional food given by buildingCard
+       for(BuildingCard c: buildingCards){
+           additionalFood =+ c.FoodBonusFromArtists(this.characterCards);
+       }
+       //add additionalFood
+       addFood(additionalFood);
+   }
+
+   public int calculateStarPoints()
+   {
+       int starBonus=0;
+
+       //additional stars given by BuildingType9
+       for(BuildingCard c: this.buildingCards){
+           starBonus += c.StarBonus(this.characterCards);//BuildingType9
+       }
+       //count number of star icons
+       int stars = this.characterCards.stream()
+               .filter(c -> c.getCardType().equals(CardType.SHAMAN))
+               .mapToInt(c -> ((Shaman)c).getStars())
+               .sum();
+       //add starBonus given by BuildingType9
+       return stars + starBonus;
+   }
+
+   public boolean hasDoubleRitualEventPoints()
+   {
+       for(BuildingCard c: this.buildingCards){
+           if( c.isDoubleRitualEventPoints())//BuildingType8
+               return true;
+       }
+       return false;
+   }
+
+   public boolean hasShieldFromRitualEvent(){
+        for(BuildingCard c: this.buildingCards){
+            if(c.isShieldFromRitualEvent())
+                return true;
+        }
+        return  false;
+   }
+
+    /**
+     *Only For Test
+     * @return pp of player
+     */
+   protected int getPp()
+   {
+       return pp;
+   }
+
+    /**
+     * Only For Test
+     * @return food of player
+     */
+   protected int getFood()
+   {
+       return food;
+   }
 }

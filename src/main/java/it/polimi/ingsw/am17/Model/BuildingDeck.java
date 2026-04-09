@@ -10,24 +10,18 @@ import static it.polimi.ingsw.am17.Utility.CardParser.buildingCard13MParser;
 import static it.polimi.ingsw.am17.Utility.CardParser.buildingCard3MParser;
 
 public class BuildingDeck {
-    private final List<BuildingCard> buildingCards;
+    private final List<BuildingCard> buildingCardsEra1;
+    private final List<BuildingCard> buildingCardsEra2;
+    private final List<BuildingCard> buildingCardsEra3;
 
-    public BuildingDeck(int numPlayers, int era)
+    public BuildingDeck(int numPlayers)
     {
-        buildingCards = new ArrayList<>();
-        switch(era){
-            case 1:
-                buildEra1Deck(numPlayers);
-                break;
-            case 2:
-                buildEra2Deck(numPlayers);
-                break;
-            case 3:
-                buildEra3Deck(numPlayers);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid era value");
-        }
+        buildingCardsEra1 = new ArrayList<>();
+        buildingCardsEra2 = new ArrayList<>();
+        buildingCardsEra3 = new ArrayList<>();
+        buildEra1Deck(numPlayers);
+        buildEra2Deck(numPlayers);
+        buildEra3Deck(numPlayers);
     }
 
     private void buildEra1Deck(int numPlayers){
@@ -43,10 +37,10 @@ public class BuildingDeck {
         Collections.shuffle(temp);
         //add the right number of cards based on numPlayer
         if(numPlayers == 2) {
-            buildingCards.add(temp.getFirst());
+            buildingCardsEra1.add(temp.getFirst());
         }
         else {
-            buildingCards.addAll(temp.subList(0,2));
+            buildingCardsEra1.addAll(temp.subList(0,2));
         }
     }
 
@@ -65,10 +59,10 @@ public class BuildingDeck {
         Collections.shuffle(temp);
         //add the right number of cards based on numPlayer
         if(numPlayers <= 3) {
-            buildingCards.addAll(temp.subList(0,2));
+            buildingCardsEra2.addAll(temp.subList(0,2));
         }
         else {
-            buildingCards.addAll(temp.subList(0,3));
+            buildingCardsEra2.addAll(temp.subList(0,3));
         }
     }
 
@@ -83,16 +77,25 @@ public class BuildingDeck {
         Collections.shuffle(temp);
         //add the right number of cards based on numPlayer
         if(numPlayers == 2) {
-            buildingCards.addAll(temp.subList(0,3));
+            buildingCardsEra3.addAll(temp.subList(0,3));
         }
         else if (numPlayers == 3 || numPlayers == 4) {
-            buildingCards.addAll(temp.subList(0,4));
+            buildingCardsEra3.addAll(temp.subList(0,4));
         }
         else{
-            buildingCards.addAll(temp.subList(0,5));
+            buildingCardsEra3.addAll(temp.subList(0,5));
         }
     }
-    public List<BuildingCard> drawAll(){
-        return buildingCards;
+
+    public List<BuildingCard> drawAllEra1(){
+        return Collections.unmodifiableList(buildingCardsEra1);
+    }
+
+    public List<BuildingCard> drawAllEra2(){
+        return Collections.unmodifiableList(buildingCardsEra2);
+    }
+
+    public List<BuildingCard> drawAllEra3(){
+        return Collections.unmodifiableList(buildingCardsEra3);
     }
 }
