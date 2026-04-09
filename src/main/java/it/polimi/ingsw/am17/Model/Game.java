@@ -296,6 +296,11 @@ public class Game extends Subject {
      */
     public void selectOfferingCard(Player player, OfferingCard offeringCard)
     {
+        //check if offeringCard is valid
+        if(!offeringCards.contains(offeringCard) && !offeringCard.equals(building2OfferingCard)) {
+            throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
+        }
+
         //check if is player turn
         if(!player.equals(orderedPlayer.pop())) {
             throw new IllegalStateException("It is not the player's turn.");
