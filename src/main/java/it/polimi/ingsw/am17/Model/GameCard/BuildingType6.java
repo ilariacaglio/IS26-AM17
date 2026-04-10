@@ -16,7 +16,7 @@ public class BuildingType6 extends BuildingCard {
     }
 
     @Override
-    public int FinalPoints(List<CharacterCard> characterCards) {
+    public int GetAdditionalFinalPoints(List<CharacterCard> characterCards) {
         // get builders with stream magic
         List<Builder> builders = characterCards.stream()
                 .filter(card -> card.getCardType() == CardType.BUILDER)

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,30 +15,37 @@ public class BuildingType14 extends BuildingCard {
     private static final int era = 1;
     private static final int foodCost = 6;
     private static final int bonusPoints = 4;
+    private final int numberOfCharacter = (int) Arrays.stream(CardType.values())
+            .filter(type -> !type.name().endsWith("_EVENT"))
+            .count();
     public BuildingType14() {
         super(era, foodCost, bonusPoints);
     }
 
     @Override
-    public int FoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
+    public int GetFoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
 
-        // TODO: check if working
-        // Count how many cards of each character type with some stream magic
-        Map<CardType, Long> typeCount = characterCards.stream()
-                .collect(Collectors.groupingBy(
-                        CharacterCard::getCardType,
-                        Collectors.counting()
-                ));
+        //create frequency array
+        int[] presenceByCharacterType = new int[numberOfCharacter];
 
-        // If you're missing any characterType different than the new one, you don't have a new set
-        for  (Map.Entry<CardType, Long> entry : typeCount.entrySet()) {
-            if (entry.getKey() != newCard.getCardType())
-                if (entry.getValue() == 0) {
-                    return 0;
-                }
+        //Populate frequency array
+        for(CharacterCard card : characterCards)
+        {
+            presenceByCharacterType[card.getCardType().ordinal()]++;
         }
 
-        // else you do and get the points
-        return 5;
+        //check min value of frequency array
+        int minValueBefore = Arrays.stream(presenceByCharacterType).min().orElse(0);
+
+        //Increment the count for the specific type of the new card
+        presenceByCharacterType[newCard.getCardType().ordinal()]++;
+
+        //check new min value of frequency array
+        int minValueAfter = Arrays.stream(presenceByCharacterType).min().orElse(0);
+
+        if(minValueAfter > minValueBefore)
+            return 5;
+        else
+            return 0;
     }
 }
