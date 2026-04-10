@@ -71,7 +71,7 @@ public class Player{
 
         // final effects of buildings
         for (BuildingCard card : buildingCards) {
-            this.addPp(card.FinalPoints(characterCards));
+            this.addPp(card.GetAdditionalFinalPoints(characterCards));
         }
     }
 
@@ -81,6 +81,13 @@ public class Player{
                     "Cannot add an event card to the player's character list."
             );
         }
+        //if player has buildingType14 (and all conditions from building are met add food)
+        int foodFromBuildingType14 = 0;
+        for(BuildingCard buildingCard : buildingCards)
+        {
+            foodFromBuildingType14+= buildingCard.GetFoodBonusFromCardAcquisition(characterCards, (CharacterCard)card);
+        }
+        addFood(foodFromBuildingType14);
         characterCards.add((CharacterCard) card);
     }
 
@@ -137,12 +144,26 @@ public class Player{
 
     public boolean hasBuilding2(){
         for(BuildingCard b : buildingCards){
-           if(b.playOneMoreMove())
+           if(b.hasOneMoreMove())
                return true;
         }
         return false;
     }
 
+    public int addFoodToTurnFood()
+    {
+        // if the player has building type 11 has an additional food point
+        int food = 0;
+        for(BuildingCard card : buildingCards){
+            food+= card.GetFoodBonusFromTurnOrder();
+        }
+        return food;
+    }
+
+    /**
+     * Calculate how much food player has to pay and removes it or removes pp
+     * @param pointLost number of point lost if player doesn't have enough food
+     */
    public void solveFoodEvent(int pointLost)
    {
        //count number of Binder
@@ -153,7 +174,7 @@ public class Player{
        int foodDiscount =0;
 
        for(BuildingCard c: this.buildingCards){
-           foodDiscount += c.FoodDiscount(this.characterCards);
+           foodDiscount += c.GetFoodDiscountInFoodEvent(this.characterCards);
        }
        //count totalDiscount given by numBinder and foodDiscount
        int totalDiscount = Math.toIntExact((3*numBinder) + foodDiscount);
@@ -203,8 +224,8 @@ public class Player{
                .toList();
        //find additional food and PP given by buildingCard
        for(BuildingCard c: this.buildingCards){
-           additionalFood += c.FoodBonusFromHunters(characterList);
-           additionalPp += c.PointsBonus(characterList);
+           additionalFood += c.AddFoodPerHunterInHuntingEvent(characterList);
+           additionalPp += c.AddPointPerHunterInHuntingEvent(characterList);
        }
        //add additionalFood and additionalPp
        this.addFood(additionalFood);
@@ -229,7 +250,7 @@ public class Player{
 
        //find additional food given by buildingCard
        for(BuildingCard c: buildingCards){
-           additionalFood =+ c.FoodBonusFromArtists(this.characterCards);
+           additionalFood =+ c.AddFoodPerHunterInPaintingEvent(this.characterCards);
        }
        //add additionalFood
        addFood(additionalFood);
@@ -241,7 +262,7 @@ public class Player{
 
        //additional stars given by BuildingType9
        for(BuildingCard c: this.buildingCards){
-           starBonus += c.StarBonus(this.characterCards);//BuildingType9
+           starBonus += c.GiveBonusStarInRitualEvent(this.characterCards);//BuildingType9
        }
        //count number of star icons
        int stars = this.characterCards.stream()
@@ -255,7 +276,7 @@ public class Player{
    public boolean hasDoubleRitualEventPoints()
    {
        for(BuildingCard c: this.buildingCards){
-           if( c.isDoubleRitualEventPoints())//BuildingType8
+           if( c.hasDoubleRitualEventPoints())//BuildingType8
                return true;
        }
        return false;
@@ -263,7 +284,7 @@ public class Player{
 
    public boolean hasShieldFromRitualEvent(){
         for(BuildingCard c: this.buildingCards){
-            if(c.isShieldFromRitualEvent())
+            if(c.isShieldedFromRitualEvent())
                 return true;
         }
         return  false;

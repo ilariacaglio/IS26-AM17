@@ -14,6 +14,6 @@ public class BuildingType8 extends BuildingCard {
     }
 
     @Override
-    public boolean isDoubleRitualEventPoints() { return true; } // Tribes effect
+    public boolean hasDoubleRitualEventPoints() { return true; } // Tribes effect
 
 }

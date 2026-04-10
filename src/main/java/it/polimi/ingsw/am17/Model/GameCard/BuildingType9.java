@@ -18,7 +18,7 @@ public class BuildingType9 extends BuildingCard {
     }
 
     @Override
-    public int StarBonus(List<CharacterCard> characterCards) {
+    public int GiveBonusStarInRitualEvent(List<CharacterCard> characterCards) {
         return 3;
     }
 }

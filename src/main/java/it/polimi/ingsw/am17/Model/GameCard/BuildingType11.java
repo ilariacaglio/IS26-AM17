@@ -17,7 +17,7 @@ public class BuildingType11 extends BuildingCard {
     }
 
     @Override
-    public int FoodBonusFromTurnOrder(OfferingCard offeringCard) {
+    public int GetFoodBonusFromTurnOrder() {
         return 1;
     }
 }
