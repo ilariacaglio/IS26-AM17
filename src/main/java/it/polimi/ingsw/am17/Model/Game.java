@@ -59,7 +59,10 @@ public class Game extends Subject {
     }
 
     boolean isStarted() {
-        return currentEra != 0;
+        return currentEra > 0;
+    }
+    boolean isEnded() {
+        return currentEra < 0;
     }
 
     /**
@@ -394,7 +397,7 @@ public class Game extends Subject {
      * @param characterCards TODO: check null
      * @param buildingCards TODO: check null
      */
-    public void pickTrib eCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
 
