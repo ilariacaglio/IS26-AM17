@@ -322,7 +322,7 @@ public class Game extends Subject {
      * @param characterCards TODO: check null
      * @param buildingCards TODO: check null
      */
-    public void playerAction(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    public void pickTrib eCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
 
