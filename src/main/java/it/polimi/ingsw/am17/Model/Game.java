@@ -264,7 +264,7 @@ public class Game extends Subject {
         // remove player from buildingType2 offering card
          building2OfferingCard.setPlayer(null);
 
-        // TODO: notifyObserver(GameState gameState);
+        notifyObservers(orderedPlayer.foreach.getfood and pp, upperRow);
     }
 
     /**
