@@ -33,7 +33,7 @@ public class Game extends Subject {
         this.id = id;
         this.numPlayers = numPlayers;
         currentEra = 0;
-        players = new ArrayList<>(numPlayers);
+        orderedPlayer = new Stack<>();
         offeringCards = loadOfferingCards(numPlayers);
 
         tribesDeck = new TribesDeck(numPlayers);
@@ -99,9 +99,10 @@ public class Game extends Subject {
         if (isStarted()) {
             throw new IllegalStateException("The game has already started.");
         }
-        if (orderedPlayer.size() >= numPlayers) {
-            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
-        }
+        //double check
+//        if (orderedPlayer.size() >= numPlayers) {
+//            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
+//        }
         if (orderedPlayer.contains(p)) {
             throw new IllegalArgumentException("This player is already in the lobby.");
         }
@@ -141,14 +142,6 @@ public class Game extends Subject {
         upperBuildingRow.clear();
     }
 
-    private void initStack(){
-        // Init players order stack
-        orderedPlayer = new Stack<>();
-        for (Player p : orderedPlayer) {
-            orderedPlayer.push(p);
-        }
-    }
-
     private void giveFoodToPlayers(){
         int[] startingFood = {2, 3, 3, 4, 4};
         for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
@@ -168,7 +161,6 @@ public class Game extends Subject {
         this.currentEra = 1;
         Collections.shuffle(orderedPlayer);
 
-        initStack();
 
         giveFoodToPlayers();
 
