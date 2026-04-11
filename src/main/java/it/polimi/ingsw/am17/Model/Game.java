@@ -102,10 +102,9 @@ public class Game extends Subject {
         if (isStarted()) {
             throw new IllegalStateException("The game has already started.");
         }
-        //double check
-//        if (orderedPlayer.size() >= numPlayers) {
-//            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
-//        }
+        if (orderedPlayer.size() >= numPlayers) { // This check is not necessary, but we keep it for completeness.
+            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
+        }
         if (orderedPlayer.contains(p)) {
             throw new IllegalArgumentException("This player is already in the lobby.");
         }
