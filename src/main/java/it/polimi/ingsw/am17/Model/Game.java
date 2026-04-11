@@ -205,19 +205,23 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
     }
 
-    private void turnOrderFoodBonus(){
-        int i=0;
+    private void turnOrderFoodBonus() {
+        int i = 0;
         for (Player p : orderedPlayer) {
-            //check if turnFood > 0
-            if(turnFoodPoints[i]<0){
-                //if not check if player can pay the food (food price is not higher than 1)
-                if( p.getFood()<1)
+
+            // if the player has to pay food due to the turn order
+            if (turnFoodPoints[i] < 0) {
+                // and cannot pay
+                if(p.getFood() < 1)
+                    // use pp to pay
                     p.addPp(-2);
                 else
+                    // pay food
                     p.addFood(turnFoodPoints[i]);
             }
-            else{
-                //check if player has food bonus from buildings
+            // if the player has to get food due to the turn order
+            else if (turnFoodPoints[i] > 0) {
+                // give the player food considering the possible bonus from buildings
                 int foodFromBuilding = p.addFoodToTurnFood();
                 p.addFood(turnFoodPoints[i] + foodFromBuilding);
             }
