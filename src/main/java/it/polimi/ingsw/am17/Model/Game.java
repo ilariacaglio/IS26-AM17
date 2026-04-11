@@ -484,18 +484,6 @@ public class Game extends Subject {
     }
 
     @Override
-    public void attach(Observer observer) {
-
-    }
-
-
-    @Override
-    public void detach(Observer observer) {
-
-    }
-
-
-    @Override
     public void notifyObserver() {
 
     }
