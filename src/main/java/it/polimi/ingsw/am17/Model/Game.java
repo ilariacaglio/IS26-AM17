@@ -47,6 +47,9 @@ public class Game extends Subject {
         turnFoodPoints = getTurnFoodPoints();
     }
 
+    /**
+     * @return Array of integers representing the number of food points for each player in the turn order.
+     */
     private int[] getTurnFoodPoints() {
         return switch (numPlayers) {
             case 2 -> new int[]{1, -1};
