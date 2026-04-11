@@ -134,7 +134,7 @@ public class Game extends Subject {
                 throw new IllegalStateException("Invalid era");
         }
 
-        // TODO: notifyObserver(GameState gameState);
+        notifyObservers(currentEra, upperRow, lowerRow, upperBuildingRow);
     }
 
     private void moveDownBuildingCards() {
