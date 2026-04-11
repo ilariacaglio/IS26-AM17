@@ -496,7 +496,7 @@ public class Game extends Subject {
 
 
     @Override
-    public void notifyObserver() {
+    public void notifyObservers() {
 
     }
 }
