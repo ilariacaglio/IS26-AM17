@@ -13,7 +13,6 @@ public class Game extends Subject {
     private final int numPlayers;
     private int currentEra;
 
-    private final List<Player> players;
     private Stack<Player> orderedPlayer;
 
     private final List<OfferingCard> offeringCards;
@@ -100,17 +99,17 @@ public class Game extends Subject {
         if (isStarted()) {
             throw new IllegalStateException("The game has already started.");
         }
-        if (players.size() >= numPlayers) {
+        if (orderedPlayer.size() >= numPlayers) {
             throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
         }
-        if (players.contains(p)) {
+        if (orderedPlayer.contains(p)) {
             throw new IllegalArgumentException("This player is already in the lobby.");
         }
 
-        players.add(p);
+        orderedPlayer.add(p);
 
         //if we reached the number of players for the game we start the game
-        if(players.size() == numPlayers)
+        if(orderedPlayer.size() == numPlayers)
             nextEra();
     }
 
@@ -145,7 +144,7 @@ public class Game extends Subject {
     private void initStack(){
         // Init players order stack
         orderedPlayer = new Stack<>();
-        for (Player p : players) {
+        for (Player p : orderedPlayer) {
             orderedPlayer.push(p);
         }
     }
@@ -153,7 +152,7 @@ public class Game extends Subject {
     private void giveFoodToPlayers(){
         int[] startingFood = {2, 3, 3, 4, 4};
         for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
-            players.get(i).addFood(startingFood[i]);
+            orderedPlayer.get(i).addFood(startingFood[i]);
         }
     }
 
@@ -167,7 +166,7 @@ public class Game extends Subject {
 
         // Set era and shuffle players
         this.currentEra = 1;
-        Collections.shuffle(players); // TODO: check if already shuffled by controller
+        Collections.shuffle(orderedPlayer);
 
         initStack();
 
@@ -246,10 +245,10 @@ public class Game extends Subject {
 
         // 1. Solve events leaving food_event(s) last.
         events.stream().filter(e -> e.getCardType() != CardType.FOOD_EVENT).toList().forEach(
-                event -> event.computeScore(players)
+                event -> event.computeScore(orderedPlayer)
         );
         events.stream().filter(e -> e.getCardType() == CardType.FOOD_EVENT).toList().forEach(
-                event -> event.computeScore(players)
+                event -> event.computeScore(orderedPlayer)
         );
 
         // 2. 3. 4. Reorganize cards.
@@ -289,13 +288,13 @@ public class Game extends Subject {
 
         // Solve events leaving food_event(s) last.
         events.stream().filter(e -> e.getCardType() != CardType.FOOD_EVENT).toList().forEach(
-                event -> event.computeScore(players)
+                event -> event.computeScore(orderedPlayer)
         );
         events.stream().filter(e -> e.getCardType() == CardType.FOOD_EVENT).toList().forEach(
-                event -> event.computeScore(players)
+                event -> event.computeScore(orderedPlayer)
         );
 
-        for (Player player : players) {
+        for (Player player : orderedPlayer) {
             player.calculateFinalPoints();
         }
 
@@ -461,7 +460,7 @@ public class Game extends Subject {
 
     /// only for testing
     protected List<Player> getPlayers(){
-        return players;
+        return orderedPlayer;
     }
     /// only for testing
     protected int getCurrentEra(){
