@@ -183,6 +183,7 @@ public class Game extends Subject {
         }
 
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
+
     }
 
     /**
