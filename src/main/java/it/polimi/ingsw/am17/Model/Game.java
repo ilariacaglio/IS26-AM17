@@ -40,8 +40,8 @@ public class Game extends Subject {
         offeringCards = loadOfferingCards(numPlayers);
 
         tribesDeck = new TribesDeck(numPlayers);
-        upperRow = new ArrayList<>();
-        lowerRow = new ArrayList<>();
+        upperRow = new ArrayList<>(); // TODO: rename to upperTribeRow
+        lowerRow = new ArrayList<>(); // TODO: rename to lowerTribeRow
 
         buildingDeck = new BuildingDeck(numPlayers);
         upperBuildingRow = new ArrayList<>();
