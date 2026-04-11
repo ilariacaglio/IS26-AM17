@@ -293,36 +293,50 @@ public class Game extends Subject {
         // TODO: notifyObserver(GameState gameState);
     }
 
-    private void validateCardChoice(int numUpper, int numLower, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        List<CharacterCard> upperRowCharacterCards = upperRow.stream()
+    /**
+     * Validates card selection for the player action "pickTribeCards".
+     * @param numToSelectFromUpper Number of cards that must be selected (if possible!) from the upper row.
+     * @param numToSelectFromLower Number of cards that must be selected (if possible!) from the lower row.
+     * @param characterCards Selected character cards.
+     * @param buildingCards Selected building cards.
+     */
+    private void validateCardChoice(int numToSelectFromUpper, int numToSelectFromLower, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+
+        // get character cards from tribe rows (filter out events)
+        List<CharacterCard> upperRowCharacterCards = new ArrayList<>(upperRow.stream()
                 .filter(card -> card.getCardType().isCharacter())
                 .map(CharacterCard.class::cast)
-                .toList();
-        List<CharacterCard> lowerRowCharacterCards = lowerRow.stream()
+                .toList());
+        List<CharacterCard> lowerRowCharacterCards = new ArrayList<>(lowerRow.stream()
                 .filter(card -> card.getCardType().isCharacter())
                 .map(CharacterCard.class::cast)
-                .toList();
+                .toList());
 
-
+        // decrease the number of cards the player has to (still) select when a match is found
         for (CharacterCard card : characterCards) {
             if (upperRowCharacterCards.contains(card)) {
-                numUpper--;
+                numToSelectFromUpper--;
+                upperRowCharacterCards.remove(card);
             } else if (lowerRowCharacterCards.contains(card)) {
-                numLower--;
+                numToSelectFromLower--;
+                lowerRowCharacterCards.remove(card);
             } else {
                 throw new IllegalStateException("Illegal character selection. (Card not in any row)");
             }
         }
         for (BuildingCard card : buildingCards) {
             if (upperBuildingRow.contains(card)) {
-                numUpper--;
+                numToSelectFromUpper--;
             } else if (lowerBuildingRow.contains(card)) {
-                numLower--;
+                numToSelectFromLower--;
             } else {
                 throw new IllegalStateException("Illegal building selection. (Card not in any row)");
             }
         }
-        if (numUpper != 0 || numLower != 0) {
+
+        // if the player still has cards to select (counters != 0),
+        // AND it is possible to select more cards (i.e. row not empty), the choice is not valid.
+        if ((numToSelectFromUpper != 0 && !upperRowCharacterCards.isEmpty()) || (numToSelectFromLower != 0 && !lowerRowCharacterCards.isEmpty())) {
             throw new IllegalStateException("Illegal card selection. (Wrong number of cards)");
         }
 
