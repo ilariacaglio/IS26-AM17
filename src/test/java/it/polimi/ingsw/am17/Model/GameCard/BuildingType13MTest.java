@@ -26,7 +26,7 @@ class BuildingType13MTest {
         playerCharacterCards.add(A);
         playerCharacterCards.add(B);
 
-        int foodDiscount = buildingType13M.FoodDiscount(playerCharacterCards);
+        int foodDiscount = buildingType13M.GetFoodDiscountInFoodEvent(playerCharacterCards);
 
         assertEquals(1,foodDiscount);
     }
@@ -40,7 +40,7 @@ class BuildingType13MTest {
         playerCharacterCards.add(A);
         playerCharacterCards.add(B);
 
-        int foodDiscount = buildingType13M.FoodDiscount(playerCharacterCards);
+        int foodDiscount = buildingType13M.GetFoodDiscountInFoodEvent(playerCharacterCards);
 
         assertEquals(0,foodDiscount);
     }
@@ -49,7 +49,7 @@ class BuildingType13MTest {
     void ShouldNotGiveFoodDiscountWhenPlayerCardIsEmpty() {
         List<CharacterCard> playerCharacterCards = new ArrayList<>();
 
-        int foodDiscount = buildingType13M.FoodDiscount(playerCharacterCards);
+        int foodDiscount = buildingType13M.GetFoodDiscountInFoodEvent(playerCharacterCards);
 
         assertEquals(0,foodDiscount);
     }
