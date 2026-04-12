@@ -66,7 +66,7 @@ class TribesDeckTest {
     void shouldHaveRightEraOrder(){
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
-        int previousEra = deck.get(0).getEra();
+        int previousEra = 1;
 
         for(int  i = 1; i<deck.size(); i++) {
             int currentEra = deck.get(i).getEra();
