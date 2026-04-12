@@ -15,26 +15,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class TribesDeckTest {
     TribesDeck tribesDeck;
 
-    @BeforeEach
-    void setUp()
-    {
-        tribesDeck = new TribesDeck(3);
-    }
-
-    //Draw() the card assigned to currIndex
-    @Test
-    void shouldDrawTribesCard(){
-        List<TribesCard> deck = tribesDeck.getTribeCards();
-
-        TribesCard carta = tribesDeck.Draw();
-
-        assertEquals(carta, deck.get(0));
-
-    }
-
     //doesn't Draw(), throws exception, end of deck
     @Test
     void shouldNotDrawTribesCard(){
+        tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
 
         for(int  i = 0; i<deck.size(); i++) {
@@ -47,12 +31,14 @@ class TribesDeckTest {
     //doesn't create empty list
     @Test
     void shouldNotHaveEmptyTribesDeck(){
+        tribesDeck = new TribesDeck(3);
         assertFalse(tribesDeck.getTribeCards().isEmpty());
     }
 
     //cards are drawn in order
     @Test
     void shouldDrawCardsInOrder(){
+        tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
 
         for(int  i = 0; i<deck.size(); i++) {
@@ -63,6 +49,7 @@ class TribesDeckTest {
     //finalEvents are the last 2 cards
     @Test
     void shouldHaveFinalEventsAtTheEnd(){
+        tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
 
         TribesCard lastCard = deck.get(deck.size()-1);
@@ -77,6 +64,7 @@ class TribesDeckTest {
     //era of the cards is always in order from 1 to 3
     @Test
     void shouldHaveRightEraOrder(){
+        tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
         int previousEra = deck.get(0).getEra();
 
@@ -85,6 +73,43 @@ class TribesDeckTest {
             assertTrue(previousEra <= currentEra);
             previousEra = currentEra;
         }
+
+
     }
 
+    //the size of the deck is always the same if given numPlayer==2
+    @Test
+    void shouldHaveConsistentDeckSize2Players() {
+        tribesDeck = new TribesDeck(2);
+        int size = tribesDeck.getTribeCards().size();
+
+        assertEquals(size, new TribesDeck(2).getTribeCards().size());
+    }
+
+    //the size of the deck is always the same if given numPlayer==3
+    @Test
+    void shouldHaveConsistentDeckSize3Players() {
+        tribesDeck = new TribesDeck(3);
+        int size = tribesDeck.getTribeCards().size();
+
+        assertEquals(size, new TribesDeck(3).getTribeCards().size());
+    }
+
+    //the size of the deck is always the same if given numPlayer==4
+    @Test
+    void shouldHaveConsistentDeckSize4Players() {
+        tribesDeck = new TribesDeck(4);
+        int size = tribesDeck.getTribeCards().size();
+
+        assertEquals(size, new TribesDeck(4).getTribeCards().size());
+    }
+
+    //the size of the deck is always the same if given numPlayer==5
+    @Test
+    void shouldHaveConsistentDeckSize5Players() {
+        tribesDeck = new TribesDeck(5);
+        int size = tribesDeck.getTribeCards().size();
+
+        assertEquals(size, new TribesDeck(5).getTribeCards().size());
+    }
 }
