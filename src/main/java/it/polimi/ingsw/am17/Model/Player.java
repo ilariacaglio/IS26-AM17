@@ -106,12 +106,13 @@ public class Player{
 
         for(CharacterCard card : characterCards){
 
-            // get bonus food if hunter with icon
+            // add the Hunter card to the player's tribe first (as it is supposed to be counted towards food)
+            addCharacter(card);
+
+            // get bonus food for each Hunter if the Hunter has the icon
             if (card.getCardType().equals(CardType.HUNTER) && ((Hunter)card).isWithIcon()) {
                 addFood(getNumberOfHunters());
             }
-
-            addCharacter(card);
         }
 
         for (BuildingCard card : buildingCards){
@@ -294,7 +295,7 @@ public class Player{
      *Only For Test
      * @return pp of player
      */
-   protected int getPp()
+   int getPp()
    {
        return pp;
    }
