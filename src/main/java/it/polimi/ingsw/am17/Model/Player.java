@@ -294,7 +294,7 @@ public class Player{
      *Only For Test
      * @return pp of player
      */
-   protected int getPp()
+   int getPp()
    {
        return pp;
    }
