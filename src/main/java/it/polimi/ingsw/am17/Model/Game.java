@@ -388,10 +388,7 @@ public class Game extends Subject {
 
     /**
      * Emulates a player action (picking cards).
-     * TODO: FoodBonusFromTurnOrder
-     * TODO: FoodBonusFromCardAcquisition
      * TODO: Observer
-     * TODO: endRound at the end?
      * @param player
      * @param characterCards TODO: check null
      * @param buildingCards TODO: check null
