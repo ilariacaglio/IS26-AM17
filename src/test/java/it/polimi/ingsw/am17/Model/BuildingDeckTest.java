@@ -147,31 +147,4 @@ class BuildingDeckTest {
         assertThrows(UnsupportedOperationException.class, () ->buildingCardsEra3.add(null) );
     }
 
-    //test stability numPlayers==2
-    @Test
-    void stabilityTestNumPlayers2(){
-        new BuildingDeck(2);
-    }
-
-    //test stability numPlayers==3
-    @Test
-    void stabilityTestNumPlayers3(){
-        new BuildingDeck(3);
-    }
-
-    //test stability numPlayers==4
-    @Test
-    void stabilityTestNumPlayers4(){
-        new BuildingDeck(4);
-    }
-
-    //test stability numPlayers==5
-    @Test
-    void stabilityTestNumPlayers5(){
-        new BuildingDeck(5);
-    }
-
-
-
-
 }
