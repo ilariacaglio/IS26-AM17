@@ -7,22 +7,38 @@ import java.util.Collections;
 import java.util.List;
 
 public class GamesListHandler {
-    private static final List<Game> incompleteGamesList = new ArrayList<>();
+    private static final List<Game> gamesList = new ArrayList<>();
+
+    /**
+     * adds the game to gamesList
+     * @param game the game to be added
+     */
     public static void addGame(Game game){
-        synchronized (incompleteGamesList){
-            if(!game.isStarted() && !game.isEnded()){
-                incompleteGamesList.add(game);
-            }
+        synchronized (gamesList){
+            gamesList.add(game);
         }
     }
-    public static List<Game> getIncompleteGamesList(){
-        synchronized (incompleteGamesList){
-            return Collections.unmodifiableList(incompleteGamesList);
+
+    /**
+     * @return the games that are not started yet
+     */
+    public static List<Game> getGamesNotStarted(){
+        synchronized (gamesList){
+            return Collections.unmodifiableList(
+                    gamesList.stream()
+                            .filter(g->!g.isStarted())
+                            .toList()
+            );
         }
     }
+
+    /**
+     * @param id
+     * @return the game in the list with the given id
+     */
     public static Game getGameFromId(int id){
-        synchronized (incompleteGamesList){
-            return incompleteGamesList
+        synchronized (gamesList){
+            return gamesList
                     .stream()
                     .filter(game -> game.getId() == id)
                     .findFirst().orElse(null);
