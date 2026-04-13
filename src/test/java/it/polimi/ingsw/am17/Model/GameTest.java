@@ -19,6 +19,24 @@ public class GameTest {
     }
 
     @Test
+    void testGameCreation_0players(){
+        // test exception when given invalid number of players
+        assertThrows(IllegalStateException.class, () -> new Game(2, 0));
+    }
+
+    @Test
+    void testGameCreation_1player(){
+        // test exception when given invalid number of players
+        assertThrows(IllegalStateException.class, () -> new Game(2, 1));
+    }
+
+    @Test
+    void testGameCreation_6players(){
+        // test exception when given invalid number of players
+        assertThrows(IllegalStateException.class, () -> new Game(2, 6));
+    }
+
+    @Test
     void testAddPlayer_withGameStart() {
         // player creation
         Player p1 = new Player("player1", Color.BLACK);
