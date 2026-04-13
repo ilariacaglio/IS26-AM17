@@ -31,6 +31,17 @@ public class GameTest {
     }
 
     @Test
+    void testAddPlayer(){
+        // player creation
+        Player p1 = new Player("player1", Color.BLACK);
+        // add player to game
+        game.addPlayer(p1);
+        // check that the list contains the playes and its size is 1
+        assertTrue(game.getPlayers().contains(p1));
+        assertEquals(1, game.getPlayers().size());
+    }
+
+    @Test
     void testAddPlayer_withGameStart() {
         // player creation
         Player p1 = new Player("player1", Color.BLACK);
