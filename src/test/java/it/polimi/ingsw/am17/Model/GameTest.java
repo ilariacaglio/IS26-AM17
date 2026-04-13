@@ -281,21 +281,27 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_ValidateErrorCharacter() {
-            setOfferingCardToPlayers();
+        void testPlayerAction_ValidateErrorCharacterLower() {
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
-            // offering card 0: 1 card from lower row
+            //the first player picks the offering card with index 0: 1 card from lower row
+            offeringCardList.getFirst().setPlayer(game.getCurrentPlayer());
             // the player selects some upper cards instead of lower ones
             int lowerSize = offeringCardList.getFirst().getNumCardsLower();
             List<CharacterCard> characterList = new ArrayList<>(extractUpperCharacters(lowerSize));
             assertThrows(IllegalStateException.class,
                     () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
-            characterList.clear();
-            // offering card 1: 1 card from upper row
+        }
+
+        @Test
+        void testPlayerAction_ValidateErrorCharacterUpper() {
+            // get offering card list
+            List<OfferingCard> offeringCardList = game.getOfferingCards();
+            //the first player picks the offering card with index 1: 1 card from upper row
+            offeringCardList.getFirst().setPlayer(game.getCurrentPlayer());
             int upperSize = offeringCardList.get(1).getNumCardsUpper();
             // the player selects lower cards instead of upper ones
-            characterList.addAll(extractLowerCharacters(upperSize));
+            List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(upperSize));
             assertThrows(IllegalStateException.class,
                     () -> game.pickTribeCards(
                             offeringCardList.get(1).getPlayer(),
