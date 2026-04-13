@@ -92,6 +92,10 @@ public class GameTest {
             }
         }
 
+        private void setFirstPlayerToOffering(int index){
+            game.getOfferingCards().get(index).setPlayer(game.getCurrentPlayer());
+        }
+
         private Player pickWrongPlayer(){
             return game.getPlayers().stream()
                     .filter(p -> !p.equals(game.getCurrentPlayer()))
@@ -128,7 +132,7 @@ public class GameTest {
         }
 
         private List<BuildingCard> extractLowerBuildings(int amount) {
-            return game.getUpperBuildingRow().stream()
+            return game.getLowerBuildingRow().stream()
                     .limit(amount)
                     .toList();
         }
@@ -273,7 +277,7 @@ public class GameTest {
 
         @Test
         void testPlayerAction_PlayerError() {
-            setOfferingCardToPlayers();
+            setFirstPlayerToOffering(0);
             //the wrong player tries to select cards
             Player wrongPlayer = pickWrongPlayer();
             assertThrows(IllegalStateException.class,
@@ -282,12 +286,10 @@ public class GameTest {
 
         @Test
         void testPlayerAction_ValidateErrorCharacterLower() {
-            // get offering card list
-            List<OfferingCard> offeringCardList = game.getOfferingCards();
             //the first player picks the offering card with index 0: 1 card from lower row
-            offeringCardList.getFirst().setPlayer(game.getCurrentPlayer());
+            setFirstPlayerToOffering(0);
             // the player selects some upper cards instead of lower ones
-            int lowerSize = offeringCardList.getFirst().getNumCardsLower();
+            int lowerSize = game.getOfferingCards().getFirst().getNumCardsLower();
             List<CharacterCard> characterList = new ArrayList<>(extractUpperCharacters(lowerSize));
             assertThrows(IllegalStateException.class,
                     () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
@@ -298,7 +300,7 @@ public class GameTest {
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             //the first player picks the offering card with index 1: 1 card from upper row
-            offeringCardList.getFirst().setPlayer(game.getCurrentPlayer());
+            setFirstPlayerToOffering(1);
             int upperSize = offeringCardList.get(1).getNumCardsUpper();
             // the player selects lower cards instead of upper ones
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(upperSize));
@@ -315,23 +317,20 @@ public class GameTest {
             for (int i=0; i<3; i++){
                 game.endRound();
             }
-            // get offering card list
-            List<OfferingCard> offeringCardList = game.getOfferingCards();
             //the first player picks the offering card with index 0: 1 card from lower row
-            offeringCardList.getFirst().setPlayer(game.getCurrentPlayer());
-            // offering card 0: 1 card from lower row
-            int lowerSize = offeringCardList.getFirst().getNumCardsLower();
+            setFirstPlayerToOffering(0);
+            int lowerSize = game.getOfferingCards().getFirst().getNumCardsLower();
             // the player selects some upper cards instead of lower ones
-                List<BuildingCard> buildingList = new ArrayList<>(extractUpperBuildings(lowerSize));
-                assertThrows(IllegalStateException.class,
-                        () -> game.pickTribeCards(game.getCurrentPlayer(), Collections.emptyList(), buildingList));
+            List<BuildingCard> buildingList = new ArrayList<>(extractUpperBuildings(lowerSize));
+            assertThrows(IllegalStateException.class,
+                    () -> game.pickTribeCards(game.getCurrentPlayer(), Collections.emptyList(), buildingList));
         }
 
         @Test
         void testPlayerAction_ValidateErrorBuildingUpper() {
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             // the player picks offering card with index 1: 1 card from upper row
-            offeringCardList.getFirst().setPlayer(game.getCurrentPlayer());
+            setFirstPlayerToOffering(1);
             int upperSize = offeringCardList.get(1).getNumCardsUpper();
             // the player selects lower cards instead of upper ones
             List<BuildingCard> buildingList = new ArrayList<>(extractLowerBuildings(upperSize));
@@ -344,7 +343,8 @@ public class GameTest {
 
         @Test
         void testPlayerAction_ValidateErrorNumber(){
-            setOfferingCardToPlayers();
+            // offering card with index 3: 1 card from upper row and 1 card from building row
+            setFirstPlayerToOffering(3);
             List<BuildingCard> buildingList = new ArrayList<>();
             int wrongNumUpper = game.getOfferingCards().getFirst().getNumCardsUpper()+1;
             int wrongNumLower = game.getOfferingCards().getFirst().getNumCardsLower()+1;
@@ -359,8 +359,8 @@ public class GameTest {
 
         @Test
         void testPlayerAction_CardNotFound(){
-            setOfferingCardToPlayers();
             // offering card 0: 1 card from lower row
+            setFirstPlayerToOffering(0);
             List<CharacterCard> characterList = new ArrayList<>();
             // add a random card to list
             characterList.add(new Binder(2,4));
@@ -369,12 +369,10 @@ public class GameTest {
 
         @Test
         void testPlayerAction_FoodError(){
-            // get offering card list
-            List<OfferingCard> offeringCardList = game.getOfferingCards();
             // the player selects offering card with index 1: 1 card from the upper row
-            offeringCardList.get(1).setPlayer(game.getCurrentPlayer());
+            setFirstPlayerToOffering(1);
             List<BuildingCard> buildingList = new ArrayList<>();
-            int numUpper =  offeringCardList.get(1).getNumCardsUpper();
+            int numUpper =  game.getOfferingCards().get(1).getNumCardsUpper();
             // the player selects buildings from the upper row
             if(!game.getUpperBuildingRow().isEmpty()) {
                 buildingList.addAll(extractUpperBuildings(numUpper));
@@ -385,8 +383,10 @@ public class GameTest {
 
         @Test
         void testPlayerAction_Normal(){
-            setOfferingCardToPlayers();
+            // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
+            // the player selects offering card with index 0: 1 card from the lower row
+            setFirstPlayerToOffering(0);
             // the player picks cards from the lower row
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(offeringCardList.getFirst().getNumCardsLower()));
             // call method
