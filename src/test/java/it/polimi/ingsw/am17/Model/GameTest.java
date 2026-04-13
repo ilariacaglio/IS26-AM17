@@ -36,7 +36,7 @@ public class GameTest {
         Player p1 = new Player("player1", Color.BLACK);
         // add player to game
         game.addPlayer(p1);
-        // check that the list contains the playes and its size is 1
+        // check that the list contains the players and its size is 1
         assertTrue(game.getPlayers().contains(p1));
         assertEquals(1, game.getPlayers().size());
     }
@@ -239,7 +239,6 @@ public class GameTest {
             assertEquals(currentPlayer, offeringCardList.getFirst().getPlayer());
         }
 
-
         @Test
         void testSelectOfferingCard_CardError() {
             // get offering card list
@@ -384,6 +383,21 @@ public class GameTest {
         @Test
         void testPlayerAction_Normal(){
             setOfferingCardToPlayers();
+            List<OfferingCard> offeringCardList = game.getOfferingCards();
+            // the player picks cards from the lower row
+            List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(offeringCardList.getFirst().getNumCardsLower()));
+            // call method
+            game.pickTribeCards(game.getCurrentPlayer(),characterList,Collections.emptyList());
+            // check that the offering card has null in the player field
+            assertNull(offeringCardList.getFirst().getPlayer());
+            // check that the game row do not contain the selected cards
+            assertTrue(Collections.disjoint(game.getLowerRow(), characterList));
+        }
+
+        // turn simulation without building type 2 card
+        @Test
+        void testPlayerAction_NormalTurn(){
+            setOfferingCardToPlayers();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             // first offering card: 1 card from the lower row
@@ -426,8 +440,9 @@ public class GameTest {
             assertNull(nextOfferingCard);
         }
 
+        // turn simulation with building type 2 card
         @Test
-        void testPlayerAction_BuildingType2(){
+        void testPlayerAction_BuildingType2Turn(){
             setOfferingCardToPlayers();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
