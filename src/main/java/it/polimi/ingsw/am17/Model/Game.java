@@ -18,7 +18,7 @@ public class Game extends Subject {
     private final List<OfferingCard> offeringCards;
 
     private final TribesDeck tribesDeck;
-    private List<TribesCard> upperRow;
+    private final List<TribesCard> upperRow;
     private List<TribesCard> lowerRow;
 
     private final BuildingDeck buildingDeck;
@@ -31,6 +31,9 @@ public class Game extends Subject {
 
     public Game(int id, int numPlayers) {
         this.id = id;
+
+        checkNumPlayers(numPlayers);
+
         this.numPlayers = numPlayers;
         currentEra = 0;
         orderedPlayer = new Stack<>();
@@ -45,6 +48,12 @@ public class Game extends Subject {
         lowerBuildingRow = new ArrayList<>();
 
         turnFoodPoints = getTurnFoodPoints();
+    }
+
+    private void checkNumPlayers(int numPlayers){
+        if(numPlayers < 2 || numPlayers > 5){
+            throw new IllegalArgumentException("Wrong number of players");
+        }
     }
 
     private int[] getTurnFoodPoints() {
