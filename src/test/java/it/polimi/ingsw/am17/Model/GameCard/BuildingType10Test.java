@@ -26,7 +26,7 @@ class BuildingType10Test {
         CharacterCard B = new Inventor(3, 2,InventorIconType.CANOE);
         cards.add(A);
 
-        int risultato = buildingType10.FoodBonus(cards, B);
+        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first and second if are true (Inventor, same icon)
         assertEquals(3,risultato);
     }
@@ -39,7 +39,7 @@ class BuildingType10Test {
         CharacterCard B = new Inventor(3, 2,InventorIconType.BREAD);
         cards.add(A);
 
-        int risultato = buildingType10.FoodBonus(cards, B);
+        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first if is true,second if is false (Inventor, no same icon)
         assertEquals(0,risultato);
 
@@ -53,7 +53,7 @@ class BuildingType10Test {
         CharacterCard B = new Artist(3, 2);
         cards.add(A);
 
-        int risultato = buildingType10.FoodBonus(cards, B);
+        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first if is false, we don't enter in second if (no Inventor)
         assertEquals(0,risultato);
     }
@@ -64,7 +64,7 @@ class BuildingType10Test {
 
         CharacterCard A = new Inventor(3, 2,InventorIconType.BREAD);
 
-        int risultato = buildingType10.FoodBonus(cards, A);
+        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, A);
         //first if is true, but list is void (Inventor)
         assertEquals(0,risultato);
     }
@@ -75,7 +75,7 @@ class BuildingType10Test {
 
         CharacterCard B = new Shaman(2, 2, 2);
 
-        int risultato = buildingType10.FoodBonus(cards, B);
+        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first if is false and list is void (no Inventor)
         assertEquals(0,risultato);
     }
