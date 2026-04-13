@@ -66,10 +66,10 @@ public class Game extends Subject {
         };
     }
 
-    boolean isStarted() {
+    public boolean isStarted() {
         return currentEra > 0;
     }
-    boolean isEnded() {
+    public boolean isEnded() {
         return currentEra < 0;
     }
 
@@ -473,6 +473,9 @@ public class Game extends Subject {
         }
     }
 
+    public int getId(){
+        return id;
+    }
     /// only for testing
     protected List<Player> getPlayers(){
         return orderedPlayer;
