@@ -18,7 +18,7 @@ public class Game extends Subject {
     private final List<OfferingCard> offeringCards;
 
     private final TribesDeck tribesDeck;
-    private List<TribesCard> upperRow;
+    private final List<TribesCard> upperRow;
     private List<TribesCard> lowerRow;
 
     private final BuildingDeck buildingDeck;
