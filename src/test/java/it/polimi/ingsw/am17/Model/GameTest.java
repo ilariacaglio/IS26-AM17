@@ -310,32 +310,36 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_ValidateErrorBuilding() {
-            setOfferingCardToPlayers();
+        void testPlayerAction_ValidateErrorBuildingLower() {
+            // play 3 turns to populate lower building row
+            for (int i=0; i<3; i++){
+                game.endRound();
+            }
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
-            List<BuildingCard> buildingList = new ArrayList<>();
+            //the first player picks the offering card with index 0: 1 card from lower row
+            offeringCardList.getFirst().setPlayer(game.getCurrentPlayer());
             // offering card 0: 1 card from lower row
             int lowerSize = offeringCardList.getFirst().getNumCardsLower();
             // the player selects some upper cards instead of lower ones
-            if (!game.getUpperBuildingRow().isEmpty()) {
-                buildingList.addAll(extractUpperBuildings(lowerSize));
+                List<BuildingCard> buildingList = new ArrayList<>(extractUpperBuildings(lowerSize));
                 assertThrows(IllegalStateException.class,
                         () -> game.pickTribeCards(game.getCurrentPlayer(), Collections.emptyList(), buildingList));
-            }
-            // clear the choice list
-            buildingList.clear();
-            // offering card 1: 1 card from upper row
+        }
+
+        @Test
+        void testPlayerAction_ValidateErrorBuildingUpper() {
+            List<OfferingCard> offeringCardList = game.getOfferingCards();
+            // the player picks offering card with index 1: 1 card from upper row
+            offeringCardList.getFirst().setPlayer(game.getCurrentPlayer());
             int upperSize = offeringCardList.get(1).getNumCardsUpper();
             // the player selects lower cards instead of upper ones
-            if (!game.getLowerBuildingRow().isEmpty()) {
-                buildingList.addAll(extractLowerBuildings(upperSize));
-                assertThrows(IllegalStateException.class,
+            List<BuildingCard> buildingList = new ArrayList<>(extractLowerBuildings(upperSize));
+            assertThrows(IllegalStateException.class,
                         () -> game.pickTribeCards(
                                 offeringCardList.get(1).getPlayer(),
                                 Collections.emptyList(),
                                 buildingList));
-            }
         }
 
         @Test
