@@ -36,8 +36,8 @@ class RitualEventTest {
 
         ritualEvent.computeScore(list);
 
-        //assertEquals(15, A.getPp());
-        //assertEquals(5, B.getPp());
+        assertEquals(15, A.getPp());
+        assertEquals(5, B.getPp());
     }
 
     //everyone has the same star number and nobody has BuildingType8
@@ -56,8 +56,8 @@ class RitualEventTest {
 
         ritualEvent.computeScore(list);
 
-        //assertEquals(5, A.getPp());
-        //assertEquals(5, B.getPp());
+        assertEquals(5, A.getPp());
+        assertEquals(5, B.getPp());
     }
 
     //A has max stars and BuildingType8
@@ -80,8 +80,8 @@ class RitualEventTest {
 
         ritualEvent.computeScore(list);
 
-        //assertEquals(20, A.getPp());
-        //assertEquals(0, B.getPp());
+        assertEquals(20, A.getPp());
+        assertEquals(0, B.getPp());
     }
 
     //A has max stars and  no BuildingType8
@@ -101,8 +101,8 @@ class RitualEventTest {
 
         ritualEvent.computeScore(list);
 
-        //assertEquals(10, A.getPp());
-        //assertEquals(-5, B.getPp());
+        assertEquals(10, A.getPp());
+        assertEquals(-5, B.getPp());
     }
 
     //A and B max stars and A has BuildingType8
@@ -129,9 +129,9 @@ class RitualEventTest {
 
         ritualEvent.computeScore(list);
 
-        //assertEquals(20, A.getPp());
-        //assertEquals(10, B.getPp());
-        //assertEquals(0, C.getPp());
+        assertEquals(20, A.getPp());
+        assertEquals(10, B.getPp());
+        assertEquals(0, C.getPp());
     }
 
     //A and B max stars and no BuildingType8
@@ -155,9 +155,9 @@ class RitualEventTest {
 
         ritualEvent.computeScore(list);
 
-        //assertEquals(10, A.getPp());
-        //assertEquals(10, B.getPp());
-        //assertEquals(-5, C.getPp());
+        assertEquals(10, A.getPp());
+        assertEquals(10, B.getPp());
+        assertEquals(-5, C.getPp());
     }
 
     //A max stars and BuildingType8
@@ -184,9 +184,9 @@ class RitualEventTest {
 
         ritualEvent.computeScore(list);
 
-        //assertEquals(20, A.getPp());
-        //assertEquals(-5, B.getPp());
-        //assertEquals(0, C.getPp());
+        assertEquals(20, A.getPp());
+        assertEquals(-5, B.getPp());
+        assertEquals(0, C.getPp());
     }
 
     //A max stars and no BuildingType8
@@ -210,9 +210,9 @@ class RitualEventTest {
 
         ritualEvent.computeScore(list);
 
-        //assertEquals(10, A.getPp());
-        //assertEquals(-5, B.getPp());
-        //assertEquals(-5, C.getPp());
+        assertEquals(10, A.getPp());
+        assertEquals(-5, B.getPp());
+        assertEquals(-5, C.getPp());
     }
 
 
