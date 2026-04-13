@@ -359,17 +359,10 @@ public class GameTest {
 
         @Test
         void testPlayerAction_FoodError(){
-            setOfferingCardToPlayers();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
-            // play first turn without checking because the lower building row is empty
-            // first offering card: 1 card from the lower row
-            // the first player picks character cards
-            // selection from lower row
-            List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(offeringCardList.getFirst().getNumCardsLower()));
-            // call method for the first time
-            game.pickTribeCards(game.getCurrentPlayer(),characterList,Collections.emptyList());
-            // second offering card: 1 card from the upper row
+            // the player selects offering card with index 1: 1 card from the upper row
+            offeringCardList.get(1).setPlayer(game.getCurrentPlayer());
             List<BuildingCard> buildingList = new ArrayList<>();
             int numUpper =  offeringCardList.get(1).getNumCardsUpper();
             // the player selects buildings from the upper row
