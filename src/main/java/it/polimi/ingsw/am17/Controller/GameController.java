@@ -6,7 +6,6 @@ import it.polimi.ingsw.am17.Model.Player;
 import it.polimi.ingsw.am17.Utility.GamesListHandler;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GameController {
     // TODO: find a way to make ids incremental
@@ -15,39 +14,54 @@ public class GameController {
 
     public GameController() {}
 
+    /**
+     * @return the ids list of the games that are not started yet
+     */
     public List<Integer> getGamesList(){
-        return GamesListHandler.getIncompleteGamesList()
+        return GamesListHandler.getGamesNotStarted()
                 .stream()
                 .map(Game::getId)
                 .toList();
     }
 
+    /**
+     * Creates a game and adds its first player
+     * @param nickname
+     * @param color
+     * @param numPlayers
+     */
     public void createGame(String nickname, Color color, int numPlayers){
         try{
             // game creation
             game = new Game(id, numPlayers);
-            synchronized (this){
-                // add game to utility list
-                GamesListHandler.addGame(game);
-                // add player to game
-                game.addPlayer(new Player(nickname, color));
-            }
+            // add game to utility list
+            GamesListHandler.addGame(game);
+            addPlayerToGame(nickname, color);
         }
         catch (Exception e){
             throw new RuntimeException(e);
         }
     }
 
-    public void joinGame(String nickname, Color color, int gameId){
+    /**
+     * Adds the player to the game
+     * @param nickname
+     * @param color
+     */
+    public void joinGame(String nickname, Color color){
         try{
-
+            addPlayerToGame(nickname, color);
         }
         catch (Exception e){
-
+            throw new RuntimeException(e);
         }
     }
 
     public void pickOfferingCard(){}
 
     public void pickTribeCards(){}
+
+    private synchronized void addPlayerToGame(String nickname, Color color){
+        game.addPlayer(new Player(nickname, color));
+    }
 }
