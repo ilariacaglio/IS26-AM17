@@ -20,6 +20,14 @@ public class Player{
         this.buildingCards = new ArrayList<>();
     }
 
+    public Color getColor() {
+        return color;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
     public void addPp(int quantity){
         this.pp+=quantity;
     }

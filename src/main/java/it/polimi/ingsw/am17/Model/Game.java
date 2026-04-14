@@ -108,6 +108,21 @@ public class Game extends Subject {
         if (isStarted()) {
             throw new IllegalStateException("The game has already started.");
         }
+        if(orderedPlayer.stream().anyMatch(player -> player.getNickname().equals(p.getNickname())))
+        {
+            throw new IllegalStateException("The game has already a player with the same nickname.");
+        }
+        if(orderedPlayer.stream().anyMatch(player -> player.getColor().equals(p.getColor())))
+        {
+            String message = "The game has already a player with the same color. Unused colors: ";
+            //Get All colors
+            EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
+            //Remove the colors that are currently in use
+            orderedPlayer.forEach(player -> unusedColors.remove(player.getColor()));
+            message.concat(unusedColors.toString());
+            throw new IllegalStateException(message);
+        }
+
         //double check
 //        if (orderedPlayer.size() >= numPlayers) {
 //            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
@@ -359,6 +374,7 @@ public class Game extends Subject {
      */
     public void selectOfferingCard(Player player, OfferingCard offeringCard)
     {
+
         //check if is player turn
         if(!player.equals(orderedPlayer.pop())) {
             throw new IllegalStateException("It is not the player's turn.");
