@@ -492,8 +492,7 @@ public class Game extends Subject {
     public int getId(){
         return id;
     }
-    /// only for testing
-    protected List<Player> getPlayers(){
+    public List<Player> getPlayers(){
         return orderedPlayer;
     }
     /// only for testing
