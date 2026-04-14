@@ -2,17 +2,24 @@ package it.polimi.ingsw.am17.Controller;
 
 import it.polimi.ingsw.am17.Model.Color;
 import it.polimi.ingsw.am17.Model.Game;
+import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
+import it.polimi.ingsw.am17.Model.GameCard.CharacterCard;
+import it.polimi.ingsw.am17.Model.OfferingCard;
 import it.polimi.ingsw.am17.Model.Player;
+import it.polimi.ingsw.am17.Utility.CardParser;
 import it.polimi.ingsw.am17.Utility.GamesListHandler;
 
 import java.util.List;
+import java.util.UUID;
 
 public class GameController {
-    // TODO: find a way to make ids incremental
-    private Game game;
+    // to remove when ids implemented
     int id;
-
-    public GameController() {}
+    // Offering card list
+    List<OfferingCard> offeringCards;
+    public GameController() {
+        offeringCards = CardParser.loadOfferingCards(5);
+    }
 
     /**
      * @return the ids list of the games that are not started yet
@@ -33,10 +40,11 @@ public class GameController {
     public void createGame(String nickname, Color color, int numPlayers){
         try{
             // game creation
-            game = new Game(id, numPlayers);
+            UUID id = UUID.randomUUID();
+            Game game = new Game(id, numPlayers);
             // add game to utility list
             GamesListHandler.addGame(game);
-            addPlayerToGame(nickname, color);
+            addPlayerToGame(game, nickname, color);
         }
         catch (Exception e){
             throw new RuntimeException(e);
@@ -48,20 +56,55 @@ public class GameController {
      * @param nickname
      * @param color
      */
-    public void joinGame(String nickname, Color color){
+    public void joinGame(int gameId, String nickname, Color color){
         try{
-            addPlayerToGame(nickname, color);
+            Game game = GamesListHandler.getGameFromId(gameId);
+            addPlayerToGame(game, nickname, color);
         }
         catch (Exception e){
             throw new RuntimeException(e);
         }
     }
 
-    public void pickOfferingCard(){}
+    /**
+     * Picks the offering card of the player.
+     * Calls it's equivalent model.game method.
+     * @param gameId
+     * @param nickname
+     * @param letter
+     */
+    public void pickOfferingCard(int gameId, String nickname, Character letter){
+        try{
+            Game game = GamesListHandler.getGameFromId(gameId);
+            Player player = GamesListHandler.getPlayerFromNickname(game, nickname);
+            OfferingCard card = getOfferingCardFromLetter(letter);
+            synchronized (this){
+                game.selectOfferingCard(player,card);
+            }
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 
-    public void pickTribeCards(){}
+    // TODO: the params types are lists?
+    public void pickTribeCards(int gameId, String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
+        try {
+            Game game = GamesListHandler.getGameFromId(gameId);
+            Player player = GamesListHandler.getPlayerFromNickname(game, nickname);
+            synchronized (this) {
+                game.pickTribeCards(player, characterCards, buildingCards);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    private synchronized void addPlayerToGame(String nickname, Color color){
+    private OfferingCard getOfferingCardFromLetter(Character letter){
+        return offeringCards.stream().filter(o -> o.getOrderLetter() == letter).findFirst().orElse(null);
+    }
+
+    private synchronized void addPlayerToGame(Game game, String nickname, Color color){
         game.addPlayer(new Player(nickname, color));
     }
 }
