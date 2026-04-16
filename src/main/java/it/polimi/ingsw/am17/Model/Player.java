@@ -298,11 +298,6 @@ public class Player{
         }
         return  false;
    }
-
-   public String getName(){
-       return nickname;
-   }
-
     /**
      *Only For Test
      * @return pp of player
