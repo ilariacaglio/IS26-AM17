@@ -75,11 +75,9 @@ public class GameController {
         }
     }
 
-    // TODO: the params types are lists?
-    public void pickTribeCards(int gameId, String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
+    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
         try {
             Game game = GamesListHandler.getGameFromId(gameId);
-            Player player = GamesListHandler.getPlayerFromNickname(game, nickname);
             synchronized (this) {
                 game.pickTribeCards(player, characterCards, buildingCards);
             }
