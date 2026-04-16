@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import static it.polimi.ingsw.am17.Utility.CardParser.loadOfferingCards;
 
 public class Game extends Subject {
-    private final int id;
+    private final UUID id;
     private final int numPlayers;
     private int currentEra;
 
@@ -29,7 +29,7 @@ public class Game extends Subject {
     private final OfferingCard building2OfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
     private final int[] turnFoodPoints;
 
-    public Game(int id, int numPlayers) {
+    public Game(UUID id, int numPlayers) {
         this.id = id;
 
         checkNumPlayers(numPlayers);
@@ -489,7 +489,7 @@ public class Game extends Subject {
         }
     }
 
-    public int getId(){
+    public UUID getId(){
         return id;
     }
     public List<Player> getPlayers(){
