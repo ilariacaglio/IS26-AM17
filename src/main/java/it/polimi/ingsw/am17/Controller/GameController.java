@@ -6,18 +6,17 @@ import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.CharacterCard;
 import it.polimi.ingsw.am17.Model.OfferingCard;
 import it.polimi.ingsw.am17.Model.Player;
-import it.polimi.ingsw.am17.Utility.CardParser;
 import it.polimi.ingsw.am17.Utility.GamesListHandler;
-
 import java.util.List;
 import java.util.UUID;
 
 public class GameController {
     public GameController(){}
+
     /**
      * @return the ids list of the games that are not started yet
      */
-    public List<Integer> getGamesList(){
+    public List<UUID> getGamesList(){
         return GamesListHandler.getGamesNotStarted()
                 .stream()
                 .map(Game::getId)
@@ -26,18 +25,17 @@ public class GameController {
 
     /**
      * Creates a game and adds its first player
-     * @param nickname
-     * @param color
+     * @param player
      * @param numPlayers
      */
-    public void createGame(String nickname, Color color, int numPlayers){
+    public void createGame(Player player, int numPlayers){
         try{
             // game creation
             UUID id = UUID.randomUUID();
             Game game = new Game(id, numPlayers);
             // add game to utility list
             GamesListHandler.addGame(game);
-            addPlayerToGame(game, nickname, color);
+            addPlayerToGame(game, player);
         }
         catch (Exception e){
             throw new RuntimeException(e);
@@ -46,13 +44,13 @@ public class GameController {
 
     /**
      * Adds the player to the game
-     * @param nickname
-     * @param color
+     * @param gameId
+     * @param player
      */
-    public void joinGame(int gameId, String nickname, Color color){
+    public void joinGame(UUID gameId, Player player){
         try{
             Game game = GamesListHandler.getGameFromId(gameId);
-            addPlayerToGame(game, nickname, color);
+            addPlayerToGame(game, player);
         }
         catch (Exception e){
             throw new RuntimeException(e);
@@ -93,11 +91,7 @@ public class GameController {
         }
     }
 
-    private OfferingCard getOfferingCardFromLetter(Character letter){
-        return offeringCards.stream().filter(o -> o.getOrderLetter() == letter).findFirst().orElse(null);
-    }
-
-    private synchronized void addPlayerToGame(Game game, String nickname, Color color){
-        game.addPlayer(new Player(nickname, color));
+    private synchronized void addPlayerToGame(Game game, Player player){
+        game.addPlayer(player);
     }
 }
