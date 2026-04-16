@@ -66,9 +66,7 @@ public class GameController {
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card){
         try{
             Game game = GamesListHandler.getGameFromId(gameId);
-            synchronized (this){
-                game.selectOfferingCard(player,card);
-            }
+            pickOfferingCard(game,player,card);
         }
         catch(Exception e){
             throw new RuntimeException(e);
