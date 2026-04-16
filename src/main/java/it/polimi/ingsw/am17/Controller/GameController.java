@@ -13,14 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class GameController {
-    // to remove when ids implemented
-    int id;
-    // Offering card list
-    List<OfferingCard> offeringCards;
-    public GameController() {
-        offeringCards = CardParser.loadOfferingCards(5);
-    }
-
+    public GameController(){}
     /**
      * @return the ids list of the games that are not started yet
      */
