@@ -75,15 +75,29 @@ public class GameController {
         }
     }
 
+    /**
+     * Picks the tribe cards of the player.
+     * Calls its equivalent model.game method.
+     * @param gameId
+     * @param player
+     * @param characterCards
+     * @param buildingCards
+     */
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
         try {
             Game game = GamesListHandler.getGameFromId(gameId);
-            synchronized (this) {
-                game.pickTribeCards(player, characterCards, buildingCards);
-            }
+            pickTribeCards(game, player, characterCards, buildingCards);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private synchronized void pickOfferingCard(Game game, Player player, OfferingCard card){
+        game.selectOfferingCard(player,card);
+    }
+
+    private synchronized void pickTribeCards(Game game, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
+        game.pickTribeCards(player, characterCards, buildingCards);
     }
 
     private synchronized void addPlayerToGame(Game game, Player player){
