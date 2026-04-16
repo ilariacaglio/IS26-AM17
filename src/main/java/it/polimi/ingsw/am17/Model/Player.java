@@ -299,6 +299,10 @@ public class Player{
         return  false;
    }
 
+   public Color getColor(){
+       return this.color;
+   }
+
     /**
      *Only For Test
      * @return pp of player
