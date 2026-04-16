@@ -299,10 +299,6 @@ public class Player{
         return  false;
    }
 
-   public Color getColor(){
-       return this.color;
-   }
-
    public String getName(){
        return nickname;
    }

@@ -130,12 +130,6 @@ public class Game extends Subject {
         if (orderedPlayer.contains(p)) {
             throw new IllegalArgumentException("This player is already in the lobby.");
         }
-        for(Player player : orderedPlayer){
-            if(player.getColor().equals(p.getColor()))
-                throw  new IllegalArgumentException("This color is already taken.");
-            if(player.getName().equals(p.getName()))
-                throw  new IllegalArgumentException("This name is already taken.");
-        }
 
         orderedPlayer.add(p);
 
