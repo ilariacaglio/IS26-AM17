@@ -298,7 +298,6 @@ public class Player{
         }
         return  false;
    }
-
     /**
      *Only For Test
      * @return pp of player

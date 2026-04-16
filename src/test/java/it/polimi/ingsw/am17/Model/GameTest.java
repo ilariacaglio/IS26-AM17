@@ -12,22 +12,24 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameTest {
     Game game;
     int numPlayers = 3;
+    UUID id;
 
     @BeforeEach
     void setUp() {
-        game = new Game(3, numPlayers);
+        id = UUID.randomUUID();
+        game = new Game(id, numPlayers);
     }
 
     @Test
     void testGameCreation_0players(){
         // test exception when given invalid number of players
-        assertThrows(IllegalArgumentException.class, () -> new Game(2, 0));
+        assertThrows(IllegalArgumentException.class, () -> new Game(id, 0));
     }
 
     @Test
     void testGameCreation_6players(){
         // test exception when given invalid number of players
-        assertThrows(IllegalArgumentException.class, () -> new Game(2, 6));
+        assertThrows(IllegalArgumentException.class, () -> new Game(id, 6));
     }
 
     @Test
