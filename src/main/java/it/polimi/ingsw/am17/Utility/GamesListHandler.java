@@ -1,11 +1,11 @@
 package it.polimi.ingsw.am17.Utility;
 
 import it.polimi.ingsw.am17.Model.Game;
-import it.polimi.ingsw.am17.Model.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class GamesListHandler {
     private static final List<Game> gamesList = new ArrayList<>();
@@ -37,19 +37,12 @@ public class GamesListHandler {
      * @param id
      * @return the game in the list with the given id
      */
-    public static Game getGameFromId(int id){
+    public static Game getGameFromId(UUID id){
         synchronized (gamesList){
             return gamesList
                     .stream()
                     .filter(game -> game.getId() == id)
                     .findFirst().orElse(null);
-        }
-    }
-
-    // TODO: questo metodo non va messo qui ma non so dove metterlo
-    public static Player getPlayerFromNickname(Game game, String nickname){
-        synchronized (game){
-            return game.getPlayers().stream().filter(p -> p.getNickname().equals(nickname)).findFirst().orElse(null);
         }
     }
 }
