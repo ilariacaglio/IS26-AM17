@@ -1,6 +1,5 @@
 package it.polimi.ingsw.am17.Controller;
 
-import it.polimi.ingsw.am17.Model.Color;
 import it.polimi.ingsw.am17.Model.Game;
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.CharacterCard;
@@ -61,14 +60,12 @@ public class GameController {
      * Picks the offering card of the player.
      * Calls it's equivalent model.game method.
      * @param gameId
-     * @param nickname
-     * @param letter
+     * @param player
+     * @param card
      */
-    public void pickOfferingCard(int gameId, String nickname, Character letter){
+    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card){
         try{
             Game game = GamesListHandler.getGameFromId(gameId);
-            Player player = GamesListHandler.getPlayerFromNickname(game, nickname);
-            OfferingCard card = getOfferingCardFromLetter(letter);
             synchronized (this){
                 game.selectOfferingCard(player,card);
             }
