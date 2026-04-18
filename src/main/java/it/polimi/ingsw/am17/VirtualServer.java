@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface VirtualServer {
-    void getGamesList() throws Exception;
+    List<UUID> getGamesList() throws Exception;
     void createGame(Player player, int numPlayers)  throws Exception;
     void joinGame(UUID gameId, Player player)  throws Exception;
     void pickOfferingCard(UUID gameId, Player player, OfferingCard card)  throws Exception;
