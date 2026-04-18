@@ -50,8 +50,8 @@ public class Game extends Subject {
         turnFoodPoints = getTurnFoodPoints();
     }
 
-    private void checkNumPlayers(int numPlayers){
-        if(numPlayers < 2 || numPlayers > 5){
+    private void checkNumPlayers(int numPlayers) {
+        if (numPlayers < 2 || numPlayers > 5) {
             throw new IllegalArgumentException("Wrong number of players");
         }
     }
@@ -69,6 +69,7 @@ public class Game extends Subject {
     public boolean isStarted() {
         return currentEra > 0;
     }
+
     public boolean isEnded() {
         return currentEra < 0;
     }
@@ -77,17 +78,15 @@ public class Game extends Subject {
      * @return leftmost offering card with player in the offering track.
      */
     private OfferingCard getNextOccupiedOfferingCard() {
-        OfferingCard offCard =  offeringCards.stream()
+        OfferingCard offCard = offeringCards.stream()
                 .filter(card -> card.getPlayer() != null)
                 .min(Comparator.comparing(OfferingCard::getOrderLetter))
                 .orElse(null);
-        if(offCard != null) {
+        if (offCard != null) {
             return offCard;
-        }
-        else if(building2OfferingCard.getPlayer() == null){
+        } else if (building2OfferingCard.getPlayer() == null) {
             return null;
-        }
-        else{
+        } else {
             return building2OfferingCard;
         }
     }
@@ -108,12 +107,10 @@ public class Game extends Subject {
         if (isStarted()) {
             throw new IllegalStateException("The game has already started.");
         }
-        if(orderedPlayer.stream().anyMatch(player -> player.getNickname().equals(p.getNickname())))
-        {
+        if (orderedPlayer.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
             throw new IllegalStateException("The game has already a player with the same nickname.");
         }
-        if(orderedPlayer.stream().anyMatch(player -> player.getColor().equals(p.getColor())))
-        {
+        if (orderedPlayer.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
             String message = "The game has already a player with the same color. Unused colors: ";
             //Get All colors
             EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
@@ -132,9 +129,10 @@ public class Game extends Subject {
         }
 
         orderedPlayer.add(p);
+        notifyPlayerStack(orderedPlayer);
 
         //if we reached the number of players for the game we start the game
-        if(orderedPlayer.size() == numPlayers)
+        if (orderedPlayer.size() == numPlayers)
             nextEra();
     }
 
@@ -159,8 +157,8 @@ public class Game extends Subject {
         }
 
         notifyEra(currentEra);
-        notifyTribeCards()
-        notifyObservers(currentEra, upperRow, lowerRow, upperBuildingRow);
+        notifyTribesCards(upperRow, lowerRow);
+        notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
     }
 
     private void moveDownBuildingCards() {
@@ -168,7 +166,7 @@ public class Game extends Subject {
         upperBuildingRow.clear();
     }
 
-    private void giveFoodToPlayers(){
+    private void giveFoodToPlayers() {
         int[] startingFood = {2, 3, 3, 4, 4};
         for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
             orderedPlayer.get(i).addFood(startingFood[i]);
@@ -199,7 +197,7 @@ public class Game extends Subject {
 
             if (drawnCard.getCardType().isCharacter()) {
                 lowerRow.add(drawnCard);
-            } else if (upperRow.size()< targetUpperRowSize) {
+            } else if (upperRow.size() < targetUpperRowSize) {
                 upperRow.add(drawnCard);
             }
         }
@@ -230,18 +228,17 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
     }
 
-    private void turnOrderFoodBonus(){
-        int i=0;
+    private void turnOrderFoodBonus() {
+        int i = 0;
         for (Player p : orderedPlayer) {
             //check if turnFood > 0
-            if(turnFoodPoints[i]<0){
+            if (turnFoodPoints[i] < 0) {
                 //if not check if player can pay the food (food price is not higher than 1)
-                if( p.getFood()<1)
+                if (p.getFood() < 1)
                     p.addPp(-2);
                 else
                     p.addFood(turnFoodPoints[i]);
-            }
-            else{
+            } else {
                 //check if player has food bonus from buildings
                 int foodFromBuilding = p.addFoodToTurnFood();
                 p.addFood(turnFoodPoints[i] + foodFromBuilding);
@@ -253,7 +250,7 @@ public class Game extends Subject {
     /**
      * Ends the current round by solving events.
      */
-     void endRound() {
+    void endRound() {
         turnOrderFoodBonus();
         // Get events from the lower row.
         List<EventCard> events = lowerRow.stream()
@@ -287,9 +284,10 @@ public class Game extends Subject {
         }
 
         // remove player from buildingType2 offering card
-         building2OfferingCard.setPlayer(null);
+        building2OfferingCard.setPlayer(null);
 
-        // TODO: notifyObserver(GameState gameState);
+        notifyPlayerStack(orderedPlayer);
+        notifyTribesCards(upperRow, lowerRow);
     }
 
     /**
@@ -316,15 +314,17 @@ public class Game extends Subject {
             player.calculateFinalPoints();
         }
 
-        // TODO: notifyObserver(GameState gameState);
+        notifyEra(currentEra);
+        notifyPlayerStack(orderedPlayer);
     }
 
     /**
      * Validates card selection for the player action "pickTribeCards".
+     *
      * @param numToSelectFromUpper Number of cards that must be selected (if possible!) from the upper row.
      * @param numToSelectFromLower Number of cards that must be selected (if possible!) from the lower row.
-     * @param characterCards Selected character cards.
-     * @param buildingCards Selected building cards.
+     * @param characterCards       Selected character cards.
+     * @param buildingCards        Selected building cards.
      */
     private void validateCardChoice(int numToSelectFromUpper, int numToSelectFromLower, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
 
@@ -371,36 +371,37 @@ public class Game extends Subject {
     /**
      * check if the values are plausible and set player to offering card
      * notify observer
-     * @param player player that chose the offering card
+     *
+     * @param player       player that chose the offering card
      * @param offeringCard offering card picked
      */
-    public void selectOfferingCard(Player player, OfferingCard offeringCard)
-    {
+    public void selectOfferingCard(Player player, OfferingCard offeringCard) {
 
         //check if is player turn
-        if(!player.equals(orderedPlayer.pop())) {
+        if (!player.equals(orderedPlayer.pop())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
         //check card is free
-        if(offeringCard == null || offeringCard.getPlayer() != null){
+        if (offeringCard == null || offeringCard.getPlayer() != null) {
             throw new IllegalStateException("The offering card was already selected");
         }
 
         //check if offeringCard is valid
-        if(!offeringCards.contains(offeringCard) && !offeringCard.equals(building2OfferingCard)) {
+        if (!offeringCards.contains(offeringCard) && !offeringCard.equals(building2OfferingCard)) {
             throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
         }
 
         //set player to offeringCard
         offeringCard.setPlayer(player);
 
+        notifyOfferingCards(offeringCards);
+        notifyPlayerStack(orderedPlayer); // TODO: probably not needed.
+
         Player nextPlayer;
-        //notify observer
         try {
             nextPlayer = orderedPlayer.peek();
-        }catch (EmptyStackException e)
-        {
+        } catch (EmptyStackException e) {
             //order player stack for next turn
             orderedPlayer = offeringCards.stream()
                     .filter(card -> card.getPlayer() != null)
@@ -411,23 +412,18 @@ public class Game extends Subject {
 
             //get first player to do player action
             nextPlayer = getNextPlayer();
-
-            //gamestate should specify it s turn for player action
-            //GameState = new GameState ...
-            //notifyObserver(gameState)
             return;
         }
 
-        //GameState = new GameState ...
-        //notifyObserver(gameState)
     }
 
     /**
      * Emulates a player action (picking cards).
      * TODO: FoodBonusFromTurnOrder
+     *
      * @param player
      * @param characterCards TODO: check null
-     * @param buildingCards TODO: check null
+     * @param buildingCards  TODO: check null
      */
     public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         // Get leftmost occupied offering card.
@@ -449,8 +445,7 @@ public class Game extends Subject {
         } catch (IllegalStateException e) {
             if (e.getMessage().equals("Not enough food to buy building cards")) {
                 throw new IllegalStateException("Not enough food to buy building cards");
-            }
-            else {
+            } else {
                 throw new IllegalStateException("unknown error");
             }
         }
@@ -460,7 +455,7 @@ public class Game extends Subject {
         lowerRow.removeAll(characterCards); // if not present, no worries
 
         //if the player has the buildingType2 card set it to offering card
-        if(building2OfferingCard.getPlayer() == null) {
+        if (building2OfferingCard.getPlayer() == null) {
             addPlayerToBT2OfferingCard(player);
         }
 
@@ -469,65 +464,73 @@ public class Game extends Subject {
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
 
         //check everybody played his base turn
-        if(nextOfferingCard == null)
-        {
+        if (nextOfferingCard == null) {
             // the round has ended
             endRound();
         }
+        else {
+            // TODO: improve, too much data
+            notifyOfferingCards(offeringCards); // may be unneeded
+            notifyPlayerStack(orderedPlayer); // may be unneeded
+            notifyTribesCards(upperRow, lowerRow);
+            notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
+        }
 
-        //GamseState = new GameState
-        //notifyObserver
     }
 
 
     /**
      * Checks if the player has the BuildingType2 card and sets it to buildingType2OfferingCard
+     *
      * @param player the player to be set
      */
     private void addPlayerToBT2OfferingCard(Player player) {
         //Important: there is a singular buildingType2 per game
-        if(player.hasBuilding2()) {
+        if (player.hasBuilding2()) {
             building2OfferingCard.setPlayer(player);
         }
     }
 
-    public UUID getId(){
+    public UUID getId() {
         return id;
     }
-    public List<Player> getPlayers(){
+
+    public List<Player> getPlayers() {
         return orderedPlayer;
     }
+
     /// only for testing
-    protected int getCurrentEra(){
+    protected int getCurrentEra() {
         return currentEra;
     }
+
     /// only for testing
-    protected List<TribesCard> getUpperRow(){
+    protected List<TribesCard> getUpperRow() {
         return upperRow;
     }
-    ///only for testing
-    protected List<BuildingCard> getUpperBuildingRow(){
+
+    /// only for testing
+    protected List<BuildingCard> getUpperBuildingRow() {
         return upperBuildingRow;
     }
-    ///only for testing
-    protected List<BuildingCard> getLowerBuildingRow(){
+
+    /// only for testing
+    protected List<BuildingCard> getLowerBuildingRow() {
         return lowerBuildingRow;
     }
-    ///only for testing
-    protected List<TribesCard> getLowerRow(){
+
+    /// only for testing
+    protected List<TribesCard> getLowerRow() {
         return lowerRow;
     }
-    ///only for testing
-    protected List<OfferingCard> getOfferingCards(){
+
+    /// only for testing
+    protected List<OfferingCard> getOfferingCards() {
         return offeringCards;
     }
-    ///only for testing
-    protected Player getCurrentPlayer(){
+
+    /// only for testing
+    protected Player getCurrentPlayer() {
         return orderedPlayer.peek();
-    }
-
-    @Override
-    public void notifyObserver() {
-
     }
 }
