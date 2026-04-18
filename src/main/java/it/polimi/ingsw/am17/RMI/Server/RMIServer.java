@@ -61,12 +61,12 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
     public void joinGame(UUID gameId, Player player) throws RemoteException {
         System.err.println("joinGame request received");
         this.controller.joinGame(gameId, player);
-
+        //observer
         GameState currentState = new GameState();
         //TODO: get real state of controller
         //(GameState currentState = this.controller.getGameState(); )
 
-        synchronized (this.clients) {
+        synchronized (this.clients) {//TODO: update only clients in lobby
             for (VirtualViewRMI client : clients) {
                 client.showUpdate(currentState);
 
@@ -78,7 +78,7 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException{
         System.err.println("pickOfferingCard request received");
         this.controller.pickOfferingCard(gameId, player, card);
-
+        //observer
         GameState currentState = new GameState();
         //TODO: same as joinGame()
         synchronized (this.clients) {
@@ -93,7 +93,7 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
         System.err.println("pickTribeCards request received");
         this.controller.pickTribeCards(gameId, player, characterCards, buildingCards);
-
+        //observer
         GameState currentState = new GameState();
         //TODO: same as joinGame()
         synchronized (this.clients) {
