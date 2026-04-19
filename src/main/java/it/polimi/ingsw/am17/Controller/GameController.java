@@ -6,11 +6,21 @@ import it.polimi.ingsw.am17.Model.GameCard.CharacterCard;
 import it.polimi.ingsw.am17.Model.OfferingCard;
 import it.polimi.ingsw.am17.Model.Player;
 import it.polimi.ingsw.am17.Utility.GamesListHandler;
+import it.polimi.ingsw.am17.VirtualView;
+
 import java.util.List;
 import java.util.UUID;
 
 public class GameController {
     public GameController(){}
+
+    public void signUpAsObserver(VirtualView client, UUID gameId){
+        Game game = GamesListHandler.getGameFromId(gameId);
+        synchronized (game)
+        {
+            game.attach(client);
+        }
+    }
 
     /**
      * @return the ids list of the games that are not started yet
