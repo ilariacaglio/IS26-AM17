@@ -153,7 +153,7 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
     // TODO
     public void updateOfferingCards(List<OfferingCard> offeringCards) {
         game.offeringCards = offeringCards;
-
+        drawInterface();
         //notify user
     }
 
