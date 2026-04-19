@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-public class TribesCard {
+import java.io.Serializable;
+
+public class TribesCard implements Serializable {
     private final CardType cardType;
     private final int era;
 
