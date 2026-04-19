@@ -27,7 +27,7 @@ public class GameController {
      * @param player
      * @param numPlayers
      */
-    public void createGame(Player player, int numPlayers){
+    public UUID createGame(Player player, int numPlayers){
         try{
             // game creation
             UUID id = UUID.randomUUID();
@@ -35,6 +35,7 @@ public class GameController {
             // add game to utility list
             GamesListHandler.addGame(game);
             addPlayerToGame(game, player);
+            return id;
         }
         catch (Exception e){
             throw new RuntimeException(e);
