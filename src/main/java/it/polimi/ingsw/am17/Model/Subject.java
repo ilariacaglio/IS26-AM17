@@ -14,7 +14,7 @@ public abstract class Subject {
      * Attach an observer to the subject (start observing).
      * @param observer to be attached
      */
-    void attach(Observer observer) {
+    public void attach(Observer observer) {
         observers.add(observer);
 
     };
