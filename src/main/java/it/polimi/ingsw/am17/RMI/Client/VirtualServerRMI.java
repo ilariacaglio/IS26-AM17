@@ -18,9 +18,9 @@ public interface VirtualServerRMI extends Remote, VirtualServer {
     @Override
     List<UUID> getGamesList() throws RemoteException;
     @Override
-    void createGame(Player player, int numPlayers)  throws RemoteException;
+    void createGame(VirtualViewRMI client, Player player, int numPlayers)  throws RemoteException;
     @Override
-    void joinGame(UUID gameId, Player player)  throws RemoteException;
+    void joinGame(VirtualViewRMI client,UUID gameId, Player player)  throws RemoteException;
     @Override
     void pickOfferingCard(UUID gameId, Player player, OfferingCard card)  throws RemoteException;
     @Override
