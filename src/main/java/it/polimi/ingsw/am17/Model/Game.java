@@ -470,8 +470,7 @@ public class Game extends Subject {
         }
         else {
             // TODO: improve, too much data
-            notifyOfferingCards(offeringCards); // may be unneeded
-            notifyPlayerStack(orderedPlayer); // may be unneeded
+            notifyOfferingCards(offeringCards);
             notifyTribesCards(upperRow, lowerRow);
             notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
         }
