@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am17.RMI.Server;
 
 import it.polimi.ingsw.am17.Controller.GameController;
-import it.polimi.ingsw.am17.GameState;
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.CharacterCard;
 import it.polimi.ingsw.am17.Model.OfferingCard;
@@ -19,13 +18,11 @@ import java.util.UUID;
 public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
     final GameController controller;
     final List<VirtualViewRMI> clients;
-    final List<Lobby> games;
 
     public RMIServer() throws RemoteException {
         super();
         controller = new GameController();
         clients = new ArrayList<>();
-        games = new ArrayList<>();
     }
 
     static void main(String[] args) throws RemoteException {
@@ -62,11 +59,9 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
     @Override
     public void createGame(VirtualViewRMI client, Player player, int numPlayers) throws RemoteException {
         System.err.println("createGame request received");
+        // game id generation
         UUID id = this.controller.createGame(player, numPlayers);
-        Lobby gameLobby = new Lobby(id);
-        gameLobby.addClient(client);
-        games.add(gameLobby);
-        // TODO: observer??
+        // TODO: the client signs up as observer for the game
     }
 
     /**
@@ -78,47 +73,35 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
     @Override
     public void joinGame(VirtualViewRMI client, UUID gameId, Player player) throws RemoteException {
         System.err.println("joinGame request received");
+        // add the player to the game
         this.controller.joinGame(gameId, player);
-        Lobby gameLobby = games.stream().filter(l->l.getGameID().equals(gameId)).findFirst().orElse(null);
-        if (gameLobby != null) {
-            gameLobby.addClient(client);
-        }
-        // TODO: call method in lobby for update
-        //observer
-//        GameState currentState = new GameState();
-
-        //(GameState currentState = this.controller.getGameState(); )
-
-//        synchronized (this.clients) {//TODO: update only clients in lobby
-//            for (VirtualViewRMI client : clients) {
-//                client.showUpdate(currentState);
-//
-//            }
-//        }
+        // TODO: the client signs up as observer for the game
     }
 
+    /**
+     * Picks the player offering card
+     * @param gameId
+     * @param player
+     * @param card
+     * @throws RemoteException
+     */
     @Override
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException{
         System.err.println("pickOfferingCard request received");
         this.controller.pickOfferingCard(gameId, player, card);
-        //TODO: call method in lobby for update
     }
 
-
+    /**
+     * Picks the player tribe cards
+     * @param gameId
+     * @param player
+     * @param characterCards
+     * @param buildingCards
+     * @throws RemoteException
+     */
     @Override
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
         System.err.println("pickTribeCards request received");
         this.controller.pickTribeCards(gameId, player, characterCards, buildingCards);
-        //TODO: call method in lobby for update
-        //observer
-//        GameState currentState = new GameState();
-        //TODO: same as joinGame()
-//        synchronized (this.clients) {
-//            for (VirtualViewRMI client : clients) {
-//                client.showUpdate(currentState);
-//            }
-//        }
     }
-
-
 }

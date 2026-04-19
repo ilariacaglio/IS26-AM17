@@ -1,6 +1,10 @@
 package it.polimi.ingsw.am17;
 
-public interface VirtualView {
-    void showUpdate(GameState state) throws Exception;
-    void reportError(String details) throws Exception;
+import it.polimi.ingsw.am17.Model.Observer;
+
+import java.util.UUID;
+
+public interface VirtualView extends Observer {
+    void updateGameId(UUID gameId) throws Exception;
+    void updatePlayerNumber(int playerNumber) throws Exception;
 }
