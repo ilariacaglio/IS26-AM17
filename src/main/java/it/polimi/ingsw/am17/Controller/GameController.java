@@ -22,6 +22,11 @@ public class GameController {
                 .toList();
     }
 
+    public int getNumPlayers(UUID gameId){
+        Game g = GamesListHandler.getGameFromId(gameId);
+        return g.getPlayers().size();
+    }
+
     /**
      * Creates a game and adds its first player
      * @param player

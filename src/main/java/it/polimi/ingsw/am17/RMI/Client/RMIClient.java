@@ -1,8 +1,10 @@
 package it.polimi.ingsw.am17.RMI.Client;
 
-import it.polimi.ingsw.am17.GameState;
+import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
+import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
+import it.polimi.ingsw.am17.Model.OfferingCard;
+import it.polimi.ingsw.am17.Model.Player;
 import it.polimi.ingsw.am17.RMI.Server.VirtualViewRMI;
-import it.polimi.ingsw.am17.VirtualServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -10,13 +12,12 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Stack;
 import java.util.UUID;
 
 public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
     private final VirtualServerRMI server;
-    //TODO: add ClientModel from view
-    //private final ClientModel model;
+//    private final ClientModel model;
 
     public RMIClient(VirtualServerRMI server /*,ClientModel model*/) throws RemoteException {
         super();
@@ -43,6 +44,7 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
     }
 
     private void runCli() throws RemoteException {
+        // TODO: cli implementation
         /*Scanner scan = new Scanner(System.in);
         while (true) {
             System.out.print("> ");
@@ -56,19 +58,46 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
         }*/
     }
 
+    // TODO
+    public void updateEra(int era) {
+        // call model to update era
+    }
 
-    @Override
-    public void showUpdate(GameState state) throws RemoteException {
+    // TODO
+    public void updatePlayerStack(Stack<Player> orderedPlayer) {
 
     }
 
-    @Override
-    public void reportError(String details) throws RemoteException {
+    // TODO
+    public void updateOfferingCards(List<OfferingCard> offeringCards) {
 
     }
 
+    // TODO
+    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) {
+
+    }
+
+    // TODO
+    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+
+    }
+
+    // TODO
     @Override
-    public void showUpdate(List<UUID> idList) throws RemoteException {
+    public void updateGameId(UUID gameId) {
+
+    }
+
+    // TODO
+    @Override
+    public void updatePlayerNumber(int playerNumber) {
+
+    }
+
+    // TODO: DELETE WHEN SAFE
+    @Override
+    public void update() {
 
     }
 }
