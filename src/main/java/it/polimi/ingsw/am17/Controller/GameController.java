@@ -44,7 +44,9 @@ public class GameController {
             Game game = new Game(id, numPlayers);
             // add game to utility list
             GamesListHandler.addGame(game);
-            addPlayerToGame(game, player);
+            synchronized (game){
+                game.addPlayer(player);
+            }
             return id;
         }
         catch (Exception e){
@@ -60,7 +62,9 @@ public class GameController {
     public void joinGame(UUID gameId, Player player){
         try{
             Game game = GamesListHandler.getGameFromId(gameId);
-            addPlayerToGame(game, player);
+            synchronized (game){
+                game.addPlayer(player);
+            }
         }
         catch (Exception e){
             throw new RuntimeException(e);
@@ -77,7 +81,9 @@ public class GameController {
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card){
         try{
             Game game = GamesListHandler.getGameFromId(gameId);
-            pickOfferingCard(game,player,card);
+            synchronized (game){
+                game.selectOfferingCard(player,card);
+            }
         }
         catch(Exception e){
             throw new RuntimeException(e);
@@ -95,21 +101,11 @@ public class GameController {
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
         try {
             Game game = GamesListHandler.getGameFromId(gameId);
-            pickTribeCards(game, player, characterCards, buildingCards);
+            synchronized (game){
+                game.pickTribeCards(player, characterCards, buildingCards);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private synchronized void pickOfferingCard(Game game, Player player, OfferingCard card){
-        game.selectOfferingCard(player,card);
-    }
-
-    private synchronized void pickTribeCards(Game game, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
-        game.pickTribeCards(player, characterCards, buildingCards);
-    }
-
-    private synchronized void addPlayerToGame(Game game, Player player){
-        game.addPlayer(player);
     }
 }
