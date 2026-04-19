@@ -16,6 +16,7 @@ public abstract class Subject {
      */
     void attach(Observer observer) {
         observers.add(observer);
+
     };
 
     void notifyEra(int era) {
@@ -31,12 +32,6 @@ public abstract class Subject {
     }
 
     void notifyOfferingCards(List<OfferingCard> offeringCards) {
-        for (Observer observer : observers) {
-            observer.updateOfferingCards(offeringCards);
-        }
-    }
-
-    void updateOfferingCards(List<OfferingCard> offeringCards) {
         for (Observer observer : observers) {
             observer.updateOfferingCards(offeringCards);
         }
