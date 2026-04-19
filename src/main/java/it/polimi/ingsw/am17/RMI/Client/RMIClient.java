@@ -89,12 +89,6 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
 
     }
 
-    // TODO
-    @Override
-    public void updatePlayerNumber(int playerNumber) {
-
-    }
-
     // TODO: DELETE WHEN SAFE
     @Override
     public void update() {
