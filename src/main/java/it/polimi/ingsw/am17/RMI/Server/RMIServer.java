@@ -62,7 +62,7 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
         // game id generation
         UUID id = this.controller.createGame(player, numPlayers);
         // the client signs up as observer for the game
-        controller.signUpAsObserver(id);
+        controller.signUpAsObserver(client, id);
     }
 
     /**
@@ -77,7 +77,7 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
         // add the player to the game
         this.controller.joinGame(gameId, player);
         // the client signs up as observer for the game
-        controller.signUpAsObserver(gameId);
+        controller.signUpAsObserver(client, gameId);
     }
 
     /**
