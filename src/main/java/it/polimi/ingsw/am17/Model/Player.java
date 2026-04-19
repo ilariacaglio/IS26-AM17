@@ -2,9 +2,10 @@ package it.polimi.ingsw.am17.Model;
 
 import it.polimi.ingsw.am17.Model.GameCard.*;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Player{
+public class Player implements Serializable {
     private final String nickname;
     private int pp;
     private int food;

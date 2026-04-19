@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.GameCard.*;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class OfferingCard {
+public class OfferingCard implements Serializable {
     private final int minPlayers;
     private final char orderLetter;
     private final int foodBonus;

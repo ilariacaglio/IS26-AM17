@@ -3,9 +3,10 @@ package it.polimi.ingsw.am17.Model.GameCard;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BuildingCard {
+public class BuildingCard implements Serializable {
     private final int foodCost;
     private final int bonusPoints;
     private final int era;
