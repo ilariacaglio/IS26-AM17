@@ -18,14 +18,6 @@ public abstract class Subject {
         observers.add(observer);
     };
 
-
-    /**
-     * Do we need this? TODO
-     */
-    void detach(Observer observer) {
-
-    };
-
     void notifyEra(int era) {
         for (Observer observer : observers) {
             observer.updateEra(era);
