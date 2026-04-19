@@ -22,7 +22,7 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
     Player myPlayer = null;
     GameClient game;
     static CLI cli;
-
+    boolean inGame = game == null;
 
     protected CLI() throws RemoteException {
         super();
@@ -70,21 +70,29 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
 
                         break;
                     case "create":
-                        System.out.print("Quanti giocatori vuoi? \n>");
-                        int numPlayers =  Integer.parseInt(scanner.nextLine()); //TODO: check for errors
-                        System.out.println("trying to create game");
-                        virtualServer.createGame(this, myPlayer, numPlayers);
+                        if(!inGame) {
+                            System.out.print("Quanti giocatori vuoi? \n>");
+                            int numPlayers = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
+                            System.out.println("trying to create game");
+                            virtualServer.createGame(this, myPlayer, numPlayers);
 
-                        game = new GameClient(); //TODO: fix
-                        game.numPlayers = numPlayers;
-
+                            game = new GameClient(); //TODO: fix
+                            game.numPlayers = numPlayers;
+                        }else
+                        {
+                            System.out.print("Già in partita \n>");
+                        }
                         break;
 
                     case "join":
-                        System.out.println("GameID: ");
-                        UUID gameId =  UUID.fromString(scanner.nextLine()); //TODO: check for errors
-                        System.out.println("trying to create game");
-                        virtualServer.joinGame(this, gameId, myPlayer);
+                        if(!inGame) {
+                            System.out.println("GameID: ");
+                            UUID gameId = UUID.fromString(scanner.nextLine()); //TODO: check for errors
+                            System.out.println("trying to create game");
+                            virtualServer.joinGame(this, gameId, myPlayer);
+                        }else{
+                            System.out.println("Già in game");
+                        }
                         break;
 
                     case "help":
