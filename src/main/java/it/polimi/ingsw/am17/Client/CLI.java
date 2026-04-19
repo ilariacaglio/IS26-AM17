@@ -170,6 +170,7 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
         game.upperBuildingRow = upperBuildingRow;
         game.lowerBuildingRow = lowerBuildingRow;
 
+        drawInterface();
         //notify user
     }
 
@@ -180,5 +181,9 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
         //notify user
     }
 
+    private void drawInterface()
+    {
+
+    }
 
 }
