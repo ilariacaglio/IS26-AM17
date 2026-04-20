@@ -396,7 +396,6 @@ public class Game extends Subject {
         offeringCard.setPlayer(player);
 
         notifyOfferingCards(offeringCards);
-        notifyPlayerStack(orderedPlayer); // TODO: probably not needed.
 
         Player nextPlayer;
         try {
@@ -414,6 +413,8 @@ public class Game extends Subject {
             nextPlayer = getNextPlayer();
             return;
         }
+
+        notifyPlayerStack(orderedPlayer);
 
     }
 
