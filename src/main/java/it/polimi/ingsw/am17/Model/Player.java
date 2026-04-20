@@ -9,7 +9,7 @@ public class Player implements Serializable {
     private final String nickname;
     private int pp;
     private int food;
-    private final Color color;
+    private Color color;
     private List<CharacterCard> characterCards;
     private List<BuildingCard> buildingCards;
 
@@ -23,6 +23,11 @@ public class Player implements Serializable {
 
     public Color getColor() {
         return color;
+    }
+
+    public void setColor(Color c)
+    {
+        this.color = c;
     }
 
     public String getNickname() {
