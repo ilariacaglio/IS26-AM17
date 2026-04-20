@@ -4,6 +4,7 @@ module it.polimi.ingsw.am17 {
     requires java.smartcardio;
     requires com.fasterxml.jackson.annotation;
     requires tools.jackson.databind;
+    requires java.rmi;
 
 
     opens it.polimi.ingsw.am17 to javafx.fxml;
