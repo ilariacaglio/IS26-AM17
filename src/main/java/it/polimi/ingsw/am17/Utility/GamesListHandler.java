@@ -41,7 +41,7 @@ public class GamesListHandler {
         synchronized (gamesList){
             return gamesList
                     .stream()
-                    .filter(game -> game.getId() == id)
+                    .filter(game -> game.getId().equals(id))
                     .findFirst().orElse(null);
         }
     }
