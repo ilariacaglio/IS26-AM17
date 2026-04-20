@@ -45,11 +45,17 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;
 
-            String nickname = "";
+            nickname = "";
             while (nickname.isEmpty()) {
-                System.out.print("Inserisci il tuo nickname: \n>");
+                System.out.print("Inserisci il tuo nickname (max 10 char): \n>");
                 nickname = scanner.nextLine().trim();
+                if(nickname.length() >=10 )
+                {
+                    System.out.print("il tuo nickname supera i 10 char \n>");
+                }
             }
+
+            //TODO: pick color
 
             myPlayer = new Player(nickname, Color.BLACK);
 
