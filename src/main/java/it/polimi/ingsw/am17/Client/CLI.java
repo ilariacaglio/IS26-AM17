@@ -22,7 +22,8 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
     Player myPlayer = null;
     GameClient game;
     static CLI cli;
-    boolean inGame = game == null;
+    boolean inGame = game != null;
+    String nickname = "";
 
     protected CLI() throws RemoteException {
         super();
