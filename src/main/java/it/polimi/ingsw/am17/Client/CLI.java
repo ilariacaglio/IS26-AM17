@@ -189,7 +189,8 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
     {
         game.id = gameId;
 
-        //notify user
+        //notify user to remove
+        System.out.println("Arrivato GameID: ".concat(gameId.toString()));
     }
 
     private void drawInterface()
