@@ -76,6 +76,10 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
                         connect(ip);
 
                         break;
+                    case "change color":
+                        Color c = chooseColor(scanner);
+                        myPlayer.setColor(c);
+                        break;
                     case "create":
                         if(!inGame) {
                             System.out.print("Quanti giocatori vuoi? \n>");
@@ -191,6 +195,31 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
     private void drawInterface()
     {
 
+    }
+
+
+    private Color chooseColor(Scanner scanner) {
+        Color[] colors = Color.values();
+
+        while (true) {
+            System.out.println("Available colors:");
+            for (int i = 0; i < colors.length; i++) {
+                System.out.println((i + 1) + ") " + colors[i]);
+            }
+            System.out.print("Choose a color number: ");
+
+            String input = scanner.nextLine();
+            try {
+                int choice = Integer.parseInt(input) - 1;
+                if (choice >= 0 && choice < colors.length) {
+                    return colors[choice];
+                } else {
+                    System.out.println("Invalid number. Please choose between 1 and " + colors.length);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number, not text.");
+            }
+        }
     }
 
 }
