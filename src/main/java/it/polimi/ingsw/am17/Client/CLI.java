@@ -18,19 +18,13 @@ import java.util.UUID;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 
-public class CLI {
-    private final VirtualServer virtualServer;
-    private final VirtualView client;
-    private GameClient game;
+public class CLI extends UI {
     Player myPlayer = null;
     String nickname = "";
     boolean inGame = false;
 
     public CLI(VirtualServer server, VirtualView client, GameClient game) {
         super();
-        this.virtualServer = server;
-        this.client = client;
-        this.game = game;
     }
 
     public void startCLI() {
