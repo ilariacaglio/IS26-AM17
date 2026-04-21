@@ -75,13 +75,22 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void joinGame(VirtualViewRMI client, UUID gameId, Player player) throws RemoteException {
-        System.err.println("joinGame request received");
-        // add the player to the game
-        this.controller.joinGame(gameId, player);
-        // the client signs up as observer for the game
-        controller.signUpAsObserver(client, gameId);
-        // send gameId to client
-        client.updateGameId(gameId);
+        new Thread(() -> {
+            try {
+                System.err.println("joinGame request received");
+                // Esegue le operazioni di logica
+                controller.signUpAsObserver(client, gameId);
+                // Notifica il client
+                client.updateGameId(gameId);
+                this.controller.joinGame(gameId, player);
+            } catch (Exception e) {
+                System.err.println("Errore durante la joinGame: " + e.getMessage());
+                // Remove observer
+                try {
+                    // controller.removeObserver(client, gameId);
+                } catch (Exception ignored) {}
+            }
+        }).start();
     }
 
     /**
