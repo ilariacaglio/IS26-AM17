@@ -157,7 +157,6 @@ public class Game extends Subject {
         }
 
         notifyEra(currentEra);
-        notifyTribesCards(upperRow, lowerRow);
         notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
     }
 
