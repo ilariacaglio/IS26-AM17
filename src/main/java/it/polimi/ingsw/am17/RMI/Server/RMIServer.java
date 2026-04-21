@@ -47,8 +47,14 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void getGamesList(VirtualView client) throws RemoteException {
-        System.err.println("getGamesList request received");
-        ((VirtualViewRMI)client).updateGamesIdList(this.controller.getGamesList());
+        new Thread(()->{
+            System.err.println("getGamesList request received");
+            try {
+                ((VirtualViewRMI)client).updateGamesIdList(this.controller.getGamesList());
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     /**
@@ -59,13 +65,19 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
-        System.err.println("createGame request received");
-        // game id generation
-        UUID id = this.controller.createGame(player, numPlayers);
-        // the client signs up as observer for the game
-        controller.signUpAsObserver(client, id);
-        // send gameId to client
-        ((VirtualViewRMI)client).updateGameId(id);
+        new Thread(()->{
+            System.err.println("createGame request received");
+            // game id generation
+            UUID id = this.controller.createGame(player, numPlayers);
+            // the client signs up as observer for the game
+            controller.signUpAsObserver(client, id);
+            // send gameId to client
+            try {
+                ((VirtualViewRMI)client).updateGameId(id);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     /**
@@ -86,8 +98,8 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
                 this.controller.joinGame(gameId, player);
             } catch (Exception e) {
                 System.err.println("Errore durante la joinGame: " + e.getMessage());
-                // Remove observer
                 try {
+                    // Remove observer
                     // controller.removeObserver(client, gameId);
                 } catch (Exception ignored) {}
             }
@@ -103,8 +115,10 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException{
-        System.err.println("pickOfferingCard request received");
-        this.controller.pickOfferingCard(gameId, player, card);
+        new Thread(()->{
+            System.err.println("pickOfferingCard request received");
+            this.controller.pickOfferingCard(gameId, player, card);
+        }).start();
     }
 
     /**
@@ -117,7 +131,8 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        System.err.println("pickTribeCards request received");
-        this.controller.pickTribeCards(gameId, player, characterCards, buildingCards);
+        new Thread(()->{System.err.println("pickTribeCards request received");
+            this.controller.pickTribeCards(gameId, player, characterCards, buildingCards);
+        }).start();
     }
 }
