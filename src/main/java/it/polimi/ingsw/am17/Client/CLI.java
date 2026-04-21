@@ -158,7 +158,7 @@ public class CLI {
                 System.out.print(c.toString().concat(" "));
             }
             System.out.println();
-            if(game.orderedPlayer.getFirst().getNickname().equals(myPlayer.getNickname()))
+            if(game.orderedPlayer.peek().equals(myPlayer))
                 System.out.println("è il tuo turno");
         } catch (Exception e) {
             System.err.println("Errore nel CLI: " + e.getMessage());
