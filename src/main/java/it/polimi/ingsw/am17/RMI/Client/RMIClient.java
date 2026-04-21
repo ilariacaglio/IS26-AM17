@@ -33,7 +33,6 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
         Registry registry = LocateRegistry.getRegistry(ip, 1099);
         this.server = (VirtualServerRMI) registry.lookup(serverName);
         this.model = new GameClient();
-        //model.registerObserver(view);
         if(graphic){
             // TODO: gui
         }
@@ -52,8 +51,9 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
     @Override
     public void updateEra(int era) throws RemoteException {
         // call model to update era
-        model.currentEra = era;
+        model.setCurrentEra(era);
         // UI communication
+        // spostare nella CLI
         if(era == 1)
         {
             System.out.println("è iniziata la partita");
@@ -65,41 +65,39 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
 
     @Override
     public void updatePlayerStack(Stack<Player> orderedPlayer) throws RemoteException {
-        model.orderedPlayer = orderedPlayer;
+        model.setOrderedPlayers(orderedPlayer);
         // UI communication
         userInterface.drawInterface(model);
     }
 
     @Override
     public void updateOfferingCards(List<OfferingCard> offeringCards) throws RemoteException {
-        model.offeringCards = offeringCards;
+        model.setOfferingCards(offeringCards);
         userInterface.drawInterface(model);
     }
 
     @Override
     public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws RemoteException {
-        model.upperRow = upperRow;
-        model.lowerRow = lowerRow;
+        model.setTribeCards(upperRow, lowerRow);
         userInterface.drawInterface(model);
     }
 
     @Override
     public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
-        model.upperBuildingRow = upperBuildingRow;
-        model.lowerBuildingRow = lowerBuildingRow;
-
-        userInterface.drawInterface(model);
+       model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
+       userInterface.drawInterface(model);
     }
 
     @Override
     public void updateGameId(UUID gameId) throws RemoteException {
-        model.id = gameId;
+        model.setGameId(gameId);
         // UI communication
         userInterface.printGameId(gameId);
     }
 
     @Override
     public void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException {
-
+        model.setGameIdList(gamesIdList);
+        // TODO: call user interface
     }
 }
