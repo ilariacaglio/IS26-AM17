@@ -16,8 +16,15 @@ public abstract class Subject {
      */
     public void attach(Observer observer) {
         observers.add(observer);
-
     };
+
+    /**
+     * Detach an observer to the subject (stop observing).
+     * @param observer to be detached
+     */
+    public void detach(Observer observer) {
+        observers.remove(observer);
+    }
 
     void notifyEra(int era) {
         for (Observer observer : new ArrayList<>(observers)) {
