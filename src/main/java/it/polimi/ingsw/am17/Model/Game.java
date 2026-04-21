@@ -130,6 +130,7 @@ public class Game extends Subject {
 
         orderedPlayer.add(p);
         notifyPlayerStack(orderedPlayer);
+        notifyOfferingCards(offeringCards);
 
         //if we reached the number of players for the game we start the game
         if (orderedPlayer.size() == numPlayers)
@@ -206,6 +207,8 @@ public class Game extends Subject {
         }
 
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
+
+        notifyTribesCards(upperRow,lowerRow);
     }
 
     /**

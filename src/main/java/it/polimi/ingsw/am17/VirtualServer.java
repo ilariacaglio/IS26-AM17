@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public interface VirtualServer {
     List<UUID> getGamesList() throws Exception;
-    void createGame(VirtualViewRMI client, Player player, int numPlayers)  throws Exception;
-    void joinGame(VirtualViewRMI client, UUID gameId, Player player)  throws Exception;
+    void createGame(VirtualView client, Player player, int numPlayers)  throws Exception;
+    void joinGame(VirtualView client, UUID gameId, Player player)  throws Exception;
     void pickOfferingCard(UUID gameId, Player player, OfferingCard card)  throws Exception;
     void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception;
 }

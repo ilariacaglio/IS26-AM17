@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Model.OfferingCard;
 import it.polimi.ingsw.am17.Model.Player;
 import it.polimi.ingsw.am17.RMI.Server.VirtualViewRMI;
 import it.polimi.ingsw.am17.VirtualServer;
+import it.polimi.ingsw.am17.VirtualView;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -13,14 +14,14 @@ import java.util.List;
 import java.util.UUID;
 
 public interface VirtualServerRMI extends Remote, VirtualServer {
-    void connect(VirtualViewRMI client) throws RemoteException;
+    void connect(VirtualView client) throws RemoteException;
     // controller methods
     @Override
     List<UUID> getGamesList() throws RemoteException;
     @Override
-    void createGame(VirtualViewRMI client, Player player, int numPlayers)  throws RemoteException;
+    void createGame(VirtualView client, Player player, int numPlayers)  throws RemoteException;
     @Override
-    void joinGame(VirtualViewRMI client,UUID gameId, Player player)  throws RemoteException;
+    void joinGame(VirtualView client,UUID gameId, Player player)  throws RemoteException;
     @Override
     void pickOfferingCard(UUID gameId, Player player, OfferingCard card)  throws RemoteException;
     @Override
