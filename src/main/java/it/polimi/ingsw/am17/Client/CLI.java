@@ -185,7 +185,7 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
         //notify user
     }
 
-    public void updateGameId(UUID gameId) throws Exception
+    public void updateGameId(UUID gameId) throws RemoteException
     {
         game.id = gameId;
 

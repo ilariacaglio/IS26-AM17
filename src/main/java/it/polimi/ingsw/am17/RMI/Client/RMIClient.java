@@ -59,39 +59,33 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
     }
 
     // TODO
-    public void updateEra(int era) {
+    public void updateEra(int era) throws RemoteException {
         // call model to update era
     }
 
     // TODO
-    public void updatePlayerStack(Stack<Player> orderedPlayer) {
+    public void updatePlayerStack(Stack<Player> orderedPlayer) throws RemoteException {
 
     }
 
     // TODO
-    public void updateOfferingCards(List<OfferingCard> offeringCards) {
+    public void updateOfferingCards(List<OfferingCard> offeringCards) throws RemoteException {
 
     }
 
     // TODO
-    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) {
+    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws RemoteException {
 
     }
 
     // TODO
-    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
 
     }
 
     // TODO
     @Override
-    public void updateGameId(UUID gameId) {
-
-    }
-
-    // TODO: DELETE WHEN SAFE
-    @Override
-    public void update() {
+    public void updateGameId(UUID gameId) throws RemoteException {
 
     }
 }
