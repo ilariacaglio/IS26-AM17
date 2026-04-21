@@ -97,4 +97,9 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
         // UI communication
         userInterface.printGameId(gameId);
     }
+
+    @Override
+    public void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException {
+
+    }
 }

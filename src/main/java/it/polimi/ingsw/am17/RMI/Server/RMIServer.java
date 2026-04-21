@@ -46,9 +46,9 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException
      */
     @Override
-    public List<UUID> getGamesList() throws RemoteException {
+    public void getGamesList(VirtualView client) throws RemoteException {
         System.err.println("getGamesList request received");
-        return this.controller.getGamesList();
+        ((VirtualViewRMI)client).updateGamesIdList(this.controller.getGamesList());
     }
 
     /**
