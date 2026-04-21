@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.Player;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Save 1 food for each characterType when FoodEvent
@@ -26,5 +27,17 @@ public class BuildingType13M extends BuildingCard {
     @Override
     public int GetFoodDiscountInFoodEvent(List<CharacterCard> playerCharacterCards) {
         return (int) playerCharacterCards.stream().filter(card -> card.getCardType() == characterType).count();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BuildingType13M that = (BuildingType13M) o;
+        return characterType == that.characterType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(characterType);
     }
 }

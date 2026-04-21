@@ -1,9 +1,6 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,5 +44,17 @@ public class BuildingType14 extends BuildingCard {
             return 5;
         else
             return 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BuildingType14 that = (BuildingType14) o;
+        return numberOfCharacter == that.numberOfCharacter;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(numberOfCharacter);
     }
 }

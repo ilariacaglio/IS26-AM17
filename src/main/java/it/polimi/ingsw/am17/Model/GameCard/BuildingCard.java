@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BuildingCard {
     private final int foodCost;
@@ -38,4 +39,15 @@ public class BuildingCard {
     public boolean isShieldedFromRitualEvent() { return false; } // EventEffect: returns true if a player should not lose points from rituals
     public boolean hasOneMoreMove() { return false; }
     public boolean hasDoubleRitualEventPoints() { return false; } // Tribes effect
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BuildingCard that)) return false;
+        return foodCost == that.foodCost && bonusPoints == that.bonusPoints && era == that.era;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(foodCost, bonusPoints, era);
+    }
 }

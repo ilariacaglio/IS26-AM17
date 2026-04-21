@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Gives extra points for each character of given type.
@@ -29,5 +30,17 @@ public class BuildingType3M extends BuildingCard {
     public int GetAdditionalFinalPoints(List<CharacterCard> playerCharacterCards) {
         int characterCount = (int) playerCharacterCards.stream().filter(card -> card.getCardType() == characterType).count();
         return characterCount * pointsFromEachCharacter;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BuildingType3M that = (BuildingType3M) o;
+        return pointsFromEachCharacter == that.pointsFromEachCharacter && characterType == that.characterType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pointsFromEachCharacter, characterType);
     }
 }
