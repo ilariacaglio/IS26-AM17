@@ -315,4 +315,17 @@ public class Player{
    {
        return food;
    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return Objects.equals(nickname, player.nickname) && color == player.color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nickname, pp, food, color, characterCards, buildingCards);
+    }
 }

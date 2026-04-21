@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Model.GameCard.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class OfferingCard {
     private final int minPlayers;
@@ -63,5 +64,18 @@ public class OfferingCard {
 
     public Player getPlayer() {
         return player;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        OfferingCard that = (OfferingCard) o;
+        return minPlayers == that.minPlayers && orderLetter == that.orderLetter && foodBonus == that.foodBonus && numCardsUpper == that.numCardsUpper && numCardsLower == that.numCardsLower && Objects.equals(player, that.player);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(minPlayers, orderLetter, foodBonus, numCardsUpper, numCardsLower, player);
     }
 }
