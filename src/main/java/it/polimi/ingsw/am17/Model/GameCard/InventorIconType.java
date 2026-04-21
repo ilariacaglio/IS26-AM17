@@ -10,5 +10,10 @@ public enum InventorIconType {
     HOOK,
     IDOL,
     NECKLACE,
-    FLINT
+    FLINT;
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase();
+    }
 }

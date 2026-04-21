@@ -2,37 +2,37 @@
   {
     "foodCost": 8,
     "bonusPoints": 8,
-    "characterType": "HUNTER",
+    "characterType": "hunter",
     "pointsFromEachCharacter": 3
   },
   {
     "foodCost": 7,
     "bonusPoints": 6,
-    "characterType": "BINDER",
+    "characterType": "binder",
     "pointsFromEachCharacter": 4
   },
   {
     "foodCost": 7,
     "bonusPoints": 4,
-    "characterType": "SHAMAN",
+    "characterType": "shaman",
     "pointsFromEachCharacter": 4
   },
   {
     "foodCost": 6,
     "bonusPoints": 3,
-    "characterType": "BUILDER",
+    "characterType": "builder",
     "pointsFromEachCharacter": 4
   },
   {
     "foodCost": 7,
     "bonusPoints": 4,
-    "characterType": "ARTIST",
+    "characterType": "artist",
     "pointsFromEachCharacter": 4
   },
   {
     "foodCost": 6,
     "bonusPoints": 6,
-    "characterType": "INVENTOR",
+    "characterType": "inventor",
     "pointsFromEachCharacter": 2
   }
 ]

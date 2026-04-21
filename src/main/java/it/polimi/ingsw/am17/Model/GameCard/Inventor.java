@@ -33,4 +33,8 @@ public class Inventor extends CharacterCard {
     public int hashCode() {
         return Objects.hashCode(icon);
     }
+
+    public String toString() {
+        return super.toString() + "(" + icon.toString() + ")";
+    }
 }
