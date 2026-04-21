@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.RMI.Client;
 
 import it.polimi.ingsw.am17.Client.CLI;
 import it.polimi.ingsw.am17.Client.GameClient;
+import it.polimi.ingsw.am17.Client.UI;
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
 import it.polimi.ingsw.am17.Model.OfferingCard;
@@ -20,8 +21,7 @@ import java.util.UUID;
 public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
     private VirtualServerRMI server;
     private GameClient model;
-    // TODO: mettere variabile per interfaccia grafica
-    private CLI cli;
+    private UI userInterface;
 
     public RMIClient() throws RemoteException {
         super();
@@ -38,7 +38,7 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
             // TODO: gui
         }
         else {
-            cli=new CLI(server,this, model);
+            userInterface=new CLI(server,this, model);
         }
 
         run();
@@ -46,16 +46,14 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
 
     private void run() throws RemoteException {
         this.server.connect(this);
-        cli.startCLI();
-        //TODO: or gui
+        userInterface.start();
     }
 
-    // TODO
+    @Override
     public void updateEra(int era) throws RemoteException {
         // call model to update era
         model.currentEra = era;
         // UI communication
-
         if(era == 1)
         {
             System.out.println("è iniziata la partita");
@@ -65,39 +63,38 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
         }
     }
 
-    // TODO
+    @Override
     public void updatePlayerStack(Stack<Player> orderedPlayer) throws RemoteException {
         model.orderedPlayer = orderedPlayer;
         // UI communication
-        cli.drawInterface(model);
+        userInterface.drawInterface(model);
     }
 
-    // TODO
+    @Override
     public void updateOfferingCards(List<OfferingCard> offeringCards) throws RemoteException {
         model.offeringCards = offeringCards;
-        cli.drawInterface(model);
+        userInterface.drawInterface(model);
     }
 
-    // TODO
+    @Override
     public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws RemoteException {
         model.upperRow = upperRow;
         model.lowerRow = lowerRow;
-        cli.drawInterface(model);
+        userInterface.drawInterface(model);
     }
 
-    // TODO
+    @Override
     public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
         model.upperBuildingRow = upperBuildingRow;
         model.lowerBuildingRow = lowerBuildingRow;
 
-        cli.drawInterface(model);
+        userInterface.drawInterface(model);
     }
 
-    // TODO
     @Override
     public void updateGameId(UUID gameId) throws RemoteException {
         model.id = gameId;
         // UI communication
-        cli.printGameId(gameId);
+        userInterface.printGameId(gameId);
     }
 }
