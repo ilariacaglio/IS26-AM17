@@ -16,9 +16,15 @@ public class GameController {
 
     public void signUpAsObserver(VirtualView client, UUID gameId){
         Game game = GamesListHandler.getGameFromId(gameId);
-        synchronized (game)
-        {
+        synchronized (game) {
             game.attach(client);
+        }
+    }
+
+    public void removeClientAsObserver(VirtualView client, UUID gameId){
+        Game game = GamesListHandler.getGameFromId(gameId);
+        synchronized (game){
+            game.detach(client);
         }
     }
 

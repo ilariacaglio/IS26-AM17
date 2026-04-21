@@ -100,7 +100,7 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
                 System.err.println("Errore durante la joinGame: " + e.getMessage());
                 try {
                     // Remove observer
-                    // controller.removeObserver(client, gameId);
+                    controller.removeClientAsObserver(client, gameId);
                 } catch (Exception ignored) {}
             }
         }).start();
