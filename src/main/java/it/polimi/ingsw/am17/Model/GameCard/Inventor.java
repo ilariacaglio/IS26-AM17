@@ -23,6 +23,7 @@ public class Inventor extends CharacterCard {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Inventor inventor = (Inventor) o;
         return icon == inventor.icon;

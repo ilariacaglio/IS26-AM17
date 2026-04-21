@@ -23,6 +23,7 @@ public class Hunter extends CharacterCard {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Hunter hunter = (Hunter) o;
         return withIcon == hunter.withIcon;

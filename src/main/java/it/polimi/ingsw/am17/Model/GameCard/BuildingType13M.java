@@ -31,6 +31,7 @@ public class BuildingType13M extends BuildingCard {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildingType13M that = (BuildingType13M) o;
         return characterType == that.characterType;

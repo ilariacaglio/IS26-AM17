@@ -32,6 +32,7 @@ public class FoodEvent extends EventCard{
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FoodEvent foodEvent = (FoodEvent) o;
         return pointLost == foodEvent.pointLost;

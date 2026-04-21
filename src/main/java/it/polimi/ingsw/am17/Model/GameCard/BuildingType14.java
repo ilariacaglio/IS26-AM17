@@ -48,6 +48,7 @@ public class BuildingType14 extends BuildingCard {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildingType14 that = (BuildingType14) o;
         return numberOfCharacter == that.numberOfCharacter;

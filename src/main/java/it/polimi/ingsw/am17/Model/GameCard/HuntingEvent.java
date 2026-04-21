@@ -32,6 +32,7 @@ public class HuntingEvent extends EventCard {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HuntingEvent that = (HuntingEvent) o;
         return pointEarned == that.pointEarned;

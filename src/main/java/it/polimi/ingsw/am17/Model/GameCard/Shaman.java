@@ -22,6 +22,7 @@ public class Shaman extends CharacterCard {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Shaman shaman = (Shaman) o;
         return stars == shaman.stars;

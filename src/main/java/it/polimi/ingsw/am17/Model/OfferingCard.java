@@ -69,6 +69,7 @@ public class OfferingCard {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OfferingCard that = (OfferingCard) o;
         return minPlayers == that.minPlayers && orderLetter == that.orderLetter && foodBonus == that.foodBonus && numCardsUpper == that.numCardsUpper && numCardsLower == that.numCardsLower && Objects.equals(player, that.player);

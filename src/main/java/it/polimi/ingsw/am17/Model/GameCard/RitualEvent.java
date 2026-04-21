@@ -83,6 +83,7 @@ public class RitualEvent extends EventCard {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RitualEvent that = (RitualEvent) o;
         return pointMax == that.pointMax && pointMin == that.pointMin;
