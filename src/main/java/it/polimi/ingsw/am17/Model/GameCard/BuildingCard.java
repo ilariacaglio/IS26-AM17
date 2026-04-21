@@ -42,7 +42,8 @@ public class BuildingCard {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BuildingCard that)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        BuildingCard that = (BuildingCard) o;
         return foodCost == that.foodCost && bonusPoints == that.bonusPoints && era == that.era;
     }
 

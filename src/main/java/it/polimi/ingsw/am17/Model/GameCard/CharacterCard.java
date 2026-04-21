@@ -16,7 +16,8 @@ public class CharacterCard extends TribesCard {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof CharacterCard that)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        CharacterCard that = (CharacterCard) o;
         return minPlayer == that.minPlayer;
     }
 
