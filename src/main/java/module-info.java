@@ -15,4 +15,6 @@ module it.polimi.ingsw.am17 {
     opens it.polimi.ingsw.am17.Model.GameCard to tools.jackson.databind;
     opens it.polimi.ingsw.am17.Model to tools.jackson.databind;
     exports it.polimi.ingsw.am17;
+    exports it.polimi.ingsw.am17.Model;
+    exports it.polimi.ingsw.am17.Model.GameCard;
 }
