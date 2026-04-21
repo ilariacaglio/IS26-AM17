@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.Player;
 
 import java.util.List;
+import java.util.Objects;
 
 public class FoodEvent extends EventCard{
     private final int pointLost;
@@ -27,5 +28,17 @@ public class FoodEvent extends EventCard{
         for (Player player : list) {
             player.solveFoodEvent(pointLost);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        FoodEvent foodEvent = (FoodEvent) o;
+        return pointLost == foodEvent.pointLost;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(pointLost);
     }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.Player;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PaintingEvent extends EventCard {
     private final int pointsLow;
@@ -41,5 +42,17 @@ public class PaintingEvent extends EventCard {
         for (Player player : list) {
             player.solvePaintingEvent(numMax, pointsMax, pointsLow);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PaintingEvent that = (PaintingEvent) o;
+        return pointsLow == that.pointsLow && pointsMax == that.pointsMax && numMax == that.numMax;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pointsLow, pointsMax, numMax);
     }
 }
