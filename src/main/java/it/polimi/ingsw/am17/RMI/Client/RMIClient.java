@@ -89,9 +89,5 @@ public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
 
     }
 
-    // TODO: DELETE WHEN SAFE
-    @Override
-    public void update() {
 
-    }
 }

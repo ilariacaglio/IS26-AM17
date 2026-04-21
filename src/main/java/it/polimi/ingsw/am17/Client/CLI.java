@@ -82,21 +82,26 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
                         break;
                     case "create":
                         if(!inGame) {
+                            game = new GameClient();
                             System.out.print("Quanti giocatori vuoi? \n>");
                             int numPlayers = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
                             System.out.println("trying to create game");
                             virtualServer.createGame(this, myPlayer, numPlayers);
 
-                            game = new GameClient(); //TODO: fix
                             game.numPlayers = numPlayers;
                         }else
                         {
                             System.out.print("Già in partita \n>");
                         }
                         break;
-
+                    case "pick offering card":
+                        System.out.print("Inserisci numero della carta \n>");
+                        int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
+                        virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
+                        break;
                     case "join":
                         if(!inGame) {
+                            game = new GameClient();
                             System.out.println("GameID: ");
                             UUID gameId = UUID.fromString(scanner.nextLine()); //TODO: check for errors
                             System.out.println("trying to create game");
@@ -150,21 +155,32 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
     public void updateEra(int era) {
         // call model to update era
         game.currentEra = era;
-
+        if(era == 1)
+        {
+            System.out.println("è iniziata la partita");
+        }else
+        {
+            System.out.println("è iniziata la era successiva");
+        }
         //notify user
     }
 
     // TODO
     public void updatePlayerStack(Stack<Player> orderedPlayer) {
         game.orderedPlayer = orderedPlayer;
-
-        //notify user
+        this.myPlayer = orderedPlayer.stream()
+                .filter(p -> p.getNickname().equals(this.nickname))
+                .findFirst()
+                .orElse(null);
+            //notify user
     }
 
     // TODO
     public void updateOfferingCards(List<OfferingCard> offeringCards) {
         game.offeringCards = offeringCards;
-        drawInterface();
+
+        //drawInterface(); to fix
+
         //notify user
     }
 
@@ -185,8 +201,7 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
         //notify user
     }
 
-    public void updateGameId(UUID gameId) throws Exception
-    {
+    public void updateGameId(UUID gameId) {
         game.id = gameId;
 
         //notify user to remove
@@ -195,7 +210,43 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
 
     private void drawInterface()
     {
+        //clear console
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        //draw players
+        System.out.print("Players: ");
+        for(Player p : game.orderedPlayer)
+        {
+            System.out.print(p.getNickname().concat(" "));
+        }
+        System.out.println();
 
+        //draw upper deck
+        System.out.print("Upper deck: ");
+        for(TribesCard c : game.upperRow)
+        {
+            System.out.print(c.toString().concat(" "));
+        }
+        System.out.println();
+
+        //draw lower deck
+        System.out.print("Lower deck: ");
+        for(TribesCard c : game.lowerRow)
+        {
+            System.out.print(c.toString().concat(" "));
+        }
+        System.out.println();
+        System.out.println();
+
+        //draw offering card
+        System.out.print("Offering card: ");
+        for(OfferingCard c : game.offeringCards)
+        {
+            System.out.print(c.toString().concat(" "));
+        }
+        System.out.println();
+        if(game.orderedPlayer.getFirst().equals(myPlayer))
+            System.out.println("è il tuo turno");
     }
 
 

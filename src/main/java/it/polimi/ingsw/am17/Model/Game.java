@@ -132,7 +132,7 @@ public class Game extends Subject {
         }
 
         orderedPlayer.add(p);
-
+        notifyPlayerStack(orderedPlayer);
         //if we reached the number of players for the game we start the game
         if(orderedPlayer.size() == numPlayers)
             nextEra();
@@ -157,7 +157,10 @@ public class Game extends Subject {
             default:
                 throw new IllegalStateException("Invalid era");
         }
-
+        notifyEra(currentEra);
+        notifyOfferingCards(offeringCards);
+        notifyTribesCards(upperRow, lowerRow);
+        notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
         // TODO: notifyObserver(GameState gameState);
     }
 
@@ -184,7 +187,7 @@ public class Game extends Subject {
         // Set era and shuffle players
         this.currentEra = 1;
         Collections.shuffle(orderedPlayer);
-
+        notifyPlayerStack(orderedPlayer);
 
         giveFoodToPlayers();
 
@@ -376,7 +379,7 @@ public class Game extends Subject {
     {
 
         //check if is player turn
-        if(!player.equals(orderedPlayer.pop())) {
+        if(player.getNickname().equals(orderedPlayer.peek().getNickname())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
@@ -396,6 +399,7 @@ public class Game extends Subject {
         Player nextPlayer;
         //notify observer
         try {
+            orderedPlayer.pop();
             nextPlayer = orderedPlayer.peek();
         }catch (EmptyStackException e)
         {
@@ -410,6 +414,8 @@ public class Game extends Subject {
             //get first player to do player action
             nextPlayer = getNextPlayer();
 
+            notifyOfferingCards(offeringCards);
+            notifyPlayerStack(orderedPlayer);
             //gamestate should specify it s turn for player action
             //GameState = new GameState ...
             //notifyObserver(gameState)
@@ -522,10 +528,5 @@ public class Game extends Subject {
     ///only for testing
     protected Player getCurrentPlayer(){
         return orderedPlayer.peek();
-    }
-
-    @Override
-    public void notifyObserver() {
-
     }
 }
