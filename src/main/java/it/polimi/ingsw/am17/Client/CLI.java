@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 
-public class CLI {
+public class CLI implements UI {
     private final VirtualServer virtualServer;
     private final VirtualView client;
     private GameClient game;
@@ -26,14 +26,13 @@ public class CLI {
     String nickname = "";
     boolean inGame = false;
 
-    public CLI(VirtualServer server, VirtualView client, GameClient game) {
-        super();
+    public CLI (VirtualServer server, VirtualView client, GameClient game) {
         this.virtualServer = server;
         this.client = client;
         this.game = game;
     }
 
-    public void startCLI() {
+    public void start() {
         System.out.println("=== Benvenuto a Mesos ===");
 
 
