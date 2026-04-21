@@ -18,4 +18,9 @@ public enum CardType {
     public boolean isEvent() {
         return !isCharacter();
     }
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase();
+    }
 }

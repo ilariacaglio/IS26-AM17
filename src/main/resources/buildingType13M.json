@@ -3,18 +3,18 @@
     "era": 1,
     "foodCost": 4,
     "bonusPoints": 4,
-    "characterType": "BINDER"
+    "characterType": "binder"
   },
   {
     "era": 1,
     "foodCost": 5,
     "bonusPoints": 3,
-    "characterType": "ARTIST"
+    "characterType": "artist"
   },
   {
     "era": 2,
     "foodCost": 7,
     "bonusPoints": 4,
-    "characterType": "INVENTOR"
+    "characterType": "inventor"
   }
 ]

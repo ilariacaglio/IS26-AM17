@@ -80,4 +80,13 @@ public class OfferingCard implements Serializable {
     public int hashCode() {
         return Objects.hash(minPlayers, orderLetter, foodBonus, numCardsUpper, numCardsLower, player);
     }
+
+    @Override
+    public String toString() {
+        return  orderLetter + " "
+                + foodBonus + "Food" +
+                + numCardsUpper + "↑"
+                + numCardsLower + "↓"
+                + "(" + player + ")";
+    }
 }

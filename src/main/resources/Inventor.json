@@ -2,101 +2,101 @@
   {
     "era":1,
     "minPlayers": 2,
-    "icon":"FLINT"
+    "icon":"flint"
   },
   {
     "era":3,
     "minPlayers": 2,
-    "icon":"IDOL"
+    "icon":"idol"
   },
   {
     "era":3,
     "minPlayers": 2,
-    "icon":"HOOK"
+    "icon":"hook"
   },
   {
     "era":3,
     "minPlayers": 2,
-    "icon":"NECKLACE"
+    "icon":"necklace"
   },
   {
     "era":3,
     "minPlayers": 2,
-    "icon":"BREAD"
+    "icon":"bread"
   },
   {
     "era":3,
     "minPlayers": 4,
-    "icon":"NECKLACE"
+    "icon":"necklace"
   },
   {
     "era":3,
     "minPlayers": 3,
-    "icon":"FLINT"
+    "icon":"flint"
   },
   {
     "era":3,
     "minPlayers": 3,
-    "icon":"CANOE"
+    "icon":"canoe"
   },
   {
     "era":2,
     "minPlayers": 2,
-    "icon":"IDOL"
+    "icon":"idol"
   },
   {
     "era":2,
     "minPlayers": 2,
-    "icon":"LEATHER"
+    "icon":"leather"
   },
   {
     "era":2,
     "minPlayers": 2,
-    "icon":"FLUTE"
+    "icon":"flute"
   },
   {
     "era":2,
     "minPlayers": 2,
-    "icon":"ROPE"
+    "icon":"rope"
   },
   {
     "era":2,
     "minPlayers": 2,
-    "icon":"MORTAR"
+    "icon":"mortar"
   },
   {
     "era":2,
     "minPlayers": 4,
-    "icon":"HOOK"
+    "icon":"hook"
   },
   {
     "era": 1,
     "minPlayers": 2,
-    "icon": "CANOE"
+    "icon": "canoe"
   },
   {
     "era": 1,
     "minPlayers": 2,
-    "icon": "BREAD"
+    "icon": "bread"
   },
   {
     "era": 1,
     "minPlayers": 2,
-    "icon": "LEATHER"
+    "icon": "leather"
   },
   {
     "era": 1,
     "minPlayers": 4,
-    "icon": "ROPE"
+    "icon": "rope"
   },
   {
     "era": 1,
     "minPlayers": 4,
-    "icon": "MORTAR"
+    "icon": "mortar"
   },
   {
     "era": 1,
     "minPlayers": 4,
-    "icon": "FLUTE"
+    "icon": "flute"
   }
 ]

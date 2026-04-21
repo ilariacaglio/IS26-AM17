@@ -33,4 +33,10 @@ public class Hunter extends CharacterCard {
     public int hashCode() {
         return Objects.hashCode(withIcon);
     }
+
+    @Override
+    public String toString() {
+        if (withIcon) return super.toString() + "+";
+        else return super.toString();
+    }
 }

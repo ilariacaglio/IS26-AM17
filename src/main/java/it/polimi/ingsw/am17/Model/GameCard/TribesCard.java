@@ -17,4 +17,9 @@ public class TribesCard implements Serializable {
         this.cardType=cardType;
         this.era=era;
     }
+
+    @Override
+    public String toString() {
+        return cardType.toString();
+    }
 }
