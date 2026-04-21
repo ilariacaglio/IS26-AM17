@@ -5,6 +5,8 @@ import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
 import it.polimi.ingsw.am17.RMI.Client.VirtualServerRMI;
 import it.polimi.ingsw.am17.RMI.Server.VirtualViewRMI;
+import it.polimi.ingsw.am17.VirtualServer;
+import it.polimi.ingsw.am17.VirtualView;
 
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
@@ -16,26 +18,19 @@ import java.util.UUID;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 
-public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
-
-    private VirtualServerRMI virtualServer;
+public class CLI {
+    private final VirtualServer virtualServer;
+    private final VirtualView client;
+    private GameClient game;
     Player myPlayer = null;
-    GameClient game;
-    static CLI cli;
-    boolean inGame = game != null;
     String nickname = "";
+    boolean inGame = false;
 
-    protected CLI() throws RemoteException {
+    public CLI(VirtualServer server, VirtualView client, GameClient game) {
         super();
-    }
-
-    public static void main(String[] args) {
-        try {
-            cli = new CLI();
-            cli.startCLI();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        this.virtualServer = server;
+        this.client = client;
+        this.game = game;
     }
 
     public void startCLI() {
@@ -64,18 +59,6 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
                 String input = scanner.nextLine().trim().toLowerCase();
 
                 switch (input) {
-                    case "connect":
-                        System.out.println("Insert Server ip");
-                        String ip = scanner.nextLine();
-
-                        if (ip.isEmpty()) {
-                            ip = "127.0.0.1";
-                            System.out.println("Ip set to localhost");
-                        }
-
-                        connect(ip);
-
-                        break;
                     case "change color":
                         Color c = chooseColor(scanner);
                         myPlayer.setColor(c);
@@ -85,22 +68,25 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
                             System.out.print("Quanti giocatori vuoi? \n>");
                             int numPlayers = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
                             System.out.println("trying to create game");
-                            virtualServer.createGame(this, myPlayer, numPlayers);
-
-                            game = new GameClient(); //TODO: fix
-                            game.numPlayers = numPlayers;
+                            virtualServer.createGame(client, myPlayer, numPlayers);
+                            inGame = true;
                         }else
                         {
                             System.out.print("Già in partita \n>");
                         }
                         break;
-
+                    case "pick offering card":
+                        System.out.print("Inserisci numero della carta \n>");
+                        int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
+                        virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
+                        break;
                     case "join":
                         if(!inGame) {
+                            game = new GameClient();
                             System.out.println("GameID: ");
                             UUID gameId = UUID.fromString(scanner.nextLine()); //TODO: check for errors
                             System.out.println("trying to create game");
-                            virtualServer.joinGame(this, gameId, myPlayer);
+                            virtualServer.joinGame(client, gameId, myPlayer);
                         }else{
                             System.out.println("Già in game");
                         }
@@ -129,73 +115,54 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
         System.out.println("- exit: chiude l'applicazione");
     }
 
-    public void connect(String ip) {
-        try {
-            // Locate the registry on the server's IP and default port 1099
-            Registry registry = LocateRegistry.getRegistry(ip, 1099);
-            // Look up the object by the name it was bound to
-            virtualServer = (VirtualServerRMI) registry.lookup("MesosRMIServer");
-            System.out.println("Connected to server via RMI!");
-        }catch (RemoteException e) {
-            System.err.println("Network error: The server seems to be offline.");
-            e.printStackTrace();
-        } catch (NotBoundException e) {
-            System.err.println("Service error: The server is running but the game service isn't registered.");
+    public void printGameId(UUID gameId) {
+        System.out.println("Connesso a game con ID: ".concat(gameId.toString()));
+    }
+
+    public void drawInterface(GameClient game)
+    {
+        try{
+            this.game = game;
+            //clear console
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            //draw players
+            System.out.print("Players: ");
+            for(Player p : game.orderedPlayer)
+            {
+                System.out.print(p.getNickname().concat(" "));
+            }
+            System.out.println();
+
+            //draw upper deck
+            System.out.print("Upper deck: ");
+            for(TribesCard c : game.upperRow)
+            {
+                System.out.print(c.toString().concat(" "));
+            }
+            System.out.println();
+
+            //draw lower deck
+            System.out.print("Lower deck: ");
+            for(TribesCard c : game.lowerRow)
+            {
+                System.out.print(c.toString().concat(" "));
+            }
+            System.out.println();
+            System.out.println();
+
+            //draw offering card
+            System.out.print("Offering card: ");
+            for(OfferingCard c : game.offeringCards)
+            {
+                System.out.print(c.toString().concat(" "));
+            }
+            System.out.println();
+            if(game.orderedPlayer.peek().equals(myPlayer))
+                System.out.println("è il tuo turno");
         } catch (Exception e) {
-            System.err.println("Connection failed: " + e.getMessage());
+            System.err.println("Errore nel CLI: " + e.getMessage());
         }
-    }
-
-    // TODO
-    public void updateEra(int era) {
-        // call model to update era
-        game.currentEra = era;
-
-        //notify user
-    }
-
-    // TODO
-    public void updatePlayerStack(Stack<Player> orderedPlayer) {
-        game.orderedPlayer = orderedPlayer;
-
-        //notify user
-    }
-
-    // TODO
-    public void updateOfferingCards(List<OfferingCard> offeringCards) {
-        game.offeringCards = offeringCards;
-        drawInterface();
-        //notify user
-    }
-
-    // TODO
-    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) {
-        game.upperRow = upperRow;
-        game.lowerRow = lowerRow;
-
-        //notify user
-    }
-
-    // TODO
-    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
-        game.upperBuildingRow = upperBuildingRow;
-        game.lowerBuildingRow = lowerBuildingRow;
-
-        drawInterface();
-        //notify user
-    }
-
-    public void updateGameId(UUID gameId) throws Exception
-    {
-        game.id = gameId;
-
-        //notify user to remove
-        System.out.println("Arrivato GameID: ".concat(gameId.toString()));
-    }
-
-    private void drawInterface()
-    {
-
     }
 
 
@@ -222,5 +189,4 @@ public class CLI extends UnicastRemoteObject implements VirtualViewRMI {
             }
         }
     }
-
 }

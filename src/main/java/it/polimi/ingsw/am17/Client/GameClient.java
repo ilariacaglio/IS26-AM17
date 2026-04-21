@@ -7,27 +7,24 @@ import it.polimi.ingsw.am17.Model.OfferingCard;
 import it.polimi.ingsw.am17.Model.Player;
 import it.polimi.ingsw.am17.Model.TribesDeck;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 
 public class GameClient {
 
-    UUID id;
-    int numPlayers;
-    int currentEra;
+    public UUID id;
+    public int numPlayers;
+    public int currentEra = 0;
 
-    Stack<Player> orderedPlayer;
+    public Stack<Player> orderedPlayer = new Stack<>();
 
-    List<OfferingCard> offeringCards;
+    public List<OfferingCard> offeringCards = new ArrayList<>();
 
-    TribesDeck tribesDeck;
-    List<TribesCard> upperRow;
-    List<TribesCard> lowerRow;
+    public List<TribesCard> upperRow = new ArrayList<>();
+    public List<TribesCard> lowerRow = new ArrayList<>();
 
-    BuildingDeck buildingDeck;
-
-    List<BuildingCard> upperBuildingRow;
-    List<BuildingCard> lowerBuildingRow;
-
+    public List<BuildingCard> upperBuildingRow = new ArrayList<>();
+    public List<BuildingCard> lowerBuildingRow  = new ArrayList<>();
 }

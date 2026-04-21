@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.RMI.Client;
 
+import it.polimi.ingsw.am17.Client.CLI;
+import it.polimi.ingsw.am17.Client.GameClient;
 import it.polimi.ingsw.am17.Model.GameCard.BuildingCard;
 import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
 import it.polimi.ingsw.am17.Model.OfferingCard;
@@ -16,82 +18,86 @@ import java.util.Stack;
 import java.util.UUID;
 
 public class RMIClient extends UnicastRemoteObject implements VirtualViewRMI{
-    private final VirtualServerRMI server;
-//    private final ClientModel model;
+    private VirtualServerRMI server;
+    private GameClient model;
+    // TODO: mettere variabile per interfaccia grafica
+    private CLI cli;
 
-    public RMIClient(VirtualServerRMI server /*,ClientModel model*/) throws RemoteException {
+    public RMIClient() throws RemoteException {
         super();
-        this.server = server;
-        //this.model = model;
     }
 
-    public static void main(String[] args) throws RemoteException, NotBoundException {
+    public void start(String ip, boolean graphic) throws RemoteException, NotBoundException {
         final String serverName = "MesosRMIServer";
 
-        Registry registry = LocateRegistry.getRegistry(args[0], 1099);
-        VirtualServerRMI server = (VirtualServerRMI) registry.lookup(serverName);
-
-        //ClientModel model = new ClientModel();
-        //CLIView view = new CLIView();
+        Registry registry = LocateRegistry.getRegistry(ip, 1099);
+        this.server = (VirtualServerRMI) registry.lookup(serverName);
+        this.model = new GameClient();
         //model.registerObserver(view);
+        if(graphic){
+            // TODO: gui
+        }
+        else {
+            cli=new CLI(server,this, model);
+        }
 
-        //new RmiClient(server, model).run();
+        run();
     }
 
     private void run() throws RemoteException {
         this.server.connect(this);
-        this.runCli();
-    }
-
-    private void runCli() throws RemoteException {
-        // TODO: cli implementation
-        /*Scanner scan = new Scanner(System.in);
-        while (true) {
-            System.out.print("> ");
-            int command = scan.nextInt();
-
-            if (command == 0) {
-                server.reset();
-            } else {
-                server.add(command);
-            }
-        }*/
+        cli.startCLI();
+        //TODO: or gui
     }
 
     // TODO
-    public void updateEra(int era) {
+    public void updateEra(int era) throws RemoteException {
         // call model to update era
+        model.currentEra = era;
+        // UI communication
+
+        if(era == 1)
+        {
+            System.out.println("è iniziata la partita");
+        }else
+        {
+            System.out.println("è iniziata la era successiva");
+        }
     }
 
     // TODO
-    public void updatePlayerStack(Stack<Player> orderedPlayer) {
-
+    public void updatePlayerStack(Stack<Player> orderedPlayer) throws RemoteException {
+        model.orderedPlayer = orderedPlayer;
+        // UI communication
+        cli.drawInterface(model);
     }
 
     // TODO
-    public void updateOfferingCards(List<OfferingCard> offeringCards) {
-
+    public void updateOfferingCards(List<OfferingCard> offeringCards) throws RemoteException {
+        model.offeringCards = offeringCards;
+        cli.drawInterface(model);
     }
 
     // TODO
-    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) {
-
+    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws RemoteException {
+        model.upperRow = upperRow;
+        model.lowerRow = lowerRow;
+        cli.drawInterface(model);
     }
 
     // TODO
-    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
+        model.upperBuildingRow = upperBuildingRow;
+        model.lowerBuildingRow = lowerBuildingRow;
 
+        cli.drawInterface(model);
     }
 
     // TODO
     @Override
-    public void updateGameId(UUID gameId) {
-
-    }
-
-    // TODO: DELETE WHEN SAFE
-    @Override
-    public void update() {
-
+    public void updateGameId(UUID gameId) throws RemoteException {
+        model.id = gameId;
+        // UI communication
+        cli.printGameId(gameId);
     }
 }

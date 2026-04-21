@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Model.GameCard.CharacterCard;
 import it.polimi.ingsw.am17.Model.OfferingCard;
 import it.polimi.ingsw.am17.Model.Player;
 import it.polimi.ingsw.am17.RMI.Client.VirtualServerRMI;
+import it.polimi.ingsw.am17.VirtualView;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -34,9 +35,9 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
     }
 
     @Override
-    public void connect(VirtualViewRMI client) throws RemoteException {
+    public void connect(VirtualView client) throws RemoteException {
         synchronized (this.clients) {
-            this.clients.add(client);
+            this.clients.add((VirtualViewRMI) client);
         }
     }
 
@@ -57,14 +58,14 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException
      */
     @Override
-    public void createGame(VirtualViewRMI client, Player player, int numPlayers) throws RemoteException {
+    public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
         System.err.println("createGame request received");
         // game id generation
         UUID id = this.controller.createGame(player, numPlayers);
         // the client signs up as observer for the game
         controller.signUpAsObserver(client, id);
         // send gameId to client
-        client.updateGameId(id);
+        ((VirtualViewRMI)client).updateGameId(id);
     }
 
     /**
@@ -74,7 +75,7 @@ public class RMIServer extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException
      */
     @Override
-    public void joinGame(VirtualViewRMI client, UUID gameId, Player player) throws RemoteException {
+    public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
         new Thread(() -> {
             try {
                 System.err.println("joinGame request received");

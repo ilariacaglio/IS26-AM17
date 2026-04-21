@@ -130,6 +130,7 @@ public class Game extends Subject {
 
         orderedPlayer.add(p);
         notifyPlayerStack(orderedPlayer);
+        notifyOfferingCards(offeringCards);
 
         //if we reached the number of players for the game we start the game
         if (orderedPlayer.size() == numPlayers)
@@ -183,7 +184,7 @@ public class Game extends Subject {
         // Set era and shuffle players
         this.currentEra = 1;
         Collections.shuffle(orderedPlayer);
-
+        notifyPlayerStack(orderedPlayer);
 
         giveFoodToPlayers();
 
@@ -206,6 +207,8 @@ public class Game extends Subject {
         }
 
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
+
+        notifyTribesCards(upperRow,lowerRow);
     }
 
     /**
@@ -377,7 +380,7 @@ public class Game extends Subject {
     public void selectOfferingCard(Player player, OfferingCard offeringCard) {
 
         //check if is player turn
-        if (!player.equals(orderedPlayer.pop())) {
+        if (!player.equals(orderedPlayer.peek())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
@@ -398,6 +401,7 @@ public class Game extends Subject {
 
         Player nextPlayer;
         try {
+            orderedPlayer.pop();
             nextPlayer = orderedPlayer.peek();
         } catch (EmptyStackException e) {
             //order player stack for next turn

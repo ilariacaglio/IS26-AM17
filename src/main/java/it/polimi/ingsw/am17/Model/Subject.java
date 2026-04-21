@@ -20,32 +20,52 @@ public abstract class Subject {
     };
 
     void notifyEra(int era) {
-        for (Observer observer : observers) {
-            observer.updateEra(era);
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updateEra(era);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
         }
     }
 
     void notifyPlayerStack(Stack<Player> orderedPlayer) {
-        for (Observer observer : observers) {
-            observer.updatePlayerStack(orderedPlayer);
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updatePlayerStack(orderedPlayer);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
         }
     }
 
     void notifyOfferingCards(List<OfferingCard> offeringCards) {
-        for (Observer observer : observers) {
-            observer.updateOfferingCards(offeringCards);
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updateOfferingCards(offeringCards);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
         }
     }
 
     void notifyTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) {
-        for (Observer observer : observers) {
-            observer.updateTribesCards(upperRow, lowerRow);
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updateTribesCards(upperRow, lowerRow);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
         }
     }
 
     void notifyBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
-        for (Observer observer : observers) {
-            observer.updateBuildingCards(upperBuildingRow, lowerBuildingRow);
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updateBuildingCards(upperBuildingRow, lowerBuildingRow);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
         }
     }
 }
