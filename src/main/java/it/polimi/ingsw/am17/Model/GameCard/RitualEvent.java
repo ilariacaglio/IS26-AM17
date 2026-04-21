@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Model.Player;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RitualEvent extends EventCard {
     private final int pointMax;
@@ -78,5 +79,18 @@ public class RitualEvent extends EventCard {
             }
         }
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RitualEvent that = (RitualEvent) o;
+        return pointMax == that.pointMax && pointMin == that.pointMin;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pointMax, pointMin);
     }
 }
