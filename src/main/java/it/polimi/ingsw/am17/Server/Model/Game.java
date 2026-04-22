@@ -406,10 +406,9 @@ public class Game extends Subject {
 
         notifyOfferingCards(offeringCards);
 
-        Player nextPlayer;
         try {
             orderedPlayer.pop();
-            nextPlayer = orderedPlayer.peek();
+            orderedPlayer.peek();
         } catch (EmptyStackException e) {
             //order player stack for next turn
             orderedPlayer = offeringCards.stream()
@@ -417,15 +416,8 @@ public class Game extends Subject {
                     .sorted(Comparator.comparing(OfferingCard::getOrderLetter).reversed())
                     .map(OfferingCard::getPlayer)
                     .collect(Collectors.toCollection(Stack::new));
-
-
-            //get first player to do player action
-            nextPlayer = getNextPlayer();
-            return;
+            notifyPlayerStack(orderedPlayer);
         }
-
-        notifyPlayerStack(orderedPlayer);
-
     }
 
     /**
