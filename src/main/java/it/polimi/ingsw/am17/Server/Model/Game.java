@@ -122,7 +122,7 @@ public class Game extends Subject {
             EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
             //Remove the colors that are currently in use
             orderedPlayer.forEach(player -> unusedColors.remove(player.getColor()));
-            message.concat(unusedColors.toString());
+            message = message.concat(unusedColors.toString());
             throw new IllegalStateException(message);
         }
 
