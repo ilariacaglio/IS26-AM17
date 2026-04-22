@@ -1,11 +1,14 @@
 package it.polimi.ingsw.am17.Model;
 
-import it.polimi.ingsw.am17.Model.GameCard.*;
+import it.polimi.ingsw.am17.Server.Model.Color;
+import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.*;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
+import it.polimi.ingsw.am17.Server.Model.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -1,10 +1,14 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Inventor;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.InventorIconType;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class BuildingCardTest {
     Random r = new Random();

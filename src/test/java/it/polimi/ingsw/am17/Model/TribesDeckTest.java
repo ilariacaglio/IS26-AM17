@@ -1,13 +1,10 @@
 package it.polimi.ingsw.am17.Model;
 
-import it.polimi.ingsw.am17.Model.GameCard.Builder;
-import it.polimi.ingsw.am17.Model.GameCard.CardType;
-import it.polimi.ingsw.am17.Model.GameCard.EventCard;
-import it.polimi.ingsw.am17.Model.GameCard.TribesCard;
-import org.junit.jupiter.api.BeforeEach;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,5 +1,8 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType3M;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
