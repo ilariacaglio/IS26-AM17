@@ -26,7 +26,7 @@ public class CLI implements UI {
     }
 
     public void start() {
-        System.out.println("=== Benvenuto a Mesos ===");
+        System.out.println("=== Welcome to Mesos ===");
 
 
         try (Scanner scanner = new Scanner(System.in)) {
@@ -34,11 +34,11 @@ public class CLI implements UI {
 
             nickname = "";
             while (nickname.isEmpty()) {
-                System.out.print("Inserisci il tuo nickname (max 10 char): \n>");
+                System.out.print("Insert your nickname (max 10 char): \n>");
                 nickname = scanner.nextLine().trim();
                 if(nickname.length() >=10 )
                 {
-                    System.out.print("il tuo nickname supera i 10 char \n>");
+                    System.out.print("your nickname has more then 10 character \n>");
                 }
             }
 
@@ -57,30 +57,30 @@ public class CLI implements UI {
                         break;
                     case "create":
                         if(!inGame) {
-                            System.out.print("Quanti giocatori vuoi? \n>");
+                            System.out.print("Number of player? \n>");
                             int numPlayers = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
                             System.out.println("trying to create game");
                             virtualServer.createGame(client, myPlayer, numPlayers);
                             inGame = true;
                         }else
                         {
-                            System.out.print("Già in partita \n>");
+                            System.out.print("Already in a game \n>");
                         }
                         break;
                     case "pick offering card":
-                        System.out.print("Inserisci numero della carta \n>");
+                        System.out.print("insert card number (position from 0) \n>");
                         int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
                         virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
                         break;
                     case "join":
                         if(!inGame) {
                             game = new ClientModel();
-                            System.out.println("GameID: ");
+                            System.out.print("GameID: ");
                             UUID gameId = UUID.fromString(scanner.nextLine()); //TODO: check for errors
-                            System.out.println("trying to create game");
+                            System.out.println("trying to connect");
                             virtualServer.joinGame(client, gameId, myPlayer);
                         }else{
-                            System.out.println("Già in game");
+                            System.out.println("Already in a game");
                         }
                         break;
 
@@ -89,11 +89,11 @@ public class CLI implements UI {
                         break;
                     case "quit":
                     case "exit":
-                        System.out.println("Arrivederci!");
+                        System.out.println("Goodbye!");
                         running = false;
                         break;
                     default:
-                        System.out.println("Comando non riconosciuto. Scrivi 'help' per la lista comandi.");
+                        System.out.println("Command not recognized. Please type 'help' to view the list of available commands.");
                 }
             }
         } catch (Exception e) {
@@ -108,7 +108,7 @@ public class CLI implements UI {
     }
 
     public void printGameId(UUID gameId) {
-        System.out.println("Connesso a game con ID: ".concat(gameId.toString()));
+        System.out.println("You are connected to game: ".concat(gameId.toString()));
     }
 
     public void drawInterface(ClientModel game)
@@ -116,6 +116,9 @@ public class CLI implements UI {
         try{
             this.game = game;
             //clear console
+            for (int i = 0; i < 50; i++) {
+                System.out.println();
+            }
             System.out.print("\033[H\033[2J");
             System.out.flush();
             //draw players
@@ -151,7 +154,7 @@ public class CLI implements UI {
             }
             System.out.println();
             if(game.orderedPlayer.peek().equals(myPlayer))
-                System.out.println("è il tuo turno");
+                System.out.println("it's your turn");
         } catch (Exception e) {
             System.err.println("Errore nel CLI: " + e.getMessage());
         }
