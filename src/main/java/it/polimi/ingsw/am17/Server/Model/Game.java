@@ -98,13 +98,6 @@ public class Game extends Subject {
     }
 
     /**
-     * @return leftmost player in the offering track.
-     */
-    private Player getNextPlayer() {
-        return getNextOccupiedOfferingCard().getPlayer();
-    }
-
-    /**
      * Adds a player to the game.
      *
      * @param p player to add to the game
