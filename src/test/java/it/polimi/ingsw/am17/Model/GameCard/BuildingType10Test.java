@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
+import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType10;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +24,7 @@ class BuildingType10Test {
     void TestFoodBonusInventor3() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(2, 2,InventorIconType.CANOE);
+        CharacterCard A = new Inventor(2, 2, InventorIconType.CANOE);
         CharacterCard B = new Inventor(3, 2,InventorIconType.CANOE);
         cards.add(A);
 

@@ -1,0 +1,26 @@
+package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards;
+
+public enum CardType {
+    INVENTOR,
+    BINDER,
+    SHAMAN,
+    ARTIST,
+    HUNTER,
+    BUILDER,
+    RITUAL_EVENT,
+    HUNTING_EVENT,
+    PAINTING_EVENT,
+    FOOD_EVENT;
+    public boolean isCharacter() {
+        return !this.name().endsWith("_EVENT");
+    }
+
+    public boolean isEvent() {
+        return !isCharacter();
+    }
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase();
+    }
+}

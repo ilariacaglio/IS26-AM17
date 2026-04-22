@@ -1,14 +1,11 @@
 package it.polimi.ingsw.am17.Model;
 
-import it.polimi.ingsw.am17.Model.GameCard.*;
-import org.junit.jupiter.api.BeforeEach;
+import it.polimi.ingsw.am17.Server.Model.Decks.BuildingDeck;
+import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static it.polimi.ingsw.am17.Utility.CardParser.buildingCard13MParser;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BuildingDeckTest {

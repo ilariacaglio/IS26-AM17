@@ -1,7 +1,12 @@
 package it.polimi.ingsw.am17.Model.GameCard;
 
-import it.polimi.ingsw.am17.Model.Color;
-import it.polimi.ingsw.am17.Model.Player;
+import it.polimi.ingsw.am17.Server.Model.Color;
+import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType12;
+import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType8;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Shaman;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
