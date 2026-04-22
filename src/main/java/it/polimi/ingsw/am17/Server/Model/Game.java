@@ -136,7 +136,6 @@ public class Game extends Subject {
 
         orderedPlayer.add(p);
         notifyPlayerStack(orderedPlayer);
-        notifyOfferingCards(offeringCards);
 
         //if we reached the number of players for the game we start the game
         if (orderedPlayer.size() == numPlayers)
@@ -164,7 +163,7 @@ public class Game extends Subject {
         }
 
         notifyEra(currentEra);
-        notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
+        // notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
     }
 
     private void moveDownBuildingCards() {
@@ -172,6 +171,9 @@ public class Game extends Subject {
         upperBuildingRow.clear();
     }
 
+    /**
+     * Gives the starting food to players
+     */
     private void giveFoodToPlayers() {
         int[] startingFood = {2, 3, 3, 4, 4};
         for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
@@ -190,7 +192,7 @@ public class Game extends Subject {
         // Set era and shuffle players
         this.currentEra = 1;
         Collections.shuffle(orderedPlayer);
-        notifyPlayerStack(orderedPlayer);
+        // notifyPlayerStack(orderedPlayer);
 
         giveFoodToPlayers();
 
@@ -214,7 +216,8 @@ public class Game extends Subject {
 
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
 
-        notifyTribesCards(upperRow,lowerRow);
+        // notifyTribesCards(upperRow,lowerRow);
+        notifyStartGame(orderedPlayer, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
     /**
@@ -295,8 +298,9 @@ public class Game extends Subject {
         // remove player from buildingType2 offering card
         building2OfferingCard.setPlayer(null);
 
-        notifyPlayerStack(orderedPlayer);
-        notifyTribesCards(upperRow, lowerRow);
+        //notifyPlayerStack(orderedPlayer);
+        //notifyTribesCards(upperRow, lowerRow);
+        notifyEndTurn(orderedPlayer, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     /**
@@ -404,12 +408,12 @@ public class Game extends Subject {
         //set player to offeringCard
         offeringCard.setPlayer(player);
 
-        notifyOfferingCards(offeringCards);
+        //notifyOfferingCards(offeringCards);
 
-        Player nextPlayer;
+        //Player nextPlayer;
         try {
             orderedPlayer.pop();
-            nextPlayer = orderedPlayer.peek();
+            //nextPlayer = orderedPlayer.peek();
         } catch (EmptyStackException e) {
             //order player stack for next turn
             orderedPlayer = offeringCards.stream()
@@ -420,12 +424,12 @@ public class Game extends Subject {
 
 
             //get first player to do player action
-            nextPlayer = getNextPlayer();
+            //nextPlayer = getNextPlayer();
             return;
         }
 
-        notifyPlayerStack(orderedPlayer);
-
+        // notifyPlayerStack(orderedPlayer);
+        notifyPlayerSelectOfferingCard(player, offeringCard);
     }
 
     /**
@@ -472,17 +476,18 @@ public class Game extends Subject {
 
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
 
+        notifyPlayerSelectTribesCard(player, characterCards, buildingCards);
         //check everybody played his base turn
         if (nextOfferingCard == null) {
             // the round has ended
             endRound();
         }
-        else {
-            // TODO: improve, too much data
-            notifyOfferingCards(offeringCards);
-            notifyTribesCards(upperRow, lowerRow);
-            notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
-        }
+//        else {
+//            // TODO: improve, too much data
+//            notifyOfferingCards(offeringCards);
+//            notifyTribesCards(upperRow, lowerRow);
+//            notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
+//        }
 
     }
 

@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Server.Model;
 
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.CommonInterfaces.Observer;
 
@@ -72,6 +73,48 @@ public abstract class Subject {
         for (Observer observer : new ArrayList<>(observers)) {
             try {
                 observer.updateBuildingCards(upperBuildingRow, lowerBuildingRow);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
+        }
+    }
+
+    void notifyPlayerSelectOfferingCard(Player player, OfferingCard offeringCard){
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updatePlayerSelectOfferingCard(player, offeringCard);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
+        }
+    }
+
+    void notifyPlayerSelectTribesCard(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updatePlayerSelectTribesCard(player, characterCards, buildingCards);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
+        }
+    }
+
+    void notifyEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                       List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updateEndTurn(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+            } catch (Exception e) {
+                System.err.println("Client not reachable");
+            }
+        }
+    }
+
+    void notifyStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                       List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
             } catch (Exception e) {
                 System.err.println("Client not reachable");
             }
