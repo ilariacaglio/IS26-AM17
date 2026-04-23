@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client;
 
 import it.polimi.ingsw.am17.Client.RMI.ClientRMI;
+import it.polimi.ingsw.am17.Client.Socket.ClientSocket;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -8,7 +9,7 @@ import java.util.Arrays;
 
 public class Start {
 
-    public static void main(String[] args) throws RemoteException, NotBoundException {
+    static void main(String[] args) throws RemoteException, NotBoundException {
         boolean gui = Arrays.asList(args).contains("--gui");
         boolean socket = Arrays.asList(args).contains("--socket");
 
