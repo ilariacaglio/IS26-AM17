@@ -98,13 +98,6 @@ public class Game extends Subject {
     }
 
     /**
-     * @return leftmost player in the offering track.
-     */
-    private Player getNextPlayer() {
-        return getNextOccupiedOfferingCard().getPlayer();
-    }
-
-    /**
      * Adds a player to the game.
      *
      * @param p player to add to the game
@@ -122,14 +115,15 @@ public class Game extends Subject {
             EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
             //Remove the colors that are currently in use
             orderedPlayer.forEach(player -> unusedColors.remove(player.getColor()));
-            message.concat(unusedColors.toString());
+            message = message.concat(unusedColors.toString());
             throw new IllegalStateException(message);
         }
 
-        //double check
-//        if (orderedPlayer.size() >= numPlayers) {
-//            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
-//        }
+        /*double check
+        if (orderedPlayer.size() >= numPlayers) {
+            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
+        }
+        */
         if (orderedPlayer.contains(p)) {
             throw new IllegalArgumentException("This player is already in the lobby.");
         }
@@ -241,7 +235,7 @@ public class Game extends Subject {
         for (Player p : orderedPlayer) {
             //check if turnFood > 0
             if (turnFoodPoints[i] < 0) {
-                //if not check if player can pay the food (food price is not higher than 1)
+                //if not, check if player can pay the food (food price is not higher than 1)
                 if (p.getFood() < 1)
                     p.addPp(-2);
                 else
@@ -406,10 +400,8 @@ public class Game extends Subject {
 
         notifyOfferingCards(offeringCards);
 
-        Player nextPlayer;
         try {
             orderedPlayer.pop();
-            nextPlayer = orderedPlayer.peek();
         } catch (EmptyStackException e) {
             //order player stack for next turn
             orderedPlayer = offeringCards.stream()
@@ -417,20 +409,13 @@ public class Game extends Subject {
                     .sorted(Comparator.comparing(OfferingCard::getOrderLetter).reversed())
                     .map(OfferingCard::getPlayer)
                     .collect(Collectors.toCollection(Stack::new));
-
-
-            //get first player to do player action
-            nextPlayer = getNextPlayer();
-            return;
+            notifyPlayerStack(orderedPlayer);
         }
-
-        notifyPlayerStack(orderedPlayer);
-
     }
 
     /**
      * Emulates a player action (picking cards).
-     * @param player
+     * @param player            the player that has picked the cards
      * @param characterCards TODO: check null
      * @param buildingCards  TODO: check null
      */
