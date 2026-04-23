@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client;
 
 import it.polimi.ingsw.am17.Client.RMI.ClientRMI;
+import it.polimi.ingsw.am17.Client.Socket.ClientSocket;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

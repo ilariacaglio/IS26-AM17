@@ -17,7 +17,7 @@ import java.util.UUID;
 public class ClientSocket implements VirtualView {
     VirtualServerSocket virtualServer;
 
-     public void start() throws IOException {
+    public void start(String s, boolean gui) throws IOException {
         virtualServer = new VirtualServerSocket("localhost", 5000);
     }
 
