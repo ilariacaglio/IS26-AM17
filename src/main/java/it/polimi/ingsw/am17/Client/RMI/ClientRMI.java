@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Client.RMI;
 
+import it.polimi.ingsw.am17.Client.Client;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 
-public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI{
+public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Client {
     private VirtualServerRMI server;
     private ClientModel model;
     private UI userInterface;
@@ -40,10 +41,6 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI{
             userInterface=new CLI(server,this, model);
         }
 
-        run();
-    }
-
-    private void run() throws RemoteException {
         this.server.connect(this);
         userInterface.start();
     }

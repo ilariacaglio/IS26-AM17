@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
+public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, Server {
     final GamesController controller;
     final List<VirtualViewRMI> clients;
 
