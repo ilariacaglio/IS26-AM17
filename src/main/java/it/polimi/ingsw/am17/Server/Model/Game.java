@@ -402,7 +402,6 @@ public class Game extends Subject {
 
         try {
             orderedPlayer.pop();
-            orderedPlayer.peek();
         } catch (EmptyStackException e) {
             //order player stack for next turn
             orderedPlayer = offeringCards.stream()
