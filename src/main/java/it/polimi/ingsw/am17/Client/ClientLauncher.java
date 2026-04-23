@@ -6,7 +6,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
-public class Start {
+public class ClientLauncher {
 
     public static void main(String[] args) throws RemoteException, NotBoundException {
         boolean gui = Arrays.asList(args).contains("--gui");
