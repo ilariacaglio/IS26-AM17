@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.ServerInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, Server {
+public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
     final GamesController controller;
     final List<VirtualViewRMI> clients;
 
