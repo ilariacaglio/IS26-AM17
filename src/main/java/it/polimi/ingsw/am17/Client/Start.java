@@ -4,11 +4,18 @@ import it.polimi.ingsw.am17.Client.RMI.ClientRMI;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 
 public class Start {
-    public static void main() throws RemoteException, NotBoundException {
-        // TODO: ask gui or cli
-        // TODO: ask rmi or socket
-        new ClientRMI().start("127.0.0.1",false);
+
+    public static void main(String[] args) throws RemoteException, NotBoundException {
+        boolean gui = Arrays.asList(args).contains("--gui");
+        boolean socket = Arrays.asList(args).contains("--socket");
+
+        if (socket) {
+            new ClientSocket().start("127.0.0.1", gui);
+        } else {
+            new ClientRMI().start("127.0.0.1", gui);
+        }
     }
 }
