@@ -56,4 +56,19 @@ public class ClientModel {
     public void setGameIdList(List<UUID> gamesIdList){
         this.gamesIdList = new  ArrayList<>(gamesIdList);
     }
+    public Player getPlayer(Player player)
+    {
+        return orderedPlayer.stream()
+            .filter(p -> p.equals(player))
+            .findFirst().orElse(null);
+
+    }
+
+    public void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
+    {
+        offeringCards.stream()
+                .filter(o -> o.equals(offeringCard))
+                .findFirst()
+                .ifPresent(o -> o.setPlayer(player));
+    }
 }

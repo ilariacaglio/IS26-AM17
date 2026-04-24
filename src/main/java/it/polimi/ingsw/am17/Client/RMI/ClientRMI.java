@@ -72,24 +72,6 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI{
     }
 
     @Override
-    public void updateOfferingCards(List<OfferingCard> offeringCards) throws RemoteException {
-        model.setOfferingCards(offeringCards);
-        userInterface.drawInterface(model);
-    }
-
-    @Override
-    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws RemoteException {
-        model.setTribeCards(upperRow, lowerRow);
-        userInterface.drawInterface(model);
-    }
-
-    @Override
-    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
-       model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
-       userInterface.drawInterface(model);
-    }
-
-    @Override
     public void updateGameId(UUID gameId) throws RemoteException {
         model.setGameId(gameId);
         // UI communication
@@ -105,12 +87,11 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI{
     @Override
     public void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws RemoteException {
-        model.orderedPlayer = players;
-        model.upperRow = upperRow;
-        model.lowerRow = lowerRow;
-        model.upperBuildingRow = upperBuildingRow;
-        model.lowerBuildingRow = lowerBuildingRow;
-        model.offeringCards = offeringCards;
+
+        model.setOrderedPlayers(players);
+        model.setTribeCards(upperRow, lowerRow);
+        model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
+        model.setOfferingCards(offeringCards);
 
         userInterface.drawInterface(model);
     }
@@ -119,15 +100,10 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI{
     public void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
         for(Player player : players)
         {
-            model.orderedPlayer.stream()
-                    .filter(p -> p.equals(player))
-                    .findFirst()
-                    .ifPresent(p -> updatePlayerValue(p, player));
+            updatePlayerValue(model.getPlayer(player), player);
         }
-        model.upperBuildingRow = upperBuildingRow;
-        model.lowerBuildingRow = lowerBuildingRow;
-        model.upperRow = upperRow;
-        model.lowerRow = lowerRow;
+        model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
+        model.setTribeCards(upperRow, lowerRow);
 
         userInterface.drawInterface(model);
     }
@@ -140,10 +116,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI{
 
     @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException {
-        model.offeringCards.stream()
-                .filter(o -> o.equals(offeringCard))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(player));
+        model.setPlayerOfferingCard(offeringCard, player);
 
         userInterface.drawInterface(model);
     }
