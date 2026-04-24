@@ -32,18 +32,9 @@ public class CLI implements UI {
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;
 
-            nickname = "";
-            while (nickname.isEmpty()) {
-                System.out.print("Insert your nickname (max 10 char): \n>");
-                nickname = scanner.nextLine().trim();
-                if(nickname.length() >=10 )
-                {
-                    System.out.print("your nickname has more then 10 character \n>");
-                }
-            }
-
-            //TODO: pick color
-
+            //ask user for nickname
+           setNickname(scanner);
+            //create new player with nickname and base color black
             myPlayer = new Player(nickname, Color.BLACK);
 
             while (running) {
@@ -52,36 +43,16 @@ public class CLI implements UI {
 
                 switch (input) {
                     case "change color":
-                        Color c = chooseColor(scanner);
-                        myPlayer.setColor(c);
+                        changeColor(scanner);
                         break;
                     case "create":
-                        if(!inGame) {
-                            System.out.print("Number of player? \n>");
-                            int numPlayers = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
-                            System.out.println("trying to create game");
-                            virtualServer.createGame(client, myPlayer, numPlayers);
-                            inGame = true;
-                        }else
-                        {
-                            System.out.print("Already in a game \n>");
-                        }
+                        createGame(scanner);
                         break;
                     case "pick offering card":
-                        System.out.print("insert card number (position from 0) \n>");
-                        int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
-                        virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
+                        pickOfferingCard(scanner);
                         break;
                     case "join":
-                        if(!inGame) {
-                            game = new ClientModel();
-                            System.out.print("GameID: ");
-                            UUID gameId = UUID.fromString(scanner.nextLine()); //TODO: check for errors
-                            System.out.println("trying to connect");
-                            virtualServer.joinGame(client, gameId, myPlayer);
-                        }else{
-                            System.out.println("Already in a game");
-                        }
+                        joinGame(scanner);
                         break;
 
                     case "help":
@@ -97,14 +68,18 @@ public class CLI implements UI {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Errore nel CLI: " + e.getMessage());
+            System.err.println("CLI error: " + e.getMessage());
         }
     }
 
     private void printHelp() {
-        System.out.println("Comandi disponibili:");
-        System.out.println("- help: mostra questo menu");
-        System.out.println("- exit: chiude l'applicazione");
+        System.out.println("Available commands:");
+        System.out.println("- help: shows this menu");
+        System.out.println("- exit: closes the application");
+        System.out.println("- change color: changes the player's color");
+        System.out.println("- join: joins an existing game");
+        System.out.println("- create: creates a new game");
+        System.out.println("- pick offering card: choose the offering card to take");
     }
 
     public void printGameId(UUID gameId) {
@@ -156,7 +131,7 @@ public class CLI implements UI {
             if(game.orderedPlayer.peek().equals(myPlayer))
                 System.out.println("it's your turn");
         } catch (Exception e) {
-            System.err.println("Errore nel CLI: " + e.getMessage());
+            System.err.println("CLI error: " + e.getMessage());
         }
     }
 
@@ -182,6 +157,86 @@ public class CLI implements UI {
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a valid number, not text.");
             }
+        }
+    }
+
+    /**
+     * ask player for nickname and saves it in nickname
+     * @param scanner
+     */
+    private void setNickname(Scanner scanner) {
+        nickname = "";
+        while (nickname.isEmpty()) {
+            System.out.print("Insert your nickname (max 10 char): \n>");
+            nickname = scanner.nextLine().trim();
+            if(nickname.length() >=10 )
+            {
+                System.out.print("your nickname has more then 10 character \n>");
+            }
+        }
+    }
+
+    /**
+     * let player choose new color
+     * @param scanner
+     */
+    private void changeColor(Scanner scanner){
+        Color c = chooseColor(scanner);
+        myPlayer.setColor(c);
+
+    }
+
+    /**
+     * send server command to create a game
+     * @param scanner
+     */
+    private void createGame(Scanner scanner){
+        try {
+            if (!inGame) {
+                System.out.print("Number of player? \n>");
+                int numPlayers = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
+                System.out.println("trying to create game");
+                virtualServer.createGame(client, myPlayer, numPlayers);
+                inGame = true;
+            } else {
+                System.out.print("Already in a game \n>");
+            }
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * send server command to pick offering card
+     * @param scanner
+     */
+    private void pickOfferingCard(Scanner scanner){
+        try {
+            System.out.print("insert card number (position from 0) \n>");
+            int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
+            virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * send server command to join game
+     * @param scanner
+     */
+    private void joinGame(Scanner scanner){
+        try {
+            if (!inGame) {
+                game = new ClientModel();
+                System.out.print("GameID: ");
+                UUID gameId = UUID.fromString(scanner.nextLine()); //TODO: check for errors
+                System.out.println("trying to connect");
+                virtualServer.joinGame(client, gameId, myPlayer);
+            } else {
+                System.out.println("Already in a game");
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
     }
 }
