@@ -11,10 +11,6 @@ import java.util.Stack;
 import java.util.UUID;
 
 public interface VirtualView extends Observer {
-    void updateOfferingCards(List<OfferingCard> offeringCards) throws Exception;
-    void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws Exception;
-    void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws Exception;
-
     //new
     void updateGameId(UUID gameId) throws Exception;
     void updateGamesIdList(List<UUID> gamesIdList) throws Exception;

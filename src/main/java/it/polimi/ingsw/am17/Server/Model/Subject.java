@@ -50,35 +50,6 @@ public abstract class Subject {
         }
     }
 
-    void notifyOfferingCards(List<OfferingCard> offeringCards) {
-        for (Observer observer : new ArrayList<>(observers)) {
-            try {
-                observer.updateOfferingCards(offeringCards);
-            } catch (Exception e) {
-                System.err.println("Client not reachable");
-            }
-        }
-    }
-
-    void notifyTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) {
-        for (Observer observer : new ArrayList<>(observers)) {
-            try {
-                observer.updateTribesCards(upperRow, lowerRow);
-            } catch (Exception e) {
-                System.err.println("Client not reachable");
-            }
-        }
-    }
-
-    void notifyBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
-        for (Observer observer : new ArrayList<>(observers)) {
-            try {
-                observer.updateBuildingCards(upperBuildingRow, lowerBuildingRow);
-            } catch (Exception e) {
-                System.err.println("Client not reachable");
-            }
-        }
-    }
 
     void notifyPlayerSelectOfferingCard(Player player, OfferingCard offeringCard){
         for (Observer observer : new ArrayList<>(observers)) {

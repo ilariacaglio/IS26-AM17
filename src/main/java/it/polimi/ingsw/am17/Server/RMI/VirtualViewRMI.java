@@ -14,10 +14,6 @@ import java.util.Stack;
 import java.util.UUID;
 
 public interface VirtualViewRMI extends Remote, VirtualView {
-    void updateOfferingCards(List<OfferingCard> offeringCards) throws RemoteException;
-    void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws RemoteException;
-    void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException;
-
     //new
     void updateGameId(UUID gameId) throws RemoteException;
     void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException;

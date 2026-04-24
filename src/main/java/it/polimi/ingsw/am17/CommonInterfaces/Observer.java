@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.Stack;
 
 public interface Observer {
-    //to remove
-    void updateOfferingCards(List<OfferingCard> offeringCards)  throws Exception;
-    void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow)  throws Exception;
-    void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow)  throws Exception;
 
     //new
     void updateEra(int era) throws Exception;
