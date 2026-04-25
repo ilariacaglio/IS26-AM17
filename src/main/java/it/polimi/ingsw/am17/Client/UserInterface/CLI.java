@@ -15,14 +15,17 @@ public class CLI implements UI {
     private final VirtualServer virtualServer;
     private final VirtualView client;
     private ClientModel game;
-    Player myPlayer = null;
-    String nickname = "";
-    boolean inGame = false;
+    Player myPlayer;
+    String nickname;
+    boolean inGame;
 
     public CLI (VirtualServer server, VirtualView client, ClientModel game) {
         this.virtualServer = server;
         this.client = client;
         this.game = game;
+        inGame = false;
+        myPlayer = null;
+        nickname = "";
     }
 
     public void start() {
@@ -33,7 +36,7 @@ public class CLI implements UI {
             boolean running = true;
 
             //ask user for nickname
-           setNickname(scanner);
+            setNickname(scanner);
             //create new player with nickname and base color black
             myPlayer = new Player(nickname, Color.BLACK);
 
@@ -161,17 +164,17 @@ public class CLI implements UI {
     }
 
     /**
-     * ask player for nickname and saves it in nickname
+     * Asks the user to type their nickname
      * @param scanner
      */
     private void setNickname(Scanner scanner) {
-        nickname = "";
         while (nickname.isEmpty()) {
-            System.out.print("Insert your nickname (max 10 char): \n>");
+            System.out.println("Insert your nickname (max 10 char) :>");
             nickname = scanner.nextLine().trim();
             if(nickname.length() >=10 )
             {
-                System.out.print("your nickname has more then 10 character \n>");
+                nickname = "";
+                System.out.println("Your nickname has more than 10 characters!");
             }
         }
     }
