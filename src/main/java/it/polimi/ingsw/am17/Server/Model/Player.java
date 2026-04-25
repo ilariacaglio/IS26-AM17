@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Server.Model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
@@ -16,8 +18,8 @@ public class Player implements Serializable {
     private List<CharacterCard> characterCards;
     private List<BuildingCard> buildingCards;
 
-    public Player(String nickname, Color color)
-    {
+    @JsonCreator
+    public Player(@JsonProperty("nickname") String nickname, @JsonProperty("color") Color color) {
         this.nickname = nickname;
         this.color = color;
         this.characterCards = new ArrayList<>();
