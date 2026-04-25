@@ -46,20 +46,13 @@ public class ClientSocket implements VirtualView {
         // create a VirtualServer to handle sending requests
         server = new VirtualServerSocket(socket);
 
-        if (gui){
-            // TODO: gui
-        }
-        else {
-            userInterface=new CLI(server,this, model);
-            userInterface.start();
-        }
-
         // TODO: comments
         // handle incoming messages
         new Thread(() -> {
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()))) {
                 String line;
                 while ((line = in.readLine()) != null) {
+                    System.out.println("Received: " + line);
                     Message message = mapper.readValue(line, Message.class);
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
@@ -76,6 +69,14 @@ public class ClientSocket implements VirtualView {
                 System.err.println("Disconnected from server: " + e.getMessage());
             }
         }).start();
+
+        if (gui){
+            // TODO: gui
+        }
+        else {
+            userInterface=new CLI(server,this, model);
+            userInterface.start(); // note: not threaded
+        }
     }
 
     @Override
