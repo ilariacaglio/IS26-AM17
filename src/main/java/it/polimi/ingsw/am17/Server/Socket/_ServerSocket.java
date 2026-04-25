@@ -43,8 +43,6 @@ public class _ServerSocket implements Runnable, VirtualServer {
             while ((line = in.readLine()) != null) {
                 Message message = mapper.readValue(line, Message.class);
 
-                ServerRMI temp = new ServerRMI(); // TODO: verify that the implementation is the same
-
                 switch (message.getType()) {
                     case GET_GAMES_LIST -> getGamesList(client);
                     case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
