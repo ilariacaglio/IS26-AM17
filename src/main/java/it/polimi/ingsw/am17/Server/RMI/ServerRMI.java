@@ -20,15 +20,15 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
     final GamesController controller;
     final List<VirtualViewRMI> clients;
 
-    public ServerRMI() throws RemoteException {
+    public ServerRMI(GamesController controller) throws RemoteException {
         super();
-        controller = new GamesController();
+        this.controller = controller;
         clients = new ArrayList<>();
     }
 
-    static void main(String[] args) throws RemoteException {
+    public static void start(GamesController controller) throws RemoteException {
         final String serverName = "MesosRMIServer";
-        VirtualServerRMI server = new ServerRMI();
+        VirtualServerRMI server = new ServerRMI(controller);
         Registry registry = LocateRegistry.createRegistry(1099);
         registry.rebind(serverName, server);
         System.out.println("Server ready");
