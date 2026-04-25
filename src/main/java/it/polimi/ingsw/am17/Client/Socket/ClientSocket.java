@@ -1,24 +1,54 @@
 package it.polimi.ingsw.am17.Client.Socket;
 
+import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.RMI.ClientRMI;
+import it.polimi.ingsw.am17.Client.UserInterface.CLI;
+import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 
+/**
+ * Forwards requests from the server (Game -> VirtualView) to update the ClientModel.
+ */
 public class ClientSocket implements VirtualView {
-    VirtualServerSocket virtualServer;
+    VirtualServerSocket server;
+    ClientModel model;
+    UI userInterface;
 
-    public void start(String s, boolean gui) throws IOException {
-        virtualServer = new VirtualServerSocket("localhost", 5000);
+    public ClientSocket() throws RemoteException {
+        ClientRMI temp = new ClientRMI(); // TODO: check same implementation
+        this.model = new ClientModel();
+    }
+
+    public void start(String host, boolean gui) throws IOException {
+
+        // create and start a VirtualServer to handle sending requests
+        server = new VirtualServerSocket(host, 5000);
+        server.start(this);
+
+        try {
+            server.getGamesList(this);
+        } catch (Exception e) {
+            System.err.println("Error requesting games list: " + e.getMessage());
+        }
+
+        if (gui){
+            // TODO: gui
+        }
+        else {
+            userInterface=new CLI(server,this, model);
+            userInterface.start();
+        }
+
     }
 
     @Override
