@@ -31,13 +31,13 @@ public class CLI implements UI {
     public void start() {
         System.out.println("=== Welcome to Mesos ===");
 
-
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;
 
             //ask user for nickname
             setNickname(scanner);
             //create new player with nickname and base color black
+            // TODO: trovare modo per non rendere scelta colore ridondante
             myPlayer = new Player(nickname, Color.BLACK);
 
             while (running) {
@@ -57,7 +57,8 @@ public class CLI implements UI {
                     case "join":
                         joinGame(scanner);
                         break;
-
+                    // TODO: command to select tribe/building cards
+                    // TODO: command to view the cards/pp/food of the other players
                     case "help":
                         printHelp();
                         break;
@@ -215,7 +216,7 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(Scanner scanner){
         try {
-            System.out.print("insert card number (position from 0) \n>");
+            System.out.print("Insert card number (position from 0) \n>");
             int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
             virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
         } catch (Exception e) {
