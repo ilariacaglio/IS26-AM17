@@ -79,37 +79,55 @@ public class ClientSocket implements VirtualView {
     }
 
     @Override
-    public void updateGameId(UUID gameId) throws Exception {
-
+    public void updateEra(int era) throws RemoteException {
+        // call model to update era
+        model.setCurrentEra(era);
+        // UI communication
+        // spostare nella CLI
+        if(era == 1)
+        {
+            System.out.println("è iniziata la partita");
+        }else
+        {
+            System.out.println("è iniziata la era successiva");
+        }
     }
 
     @Override
-    public void updateGamesIdList(List<UUID> gamesIdList) throws Exception {
-        System.out.println("Games list update");
+    public void updatePlayerStack(Stack<Player> orderedPlayer) throws RemoteException {
+        model.setOrderedPlayers(orderedPlayer);
+        // UI communication
+        userInterface.drawInterface(model);
     }
 
     @Override
-    public void updateEra(int era) throws Exception {
-
+    public void updateOfferingCards(List<OfferingCard> offeringCards) throws RemoteException {
+        model.setOfferingCards(offeringCards);
+        userInterface.drawInterface(model);
     }
 
     @Override
-    public void updatePlayerStack(Stack<Player> orderedPlayer) throws Exception {
-
+    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws RemoteException {
+        model.setTribeCards(upperRow, lowerRow);
+        userInterface.drawInterface(model);
     }
 
     @Override
-    public void updateOfferingCards(List<OfferingCard> offeringCards) throws Exception {
-
+    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
+        model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
+        userInterface.drawInterface(model);
     }
 
     @Override
-    public void updateTribesCards(List<TribesCard> upperRow, List<TribesCard> lowerRow) throws Exception {
-
+    public void updateGameId(UUID gameId) throws RemoteException {
+        model.setGameId(gameId);
+        // UI communication
+        userInterface.printGameId(gameId);
     }
 
     @Override
-    public void updateBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws Exception {
-
+    public void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException {
+        model.setGameIdList(gamesIdList);
+        // TODO: call user interface
     }
 }
