@@ -20,7 +20,7 @@ import java.util.UUID;
 /**
  * Forwards requests from a single client to the controller.
  */
-public class _ServerSocket implements Runnable {
+public class _ServerSocket implements Runnable, VirtualServer {
     private final Socket socket;
     private final GamesController controller;
     private final VirtualView client;
@@ -44,11 +44,11 @@ public class _ServerSocket implements Runnable {
                 ServerRMI temp = new ServerRMI(); // TODO: verify that the implementation is the same
 
                 switch (message.getType()) {
-                    case GET_GAMES_LIST -> temp.getGamesList(client);
-                    case CREATE_GAME -> temp.createGame(client, message.getPlayer(), message.getNumPlayers());
-                    case JOIN_GAME -> temp.joinGame(client, message.getGameId(), message.getPlayer());
-                    case PICK_OFFERING_CARD -> temp.pickOfferingCard(message.getGameId(), message.getPlayer(), message.getCard());
-                    case PICK_TRIBE_CARDS -> temp.pickTribeCards(message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
+                    case GET_GAMES_LIST -> getGamesList(client);
+                    case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
+                    case JOIN_GAME -> joinGame(client, message.getGameId(), message.getPlayer());
+                    case PICK_OFFERING_CARD -> pickOfferingCard(message.getGameId(), message.getPlayer(), message.getCard());
+                    case PICK_TRIBE_CARDS -> pickTribeCards(message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
                     default -> System.err.println("Unknown message type: " + message.getType());
                 }
             }
@@ -61,4 +61,28 @@ public class _ServerSocket implements Runnable {
         }
     }
 
+    @Override
+    public void getGamesList(VirtualView client) throws Exception {
+
+    }
+
+    @Override
+    public void createGame(VirtualView client, Player player, int numPlayers) throws Exception {
+
+    }
+
+    @Override
+    public void joinGame(VirtualView client, UUID gameId, Player player) throws Exception {
+
+    }
+
+    @Override
+    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws Exception {
+
+    }
+
+    @Override
+    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
+
+    }
 }
