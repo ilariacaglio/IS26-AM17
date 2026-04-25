@@ -45,6 +45,7 @@ public class CLI implements UI {
                 String input = scanner.nextLine().trim().toLowerCase();
 
                 switch (input) {
+                    // TODO: change nickname command
                     case "change color":
                         changeColor(scanner);
                         break;
