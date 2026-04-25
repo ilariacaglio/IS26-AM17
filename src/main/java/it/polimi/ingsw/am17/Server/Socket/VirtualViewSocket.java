@@ -79,6 +79,6 @@ public class VirtualViewSocket implements VirtualView {
 
     private void sendMessage(Message message) throws Exception {
         mapper.writeValue(socket.getOutputStream(), message);
-        System.err.println(mapper.writeValueAsString(message));
+        System.err.println("Sending message:" + mapper.writeValueAsString(message));
     }
 }

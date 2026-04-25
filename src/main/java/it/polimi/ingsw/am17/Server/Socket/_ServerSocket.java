@@ -83,14 +83,11 @@ public class _ServerSocket implements Runnable, VirtualServer {
      * @throws RemoteException
      */
     @Override
-    public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
+    public void createGame(VirtualView client, Player player, int numPlayers) {
         new Thread(()->{
             System.err.println("createGame request received");
-            // game id generation
             UUID id = this.controller.createGame(player, numPlayers);
-            // the client signs up as observer for the game
             controller.signUpAsObserver(client, id);
-            // send gameId to client
             try {
                 client.updateGameId(id);
             } catch (Exception e) {
