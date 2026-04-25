@@ -1,7 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Socket CLI 2P" type="CompoundRunConfigurationType">
-    <toRun name="Client Socket CLI" type="Application" />
-    <toRun name="Server Socket Multiplexer tmp" type="Application" />
-    <method v="2" />
-  </configuration>
-</component>
