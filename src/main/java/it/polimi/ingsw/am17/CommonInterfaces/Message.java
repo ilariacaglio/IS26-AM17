@@ -51,6 +51,7 @@ public class Message implements Serializable {
         return type;
     }
 
+    // TODO: comments, syncronyze?
     public void send(Socket socket) throws Exception {
         System.err.println("Sending message:" + mapper.writeValueAsString(this));
         String json = mapper.writeValueAsString(this);
