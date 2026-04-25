@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface VirtualServerRMI extends Remote, VirtualServer {
     void connect(VirtualView client) throws RemoteException;
     // controller methods
-
+    @Override
     void getGamesList(VirtualView client) throws RemoteException;
     @Override
     void createGame(VirtualView client, Player player, int numPlayers)  throws RemoteException;
