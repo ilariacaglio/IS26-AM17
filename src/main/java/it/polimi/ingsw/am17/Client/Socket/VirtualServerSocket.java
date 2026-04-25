@@ -30,7 +30,7 @@ public class VirtualServerSocket implements VirtualServer {
     @Override
     public void getGamesList(VirtualView client) throws Exception {
         Message message = new Message(MessageType.GET_GAMES_LIST);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class VirtualServerSocket implements VirtualServer {
         Message message = new Message(MessageType.CREATE_GAME);
         message.setPlayer(player);
         message.setNumPlayers(numPlayers);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class VirtualServerSocket implements VirtualServer {
         Message message = new Message(MessageType.JOIN_GAME);
         message.setGameId(gameId);
         message.setPlayer(player);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class VirtualServerSocket implements VirtualServer {
         message.setGameId(gameId);
         message.setPlayer(player);
         message.setCard(card);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
@@ -65,11 +65,7 @@ public class VirtualServerSocket implements VirtualServer {
         message.setPlayer(player);
         message.setCharacterCards(characterCards);
         message.setBuildingCards(buildingCards);
-        sendMessage(message);
+        message.send(socket);
     }
-
-    private void sendMessage(Message message) throws Exception {
-        mapper.writeValue(socket.getOutputStream(), message);
-        System.err.println("Sending message:" + mapper.writeValueAsString(message));
-    }
+    
 }

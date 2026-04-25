@@ -6,8 +6,11 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import tools.jackson.databind.ObjectMapper;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.net.Socket;
 import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
@@ -35,6 +38,9 @@ public class Message implements Serializable {
     private List<BuildingCard> upperBuildingRow;
     private List<BuildingCard> lowerBuildingRow;
 
+    private final ObjectMapper mapper = new ObjectMapper();;
+
+
     public Message() {}
 
     public Message(MessageType type) {
@@ -43,6 +49,13 @@ public class Message implements Serializable {
 
     public MessageType getType() {
         return type;
+    }
+
+    public void send(Socket socket) throws Exception {
+        System.err.println("Sending message:" + mapper.writeValueAsString(this));
+        String json = mapper.writeValueAsString(this);
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        out.println(json);
     }
 
     public UUID getGameId() {

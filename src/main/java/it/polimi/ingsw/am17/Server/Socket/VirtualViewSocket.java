@@ -19,46 +19,44 @@ import java.util.UUID;
  */
 public class VirtualViewSocket implements VirtualView {
     private final Socket socket;
-    private final ObjectMapper mapper;
 
     public VirtualViewSocket(Socket socket) {
         this.socket = socket;
-        this.mapper = new ObjectMapper();
     }
 
     @Override
     public void updateGameId(UUID gameId) throws Exception {
         Message message = new Message(MessageType.UPDATE_GAME_ID);
         message.setGameId(gameId);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
     public void updateGamesIdList(List<UUID> gamesIdList) throws Exception {
         Message message = new Message(MessageType.UPDATE_GAMES_ID_LIST);
         message.setGamesIdList(gamesIdList);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
     public void updateEra(int era) throws Exception {
         Message message = new Message(MessageType.UPDATE_ERA);
         message.setEra(era);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
     public void updatePlayerStack(Stack<Player> orderedPlayer) throws Exception {
         Message message = new Message(MessageType.UPDATE_PLAYER_STACK);
         message.setOrderedPlayer(orderedPlayer);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
     public void updateOfferingCards(List<OfferingCard> offeringCards) throws Exception {
         Message message = new Message(MessageType.UPDATE_OFFERING_CARDS);
         message.setOfferingCards(offeringCards);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
@@ -66,7 +64,7 @@ public class VirtualViewSocket implements VirtualView {
         Message message = new Message(MessageType.UPDATE_TRIBES_CARDS);
         message.setUpperRow(upperRow);
         message.setLowerRow(lowerRow);
-        sendMessage(message);
+        message.send(socket);
     }
 
     @Override
@@ -74,11 +72,6 @@ public class VirtualViewSocket implements VirtualView {
         Message message = new Message(MessageType.UPDATE_BUILDING_CARDS);
         message.setUpperBuildingRow(upperBuildingRow);
         message.setLowerBuildingRow(lowerBuildingRow);
-        sendMessage(message);
-    }
-
-    private void sendMessage(Message message) throws Exception {
-        mapper.writeValue(socket.getOutputStream(), message);
-        System.err.println("Sending message:" + mapper.writeValueAsString(message));
+        message.send(socket);
     }
 }

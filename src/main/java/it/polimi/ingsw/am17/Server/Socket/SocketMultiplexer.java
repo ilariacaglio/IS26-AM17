@@ -35,7 +35,7 @@ public class SocketMultiplexer {
                 // create a VirtualView associated with the client (socket) to handle updates
                 VirtualViewSocket client = new VirtualViewSocket(socket); //TODO
 
-                // create _ServerSocket associated with theclient to handle requests
+                // create _ServerSocket associated with the client to handle requests
                 // and start a thread for it
                 _ServerSocket server = new _ServerSocket(socket, controller, client);
                 serverSockets.add(server);
