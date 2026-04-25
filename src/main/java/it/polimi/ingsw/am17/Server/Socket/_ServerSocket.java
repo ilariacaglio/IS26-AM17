@@ -92,8 +92,8 @@ public class _ServerSocket implements Runnable, VirtualServer {
             controller.signUpAsObserver(client, id);
             // send gameId to client
             try {
-                ((VirtualViewRMI)client).updateGameId(id);
-            } catch (RemoteException e) {
+                client.updateGameId(id);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).start();
