@@ -24,7 +24,9 @@ public class VirtualServerSocket implements VirtualServer {
 
     @Override
     public void getGamesList(VirtualView client) throws Exception {
-        mapper.writeValue(socket.getOutputStream(), msg);
+//        mapper.writeValue(socket.getOutputStream(), msg);
+        MessageType tipoMessaggio = MessageType.getGameList;
+        server.getOutputStream().write(tipoMessaggio.getBytes());
     }
 
     @Override
