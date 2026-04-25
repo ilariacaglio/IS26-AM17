@@ -9,7 +9,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 import java.util.Stack;

@@ -10,10 +10,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 import java.util.UUID;
@@ -22,40 +19,12 @@ import java.util.UUID;
  * Forwards requests from the client to the server
  */
 public class VirtualServerSocket implements VirtualServer {
-    Socket server;
+    Socket socket;
     ObjectMapper mapper;
 
-    public VirtualServerSocket(String host, int port) throws IOException {
-        server = new Socket(host, port);
+    public VirtualServerSocket(Socket socket) throws IOException {
+        this.socket = socket;
         mapper = new ObjectMapper();
-    }
-
-    public void start(VirtualView view) {
-        // TODO: comments
-        new Thread(() -> {
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()))) {
-                String line;
-                while ((line = in.readLine()) != null) {
-                    Message message = mapper.readValue(line, Message.class);
-                    handleUpdate(message, view);
-                }
-            } catch (Exception e) {
-                System.err.println("Disconnected from server: " + e.getMessage());
-            }
-        }).start();
-    }
-
-    private void handleUpdate(Message message, VirtualView client) throws Exception {
-        switch (message.getType()) {
-            case UPDATE_GAME_ID -> client.updateGameId(message.getGameId());
-            case UPDATE_GAMES_ID_LIST -> client.updateGamesIdList(message.getGamesIdList());
-            case UPDATE_ERA -> client.updateEra(message.getEra());
-            case UPDATE_PLAYER_STACK -> client.updatePlayerStack(message.getOrderedPlayer());
-            case UPDATE_OFFERING_CARDS -> client.updateOfferingCards(message.getOfferingCards());
-            case UPDATE_TRIBES_CARDS -> client.updateTribesCards(message.getUpperRow(), message.getLowerRow());
-            case UPDATE_BUILDING_CARDS -> client.updateBuildingCards(message.getUpperBuildingRow(), message.getLowerBuildingRow());
-            default -> System.err.println("Unknown message type: " + message.getType());
-        }
     }
 
     @Override
@@ -100,8 +69,7 @@ public class VirtualServerSocket implements VirtualServer {
     }
 
     private void sendMessage(Message message) throws Exception {
-        String json = mapper.writeValueAsString(message);
-        PrintWriter out = new PrintWriter(server.getOutputStream(), true);
-        out.println(json);
+        mapper.writeValue(socket.getOutputStream(), message);
+        System.err.println(mapper.writeValueAsString(message));
     }
 }

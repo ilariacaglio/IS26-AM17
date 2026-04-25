@@ -8,7 +8,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.RMI.ServerRMI;
 import it.polimi.ingsw.am17.Server.RMI.VirtualViewRMI;
 import tools.jackson.databind.ObjectMapper;
 
@@ -70,7 +69,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
         new Thread(()->{
             System.err.println("getGamesList request received");
             try {
-                ((VirtualViewSocket)client).updateGamesIdList(this.controller.getGamesList());
+                client.updateGamesIdList(this.controller.getGamesList());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
