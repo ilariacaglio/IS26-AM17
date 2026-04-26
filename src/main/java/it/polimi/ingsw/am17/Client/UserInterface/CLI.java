@@ -35,12 +35,12 @@ public class CLI implements UI {
             //ask user for nickname
            setNickname(scanner);
             //create new player with nickname and base color black
-            myPlayer = new Player(nickname, Color.BLACK);
+            myPlayer = new Player(nickname, Color.BLACK);//TODO: the player chooses his color
 
             while (running) {
                 System.out.print("> ");
                 String input = scanner.nextLine().trim().toLowerCase();
-
+                //TODO: parsing more flexible?
                 switch (input) {
                     case "change color":
                         changeColor(scanner);
@@ -54,7 +54,7 @@ public class CLI implements UI {
                     case "join":
                         joinGame(scanner);
                         break;
-
+                    //TODO: pick tribe card and pick building card (pickTribeCards()) (separate buildings from characters in switch?)
                     case "help":
                         printHelp();
                         break;
@@ -95,7 +95,7 @@ public class CLI implements UI {
                 System.out.println();
             }
             System.out.print("\033[H\033[2J");
-            System.out.flush();
+            System.out.flush();//TODO: try and catch del for and flush because they do the same thing
             //draw players
             System.out.print("Players: ");
             for(Player p : game.orderedPlayer)
@@ -169,7 +169,7 @@ public class CLI implements UI {
         while (nickname.isEmpty()) {
             System.out.print("Insert your nickname (max 10 char): \n>");
             nickname = scanner.nextLine().trim();
-            if(nickname.length() >=10 )
+            if(nickname.length() >=10 )//TODO: >10 or I can't have 10 char length
             {
                 System.out.print("your nickname has more then 10 character \n>");
             }
@@ -202,7 +202,7 @@ public class CLI implements UI {
                 System.out.print("Already in a game \n>");
             }
         }catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e);//TODO: write it differently
         }
     }
 
@@ -216,7 +216,7 @@ public class CLI implements UI {
             int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
             virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e);//TODO: write it differently
         }
     }
 
@@ -236,7 +236,7 @@ public class CLI implements UI {
                 System.out.println("Already in a game");
             }
         }catch (Exception e){
-            throw new RuntimeException(e);
+            throw new RuntimeException(e);//TODO: write it differently
         }
     }
 }
