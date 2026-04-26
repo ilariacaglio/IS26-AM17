@@ -41,7 +41,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         else {
             userInterface=new CLI(server,this, model);
         }
-reman
+
         this.server.connect(this);
         userInterface.start();
     }
