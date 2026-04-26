@@ -8,7 +8,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.RMI.VirtualViewRMI;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -46,7 +45,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
                     case GET_GAMES_LIST -> getGamesList(client);
                     case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
                     case JOIN_GAME -> joinGame(client, message.getGameId(), message.getPlayer());
-                    case PICK_OFFERING_CARD -> pickOfferingCard(message.getGameId(), message.getPlayer(), message.getCard());
+                    case PICK_OFFERING_CARD -> pickOfferingCard(message.getGameId(), message.getPlayer(), message.getOfferingCard());
                     case PICK_TRIBE_CARDS -> pickTribeCards(message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
                     default -> System.err.println("Unknown message type: " + message.getType());
                 }

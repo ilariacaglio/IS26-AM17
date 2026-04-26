@@ -54,7 +54,7 @@ public class VirtualServerSocket implements VirtualServer {
         Message message = new Message(MessageType.PICK_OFFERING_CARD);
         message.setGameId(gameId);
         message.setPlayer(player);
-        message.setCard(card);
+        message.setOfferingCard(card);
         message.send(socket);
     }
 

@@ -18,14 +18,14 @@ import java.util.UUID;
 /**
  * Message class for socket communication.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL) // removes null values
 public class Message implements Serializable {
     private MessageType type;
 
     private UUID gameId;
     private Player player;
     private int numPlayers;
-    private OfferingCard card;
+    private OfferingCard offeringCard;
     private List<CharacterCard> characterCards;
     private List<BuildingCard> buildingCards;
 
@@ -83,12 +83,12 @@ public class Message implements Serializable {
         this.numPlayers = numPlayers;
     }
 
-    public OfferingCard getCard() {
-        return card;
+    public OfferingCard getOfferingCard() {
+        return offeringCard;
     }
 
-    public void setCard(OfferingCard card) {
-        this.card = card;
+    public void setOfferingCard(OfferingCard offeringCard) {
+        this.offeringCard = offeringCard;
     }
 
     public List<CharacterCard> getCharacterCards() {

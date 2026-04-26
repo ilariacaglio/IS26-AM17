@@ -119,7 +119,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     }
 
     @Override
-    public void updatePlayerSelectTribesCard(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
+    public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
         //set new value for player
         for (int i = 0; i < model.orderedPlayer.size(); i++) {
             if (model.orderedPlayer.get(i).equals(player)) {
