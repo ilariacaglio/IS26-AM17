@@ -174,7 +174,7 @@ public class CLI implements UI {
         while (nickname.isEmpty()) {
             System.out.println("Insert your nickname (max 10 char) :>");
             nickname = scanner.nextLine().trim();
-            if(nickname.length() >=10 )//TODO: >10 or I can't have 10 char length
+            if(nickname.length() >10 )
             {
                 nickname = "";
                 System.out.println("Your nickname has more than 10 characters!");
@@ -208,7 +208,7 @@ public class CLI implements UI {
                 System.out.print("Already in a game \n>");
             }
         }catch (Exception e) {
-            throw new RuntimeException(e);//TODO: write it differently
+            System.err.println("CLI error: " + e.getMessage());
         }
     }
 
@@ -222,7 +222,7 @@ public class CLI implements UI {
             int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
             virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
         } catch (Exception e) {
-            throw new RuntimeException(e);//TODO: write it differently
+            System.err.println("CLI error: " + e.getMessage());
         }
     }
 
@@ -242,7 +242,7 @@ public class CLI implements UI {
                 System.out.println("Already in a game");
             }
         }catch (Exception e){
-            throw new RuntimeException(e);//TODO: write it differently
+            System.err.println("CLI error: " + e.getMessage());
         }
     }
 }
