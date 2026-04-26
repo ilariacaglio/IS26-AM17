@@ -97,11 +97,7 @@ public class CLI implements UI {
         try{
             this.game = game;
             //clear console
-            for (int i = 0; i < 50; i++) {
-                System.out.println();
-            }
-            System.out.print("\033[H\033[2J");
-            System.out.flush();//TODO: try and catch del for and flush because they do the same thing
+            clearConsole(); //call method because it was ridondante
             //draw players
             System.out.print("Players: ");
             for(Player p : game.orderedPlayer)
@@ -245,4 +241,24 @@ public class CLI implements UI {
             System.err.println("CLI error: " + e.getMessage());
         }
     }
+
+    private void clearConsole(){
+        String os =  System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {//sometimes the code in else doesn't work in old windows
+            for (int i = 0; i < 50; i++) {
+                System.out.println();
+            }
+        }
+        else {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+        }
+    }//we can also write this method putting the ansiClear first and the fallbackClear
+    //after just in case the ansi doesn't work without using if or else o try and catch
+    //in this way we don't exclude os windows that support the ansiClear
+    //even if in this way we will always do both ansiClear and fallbackClear all the times
+    //because ansiClear does not throw any exceptions
+    //the cons about not using if/else is that we will do the clear console 2 times,
+    //which is redundant (clearing the console twice)
 }
