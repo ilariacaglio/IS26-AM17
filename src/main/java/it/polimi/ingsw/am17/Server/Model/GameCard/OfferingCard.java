@@ -71,7 +71,7 @@ public class OfferingCard implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OfferingCard that = (OfferingCard) o;
-        return minPlayers == that.minPlayers && orderLetter == that.orderLetter && foodBonus == that.foodBonus && numCardsUpper == that.numCardsUpper && numCardsLower == that.numCardsLower && Objects.equals(player, that.player);
+        return minPlayers == that.minPlayers && orderLetter == that.orderLetter && foodBonus == that.foodBonus && numCardsUpper == that.numCardsUpper && numCardsLower == that.numCardsLower;
     }
 
     @Override
@@ -81,10 +81,17 @@ public class OfferingCard implements Serializable {
 
     @Override
     public String toString() {
-        return  orderLetter + " "
+        if(player!=null)
+            return  orderLetter + " "
                 + foodBonus + "Food" +
                 + numCardsUpper + "↑"
                 + numCardsLower + "↓"
-                + "(" + player + ")";
+                + "(" + player.getNickname() + ")";
+        else
+            return  orderLetter + " "
+                    + foodBonus + "Food" +
+                    + numCardsUpper + "↑"
+                    + numCardsLower + "↓"
+                    + "(  )";
     }
 }
