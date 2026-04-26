@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client.Socket;
 
 import it.polimi.ingsw.am17.Client.ClientInterface;
+import it.polimi.ingsw.am17.Client.ClientUpdateMethods;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
@@ -60,9 +61,12 @@ public class ClientSocket implements VirtualView, ClientInterface {
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
                         case UPDATE_ERA -> updateEra(message.getEra());
                         case UPDATE_PLAYER_STACK -> updatePlayerStack(message.getOrderedPlayer());
-                        case UPDATE_PLAYER_SELECT_OFFERING_CARD -> updatePlayerSelectOfferingCard(message.getPlayer(), message.getOfferingCard());
-                        case UPDATE_END_TURN -> updateEndTurn(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow());
-                        case UPDATE_START_GAME -> updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
+                        case UPDATE_PLAYER_SELECT_OFFERING_CARD ->
+                                updatePlayerSelectOfferingCard(message.getPlayer(), message.getOfferingCard());
+                        case UPDATE_END_TURN ->
+                                updateEndTurn(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow());
+                        case UPDATE_START_GAME ->
+                                updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -71,7 +75,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
             }
         }).start();
 
-        if (gui){
+        if (gui) {
             // TODO: gui
         }
         else {
@@ -82,31 +86,17 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     @Override
     public void updateEra(int era) {
-        // call model to update era
-        model.setCurrentEra(era);
-        // UI communication
-        // spostare nella CLI
-        if(era == 1)
-        {
-            System.out.println("è iniziata la partita");
-        }else
-        {
-            System.out.println("è iniziata la era successiva");
-        }
+        ClientUpdateMethods.updateEra(model, era, userInterface);
     }
 
     @Override
     public void updatePlayerStack(Stack<Player> orderedPlayer) {
-        model.setOrderedPlayers(orderedPlayer);
-        // UI communication
-        userInterface.drawInterface(model);
+        ClientUpdateMethods.updatePlayerStack(orderedPlayer, model, userInterface);
     }
 
     @Override
     public void updateGameId(UUID gameId) {
-        model.setGameId(gameId);
-        // UI communication
-        userInterface.printGameId(gameId);
+        ClientUpdateMethods.updateGameId(gameId, model, userInterface);
     }
 
     @Override
