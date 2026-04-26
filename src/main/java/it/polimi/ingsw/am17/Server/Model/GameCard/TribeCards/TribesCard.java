@@ -1,5 +1,8 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class TribesCard implements Serializable {
@@ -13,7 +16,8 @@ public class TribesCard implements Serializable {
         return era;
     }
 
-    public TribesCard(int era,CardType cardType){
+    @JsonCreator
+    public TribesCard(@JsonProperty("era") int era, @JsonProperty("cardType") CardType cardType){
         this.cardType=cardType;
         this.era=era;
     }

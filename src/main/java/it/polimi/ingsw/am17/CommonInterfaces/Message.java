@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am17.CommonInterfaces;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -18,9 +20,9 @@ import java.util.UUID;
 /**
  * Message class for socket communication.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL) // removes null values
+@JsonInclude(JsonInclude.Include.NON_NULL) // removes null values when serializing
 public class Message implements Serializable {
-    private MessageType type;
+    private final MessageType type;
 
     private UUID gameId;
     private Player player;
@@ -38,25 +40,23 @@ public class Message implements Serializable {
     private List<BuildingCard> upperBuildingRow;
     private List<BuildingCard> lowerBuildingRow;
 
-    private final ObjectMapper mapper = new ObjectMapper();;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-
-    public Message() {}
-
-    public Message(MessageType type) {
+    @JsonCreator
+    public Message(@JsonProperty("type") MessageType type) {
         this.type = type;
     }
 
-    public MessageType getType() {
-        return type;
-    }
-
-    // TODO: comments, syncronyze?
+    // TODO: comments, synchronize?
     public void send(Socket socket) throws Exception {
         System.err.println("Sending message:" + mapper.writeValueAsString(this));
         String json = mapper.writeValueAsString(this);
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         out.println(json);
+    }
+
+    public MessageType getType() {
+        return type;
     }
 
     public UUID getGameId() {
