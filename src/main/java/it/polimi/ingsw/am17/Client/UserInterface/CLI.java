@@ -88,8 +88,8 @@ public class CLI implements UI {
         System.out.println("- exit: closes the application");
         System.out.println("- change color: changes the player's color");
         System.out.println("- change nickname: changes the player's nickname");
-        System.out.println("- join: joins an existing game");
         System.out.println("- create: creates a new game");
+        System.out.println("- join: joins an existing game");
         System.out.println("- pick offering card: choose the offering card to take");
     }
 
@@ -229,7 +229,7 @@ public class CLI implements UI {
             if (!inGame) {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
-                System.out.println("trying to create game...");
+                System.out.println("Trying to create game...");
                 // fix something in server, create game should throw an exception if there are errors
                 virtualServer.createGame(client, myPlayer, numPlayers);
                 inGame = true;
@@ -247,8 +247,8 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(Scanner scanner){
         try {
-            System.out.print("Insert card number (position from 0) \n>");
-            int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
+            System.out.print("Insert card number (position from 0) > ");
+            int numCard = Integer.parseInt(scanner.nextLine());
             virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
