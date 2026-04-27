@@ -48,9 +48,7 @@ public class CLI implements UI {
                 //TODO: parsing more flexible?
                 switch (input) {
                     case "change nickname":
-                        nickname = "";
-                        setNickname(scanner);
-                        myPlayer.setNickname(nickname);
+                        changeNickname(scanner);
                         break;
                     case "change color":
                         changeColor(scanner);
@@ -176,6 +174,12 @@ public class CLI implements UI {
     private void changeColor(Scanner scanner){
         Color c = chooseColor(scanner);
         myPlayer.setColor(c);
+    }
+
+    private void changeNickname(Scanner scanner){
+        nickname = "";
+        setNickname(scanner);
+        myPlayer.setNickname(nickname);
     }
 
     /**
