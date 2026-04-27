@@ -8,7 +8,9 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
+import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.UUID;
 
 public class CLI implements UI {
@@ -112,48 +114,52 @@ public class CLI implements UI {
                 System.out.println();
             }
             //draw players
+            Stack<Player> orderedPlayer = game.getOrderedPlayer();
             System.out.print("\nPlayers: ");
-            for(Player p : game.orderedPlayer) {
+            for(Player p : orderedPlayer) {
                 System.out.print(p.getNickname().concat(" "));
             }
             System.out.println();
 
             //draw upper row
-            // TODO: method game.getUpperRow()
-            if(!game.upperRow.isEmpty()){
+            List<TribesCard> upperRow = game.getUpperRow();
+            if(!upperRow.isEmpty()){
                 System.out.print("Upper row: ");
-                for(TribesCard c : game.upperRow) {
+                for(TribesCard c : upperRow) {
                     System.out.print(c.toString().concat(" "));
                 }
                 System.out.println();
             }
 
             //draw lower row
-            // TODO: method game.getLowerRow()
-            if(!game.lowerRow.isEmpty()){
+            List<TribesCard> lowerRow = game.getLowerRow();
+            if(!lowerRow.isEmpty()){
                 System.out.print("Lower row: ");
-                for(TribesCard c : game.lowerRow) {
+                for(TribesCard c : lowerRow) {
                     System.out.print(c.toString().concat(" "));
                 }
                 System.out.println();
             }
 
             //draw offering card
-            // TODO: method game.getOfferingCard()
-            if(!game.offeringCards.isEmpty()){
+            List<OfferingCard> offeringCards = game.getOfferingCards();
+            if(!offeringCards.isEmpty()){
                 System.out.print("Offering card: ");
-                for(OfferingCard c : game.offeringCards) {
+                for(OfferingCard c : offeringCards) {
                     System.out.print(c.toString().concat(" "));
                 }
                 System.out.println();
             }
 
             // if the game has begun notify the players turn
-            if(!game.offeringCards.isEmpty()){
-                // TODO: method game.getOrderedPlayer()
+            if(!offeringCards.isEmpty()){
                 // TODO: fare get di altri parametri usati
                 // TODO: mettere poi gli attributi private
-                if(game.orderedPlayer.peek().equals(myPlayer))
+                if(orderedPlayer.peek().equals(myPlayer))
+                    //TODO: in questo modo la CLI sta interpretando il turno con peek(), perchè
+                    // dipende dalla struttura Stack del ClientModel.
+                    // fare getCurrentPlayer in ClientModel
+                    // per non esporre la struttura dati?
                     System.out.println("It's your turn!");
             }
             System.out.print("> ");
@@ -251,7 +257,7 @@ public class CLI implements UI {
         try {
             System.out.print("Insert card number (position from 0) > ");
             int numCard = Integer.parseInt(scanner.nextLine());
-            virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
+            virtualServer.pickOfferingCard(game.id, myPlayer, game.getOfferingCards().get(numCard));
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }

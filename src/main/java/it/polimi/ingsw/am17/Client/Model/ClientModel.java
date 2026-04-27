@@ -17,12 +17,12 @@ public class ClientModel {
 
     public List<UUID> gamesIdList = new ArrayList<>();
 
-    public Stack<Player> orderedPlayer = new Stack<>();
+    private Stack<Player> orderedPlayer = new Stack<>();
 
-    public List<OfferingCard> offeringCards = new ArrayList<>();
+    private List<OfferingCard> offeringCards = new ArrayList<>();
 
-    public List<TribesCard> upperRow = new ArrayList<>();
-    public List<TribesCard> lowerRow = new ArrayList<>();
+    private List<TribesCard> upperRow = new ArrayList<>();
+    private List<TribesCard> lowerRow = new ArrayList<>();
 
     public List<BuildingCard> upperBuildingRow = new ArrayList<>();
     public List<BuildingCard> lowerBuildingRow  = new ArrayList<>();
@@ -73,5 +73,21 @@ public class ClientModel {
                 .filter(o -> o.equals(offeringCard))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(player));
+    }
+
+    public List<TribesCard> getUpperRow(){
+        return new ArrayList<>(upperRow);
+    }
+
+    public List<TribesCard> getLowerRow(){
+        return new ArrayList<>(lowerRow);
+    }
+
+    public List<OfferingCard> getOfferingCards(){
+        return new ArrayList<>(offeringCards);
+    }
+
+    public Stack<Player> getOrderedPlayer(){
+        return (Stack<Player>) orderedPlayer.clone();
     }
 }
