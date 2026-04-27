@@ -278,4 +278,13 @@ public class CLI implements UI {
     //because ansiClear does not throw any exceptions
     //the cons about not using if/else is that we will do the clear console 2 times,
     //which is redundant (clearing the console twice)
+
+    public void writeEra(){
+        if(game.getCurrentEra() == 1)
+        {
+            System.out.println("è iniziata la partita");
+        } else {
+            System.out.println("è iniziata la era successiva");
+        }
+    }
 }
