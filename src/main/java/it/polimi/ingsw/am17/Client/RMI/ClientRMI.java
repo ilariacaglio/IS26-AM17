@@ -41,7 +41,6 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         else {
             userInterface=new CLI(server,this, model);
         }
-reman
         this.server.connect(this);
         userInterface.start();
     }
@@ -51,14 +50,7 @@ reman
         // call model to update era
         model.setCurrentEra(era);
         // UI communication
-        // spostare nella CLI
-        if(era == 1)
-        {
-            System.out.println("è iniziata la partita");
-        }else
-        {
-            System.out.println("è iniziata la era successiva");
-        }
+        userInterface.printEra();
     }
 
     @Override
