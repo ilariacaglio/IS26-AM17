@@ -176,6 +176,10 @@ public class CLI implements UI {
         myPlayer.setColor(c);
     }
 
+    /**
+     * Asks the user for a new nickname and sets it to player
+     * @param scanner
+     */
     private void changeNickname(Scanner scanner){
         nickname = "";
         setNickname(scanner);
