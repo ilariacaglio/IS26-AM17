@@ -145,18 +145,21 @@ public class Game extends Subject {
         switch (currentEra) {
             case 0:
                 era1();
+                notifyEra(currentEra);
                 break;
             case 1:
                 era2();
+                notifyEra(currentEra);
                 break;
             case 2:
                 era3();
+                notifyEra(currentEra);
                 break;
             default:
                 throw new IllegalStateException("Invalid era");
         }
 
-        notifyEra(currentEra);
+
         // notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
     }
 
