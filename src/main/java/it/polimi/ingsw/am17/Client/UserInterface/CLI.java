@@ -31,15 +31,16 @@ public class CLI implements UI {
     public void start() {
         System.out.println("=== Welcome to Mesos ===");
 
-
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;
 
             //ask user for nickname
             setNickname(scanner);
-            //create new player with nickname and base color black
-            // TODO: trovare modo per non rendere scelta colore ridondante
-            myPlayer = new Player(nickname, Color.BLACK);//TODO: the player chooses his color
+            // ask user for color
+            System.out.println("Choose your color");
+            Color color = chooseColor(scanner);
+            //create new player with nickname and color
+            myPlayer = new Player(nickname, color);
 
             while (running) {
                 System.out.print("> ");
@@ -168,12 +169,12 @@ public class CLI implements UI {
      */
     private void setNickname(Scanner scanner) {
         while (nickname.isEmpty()) {
-            System.out.println("Insert your nickname (max 10 char) :>");
+            System.out.print("Insert your nickname (max 10 char) :> ");
             nickname = scanner.nextLine().trim();
             if(nickname.length() >10 )
             {
                 nickname = "";
-                System.out.println("Your nickname has more than 10 characters!");
+                System.out.print("Your nickname has more than 10 characters!\n");
             }
         }
     }
