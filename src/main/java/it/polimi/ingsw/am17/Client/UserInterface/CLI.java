@@ -90,7 +90,9 @@ public class CLI implements UI {
     }
 
     public void printGameId(UUID gameId) {
+        System.out.print("\b\b");
         System.out.println("You are connected to game: ".concat(gameId.toString()));
+        System.out.print("> ");
     }
 
     public void drawInterface(ClientModel game)
@@ -186,7 +188,6 @@ public class CLI implements UI {
     private void changeColor(Scanner scanner){
         Color c = chooseColor(scanner);
         myPlayer.setColor(c);
-
     }
 
     /**
@@ -196,9 +197,10 @@ public class CLI implements UI {
     private void createGame(Scanner scanner){
         try {
             if (!inGame) {
-                System.out.print("Number of player? \n>");
-                int numPlayers = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
-                System.out.println("trying to create game");
+                System.out.print("How many players? (2 to 5) > ");
+                int numPlayers = Integer.parseInt(scanner.nextLine());
+                System.out.println("trying to create game...");
+                // fix something in server, create game should throw an exception if there are errors
                 virtualServer.createGame(client, myPlayer, numPlayers);
                 inGame = true;
             } else {
