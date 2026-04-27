@@ -86,6 +86,7 @@ public class CLI implements UI {
         System.out.println("- help: shows this menu");
         System.out.println("- exit: closes the application");
         System.out.println("- change color: changes the player's color");
+        System.out.println("- change nickname: changes the player's nickname");
         System.out.println("- join: joins an existing game");
         System.out.println("- create: creates a new game");
         System.out.println("- pick offering card: choose the offering card to take");
