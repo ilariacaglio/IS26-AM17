@@ -47,7 +47,11 @@ public class CLI implements UI {
                 String input = scanner.nextLine().trim().toLowerCase();
                 //TODO: parsing more flexible?
                 switch (input) {
-                    // TODO: change nickname command
+                    case "change nickname":
+                        nickname = "";
+                        setNickname(scanner);
+                        myPlayer.setNickname(nickname);
+                        break;
                     case "change color":
                         changeColor(scanner);
                         break;
@@ -166,7 +170,16 @@ public class CLI implements UI {
     }
 
     /**
-     * Asks the user to type their nickname
+     * let player choose new color
+     * @param scanner
+     */
+    private void changeColor(Scanner scanner){
+        Color c = chooseColor(scanner);
+        myPlayer.setColor(c);
+    }
+
+    /**
+     * Asks the user to type their nickname and sets it to variable
      * @param scanner
      */
     private void setNickname(Scanner scanner) {
@@ -179,15 +192,6 @@ public class CLI implements UI {
                 System.out.print("Your nickname has more than 10 characters!\n");
             }
         }
-    }
-
-    /**
-     * let player choose new color
-     * @param scanner
-     */
-    private void changeColor(Scanner scanner){
-        Color c = chooseColor(scanner);
-        myPlayer.setColor(c);
     }
 
     /**
