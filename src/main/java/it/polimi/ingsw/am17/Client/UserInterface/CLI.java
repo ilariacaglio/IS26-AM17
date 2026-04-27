@@ -279,12 +279,12 @@ public class CLI implements UI {
     //the cons about not using if/else is that we will do the clear console 2 times,
     //which is redundant (clearing the console twice)
 
-    public void writeEra(){
+    public void printEra(){
         if(game.getCurrentEra() == 1)
         {
-            System.out.println("è iniziata la partita");
+            System.out.println("The game has started!");
         } else {
-            System.out.println("è iniziata la era successiva");
+            System.out.println("The next era has begun!");
         }
     }
 }
