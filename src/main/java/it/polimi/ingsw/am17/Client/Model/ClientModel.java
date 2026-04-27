@@ -34,6 +34,9 @@ public class ClientModel {
     public void setCurrentEra(int currentEra){
         this.currentEra = currentEra;
     }
+    public int getCurrentEra(){
+        return currentEra;
+    }
 
     public void setOrderedPlayers(Stack<Player> orderedPlayers){
         this.orderedPlayer = orderedPlayers;
