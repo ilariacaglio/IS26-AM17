@@ -193,7 +193,7 @@ public class CLI implements UI {
      */
     private void setNickname(Scanner scanner) {
         while (nickname.isEmpty()) {
-            System.out.print("Insert your nickname (max 10 char) :> ");
+            System.out.print("Insert your nickname (max 10 char) > ");
             nickname = scanner.nextLine().trim();
             if(nickname.length() >10 )
             {
@@ -246,12 +246,13 @@ public class CLI implements UI {
         try {
             if (!inGame) {
                 game = new ClientModel();
-                System.out.print("GameID: ");
-                UUID gameId = UUID.fromString(scanner.nextLine()); //TODO: check for errors
-                System.out.println("trying to connect");
+                System.out.print("Insert the gameID > ");
+                // TODO: check for server exceptions
+                UUID gameId = UUID.fromString(scanner.nextLine());
+                System.out.println("trying to connect...");
                 virtualServer.joinGame(client, gameId, myPlayer);
             } else {
-                System.out.println("Already in a game");
+                System.out.println("Already in a game!");
             }
         }catch (Exception e){
             System.err.println("CLI error: " + e.getMessage());
