@@ -282,9 +282,9 @@ public class CLI implements UI {
     public void printEra(){
         if(game.getCurrentEra() == 1)
         {
-            System.out.println("The game has started!");
+            System.out.println("\nThe game has started!\n");
         } else {
-            System.out.println("The next era has begun!");
+            System.out.println("\nThe next era has begun!\n");
         }
     }
 }
