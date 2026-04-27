@@ -110,8 +110,7 @@ public class CLI implements UI {
             clearConsole();
             //draw players
             System.out.print("\nPlayers: ");
-            for(Player p : game.orderedPlayer)
-            {
+            for(Player p : game.orderedPlayer) {
                 System.out.print(p.getNickname().concat(" "));
             }
             System.out.println();
@@ -120,8 +119,7 @@ public class CLI implements UI {
             // TODO: method game.getUpperRow()
             if(!game.upperRow.isEmpty()){
                 System.out.print("Upper row: ");
-                for(TribesCard c : game.upperRow)
-                {
+                for(TribesCard c : game.upperRow) {
                     System.out.print(c.toString().concat(" "));
                 }
                 System.out.println();
@@ -131,8 +129,7 @@ public class CLI implements UI {
             // TODO: method game.getLowerRow()
             if(!game.lowerRow.isEmpty()){
                 System.out.print("Lower row: ");
-                for(TribesCard c : game.lowerRow)
-                {
+                for(TribesCard c : game.lowerRow) {
                     System.out.print(c.toString().concat(" "));
                 }
                 System.out.println();
@@ -142,8 +139,7 @@ public class CLI implements UI {
             // TODO: method game.getOfferingCard()
             if(!game.offeringCards.isEmpty()){
                 System.out.print("Offering card: ");
-                for(OfferingCard c : game.offeringCards)
-                {
+                for(OfferingCard c : game.offeringCards) {
                     System.out.print(c.toString().concat(" "));
                 }
                 System.out.println();
@@ -151,6 +147,9 @@ public class CLI implements UI {
 
             // if the game has begun notify the players turn
             if(!game.offeringCards.isEmpty()){
+                // TODO: method game.getOrderedPlayer()
+                // TODO: fare get di altri parametri usati
+                // TODO: mettere poi gli attributi private
                 if(game.orderedPlayer.peek().equals(myPlayer))
                     System.out.println("It's your turn!");
             }
