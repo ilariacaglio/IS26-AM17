@@ -7,4 +7,5 @@ public interface UI {
     void start();
     void drawInterface(ClientModel game);
     void printGameId(UUID gameId);
+    void printEra();
 }
