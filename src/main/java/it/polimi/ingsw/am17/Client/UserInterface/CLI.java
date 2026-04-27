@@ -47,6 +47,7 @@ public class CLI implements UI {
                 String input = scanner.nextLine().trim().toLowerCase();
                 //TODO: parsing more flexible?
                 switch (input) {
+                    // TODO: command to view games id list
                     case "change nickname":
                         changeNickname(scanner);
                         break;
@@ -102,42 +103,58 @@ public class CLI implements UI {
     {
         try{
             this.game = game;
+            // cancel arrow
+            System.out.print("\b\b");
             //clear console
-            clearConsole(); //call method because it was ridondante
+            // TODO: this doesn't seem to work
+            clearConsole();
             //draw players
-            System.out.print("Players: ");
+            System.out.print("\nPlayers: ");
             for(Player p : game.orderedPlayer)
             {
                 System.out.print(p.getNickname().concat(" "));
             }
             System.out.println();
 
-            //draw upper deck
-            System.out.print("Upper deck: ");
-            for(TribesCard c : game.upperRow)
-            {
-                System.out.print(c.toString().concat(" "));
+            //draw upper row
+            // TODO: method game.getUpperRow()
+            if(!game.upperRow.isEmpty()){
+                System.out.print("Upper row: ");
+                for(TribesCard c : game.upperRow)
+                {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
             }
-            System.out.println();
 
-            //draw lower deck
-            System.out.print("Lower deck: ");
-            for(TribesCard c : game.lowerRow)
-            {
-                System.out.print(c.toString().concat(" "));
+            //draw lower row
+            // TODO: method game.getLowerRow()
+            if(!game.lowerRow.isEmpty()){
+                System.out.print("Lower row: ");
+                for(TribesCard c : game.lowerRow)
+                {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
             }
-            System.out.println();
-            System.out.println();
 
             //draw offering card
-            System.out.print("Offering card: ");
-            for(OfferingCard c : game.offeringCards)
-            {
-                System.out.print(c.toString().concat(" "));
+            // TODO: method game.getOfferingCard()
+            if(!game.offeringCards.isEmpty()){
+                System.out.print("Offering card: ");
+                for(OfferingCard c : game.offeringCards)
+                {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
             }
-            System.out.println();
-            if(game.orderedPlayer.peek().equals(myPlayer))
-                System.out.println("it's your turn");
+
+            // if the game has begun notify the players turn
+            if(!game.offeringCards.isEmpty()){
+                if(game.orderedPlayer.peek().equals(myPlayer))
+                    System.out.println("It's your turn!");
+            }
+            System.out.print("> ");
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
@@ -248,7 +265,7 @@ public class CLI implements UI {
                 game = new ClientModel();
                 System.out.print("Insert the gameID > ");
                 // TODO: check for server exceptions
-                UUID gameId = UUID.fromString(scanner.nextLine());
+                UUID gameId = UUID.fromString(scanner.nextLine().trim());
                 System.out.println("trying to connect...");
                 virtualServer.joinGame(client, gameId, myPlayer);
             } else {
@@ -280,11 +297,8 @@ public class CLI implements UI {
     //which is redundant (clearing the console twice)
 
     public void printEra(){
-        if(game.getCurrentEra() == 1)
-        {
-            System.out.println("\nThe game has started!\n");
-        } else {
-            System.out.println("\nThe next era has begun!\n");
+        if(game.getCurrentEra() > 1) {
+            System.out.println("\nEra "+game.getCurrentEra()+ " has begun!\n");
         }
     }
 }
