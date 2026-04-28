@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Client (Socket)" type="Application" factoryName="Application" singleton="true">
+    <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am17.Client.ClientLauncher" />
+    <module name="am17" />
+    <option name="PROGRAM_PARAMETERS" value="--socket" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="2P" type="CompoundRunConfigurationType">
+    <toRun name="Client (RMI)" type="Application" />
+    <toRun name="Client (Socket)" type="Application" />
+    <toRun name="Server" type="Application" />
+    <method v="2" />
+  </configuration>
+</component>
