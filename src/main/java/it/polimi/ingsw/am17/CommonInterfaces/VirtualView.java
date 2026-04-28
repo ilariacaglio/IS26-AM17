@@ -21,7 +21,7 @@ public interface VirtualView extends Observer {
 
     void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws Exception;
 
-    void updatePlayerSelectTribesCard(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws Exception;
+    void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws Exception;
 
     void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws  Exception;

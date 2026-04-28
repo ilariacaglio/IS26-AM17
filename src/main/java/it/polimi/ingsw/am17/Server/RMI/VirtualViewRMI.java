@@ -22,7 +22,7 @@ public interface VirtualViewRMI extends Remote, VirtualView {
 
     void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException;
 
-    void updatePlayerSelectTribesCard(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException;
+    void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException;
 
     void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws  RemoteException;

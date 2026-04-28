@@ -64,7 +64,7 @@ public abstract class Subject {
     void notifyPlayerSelectTribesCard(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
         for (Observer observer : new ArrayList<>(observers)) {
             try {
-                observer.updatePlayerSelectTribesCard(player, characterCards, buildingCards);
+                observer.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
             } catch (Exception e) {
                 System.err.println("Client not reachable");
             }
