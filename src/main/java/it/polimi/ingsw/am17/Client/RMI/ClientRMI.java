@@ -96,8 +96,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         userInterface.drawInterface(model);
     }
 
-    private void updatePlayerValue(Player oldP, Player newP)
-    {
+    private void updatePlayerValue(Player oldP, Player newP) {
         oldP.addPp(newP.getPp()- oldP.getPp());
         oldP.addFood(newP.getFood() - oldP.getFood());
     }
@@ -105,12 +104,11 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException {
         model.setPlayerOfferingCard(offeringCard, player);
-
         userInterface.drawInterface(model);
     }
 
     @Override
-    public void updatePlayerSelectTribesCard(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
+    public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
         model.setPlayerInStack(player);
         model.removePlayerFromOfferingCard(player);
         model.removeTribeCards(tribesCards);

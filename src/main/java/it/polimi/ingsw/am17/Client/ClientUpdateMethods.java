@@ -15,42 +15,32 @@ import java.util.UUID;
 
 public class ClientUpdateMethods {
 
-    public static void updateEra(ClientModel model, int era, UI userInterface){
+    public static void updateEra(ClientModel model, UI userInterface, int era) {
         // call model to update era
         model.setCurrentEra(era);
         // UI communication
-        // spostare nella CLI
-        if(era == 1)
-        {
-            System.out.println("è iniziata la partita");
-        }else
-        {
-            System.out.println("è iniziata la era successiva");
-        }
+        userInterface.printEra();
     }
 
-    public static void updatePlayerStack(Stack<Player> orderedPlayer, ClientModel model, UI userInterface){
+    public static void updatePlayerStack(ClientModel model, UI userInterface, Stack<Player> orderedPlayer) {
         model.setOrderedPlayers(orderedPlayer);
         // UI communication
         userInterface.drawInterface(model);
     }
 
-
-    public static void updateGameId(UUID gameId, ClientModel model, UI userInterface){
+    public static void updateGameId(ClientModel model, UI userInterface, UUID gameId) {
         model.setGameId(gameId);
         // UI communication
         userInterface.printGameId(gameId);
     }
 
-    public static void updateGamesIdList(List<UUID> gamesIdList, ClientModel model, UI userInterface) {
+    public static void updateGamesIdList(ClientModel model, UI userInterface, List<UUID> gamesIdList) {
         model.setGameIdList(gamesIdList);
         // TODO: call user interface
     }
 
-
-    public static void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards,
-                                ClientModel model, UI userInterface) {
+    public static void updateStartGame(ClientModel model, UI userInterface, Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
 
         model.setOrderedPlayers(players);
         model.setTribeCards(upperRow, lowerRow);
@@ -60,11 +50,8 @@ public class ClientUpdateMethods {
         userInterface.drawInterface(model);
     }
 
-
-    public static void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow,
-                              List<BuildingCard> lowerBuildingRow, ClientModel model, UI userInterface) {
-        for(Player player : players)
-        {
+    public static void updateEndTurn(ClientModel model, UI userInterface, Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+        for(Player player : players) {
             updatePlayerValue(model.getPlayer(player), player);
         }
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
@@ -73,40 +60,21 @@ public class ClientUpdateMethods {
         userInterface.drawInterface(model);
     }
 
-    private static void updatePlayerValue(Player oldP, Player newP)
-    {
+    private static void updatePlayerValue(Player oldP, Player newP) {
         oldP.addPp(newP.getPp()- oldP.getPp());
         oldP.addFood(newP.getFood() - oldP.getFood());
     }
 
-
-    public static void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard, ClientModel model, UI userInterface) {
+    public static void updatePlayerSelectOfferingCard(ClientModel model, UI userInterface, Player player, OfferingCard offeringCard) {
         model.setPlayerOfferingCard(offeringCard, player);
-
         userInterface.drawInterface(model);
     }
 
-    public static void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards
-            , ClientModel model, UI userInterface) {
-        //set new value for player
-        for (int i = 0; i < model.orderedPlayer.size(); i++) {
-            if (model.orderedPlayer.get(i).equals(player)) {
-                model.orderedPlayer.set(i, player);
-                break;
-            }
-        }
-
-        model.offeringCards.stream()
-                .filter(o -> o.getPlayer().equals(player))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(null));
-
-        model.upperRow.removeAll(tribesCards);
-        model.lowerRow.removeAll(tribesCards);
-
-        model.upperBuildingRow.removeAll(buildingCards);
-        model.lowerBuildingRow.removeAll(buildingCards);
-
+    public static void updatePlayerSelectTribeCards(ClientModel model, UI userInterface, Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) {
+        model.setPlayerInStack(player);
+        model.removePlayerFromOfferingCard(player);
+        model.removeTribeCards(tribesCards);
+        model.removeBuildingCards(buildingCards);
         userInterface.drawInterface(model);
     }
 }

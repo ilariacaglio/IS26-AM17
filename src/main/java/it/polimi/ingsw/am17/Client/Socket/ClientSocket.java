@@ -86,7 +86,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     @Override
     public void updateEra(int era) {
-        ClientUpdateMethods.updateEra(model, era, userInterface);
+        ClientUpdateMethods.updateEra(model, userInterface, era);
     }
 
     @Override
