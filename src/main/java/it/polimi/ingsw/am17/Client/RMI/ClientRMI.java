@@ -32,7 +32,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
     public void start(String ip, boolean graphic) throws RemoteException, NotBoundException {
         final String serverName = "MesosRMIServer";
-
+        this.model = new ClientModel();
         Registry registry = LocateRegistry.getRegistry(ip, 1099);
         this.server = (VirtualServerRMI) registry.lookup(serverName);
         if(graphic){
