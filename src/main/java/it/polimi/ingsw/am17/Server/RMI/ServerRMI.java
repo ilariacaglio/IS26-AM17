@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.ServerActionMethods;
 import it.polimi.ingsw.am17.Server.ServerInterface;
 
 import java.rmi.RemoteException;
@@ -40,6 +41,31 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
         synchronized (this.clients) {
             this.clients.add((VirtualViewRMI) client);
         }
+    }
+
+    @Override
+    public void getGamesList(VirtualView client) throws RemoteException {
+        ServerActionMethods.getGamesList(this.controller, client);
+    }
+
+    @Override
+    public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
+        ServerActionMethods.createGame(this.controller, client, player, numPlayers);
+    }
+
+    @Override
+    public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
+        ServerActionMethods.joinGame(this.controller, client, gameId, player);
+    }
+
+    @Override
+    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
+        ServerActionMethods.pickOfferingCard(this.controller, gameId, player, card);
+    }
+
+    @Override
+    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
+        ServerActionMethods.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
     }
 
 
