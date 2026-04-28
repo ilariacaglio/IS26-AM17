@@ -93,6 +93,12 @@ public class ClientModel {
     public List<TribesCard> getUpperTribeRow(){
         return Collections.unmodifiableList(upperRow);
     }
+    public List<BuildingCard> getLowerBuildingRow(){
+        return Collections.unmodifiableList(lowerBuildingRow);
+    }
+    public List<BuildingCard> getUpperBuildingRow(){
+        return Collections.unmodifiableList(upperBuildingRow);
+    }
 
     public List<TribesCard> getLowerTribeRow(){
         return Collections.unmodifiableList(lowerRow);
