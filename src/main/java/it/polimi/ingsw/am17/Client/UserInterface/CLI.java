@@ -52,7 +52,6 @@ public class CLI implements UI {
             while (running) {
                 System.out.print("> ");
                 String input = scanner.nextLine().trim().toLowerCase();
-                //TODO: parsing more flexible?
                 switch (input) {
                     case "get games":
                         getGamesList();
@@ -149,6 +148,7 @@ public class CLI implements UI {
     public void drawInterface(ClientModel game)
     {
         // TODO: manca la stampa dei buildings!!
+        // TODO: spezzare stampe nei metodi
         try{
             this.game = game;
             // cancel arrow
