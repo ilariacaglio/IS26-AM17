@@ -87,8 +87,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
     @Override
     public void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
-        for(Player player : players)
-        {
+        for(Player player : players) {
             updatePlayerValue(model.getPlayer(player), player);
         }
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
@@ -112,25 +111,10 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
     @Override
     public void updatePlayerSelectTribesCard(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
-        //set new value for player
-        for (int i = 0; i < model.orderedPlayer.size(); i++) {
-            if (model.orderedPlayer.get(i).equals(player)) {
-                model.orderedPlayer.set(i, player);
-                break;
-            }
-        }
-
-        model.offeringCards.stream()
-                .filter(o -> o.getPlayer().equals(player))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(null));
-
-        model.upperRow.removeAll(tribesCards);
-        model.lowerRow.removeAll(tribesCards);
-
-        model.upperBuildingRow.removeAll(buildingCards);
-        model.lowerBuildingRow.removeAll(buildingCards);
-
+        model.setPlayerInStack(player);
+        model.removePlayerFromOfferingCard(player);
+        model.removeTribeCards(tribesCards);
+        model.removeBuildingCards(buildingCards);
         userInterface.drawInterface(model);
     }
 }

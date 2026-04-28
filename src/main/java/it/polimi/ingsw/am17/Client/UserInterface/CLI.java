@@ -8,6 +8,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
+import java.security.DrbgParameters;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
@@ -103,18 +104,20 @@ public class CLI implements UI {
 
     public void drawInterface(ClientModel game)
     {
+        // TODO: manca la stampa dei buildings!!
         try{
             this.game = game;
             // cancel arrow
             System.out.print("\b\b");
             //clear console
-            System.out.print("\033[H\033[2J");
+            System.out.print("\033[H\033[2J\033[3J");
             System.out.flush();
+            // TODO: remove this loop for real terminal execution
             for (int i = 0; i < 50; i++) {
                 System.out.println();
             }
             //draw players
-            Stack<Player> orderedPlayer = game.getOrderedPlayer();
+            Stack<Player> orderedPlayer = game.getOrderedPlayers();
             System.out.print("\nPlayers: ");
             for(Player p : orderedPlayer) {
                 System.out.print(p.getNickname().concat(" "));
@@ -122,7 +125,7 @@ public class CLI implements UI {
             System.out.println();
 
             //draw upper row
-            List<TribesCard> upperRow = game.getUpperRow();
+            List<TribesCard> upperRow = game.getUpperTribeRow();
             if(!upperRow.isEmpty()){
                 System.out.print("Upper row: ");
                 for(TribesCard c : upperRow) {
@@ -132,7 +135,7 @@ public class CLI implements UI {
             }
 
             //draw lower row
-            List<TribesCard> lowerRow = game.getLowerRow();
+            List<TribesCard> lowerRow = game.getLowerTribeRow();
             if(!lowerRow.isEmpty()){
                 System.out.print("Lower row: ");
                 for(TribesCard c : lowerRow) {
@@ -153,13 +156,7 @@ public class CLI implements UI {
 
             // if the game has begun notify the players turn
             if(!offeringCards.isEmpty()){
-                // TODO: fare get di altri parametri usati
-                // TODO: mettere poi gli attributi private
-                if(orderedPlayer.peek().equals(myPlayer))
-                    //TODO: in questo modo la CLI sta interpretando il turno con peek(), perchè
-                    // dipende dalla struttura Stack del ClientModel.
-                    // fare getCurrentPlayer in ClientModel
-                    // per non esporre la struttura dati?
+                if(game.getCurrentPlayer().equals(myPlayer))
                     System.out.println("It's your turn!");
             }
             System.out.print("> ");
@@ -257,7 +254,7 @@ public class CLI implements UI {
         try {
             System.out.print("Insert card number (position from 0) > ");
             int numCard = Integer.parseInt(scanner.nextLine());
-            virtualServer.pickOfferingCard(game.id, myPlayer, game.getOfferingCards().get(numCard));
+            virtualServer.pickOfferingCard(game.getGameId(), myPlayer, game.getOfferingCards().get(numCard));
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
