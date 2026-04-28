@@ -70,7 +70,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     @Override
     public void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException {
         model.setGameIdList(gamesIdList);
-        // TODO: call user interface
+        userInterface.printGamesList();
     }
 
     @Override

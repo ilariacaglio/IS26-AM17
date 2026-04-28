@@ -50,7 +50,9 @@ public class CLI implements UI {
                 String input = scanner.nextLine().trim().toLowerCase();
                 //TODO: parsing more flexible?
                 switch (input) {
-                    // TODO: command to view games id list
+                    case "get games":
+                        getGamesList();
+                        break;
                     case "change nickname":
                         changeNickname(scanner);
                         break;
@@ -91,6 +93,7 @@ public class CLI implements UI {
         System.out.println("- exit: closes the application");
         System.out.println("- change color: changes the player's color");
         System.out.println("- change nickname: changes the player's nickname");
+        System.out.println("- get games: get the list of incomplete games");
         System.out.println("- create: creates a new game");
         System.out.println("- join: joins an existing game");
         System.out.println("- pick offering card: choose the offering card to take");
@@ -100,6 +103,23 @@ public class CLI implements UI {
         System.out.print("\b\b");
         System.out.println("You are connected to game: ".concat(gameId.toString()));
         System.out.print("> ");
+    }
+
+    public void printGamesList(){
+        System.out.print("\b\b");
+        System.out.println("Incomplete games:");
+        for(int i=0; i< game.getGamesIdList().size(); i++){
+            System.out.println(i+"\t"+game.getGamesIdList().get(i));
+        }
+        System.out.print("> ");
+    }
+
+    private void getGamesList(){
+        try {
+            virtualServer.getGamesList(client);
+        } catch (Exception e) {
+            System.out.println("CLI error: " + e.getMessage());
+        }
     }
 
     public void drawInterface(ClientModel game)
@@ -217,8 +237,7 @@ public class CLI implements UI {
         while (nickname.isEmpty()) {
             System.out.print("Insert your nickname (max 10 char) > ");
             nickname = scanner.nextLine().trim();
-            if(nickname.length() >10 )
-            {
+            if(nickname.length() >10 ) {
                 nickname = "";
                 System.out.print("Your nickname has more than 10 characters!\n");
             }
@@ -235,7 +254,6 @@ public class CLI implements UI {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
-                // fix something in server, create game should throw an exception if there are errors
                 virtualServer.createGame(client, myPlayer, numPlayers);
                 inGame = true;
             } else {
@@ -269,14 +287,13 @@ public class CLI implements UI {
             if (!inGame) {
                 game = new ClientModel();
                 System.out.print("Insert the gameID > ");
-                // TODO: check for server exceptions
                 UUID gameId = UUID.fromString(scanner.nextLine().trim());
                 System.out.println("trying to connect...");
                 virtualServer.joinGame(client, gameId, myPlayer);
             } else {
                 System.out.println("Already in a game!");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
     }

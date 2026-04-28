@@ -131,4 +131,8 @@ public class ClientModel {
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(null));
     }
+
+    public List<UUID> getGamesIdList(){
+        return Collections.unmodifiableList(gamesIdList);
+    }
 }
