@@ -8,40 +8,52 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
+import java.security.DrbgParameters;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.UUID;
 
 public class CLI implements UI {
     private final VirtualServer virtualServer;
     private final VirtualView client;
     private ClientModel game;
-    Player myPlayer = null;
-    String nickname = "";
-    boolean inGame = false;
+    Player myPlayer;
+    String nickname;
+    boolean inGame;
 
     public CLI (VirtualServer server, VirtualView client, ClientModel game) {
         this.virtualServer = server;
         this.client = client;
         this.game = game;
+        inGame = false;
+        myPlayer = null;
+        nickname = "";
     }
 
     public void start() {
         System.out.println("=== Welcome to Mesos ===");
 
-
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;
 
             //ask user for nickname
-           setNickname(scanner);
-            //create new player with nickname and base color black
-            myPlayer = new Player(nickname, Color.BLACK);
+            setNickname(scanner);
+            // ask user for color
+            System.out.println("Choose your color");
+            Color color = chooseColor(scanner);
+            //create new player with nickname and color
+            myPlayer = new Player(nickname, color);
 
             while (running) {
                 System.out.print("> ");
                 String input = scanner.nextLine().trim().toLowerCase();
-
+                //TODO: parsing more flexible?
                 switch (input) {
+                    // TODO: command to view games id list
+                    case "change nickname":
+                        changeNickname(scanner);
+                        break;
                     case "change color":
                         changeColor(scanner);
                         break;
@@ -54,7 +66,8 @@ public class CLI implements UI {
                     case "join":
                         joinGame(scanner);
                         break;
-
+                    // TODO: command to select tribe/building cards
+                    // TODO: command to view the cards/pp/food of the other players
                     case "help":
                         printHelp();
                         break;
@@ -77,59 +90,76 @@ public class CLI implements UI {
         System.out.println("- help: shows this menu");
         System.out.println("- exit: closes the application");
         System.out.println("- change color: changes the player's color");
-        System.out.println("- join: joins an existing game");
+        System.out.println("- change nickname: changes the player's nickname");
         System.out.println("- create: creates a new game");
+        System.out.println("- join: joins an existing game");
         System.out.println("- pick offering card: choose the offering card to take");
     }
 
     public void printGameId(UUID gameId) {
+        System.out.print("\b\b");
         System.out.println("You are connected to game: ".concat(gameId.toString()));
+        System.out.print("> ");
     }
 
     public void drawInterface(ClientModel game)
     {
+        // TODO: manca la stampa dei buildings!!
         try{
             this.game = game;
+            // cancel arrow
+            System.out.print("\b\b");
             //clear console
+            System.out.print("\033[H\033[2J\033[3J");
+            System.out.flush();
+            // TODO: remove this loop for real terminal execution
             for (int i = 0; i < 50; i++) {
                 System.out.println();
             }
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
             //draw players
-            System.out.print("Players: ");
-            for(Player p : game.orderedPlayer)
-            {
+            Stack<Player> orderedPlayer = game.getOrderedPlayers();
+            System.out.print("\nPlayers: ");
+            for(Player p : orderedPlayer) {
                 System.out.print(p.getNickname().concat(" "));
             }
             System.out.println();
 
-            //draw upper deck
-            System.out.print("Upper deck: ");
-            for(TribesCard c : game.upperRow)
-            {
-                System.out.print(c.toString().concat(" "));
+            //draw upper row
+            List<TribesCard> upperRow = game.getUpperTribeRow();
+            if(!upperRow.isEmpty()){
+                System.out.print("Upper row: ");
+                for(TribesCard c : upperRow) {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
             }
-            System.out.println();
 
-            //draw lower deck
-            System.out.print("Lower deck: ");
-            for(TribesCard c : game.lowerRow)
-            {
-                System.out.print(c.toString().concat(" "));
+            //draw lower row
+            List<TribesCard> lowerRow = game.getLowerTribeRow();
+            if(!lowerRow.isEmpty()){
+                System.out.print("Lower row: ");
+                for(TribesCard c : lowerRow) {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
             }
-            System.out.println();
-            System.out.println();
 
             //draw offering card
-            System.out.print("Offering card: ");
-            for(OfferingCard c : game.offeringCards)
-            {
-                System.out.print(c.toString().concat(" "));
+            List<OfferingCard> offeringCards = game.getOfferingCards();
+            if(!offeringCards.isEmpty()){
+                System.out.print("Offering card: ");
+                for(OfferingCard c : offeringCards) {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
             }
-            System.out.println();
-            if(game.orderedPlayer.peek().equals(myPlayer))
-                System.out.println("it's your turn");
+
+            // if the game has begun notify the players turn
+            if(!offeringCards.isEmpty()){
+                if(game.getCurrentPlayer().equals(myPlayer))
+                    System.out.println("It's your turn!");
+            }
+            System.out.print("> ");
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
@@ -161,29 +191,38 @@ public class CLI implements UI {
     }
 
     /**
-     * ask player for nickname and saves it in nickname
-     * @param scanner
-     */
-    private void setNickname(Scanner scanner) {
-        nickname = "";
-        while (nickname.isEmpty()) {
-            System.out.print("Insert your nickname (max 10 char): \n>");
-            nickname = scanner.nextLine().trim();
-            if(nickname.length() >=10 )
-            {
-                System.out.print("your nickname has more then 10 character \n>");
-            }
-        }
-    }
-
-    /**
      * let player choose new color
      * @param scanner
      */
     private void changeColor(Scanner scanner){
         Color c = chooseColor(scanner);
         myPlayer.setColor(c);
+    }
 
+    /**
+     * Asks the user for a new nickname and sets it to player
+     * @param scanner
+     */
+    private void changeNickname(Scanner scanner){
+        nickname = "";
+        setNickname(scanner);
+        myPlayer.setNickname(nickname);
+    }
+
+    /**
+     * Asks the user to type their nickname and sets it to variable
+     * @param scanner
+     */
+    private void setNickname(Scanner scanner) {
+        while (nickname.isEmpty()) {
+            System.out.print("Insert your nickname (max 10 char) > ");
+            nickname = scanner.nextLine().trim();
+            if(nickname.length() >10 )
+            {
+                nickname = "";
+                System.out.print("Your nickname has more than 10 characters!\n");
+            }
+        }
     }
 
     /**
@@ -193,16 +232,17 @@ public class CLI implements UI {
     private void createGame(Scanner scanner){
         try {
             if (!inGame) {
-                System.out.print("Number of player? \n>");
-                int numPlayers = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
-                System.out.println("trying to create game");
+                System.out.print("How many players? (2 to 5) > ");
+                int numPlayers = Integer.parseInt(scanner.nextLine());
+                System.out.println("Trying to create game...");
+                // fix something in server, create game should throw an exception if there are errors
                 virtualServer.createGame(client, myPlayer, numPlayers);
                 inGame = true;
             } else {
                 System.out.print("Already in a game \n>");
             }
         }catch (Exception e) {
-            throw new RuntimeException(e);
+            System.err.println("CLI error: " + e.getMessage());
         }
     }
 
@@ -212,11 +252,11 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(Scanner scanner){
         try {
-            System.out.print("insert card number (position from 0) \n>");
-            int numCard = Integer.parseInt(scanner.nextLine()); //TODO: check for errors
-            virtualServer.pickOfferingCard(game.id, myPlayer, game.offeringCards.get(numCard));
+            System.out.print("Insert card number (position from 0) > ");
+            int numCard = Integer.parseInt(scanner.nextLine());
+            virtualServer.pickOfferingCard(game.getGameId(), myPlayer, game.getOfferingCards().get(numCard));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.err.println("CLI error: " + e.getMessage());
         }
     }
 
@@ -228,15 +268,22 @@ public class CLI implements UI {
         try {
             if (!inGame) {
                 game = new ClientModel();
-                System.out.print("GameID: ");
-                UUID gameId = UUID.fromString(scanner.nextLine()); //TODO: check for errors
-                System.out.println("trying to connect");
+                System.out.print("Insert the gameID > ");
+                // TODO: check for server exceptions
+                UUID gameId = UUID.fromString(scanner.nextLine().trim());
+                System.out.println("trying to connect...");
                 virtualServer.joinGame(client, gameId, myPlayer);
             } else {
-                System.out.println("Already in a game");
+                System.out.println("Already in a game!");
             }
         }catch (Exception e){
-            throw new RuntimeException(e);
+            System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    public void printEra(){
+        if(game.getCurrentEra() > 1) {
+            System.out.println("\nEra "+game.getCurrentEra()+ " has begun!\n");
         }
     }
 }

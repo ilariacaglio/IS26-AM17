@@ -1,42 +1,55 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ClientModel {
-    public UUID id;
-    public int numPlayers;
-    public int currentEra = 0;
+    private UUID id;
+    private int numPlayers;
+    private int currentEra = 0;
 
-    public List<UUID> gamesIdList = new ArrayList<>();
+    private List<UUID> gamesIdList = new ArrayList<>();
 
-    public Stack<Player> orderedPlayer = new Stack<>();
+    private final Stack<Player> orderedPlayer = new Stack<>();
 
-    public List<OfferingCard> offeringCards = new ArrayList<>();
+    private List<OfferingCard> offeringCards = new ArrayList<>();
 
-    public List<TribesCard> upperRow = new ArrayList<>();
-    public List<TribesCard> lowerRow = new ArrayList<>();
+    private final List<TribesCard> upperRow = new ArrayList<>();
+    private final List<TribesCard> lowerRow = new ArrayList<>();
 
-    public List<BuildingCard> upperBuildingRow = new ArrayList<>();
-    public List<BuildingCard> lowerBuildingRow  = new ArrayList<>();
+    private final List<BuildingCard> upperBuildingRow = new ArrayList<>();
+    private final List<BuildingCard> lowerBuildingRow  = new ArrayList<>();
 
     public void setGameId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getGameId() {
+        return id;
     }
 
     public void setCurrentEra(int currentEra){
         this.currentEra = currentEra;
     }
 
+    public int getCurrentEra(){
+        return currentEra;
+    }
+
     public void setOrderedPlayers(Stack<Player> orderedPlayers){
-        this.orderedPlayer = orderedPlayers;
+        this.orderedPlayer.clear();
+        this.orderedPlayer.addAll(orderedPlayers);
+    }
+
+    public Stack<Player> getOrderedPlayers(){
+        return Collections.unmodifiableCollection(orderedPlayer)
+                .stream().collect(Collectors.toCollection(Stack::new));
     }
 
     public void setOfferingCards(List<OfferingCard> offeringCards){
@@ -44,18 +57,23 @@ public class ClientModel {
     }
 
     public void setTribeCards(List<TribesCard> upperRow, List<TribesCard> lowerRow){
-        this.upperRow = upperRow;
-        this.lowerRow = lowerRow;
+        this.upperRow.clear();
+        this.upperRow.addAll(upperRow);
+        this.lowerRow.clear();
+        this.lowerRow.addAll(lowerRow);
     }
 
     public void setBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
-        this.upperBuildingRow = upperBuildingRow;
-        this.lowerBuildingRow = lowerBuildingRow;
+        this.upperBuildingRow.clear();
+        this.upperBuildingRow.addAll(upperBuildingRow);
+        this.lowerBuildingRow.clear();
+        this.lowerBuildingRow.addAll(lowerBuildingRow);
     }
 
     public void setGameIdList(List<UUID> gamesIdList){
         this.gamesIdList = new  ArrayList<>(gamesIdList);
     }
+
     public Player getPlayer(Player player)
     {
         return orderedPlayer.stream()
@@ -70,5 +88,47 @@ public class ClientModel {
                 .filter(o -> o.equals(offeringCard))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(player));
+    }
+
+    public List<TribesCard> getUpperTribeRow(){
+        return Collections.unmodifiableList(upperRow);
+    }
+
+    public List<TribesCard> getLowerTribeRow(){
+        return Collections.unmodifiableList(lowerRow);
+    }
+
+    public List<OfferingCard> getOfferingCards(){
+        return Collections.unmodifiableList(offeringCards);
+    }
+
+    public Player getCurrentPlayer(){
+        return orderedPlayer.peek();
+    }
+
+    public void removeTribeCards(List<CharacterCard> tribeCards){
+        upperRow.removeAll(tribeCards);
+        lowerRow.removeAll(tribeCards);
+    }
+
+    public void removeBuildingCards(List<BuildingCard> buildingCards){
+        upperBuildingRow.removeAll(buildingCards);
+        lowerBuildingRow.removeAll(buildingCards);
+    }
+
+    public void setPlayerInStack(Player player){
+        for (int i = 0; i < orderedPlayer.size(); i++) {
+            if (orderedPlayer.get(i).equals(player)) {
+                orderedPlayer.set(i,player);
+                break;
+            }
+        }
+    }
+
+    public void removePlayerFromOfferingCard(Player player){
+        offeringCards.stream()
+                .filter(o -> o.getPlayer().equals(player))
+                .findFirst()
+                .ifPresent(o -> o.setPlayer(null));
     }
 }

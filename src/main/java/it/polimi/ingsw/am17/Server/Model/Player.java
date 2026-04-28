@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Player implements Serializable {
-    private final String nickname;
+    private String nickname;
     private int pp;
     private int food;
     private Color color;
@@ -37,6 +37,10 @@ public class Player implements Serializable {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname=nickname;
     }
 
     public void addPp(int quantity){
