@@ -10,7 +10,6 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
-import java.security.DrbgParameters;
 import java.util.*;
 
 public class CLI implements UI {
@@ -160,13 +159,16 @@ public class CLI implements UI {
             for (int i = 0; i < 50; i++) {
                 System.out.println();
             }
+
             //draw players
-            Stack<Player> orderedPlayer = game.getOrderedPlayers();
-            System.out.print("\nPlayers: ");
-            for(Player p : orderedPlayer) {
-                System.out.print(p.getNickname().concat(" "));
+            if(!inGame) {
+                Stack<Player> orderedPlayer = game.getOrderedPlayers();
+                System.out.print("\nPlayers: ");
+                for(Player p : orderedPlayer) {
+                    System.out.print(p.getNickname().concat(" "));
+                }
+                System.out.println("\nWaiting for players to join...");
             }
-            System.out.println();
 
             //draw upper row
             List<TribesCard> upperRow = game.getUpperTribeRow();

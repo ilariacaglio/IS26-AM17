@@ -432,7 +432,7 @@ public class Game extends Subject {
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
 
         // Check if the player is current next player
-        if (player != currentOffering.getPlayer()) {
+        if (!player.equals(currentOffering.getPlayer())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
