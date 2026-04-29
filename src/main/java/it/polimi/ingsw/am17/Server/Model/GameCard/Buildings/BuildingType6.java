@@ -30,4 +30,9 @@ public class BuildingType6 extends BuildingCard {
         // return the sum of bonus points ONCE (as they should be counted once already)
         return builders.stream().mapToInt(Builder::getPointBonus).sum();
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: x2PP from Builders";
+    }
 }

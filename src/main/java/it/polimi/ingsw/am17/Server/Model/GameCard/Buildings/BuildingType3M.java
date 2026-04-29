@@ -46,4 +46,9 @@ public class BuildingType3M extends BuildingCard {
     public int hashCode() {
         return Objects.hash(pointsFromEachCharacter, characterType);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: +PP/each " + characterType.toString();
+    }
 }

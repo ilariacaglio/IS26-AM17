@@ -60,4 +60,9 @@ public class BuildingType14 extends BuildingCard {
     public int hashCode() {
         return Objects.hashCode(numberOfCharacter);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: +5F/set of 6 different characters";
+    }
 }

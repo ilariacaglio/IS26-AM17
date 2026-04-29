@@ -16,4 +16,8 @@ public class BuildingType8 extends BuildingCard {
     @Override
     public boolean hasDoubleRitualEventPoints() { return true; } // Tribes effect
 
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: x2PP in RitualEvent if won.";
+    }
 }

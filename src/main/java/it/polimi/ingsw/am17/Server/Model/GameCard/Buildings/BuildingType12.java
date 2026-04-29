@@ -17,4 +17,9 @@ public class BuildingType12 extends BuildingCard {
     public boolean isShieldedFromRitualEvent() {
         return true;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: -0PP in RitualEvent";
+    }
 }
