@@ -77,6 +77,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     public void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws RemoteException {
 
+        model.setNumPlayers(players.size());
         model.setOrderedPlayers(players);
         model.setTribeCards(upperRow, lowerRow);
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);

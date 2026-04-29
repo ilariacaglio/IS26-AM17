@@ -18,7 +18,6 @@ public class CLI implements UI {
     private ClientModel game;
     Player myPlayer;
     String nickname;
-    OfferingCard myOfferingCard;
     boolean inGame;
 
     public CLI (VirtualServer server, VirtualView client, ClientModel game) {
@@ -28,7 +27,6 @@ public class CLI implements UI {
         inGame = false;
         myPlayer = null;
         nickname = "";
-        myOfferingCard = null;
     }
 
     /**
@@ -224,8 +222,10 @@ public class CLI implements UI {
      * @param scanner
      */
     private void pickCards(Scanner scanner) {
-        // TODO: improve offering card
-        int totalCards = myOfferingCard.getNumCardsUpper() + myOfferingCard.getNumCardsLower();
+        OfferingCard myOfferingCard = game.getOfferingCards().stream()
+                .filter(c->c.getPlayer().equals(myPlayer))
+                .findFirst().orElse(null);
+        int totalCards = (myOfferingCard != null ? myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower() : 0);
 
         // get game rows
         var upperTRow = game.getUpperTribeRow();
@@ -286,17 +286,19 @@ public class CLI implements UI {
      * Prints all the character and building cards in the upper row
      */
     private void printPickableUpperRow(){
-        int span = game.getUpperTribeRow().size();
+        var upperTribeRow = game.getUpperTribeRow();
+        var upperBuildingRow = game.getUpperBuildingRow();
+        int span = upperTribeRow.size();
         System.out.print("Upper row:");
         // print character cards
         for(int i=0; i< span; i++){
-            if(game.getUpperTribeRow().get(i).getCardType().isCharacter()){
-                System.out.print(i + " " + game.getUpperTribeRow().get(i) + "\t");
+            if(upperTribeRow.get(i).getCardType().isCharacter()){
+                System.out.print(i + ") " + upperTribeRow.get(i) + "\t");
             }
         }
         // print building cards
-        for(int i=0; i< game.getUpperBuildingRow().size(); i++){
-            System.out.print((i+span) + " " + game.getUpperBuildingRow().get(i) + "\t");
+        for(int i=0; i< upperBuildingRow.size(); i++){
+            System.out.print((i+span) + ") " + upperBuildingRow.get(i) + "\t");
         }
         System.out.print("\n");
     }
@@ -305,18 +307,20 @@ public class CLI implements UI {
      * Prints all the character and building cards in the lower row
      */
     private void printPickableLowerRow(){
+        var lowerTribeRow = game.getLowerTribeRow();
+        var lowerBuildingRow = game.getLowerBuildingRow();
         int span = game.getUpperTribeRow().size()+game.getUpperBuildingRow().size();
-        int buildingSpan = span + game.getLowerTribeRow().size();
+        int buildingSpan = span + lowerTribeRow.size();
         System.out.print("Lower row:");
         // print character cards
-        for(int i=0; i< game.getLowerTribeRow().size(); i++){
-            if(game.getLowerTribeRow().get(i).getCardType().isCharacter()){
-                System.out.print((i+span) + " " + game.getLowerTribeRow().get(i) + "\t");
+        for(int i=0; i< lowerTribeRow.size(); i++){
+            if(lowerTribeRow.get(i).getCardType().isCharacter()){
+                System.out.print((i+span) + ") " +lowerTribeRow.get(i) + "\t");
             }
         }
         // print building cards
-        for(int i=0; i< game.getLowerBuildingRow().size(); i++){
-            System.out.print((i+buildingSpan) + " " + game.getUpperBuildingRow().get(i) + "\t");
+        for(int i=0; i< lowerBuildingRow.size(); i++){
+            System.out.print((i+buildingSpan) + ") " + lowerBuildingRow.get(i) + "\t");
         }
         System.out.print("\n");
     }
@@ -414,7 +418,6 @@ public class CLI implements UI {
             System.out.print("Insert card number (position from 0) > ");
             int numCard = Integer.parseInt(scanner.nextLine());
             virtualServer.pickOfferingCard(game.getGameId(), myPlayer, game.getOfferingCards().get(numCard));
-            myOfferingCard = game.getOfferingCards().get(numCard);
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }

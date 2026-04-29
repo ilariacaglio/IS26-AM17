@@ -34,6 +34,10 @@ public class ClientModel {
         return id;
     }
 
+    public void setNumPlayers(int numPlayers) {
+        this.numPlayers = numPlayers;
+    }
+
     public int getNumPlayers() {
         return numPlayers;
     }
