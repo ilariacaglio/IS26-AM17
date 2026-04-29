@@ -162,11 +162,7 @@ public class CLI implements UI {
 
             //draw players
             if(!inGame) {
-                Stack<Player> orderedPlayer = game.getOrderedPlayers();
-                System.out.print("\nPlayers: ");
-                for(Player p : orderedPlayer) {
-                    System.out.print(p.getNickname().concat(" "));
-                }
+                printPlayers();
                 System.out.println("\nWaiting for players to join...");
             }
 
@@ -208,6 +204,17 @@ public class CLI implements UI {
             System.out.print("> ");
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Prints on the terminal the players list
+     */
+    private void printPlayers() {
+        Stack<Player> orderedPlayer = game.getOrderedPlayers();
+        System.out.print("\nPlayers: ");
+        for(Player p : orderedPlayer) {
+            System.out.print(p.getNickname().concat(" "));
         }
     }
 
