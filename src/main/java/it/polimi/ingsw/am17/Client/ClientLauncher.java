@@ -15,7 +15,7 @@ public class ClientLauncher {
         boolean socket = Arrays.asList(args).contains("--socket");
 
         if (socket) {
-            //new ClientSocket().start("127.0.0.1", gui);
+            new ClientSocket().start("127.0.0.1", gui);
         } else {
             new ClientRMI().start("127.0.0.1", gui);
         }
