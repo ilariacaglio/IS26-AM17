@@ -34,6 +34,10 @@ public class ClientModel {
         return id;
     }
 
+    public int getNumPlayers() {
+        return numPlayers;
+    }
+
     public void setCurrentEra(int currentEra){
         this.currentEra = currentEra;
     }

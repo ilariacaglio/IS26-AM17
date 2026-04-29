@@ -162,8 +162,9 @@ public class CLI implements UI {
 
             //draw players
             if(!inGame) {
+                int playersToWait = game.getNumPlayers()+game.getOrderedPlayers().size();
                 printPlayers();
-                System.out.println("\nWaiting for players to join...");
+                System.out.println("\nWaiting for "+ playersToWait + " more players to join...");
             }
 
             //draw upper row
