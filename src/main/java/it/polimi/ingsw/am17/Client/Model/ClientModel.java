@@ -50,6 +50,10 @@ public class ClientModel {
         return myPlayer;
     }
 
+    public void setPickOfferingCardPhase(boolean isPickOfferingCardPhase) {
+        this.isPickOfferingCardPhase = isPickOfferingCardPhase;
+    }
+
     public int getNumPlayers() {
         return numPlayers;
     }
