@@ -204,7 +204,7 @@ public class CLI implements UI {
                 System.out.println();
             }
 
-            //draw upper BuildingRow
+            //draw lower BuildingRow
             List<BuildingCard> lowerBuildingRow = game.getLowerBuildingRow();
             if(!lowerBuildingRow.isEmpty()){
                 System.out.print("Lower building row: ");
