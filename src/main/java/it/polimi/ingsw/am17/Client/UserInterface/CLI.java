@@ -3,7 +3,6 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -140,7 +139,9 @@ public class CLI implements UI {
     public void drawInterface(ClientModel game)
     {
         try{
+            // update game data
             this.game = game;
+            evaluateGamePhase();
             // cancel arrow
             System.out.print("\b\b");
             //clear console
@@ -197,7 +198,7 @@ public class CLI implements UI {
      */
     private void pickCards(Scanner scanner) {
         OfferingCard myOfferingCard = game.getOfferingCards().stream()
-                .filter(c->c.getPlayer().equals(game.getLocalPlayer()))
+                .filter(c->c.getPlayer()!= null && c.getPlayer().equals(game.getLocalPlayer()))
                 .findFirst().orElse(null);
         int totalCards = (myOfferingCard != null ? myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower() : 0);
 
@@ -465,6 +466,13 @@ public class CLI implements UI {
                 System.out.print(c.toString().concat("\t"));
             }
             System.out.println();
+        }
+    }
+
+    private void evaluateGamePhase(){
+        if( game.getOrderedPlayers().size() == game.getNumPlayers() &&
+            game.everyPlayerInOfferingCard()){
+            game.setPickOfferingCardPhase(false);
         }
     }
 }

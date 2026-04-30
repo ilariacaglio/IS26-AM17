@@ -14,7 +14,9 @@ public class ClientModel {
     private UUID id;
     private int numPlayers;
     private int currentEra = 0;
+
     private boolean isPickOfferingCardPhase;
+    private List<Player> allPlayers;
 
     private Player myPlayer;
 
@@ -50,8 +52,8 @@ public class ClientModel {
         return myPlayer;
     }
 
-    public void setPickOfferingCardPhase(boolean isPickOfferingCardPhase) {
-        this.isPickOfferingCardPhase = isPickOfferingCardPhase;
+    public void setPickOfferingCardPhase(boolean value) {
+        this.isPickOfferingCardPhase = value;
     }
 
     public int getNumPlayers() {
@@ -132,7 +134,7 @@ public class ClientModel {
     }
 
     public boolean isPlayerTurn(){
-        if(currentEra<0)
+        if(currentEra<1)
             return false;
         if (isPickOfferingCardPhase){
             return orderedPlayer.peek().equals(myPlayer);
@@ -177,5 +179,24 @@ public class ClientModel {
 
     public List<UUID> getGamesIdList(){
         return Collections.unmodifiableList(gamesIdList);
+    }
+
+    public boolean everyPlayerInOfferingCard(){
+        for(Player p : allPlayers){
+            OfferingCard oc = offeringCards.stream()
+                    .filter(c-> c.getPlayer()!= null && c.getPlayer().equals(p))
+                    .findFirst().orElse(null);
+            if(oc == null)
+                return false;
+        }
+        return true;
+    }
+
+    public void setAllPlayers(List<Player> allPlayers) {
+        this.allPlayers = allPlayers;
+    }
+
+    public List<Player> getAllPlayers() {
+        return Collections.unmodifiableList(allPlayers);
     }
 }

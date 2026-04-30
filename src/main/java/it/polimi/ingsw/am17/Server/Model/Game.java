@@ -405,7 +405,7 @@ public class Game extends Subject {
         //search for offering card index in list
         int index = offeringCards.indexOf(offeringCard);
         //set player to offeringCard
-        offeringCards.get(index).setPlayer(player);
+        offeringCards.get(index).setPlayer(orderedPlayer.peek());
 
         orderedPlayer.pop();
         if(orderedPlayer.isEmpty()){
@@ -443,7 +443,7 @@ public class Game extends Subject {
 
         // selection legal: obtain cards
         try {
-            player.addCards(characterCards, buildingCards);
+            currentOffering.getPlayer().addCards(characterCards, buildingCards);
         } catch (IllegalStateException e) {
             if (e.getMessage().equals("Not enough food to buy building cards")) {
                 throw new IllegalStateException("Not enough food to buy building cards");
