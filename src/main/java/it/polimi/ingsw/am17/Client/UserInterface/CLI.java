@@ -16,13 +16,11 @@ public class CLI implements UI {
     private final VirtualServer virtualServer;
     private final VirtualView client;
     private ClientModel game;
-    boolean inGame;
 
     public CLI (VirtualServer server, VirtualView client, ClientModel game) {
         this.virtualServer = server;
         this.client = client;
         this.game = game;
-        inGame = false;
     }
 
     /**
@@ -152,12 +150,14 @@ public class CLI implements UI {
                 System.out.println();
             }
 
-            //draw players
-            if(!inGame) {
+            // TODO: fix this
+            //draw players if the game is not started
+            //if() {
                 int playersToWait = game.getNumPlayers()+game.getOrderedPlayers().size();
                 printPlayers();
                 System.out.println("\nWaiting for "+ playersToWait + " more players to join...");
-            }
+            //}
+            // TODO: if the game is started print the complete list of players
 
             //draw upper row
             drawRow(true);
@@ -361,12 +361,11 @@ public class CLI implements UI {
      */
     private void createGame(Scanner scanner){
         try {
-            if (!inGame) {
+            if (game.getGameId() == null) {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
                 virtualServer.createGame(client, game.getLocalPlayer(), numPlayers);
-                inGame = true;
             } else {
                 System.out.print("Already in a game \n>");
             }
@@ -395,11 +394,10 @@ public class CLI implements UI {
      */
     private void joinGame(Scanner scanner){
         try {
-            if (!inGame) {
-                game = new ClientModel();
+            if (game.getGameId() == null) {
                 System.out.print("Insert the gameID > ");
                 UUID gameId = UUID.fromString(scanner.nextLine().trim());
-                System.out.println("trying to connect...");
+                System.out.println("Trying to connect...");
                 virtualServer.joinGame(client, gameId, game.getLocalPlayer());
             } else {
                 System.out.println("Already in a game!");
