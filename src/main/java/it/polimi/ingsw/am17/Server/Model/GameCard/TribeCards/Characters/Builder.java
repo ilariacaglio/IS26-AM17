@@ -34,6 +34,7 @@ public class Builder extends CharacterCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Builder builder = (Builder) o;
+        if(!this.getId().equals(builder.getId())) return false;
         return pointBonus == builder.pointBonus && foodReduction == builder.foodReduction;
     }
 
