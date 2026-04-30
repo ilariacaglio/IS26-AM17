@@ -10,6 +10,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
+import java.security.cert.TrustAnchor;
 import java.util.*;
 
 public class CLI implements UI {
@@ -164,26 +165,17 @@ public class CLI implements UI {
             }
 
             //draw upper row
-            List<TribesCard> upperRow = game.getUpperTribeRow();
-            drawUpperRow(upperRow);
-
-            //draw lower row
-            List<TribesCard> lowerRow = game.getLowerTribeRow();
-            drawLowerRow(lowerRow);
+            drawRow(true);
 
             //draw offering card
-            List<OfferingCard> offeringCards = game.getOfferingCards();
-            drawOfferingCard(offeringCards);
+            drawOfferingCard();
 
-            //draw upper BuildingRow
-            List<BuildingCard> upperBuildingRow = game.getUpperBuildingRow();
-            drawUpperBuildingRow(upperBuildingRow);
-
-            //draw lower BuildingRow
-            List<BuildingCard> lowerBuildingRow = game.getLowerBuildingRow();
-            drawLowerBuildingRow(lowerBuildingRow);
+            //draw lower row
+            drawRow(false);
 
             // if the game has begun notify the players turn
+            // TODO: trovare modo migliore per fare questo
+            List<OfferingCard> offeringCards = game.getOfferingCards();
             if(!offeringCards.isEmpty()){
                 if(game.getCurrentPlayer().equals(myPlayer))
                     System.out.println("It's your turn!");
@@ -232,9 +224,9 @@ public class CLI implements UI {
         // selected cards indexes
         List<Integer> cardIndexes = new ArrayList<>();
         // print the upper row
-        printPickableUpperRow();
+        printPickableRow(true);
         // print the lower row
-        printPickableLowerRow();
+        printPickableRow(false);
         // cards selection
         while (cardIndexes.size() < totalCards) {
             System.out.print("Type the card number >");
@@ -271,44 +263,33 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints all the character and building cards in the upper row
+     * Prints all the character and building cards in the row
+     * @param upper if true prints the upper row, if false prints the lower row
      */
-    private void printPickableUpperRow(){
-        var upperTribeRow = game.getUpperTribeRow();
-        var upperBuildingRow = game.getUpperBuildingRow();
-        int span = upperTribeRow.size();
-        System.out.print("Upper row:");
+    private void printPickableRow(boolean upper){
+        List<TribesCard> tribeRow;
+        List<BuildingCard> buildingRow;
+        if(upper){
+            tribeRow = game.getUpperTribeRow();
+            buildingRow = game.getUpperBuildingRow();
+            System.out.print("Upper row:");
+        }
+        else {
+            tribeRow = game.getLowerTribeRow();
+            buildingRow = game.getLowerBuildingRow();
+            System.out.print("Lower row:");
+        }
+        int span = tribeRow.size();
+
         // print character cards
         for(int i=0; i< span; i++){
-            if(upperTribeRow.get(i).getCardType().isCharacter()){
-                System.out.print(i + ") " + upperTribeRow.get(i) + "\t");
+            if(tribeRow.get(i).getCardType().isCharacter()){
+                System.out.print(i + ") " + tribeRow.get(i) + "\t");
             }
         }
         // print building cards
-        for(int i=0; i< upperBuildingRow.size(); i++){
-            System.out.print((i+span) + ") " + upperBuildingRow.get(i) + "\t");
-        }
-        System.out.print("\n");
-    }
-
-    /**
-     * Prints all the character and building cards in the lower row
-     */
-    private void printPickableLowerRow(){
-        var lowerTribeRow = game.getLowerTribeRow();
-        var lowerBuildingRow = game.getLowerBuildingRow();
-        int span = game.getUpperTribeRow().size()+game.getUpperBuildingRow().size();
-        int buildingSpan = span + lowerTribeRow.size();
-        System.out.print("Lower row:");
-        // print character cards
-        for(int i=0; i< lowerTribeRow.size(); i++){
-            if(lowerTribeRow.get(i).getCardType().isCharacter()){
-                System.out.print((i+span) + ") " +lowerTribeRow.get(i) + "\t");
-            }
-        }
-        // print building cards
-        for(int i=0; i< lowerBuildingRow.size(); i++){
-            System.out.print((i+buildingSpan) + ") " + lowerBuildingRow.get(i) + "\t");
+        for(int i=0; i< buildingRow.size(); i++){
+            System.out.print((i+span) + ") " + buildingRow.get(i) + "\t");
         }
         System.out.print("\n");
     }
@@ -440,27 +421,47 @@ public class CLI implements UI {
         }
     }
 
-    private void drawUpperRow(List<TribesCard> upperRow){
-        if(!upperRow.isEmpty()){
-            System.out.print("Upper row: ");
-            for(TribesCard c : upperRow) {
-                System.out.print(c.toString().concat(" "));
+    /**
+     * Draws the tribe and building row
+     * @param upper if true prints upper row, if false prints the lower row
+     */
+    private void drawRow(boolean upper){
+        List<TribesCard> tribeRow;
+        List<BuildingCard> buildingRow;
+        if(upper) {
+            tribeRow = game.getUpperTribeRow();
+            buildingRow = game.getUpperBuildingRow();
+        }
+        else {
+            tribeRow = game.getLowerTribeRow();
+            buildingRow = game.getLowerBuildingRow();
+        }
+        if(!tribeRow.isEmpty() && !buildingRow.isEmpty()){
+            if(upper) {
+                System.out.print("Upper row: ");
             }
-            System.out.println();
+            else {
+                System.out.print("Lower row: ");
+            }
+            if(!tribeRow.isEmpty()) {
+                for (TribesCard c : tribeRow) {
+                    System.out.print(c.toString().concat(" "));
+                }
+            }
+            if(!buildingRow.isEmpty()){
+                for(BuildingCard c : buildingRow) {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
+            }
         }
     }
 
-    private void drawLowerRow(List<TribesCard> lowerRow){
-        if(!lowerRow.isEmpty()){
-            System.out.print("Lower row: ");
-            for(TribesCard c : lowerRow) {
-                System.out.print(c.toString().concat(" "));
-            }
-            System.out.println();
-        }
-    }
-
-    private void drawOfferingCard(List<OfferingCard> offeringCards){
+    /**
+     * Draws the offering cards list
+     */
+    private void drawOfferingCard(){
+        var offeringCards = game.getOfferingCards();
         if(!offeringCards.isEmpty()){
             System.out.print("Offering card: ");
             for(OfferingCard c : offeringCards) {
@@ -469,25 +470,4 @@ public class CLI implements UI {
             System.out.println();
         }
     }
-
-    private void drawUpperBuildingRow(List<BuildingCard> upperBuildingRow){
-        if(!upperBuildingRow.isEmpty()){
-            System.out.print("Upper building row: ");
-            for(BuildingCard c : upperBuildingRow) {
-                System.out.print(c.toString().concat(" "));
-            }
-            System.out.println();
-        }
-    }
-
-    private void drawLowerBuildingRow(List<BuildingCard> lowerBuildingRow){
-        if(!lowerBuildingRow.isEmpty()){
-            System.out.print("Lower building row: ");
-            for(BuildingCard c : lowerBuildingRow) {
-                System.out.print(c.toString().concat(" "));
-            }
-            System.out.println();
-        }
-    }
-
 }
