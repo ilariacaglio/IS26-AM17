@@ -144,7 +144,6 @@ public class CLI implements UI {
      */
     public void drawInterface(ClientModel game)
     {
-        // TODO: manca la stampa dei buildings!!
         // TODO: spezzare stampe nei metodi
         try{
             this.game = game;
@@ -194,6 +193,27 @@ public class CLI implements UI {
                 }
                 System.out.println();
             }
+
+            //draw upper BuildingRow
+            List<BuildingCard> upperBuildingRow = game.getUpperBuildingRow();
+            if(!upperBuildingRow.isEmpty()){
+                System.out.print("Upper building row: ");
+                for(BuildingCard c : upperBuildingRow) {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
+            }
+
+            //draw upper BuildingRow
+            List<BuildingCard> lowerBuildingRow = game.getLowerBuildingRow();
+            if(!lowerBuildingRow.isEmpty()){
+                System.out.print("Lower building row: ");
+                for(BuildingCard c : lowerBuildingRow) {
+                    System.out.print(c.toString().concat(" "));
+                }
+                System.out.println();
+            }
+
 
             // if the game has begun notify the players turn
             if(!offeringCards.isEmpty()){
