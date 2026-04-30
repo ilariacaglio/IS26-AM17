@@ -445,12 +445,12 @@ public class CLI implements UI {
             }
             if(!tribeRow.isEmpty()) {
                 for (TribesCard c : tribeRow) {
-                    System.out.print(c.toString().concat(" "));
+                    System.out.print(c.toString().concat("\t"));
                 }
             }
             if(!buildingRow.isEmpty()){
                 for(BuildingCard c : buildingRow) {
-                    System.out.print(c.toString().concat(" "));
+                    System.out.print(c.toString().concat("\t"));
                 }
                 System.out.println();
             }
@@ -463,9 +463,9 @@ public class CLI implements UI {
     private void drawOfferingCard(){
         var offeringCards = game.getOfferingCards();
         if(!offeringCards.isEmpty()){
-            System.out.print("Offering card: ");
+            System.out.print("Bidding trail: ");
             for(OfferingCard c : offeringCards) {
-                System.out.print(c.toString().concat(" "));
+                System.out.print(c.toString().concat("\t"));
             }
             System.out.println();
         }
