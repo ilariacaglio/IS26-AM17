@@ -10,7 +10,6 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
-import java.security.cert.TrustAnchor;
 import java.util.*;
 
 public class CLI implements UI {
@@ -173,8 +172,8 @@ public class CLI implements UI {
             //draw lower row
             drawRow(false);
 
-            // if the game has begun notify the players turn
             // TODO: trovare modo migliore per fare questo
+            // if the game has begun notify the players turn
             List<OfferingCard> offeringCards = game.getOfferingCards();
             if(!offeringCards.isEmpty()){
                 if(game.getCurrentPlayer().equals(myPlayer))
@@ -229,7 +228,7 @@ public class CLI implements UI {
         printPickableRow(false);
         // cards selection
         while (cardIndexes.size() < totalCards) {
-            System.out.print("Type the card number >");
+            System.out.print("Type the card number > ");
             int numCard = Integer.parseInt(scanner.nextLine());
             if (numCard >= 0 && numCard <= sizeUpperRow+sizeLowerRow) {
                 cardIndexes.add(numCard);
@@ -308,7 +307,7 @@ public class CLI implements UI {
             for (int i = 0; i < colors.length; i++) {
                 System.out.println((i + 1) + ") " + colors[i]);
             }
-            System.out.print("Choose a color number: ");
+            System.out.print("Choose a color number > ");
 
             String input = scanner.nextLine();
             try {
