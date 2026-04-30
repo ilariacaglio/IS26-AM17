@@ -150,14 +150,16 @@ public class CLI implements UI {
                 System.out.println();
             }
 
-            // TODO: fix this
-            //draw players if the game is not started
-            //if() {
+            if(game.getCurrentEra()<1) {
+                //draw players if the game is not started
                 int playersToWait = game.getNumPlayers()+game.getOrderedPlayers().size();
                 printPlayers();
                 System.out.println("\nWaiting for "+ playersToWait + " more players to join...");
-            //}
-            // TODO: if the game is started print the complete list of players
+            }
+            else{
+                // if the game is started print the complete list of players
+                // TODO: method printPlayers
+            }
 
             //draw upper row
             drawRow(true);
@@ -170,10 +172,10 @@ public class CLI implements UI {
 
             // TODO: trovare modo migliore per fare questo
             // if the game has begun notify the players turn
-            //if(game.getCurrentEra()>0) {
+            if(game.getCurrentEra()>0) {
                 if(game.getCurrentPlayer().equals(game.getLocalPlayer()))
                     System.out.println("It's your turn!");
-            //}
+            }
             System.out.print("> ");
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -263,6 +265,7 @@ public class CLI implements UI {
     private void printPickableRow(boolean upper){
         List<TribesCard> tribeRow;
         List<BuildingCard> buildingRow;
+        int lowerSpan = 0;
         if(upper){
             tribeRow = game.getUpperTribeRow();
             buildingRow = game.getUpperBuildingRow();
@@ -272,18 +275,19 @@ public class CLI implements UI {
             tribeRow = game.getLowerTribeRow();
             buildingRow = game.getLowerBuildingRow();
             System.out.print("Lower row:");
+            lowerSpan = game.getUpperTribeRow().size() + game.getUpperBuildingRow().size();
         }
         int span = tribeRow.size();
 
         // print character cards
         for(int i=0; i< span; i++){
             if(tribeRow.get(i).getCardType().isCharacter()){
-                System.out.print(i + ") " + tribeRow.get(i) + "\t");
+                System.out.print((i+lowerSpan) + ") " + tribeRow.get(i) + "\t");
             }
         }
         // print building cards
         for(int i=0; i< buildingRow.size(); i++){
-            System.out.print((i+span) + ") " + buildingRow.get(i) + "\t");
+            System.out.print((i+span+lowerSpan) + ") " + buildingRow.get(i) + "\t");
         }
         System.out.print("\n");
     }
@@ -431,7 +435,7 @@ public class CLI implements UI {
             tribeRow = game.getLowerTribeRow();
             buildingRow = game.getLowerBuildingRow();
         }
-        if(!tribeRow.isEmpty() && !buildingRow.isEmpty()){
+        if(!(tribeRow.isEmpty() && buildingRow.isEmpty())){
             if(upper) {
                 System.out.print("Upper row: ");
             }
@@ -447,8 +451,8 @@ public class CLI implements UI {
                 for(BuildingCard c : buildingRow) {
                     System.out.print(c.toString().concat("\t"));
                 }
-                System.out.println();
             }
+            System.out.println();
         }
     }
 
