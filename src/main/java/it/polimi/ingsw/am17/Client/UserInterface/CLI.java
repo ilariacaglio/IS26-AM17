@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -170,12 +171,9 @@ public class CLI implements UI {
             //draw lower row
             drawRow(false);
 
-            // TODO: trovare modo migliore per fare questo
             // if the game has begun notify the players turn
-            if(game.getCurrentEra()>0) {
-                if(game.getCurrentPlayer().equals(game.getLocalPlayer()))
-                    System.out.println("It's your turn!");
-            }
+            if(game.isPlayerTurn())
+                System.out.println("It's your turn!");
             System.out.print("> ");
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());

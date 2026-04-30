@@ -14,6 +14,7 @@ public class ClientModel {
     private UUID id;
     private int numPlayers;
     private int currentEra = 0;
+    private boolean isPickOfferingCardPhase;
 
     private Player myPlayer;
 
@@ -98,7 +99,6 @@ public class ClientModel {
         return orderedPlayer.stream()
             .filter(p -> p.equals(player))
             .findFirst().orElse(null);
-
     }
 
     public void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
@@ -127,8 +127,22 @@ public class ClientModel {
         return Collections.unmodifiableList(offeringCards);
     }
 
-    public Player getCurrentPlayer(){
-        return orderedPlayer.peek();
+    public boolean isPlayerTurn(){
+        if(currentEra<0)
+            return false;
+        if (isPickOfferingCardPhase){
+            return orderedPlayer.peek().equals(myPlayer);
+        }
+        else {
+            OfferingCard oc =  offeringCards.stream()
+                    .filter(c -> c.getPlayer() != null)
+                    .min(Comparator.comparing(OfferingCard::getOrderLetter))
+                    .orElse(null);
+            if(oc != null)
+                return oc.getPlayer().equals(myPlayer);
+            else
+                return false;
+        }
     }
 
     public void removeTribeCards(List<CharacterCard> tribeCards){
