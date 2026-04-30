@@ -42,4 +42,9 @@ public class BuildingType13M extends BuildingCard {
     public int hashCode() {
         return Objects.hashCode(characterType);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: -1PP/" + characterType.toString() + " in FoodEvent";
+    }
 }

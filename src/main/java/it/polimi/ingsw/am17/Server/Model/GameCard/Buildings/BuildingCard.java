@@ -54,4 +54,9 @@ public class BuildingCard implements Serializable {
     public int hashCode() {
         return Objects.hash(foodCost, bonusPoints, era);
     }
+
+    @Override
+    public String toString() {
+        return "€" + foodCost + " BP:" + bonusPoints + " Era:" + era;
+    }
 }

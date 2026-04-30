@@ -21,4 +21,9 @@ public class BuildingType9 extends BuildingCard {
     public int GiveBonusStarInRitualEvent(List<CharacterCard> characterCards) {
         return 3;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: +3★ in RitualEvent if won.";
+    }
 }
