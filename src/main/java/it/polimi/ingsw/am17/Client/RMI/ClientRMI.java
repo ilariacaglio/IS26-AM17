@@ -83,6 +83,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         model.setTribeCards(upperRow, lowerRow);
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setOfferingCards(offeringCards);
+        model.setPickOfferingCardPhase(true);
 
         userInterface.drawInterface(model);
     }
@@ -94,6 +95,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         }
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setTribeCards(upperRow, lowerRow);
+        model.setPickOfferingCardPhase(true);
 
         userInterface.drawInterface(model);
     }
