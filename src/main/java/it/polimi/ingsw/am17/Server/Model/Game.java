@@ -418,7 +418,7 @@ public class Game extends Subject {
         }
 
         notifyPlayerStack(orderedPlayer);
-        notifyPlayerSelectOfferingCard(player, offeringCard);
+        notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
     }
 
     /**
@@ -435,7 +435,7 @@ public class Game extends Subject {
         if (!player.equals(currentOffering.getPlayer())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
-
+        player = currentOffering.getPlayer();
         // check if cards selection is legal based on the offeringCard
         int numUpper = currentOffering.getNumCardsUpper();
         int numLower = currentOffering.getNumCardsLower();
@@ -443,7 +443,7 @@ public class Game extends Subject {
 
         // selection legal: obtain cards
         try {
-            currentOffering.getPlayer().addCards(characterCards, buildingCards);
+            player.addCards(characterCards, buildingCards);
         } catch (IllegalStateException e) {
             if (e.getMessage().equals("Not enough food to buy building cards")) {
                 throw new IllegalStateException("Not enough food to buy building cards");
