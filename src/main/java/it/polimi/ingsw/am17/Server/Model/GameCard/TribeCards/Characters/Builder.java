@@ -41,4 +41,8 @@ public class Builder extends CharacterCard {
     public int hashCode() {
         return Objects.hash(pointBonus, foodReduction);
     }
+
+    public String toString() {
+        return super.toString() + "(-" + foodReduction + "F, +" + pointBonus + "P" + ")";
+    }
 }
