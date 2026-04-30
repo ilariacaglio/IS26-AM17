@@ -156,7 +156,7 @@ public class CLI implements UI {
             printPlayers();
             if(game.getCurrentEra()<1) {
                 int playersToWait = game.getNumPlayers()+game.getOrderedPlayers().size();
-                System.out.println("\nWaiting for "+ playersToWait + " more players to join...");
+                System.out.println("Waiting for "+ playersToWait + " more players to join...");
             }
 
             //draw upper row
@@ -192,6 +192,7 @@ public class CLI implements UI {
         for(Player p : players) {
             System.out.print(p.getNickname().concat(" "));
         }
+        System.out.println();
     }
 
     /**
