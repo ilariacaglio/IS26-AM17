@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Client.Model;
 
+import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -13,6 +14,8 @@ public class ClientModel {
     private UUID id;
     private int numPlayers;
     private int currentEra = 0;
+
+    private Player myPlayer;
 
     private List<UUID> gamesIdList = new ArrayList<>();
 
@@ -36,6 +39,14 @@ public class ClientModel {
 
     public void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
+    }
+
+    public void createLocalPlayer(String nickname, Color color) {
+        myPlayer = new Player(nickname, color);
+    }
+
+    public Player getLocalPlayer() {
+        return myPlayer;
     }
 
     public int getNumPlayers() {

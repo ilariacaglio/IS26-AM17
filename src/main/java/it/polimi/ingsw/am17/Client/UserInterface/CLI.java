@@ -16,8 +16,6 @@ public class CLI implements UI {
     private final VirtualServer virtualServer;
     private final VirtualView client;
     private ClientModel game;
-    Player myPlayer;
-    String nickname;
     boolean inGame;
 
     public CLI (VirtualServer server, VirtualView client, ClientModel game) {
@@ -25,8 +23,6 @@ public class CLI implements UI {
         this.client = client;
         this.game = game;
         inGame = false;
-        myPlayer = null;
-        nickname = "";
     }
 
     /**
@@ -39,12 +35,12 @@ public class CLI implements UI {
             boolean running = true;
 
             //ask user for nickname
-            setNickname(scanner);
+            String nickname = askNickname(scanner);
             // ask user for color
             System.out.println("Choose your color");
             Color color = chooseColor(scanner);
             //create new player with nickname and color
-            myPlayer = new Player(nickname, color);
+            game.createLocalPlayer(nickname, color);
 
             while (running) {
                 System.out.print("> ");
@@ -174,11 +170,10 @@ public class CLI implements UI {
 
             // TODO: trovare modo migliore per fare questo
             // if the game has begun notify the players turn
-            List<OfferingCard> offeringCards = game.getOfferingCards();
-            if(!offeringCards.isEmpty()){
-                if(game.getCurrentPlayer().equals(myPlayer))
+            //if(game.getCurrentEra()>0) {
+                if(game.getCurrentPlayer().equals(game.getLocalPlayer()))
                     System.out.println("It's your turn!");
-            }
+            //}
             System.out.print("> ");
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -202,7 +197,7 @@ public class CLI implements UI {
      */
     private void pickCards(Scanner scanner) {
         OfferingCard myOfferingCard = game.getOfferingCards().stream()
-                .filter(c->c.getPlayer().equals(myPlayer))
+                .filter(c->c.getPlayer().equals(game.getLocalPlayer()))
                 .findFirst().orElse(null);
         int totalCards = (myOfferingCard != null ? myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower() : 0);
 
@@ -256,7 +251,7 @@ public class CLI implements UI {
 
         // call server method
         try{
-            virtualServer.pickTribeCards(game.getGameId(),myPlayer,characterCards,buildingCards);
+            virtualServer.pickTribeCards(game.getGameId(),game.getLocalPlayer(),characterCards,buildingCards);
         }
         catch (Exception e) {}
     }
@@ -329,7 +324,7 @@ public class CLI implements UI {
      */
     private void changeColor(Scanner scanner){
         Color c = chooseColor(scanner);
-        myPlayer.setColor(c);
+        game.getLocalPlayer().setColor(c);
     }
 
     /**
@@ -337,16 +332,18 @@ public class CLI implements UI {
      * @param scanner
      */
     private void changeNickname(Scanner scanner){
-        nickname = "";
-        setNickname(scanner);
+        Player myPlayer = game.getLocalPlayer();
+        String nickname = askNickname(scanner);
         myPlayer.setNickname(nickname);
     }
 
     /**
-     * Asks the user to type their nickname and sets it to variable
+     * Asks the user to type their nickname
      * @param scanner
+     * @return the nickname to be set
      */
-    private void setNickname(Scanner scanner) {
+    private String askNickname(Scanner scanner) {
+        String nickname = "";
         while (nickname.isEmpty()) {
             System.out.print("Insert your nickname (max 10 char) > ");
             nickname = scanner.nextLine().trim();
@@ -355,6 +352,7 @@ public class CLI implements UI {
                 System.out.print("Your nickname has more than 10 characters!\n");
             }
         }
+        return nickname;
     }
 
     /**
@@ -367,7 +365,7 @@ public class CLI implements UI {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
-                virtualServer.createGame(client, myPlayer, numPlayers);
+                virtualServer.createGame(client, game.getLocalPlayer(), numPlayers);
                 inGame = true;
             } else {
                 System.out.print("Already in a game \n>");
@@ -385,7 +383,7 @@ public class CLI implements UI {
         try {
             System.out.print("Insert card number (position from 0) > ");
             int numCard = Integer.parseInt(scanner.nextLine());
-            virtualServer.pickOfferingCard(game.getGameId(), myPlayer, game.getOfferingCards().get(numCard));
+            virtualServer.pickOfferingCard(game.getGameId(), game.getLocalPlayer(), game.getOfferingCards().get(numCard));
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
@@ -402,7 +400,7 @@ public class CLI implements UI {
                 System.out.print("Insert the gameID > ");
                 UUID gameId = UUID.fromString(scanner.nextLine().trim());
                 System.out.println("trying to connect...");
-                virtualServer.joinGame(client, gameId, myPlayer);
+                virtualServer.joinGame(client, gameId, game.getLocalPlayer());
             } else {
                 System.out.println("Already in a game!");
             }
