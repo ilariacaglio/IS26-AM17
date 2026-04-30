@@ -152,15 +152,11 @@ public class CLI implements UI {
                 System.out.println();
             }
 
+            // print players list
+            printPlayers();
             if(game.getCurrentEra()<1) {
-                //draw players if the game is not started
                 int playersToWait = game.getNumPlayers()+game.getOrderedPlayers().size();
-                printPlayers();
                 System.out.println("\nWaiting for "+ playersToWait + " more players to join...");
-            }
-            else{
-                // if the game is started print the complete list of players
-                // TODO: method printPlayers
             }
 
             //draw upper row
@@ -185,9 +181,15 @@ public class CLI implements UI {
      * Prints on the terminal the players list
      */
     private void printPlayers() {
-        Stack<Player> orderedPlayer = game.getOrderedPlayers();
+        Collection<Player> players;
+        if(game.getCurrentEra()<1){
+            players = game.getOrderedPlayers();
+        }
+        else{
+            players = game.getAllPlayers();
+        }
         System.out.print("\nPlayers: ");
-        for(Player p : orderedPlayer) {
+        for(Player p : players) {
             System.out.print(p.getNickname().concat(" "));
         }
     }
@@ -469,6 +471,9 @@ public class CLI implements UI {
         }
     }
 
+    /**
+     * Sets the phase of the game to pick tribe cards if condition met
+     */
     private void evaluateGamePhase(){
         if( game.getOrderedPlayers().size() == game.getNumPlayers() &&
             game.everyPlayerInOfferingCard()){
