@@ -144,7 +144,6 @@ public class CLI implements UI {
      */
     public void drawInterface(ClientModel game)
     {
-        // TODO: spezzare stampe nei metodi
         try{
             this.game = game;
             // cancel arrow
@@ -166,54 +165,23 @@ public class CLI implements UI {
 
             //draw upper row
             List<TribesCard> upperRow = game.getUpperTribeRow();
-            if(!upperRow.isEmpty()){
-                System.out.print("Upper row: ");
-                for(TribesCard c : upperRow) {
-                    System.out.print(c.toString().concat(" "));
-                }
-                System.out.println();
-            }
+            drawUpperRow(upperRow);
 
             //draw lower row
             List<TribesCard> lowerRow = game.getLowerTribeRow();
-            if(!lowerRow.isEmpty()){
-                System.out.print("Lower row: ");
-                for(TribesCard c : lowerRow) {
-                    System.out.print(c.toString().concat(" "));
-                }
-                System.out.println();
-            }
+            drawLowerRow(lowerRow);
 
             //draw offering card
             List<OfferingCard> offeringCards = game.getOfferingCards();
-            if(!offeringCards.isEmpty()){
-                System.out.print("Offering card: ");
-                for(OfferingCard c : offeringCards) {
-                    System.out.print(c.toString().concat(" "));
-                }
-                System.out.println();
-            }
+            drawOfferingCard(offeringCards);
 
             //draw upper BuildingRow
             List<BuildingCard> upperBuildingRow = game.getUpperBuildingRow();
-            if(!upperBuildingRow.isEmpty()){
-                System.out.print("Upper building row: ");
-                for(BuildingCard c : upperBuildingRow) {
-                    System.out.print(c.toString().concat(" "));
-                }
-                System.out.println();
-            }
+            drawUpperBuildingRow(upperBuildingRow);
 
             //draw lower BuildingRow
             List<BuildingCard> lowerBuildingRow = game.getLowerBuildingRow();
-            if(!lowerBuildingRow.isEmpty()){
-                System.out.print("Lower building row: ");
-                for(BuildingCard c : lowerBuildingRow) {
-                    System.out.print(c.toString().concat(" "));
-                }
-                System.out.println();
-            }
-
+            drawLowerBuildingRow(lowerBuildingRow);
 
             // if the game has begun notify the players turn
             if(!offeringCards.isEmpty()){
@@ -471,4 +439,55 @@ public class CLI implements UI {
             System.out.println("\nEra "+game.getCurrentEra()+ " has begun!\n");
         }
     }
+
+    private void drawUpperRow(List<TribesCard> upperRow){
+        if(!upperRow.isEmpty()){
+            System.out.print("Upper row: ");
+            for(TribesCard c : upperRow) {
+                System.out.print(c.toString().concat(" "));
+            }
+            System.out.println();
+        }
+    }
+
+    private void drawLowerRow(List<TribesCard> lowerRow){
+        if(!lowerRow.isEmpty()){
+            System.out.print("Lower row: ");
+            for(TribesCard c : lowerRow) {
+                System.out.print(c.toString().concat(" "));
+            }
+            System.out.println();
+        }
+    }
+
+    private void drawOfferingCard(List<OfferingCard> offeringCards){
+        if(!offeringCards.isEmpty()){
+            System.out.print("Offering card: ");
+            for(OfferingCard c : offeringCards) {
+                System.out.print(c.toString().concat(" "));
+            }
+            System.out.println();
+        }
+    }
+
+    private void drawUpperBuildingRow(List<BuildingCard> upperBuildingRow){
+        if(!upperBuildingRow.isEmpty()){
+            System.out.print("Upper building row: ");
+            for(BuildingCard c : upperBuildingRow) {
+                System.out.print(c.toString().concat(" "));
+            }
+            System.out.println();
+        }
+    }
+
+    private void drawLowerBuildingRow(List<BuildingCard> lowerBuildingRow){
+        if(!lowerBuildingRow.isEmpty()){
+            System.out.print("Lower building row: ");
+            for(BuildingCard c : lowerBuildingRow) {
+                System.out.print(c.toString().concat(" "));
+            }
+            System.out.println();
+        }
+    }
+
 }
