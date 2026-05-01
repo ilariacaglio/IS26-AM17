@@ -168,6 +168,7 @@ public class ClientModel {
                 break;
             }
         }
+        updateAllPlayers();
     }
 
     public void removePlayerFromOfferingCard(Player player){
@@ -198,5 +199,14 @@ public class ClientModel {
 
     public List<Player> getAllPlayers() {
         return Collections.unmodifiableList(allPlayers);
+    }
+
+    public void updateAllPlayers() {
+        for(Player p : orderedPlayer) {
+            if(allPlayers.contains(p)){
+                int index = allPlayers.indexOf(p);
+                allPlayers.set(index, p);
+            }
+        }
     }
 }
