@@ -172,7 +172,7 @@ public class ClientModel {
 
     public void removePlayerFromOfferingCard(Player player){
         offeringCards.stream()
-                .filter(o -> o.getPlayer().equals(player))
+                .filter(o -> o.getPlayer()!= null && o.getPlayer().equals(player))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(null));
     }
