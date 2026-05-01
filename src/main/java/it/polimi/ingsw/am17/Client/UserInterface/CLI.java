@@ -232,7 +232,6 @@ public class CLI implements UI {
             if (numCard >= 0 && numCard <= sizeUpperRow+sizeLowerRow) {
                 cardIndexes.add(numCard);
             }
-            System.out.println();
         }
 
         // build cards lists
