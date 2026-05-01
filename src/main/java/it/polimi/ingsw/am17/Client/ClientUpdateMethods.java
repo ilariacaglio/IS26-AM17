@@ -36,13 +36,17 @@ public class ClientUpdateMethods {
 
     public static void updateGamesIdList(ClientModel model, UI userInterface, List<UUID> gamesIdList) {
         model.setGameIdList(gamesIdList);
-        // TODO: call user interface
+        userInterface.printGamesList();
     }
 
     public static void updateStartGame(ClientModel model, UI userInterface, Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
 
+        model.setCurrentEra(1);
+        model.setPickOfferingCardPhase(true);
+        model.setNumPlayers(players.size());
         model.setOrderedPlayers(players);
+        model.setAllPlayers(players.stream().toList());
         model.setTribeCards(upperRow, lowerRow);
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setOfferingCards(offeringCards);
@@ -56,6 +60,7 @@ public class ClientUpdateMethods {
         }
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setTribeCards(upperRow, lowerRow);
+        model.setPickOfferingCardPhase(true);
 
         userInterface.drawInterface(model);
     }

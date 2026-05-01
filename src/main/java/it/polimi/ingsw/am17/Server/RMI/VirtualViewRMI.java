@@ -14,7 +14,6 @@ import java.util.Stack;
 import java.util.UUID;
 
 public interface VirtualViewRMI extends Remote, VirtualView {
-    //new
     void updateGameId(UUID gameId) throws RemoteException;
     void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException;
     void updateEra(int era) throws RemoteException;
@@ -29,6 +28,4 @@ public interface VirtualViewRMI extends Remote, VirtualView {
 
     void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                          List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws  RemoteException;
-
-
 }

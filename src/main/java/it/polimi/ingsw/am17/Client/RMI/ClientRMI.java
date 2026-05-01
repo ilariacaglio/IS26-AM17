@@ -48,79 +48,42 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
     @Override
     public void updateEra(int era) throws RemoteException {
-        // call model to update era
-        model.setCurrentEra(era);
-        // UI communication
-        userInterface.printEra();
+        ClientUpdateMethods.updateEra(model,userInterface,era);
     }
 
     @Override
     public void updatePlayerStack(Stack<Player> orderedPlayer) throws RemoteException {
-        model.setOrderedPlayers(orderedPlayer);
-        // UI communication
-        userInterface.drawInterface(model);
+        ClientUpdateMethods.updatePlayerStack(model,userInterface,orderedPlayer);
     }
 
     @Override
     public void updateGameId(UUID gameId) throws RemoteException {
-        model.setGameId(gameId);
-        // UI communication
-        userInterface.printGameId(gameId);
+        ClientUpdateMethods.updateGameId(model,userInterface,gameId);
     }
 
     @Override
     public void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException {
-        model.setGameIdList(gamesIdList);
-        userInterface.printGamesList();
+        ClientUpdateMethods.updateGamesIdList(model,userInterface,gamesIdList);
     }
 
     @Override
     public void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws RemoteException {
-
-        model.setCurrentEra(1);
-        model.setPickOfferingCardPhase(true);
-        model.setNumPlayers(players.size());
-        model.setOrderedPlayers(players);
-        model.setAllPlayers(players.stream().toList());
-        model.setTribeCards(upperRow, lowerRow);
-        model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
-        model.setOfferingCards(offeringCards);
-
-        userInterface.drawInterface(model);
+        ClientUpdateMethods.updateStartGame(model,userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow,offeringCards);
     }
 
     @Override
     public void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
-        for(Player player : players) {
-            updatePlayerValue(model.getPlayer(player), player);
-        }
-        model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
-        model.setTribeCards(upperRow, lowerRow);
-        model.setPickOfferingCardPhase(true);
-
-        userInterface.drawInterface(model);
-    }
-
-    private void updatePlayerValue(Player oldP, Player newP)
-    {
-        oldP.addPp(newP.getPp()- oldP.getPp());
-        oldP.addFood(newP.getFood() - oldP.getFood());
+        ClientUpdateMethods.updateEndTurn(model, userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
     }
 
     @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException {
-        model.setPlayerOfferingCard(offeringCard, player);
-
-        userInterface.drawInterface(model);
+        ClientUpdateMethods.updatePlayerSelectOfferingCard(model,userInterface,player,offeringCard);
     }
 
     @Override
-    public void updatePlayerSelectTribesCard(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
-        model.setPlayerInStack(player);
-        model.removePlayerFromOfferingCard(player);
-        model.removeTribeCards(tribesCards);
-        model.removeBuildingCards(buildingCards);
-        userInterface.drawInterface(model);
+    public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
+        ClientUpdateMethods.updatePlayerSelectTribeCards(model,userInterface,player,tribesCards,buildingCards);
     }
 }
