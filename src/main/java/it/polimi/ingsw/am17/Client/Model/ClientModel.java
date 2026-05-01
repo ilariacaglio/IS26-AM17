@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Client.Model;
 
+import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -13,6 +14,11 @@ public class ClientModel {
     private UUID id;
     private int numPlayers;
     private int currentEra = 0;
+
+    private boolean isPickOfferingCardPhase;
+    private List<Player> allPlayers;
+
+    private Player myPlayer;
 
     private List<UUID> gamesIdList = new ArrayList<>();
 
@@ -32,6 +38,26 @@ public class ClientModel {
 
     public UUID getGameId() {
         return id;
+    }
+
+    public void setNumPlayers(int numPlayers) {
+        this.numPlayers = numPlayers;
+    }
+
+    public void createLocalPlayer(String nickname, Color color) {
+        myPlayer = new Player(nickname, color);
+    }
+
+    public Player getLocalPlayer() {
+        return myPlayer;
+    }
+
+    public void setPickOfferingCardPhase(boolean value) {
+        this.isPickOfferingCardPhase = value;
+    }
+
+    public int getNumPlayers() {
+        return numPlayers;
     }
 
     public void setCurrentEra(int currentEra){
@@ -79,7 +105,6 @@ public class ClientModel {
         return orderedPlayer.stream()
             .filter(p -> p.equals(player))
             .findFirst().orElse(null);
-
     }
 
     public void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
@@ -93,6 +118,12 @@ public class ClientModel {
     public List<TribesCard> getUpperTribeRow(){
         return Collections.unmodifiableList(upperRow);
     }
+    public List<BuildingCard> getLowerBuildingRow(){
+        return Collections.unmodifiableList(lowerBuildingRow);
+    }
+    public List<BuildingCard> getUpperBuildingRow(){
+        return Collections.unmodifiableList(upperBuildingRow);
+    }
 
     public List<TribesCard> getLowerTribeRow(){
         return Collections.unmodifiableList(lowerRow);
@@ -102,8 +133,22 @@ public class ClientModel {
         return Collections.unmodifiableList(offeringCards);
     }
 
-    public Player getCurrentPlayer(){
-        return orderedPlayer.peek();
+    public boolean isPlayerTurn(){
+        if(currentEra<1)
+            return false;
+        if (isPickOfferingCardPhase){
+            return orderedPlayer.peek().equals(myPlayer);
+        }
+        else {
+            OfferingCard oc =  offeringCards.stream()
+                    .filter(c -> c.getPlayer() != null)
+                    .min(Comparator.comparing(OfferingCard::getOrderLetter))
+                    .orElse(null);
+            if(oc != null)
+                return oc.getPlayer().equals(myPlayer);
+            else
+                return false;
+        }
     }
 
     public void removeTribeCards(List<CharacterCard> tribeCards){
@@ -130,5 +175,28 @@ public class ClientModel {
                 .filter(o -> o.getPlayer().equals(player))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(null));
+    }
+
+    public List<UUID> getGamesIdList(){
+        return Collections.unmodifiableList(gamesIdList);
+    }
+
+    public boolean everyPlayerInOfferingCard(){
+        for(Player p : allPlayers){
+            OfferingCard oc = offeringCards.stream()
+                    .filter(c-> c.getPlayer()!= null && c.getPlayer().equals(p))
+                    .findFirst().orElse(null);
+            if(oc == null)
+                return false;
+        }
+        return true;
+    }
+
+    public void setAllPlayers(List<Player> allPlayers) {
+        this.allPlayers = allPlayers;
+    }
+
+    public List<Player> getAllPlayers() {
+        return Collections.unmodifiableList(allPlayers);
     }
 }

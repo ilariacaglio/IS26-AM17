@@ -26,6 +26,7 @@ public class Shaman extends CharacterCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Shaman shaman = (Shaman) o;
+        if(!this.getId().equals(shaman.getId())) return false;
         return stars == shaman.stars;
     }
 

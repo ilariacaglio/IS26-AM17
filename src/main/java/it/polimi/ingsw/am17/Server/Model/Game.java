@@ -405,7 +405,7 @@ public class Game extends Subject {
         //search for offering card index in list
         int index = offeringCards.indexOf(offeringCard);
         //set player to offeringCard
-        offeringCards.get(index).setPlayer(player);
+        offeringCards.get(index).setPlayer(orderedPlayer.peek());
 
         orderedPlayer.pop();
         if(orderedPlayer.isEmpty()){
@@ -418,7 +418,7 @@ public class Game extends Subject {
         }
 
         notifyPlayerStack(orderedPlayer);
-        notifyPlayerSelectOfferingCard(player, offeringCard);
+        notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
     }
 
     /**
@@ -432,10 +432,10 @@ public class Game extends Subject {
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
 
         // Check if the player is current next player
-        if (player != currentOffering.getPlayer()) {
+        if (!player.equals(currentOffering.getPlayer())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
-
+        player = currentOffering.getPlayer();
         // check if cards selection is legal based on the offeringCard
         int numUpper = currentOffering.getNumCardsUpper();
         int numLower = currentOffering.getNumCardsLower();
