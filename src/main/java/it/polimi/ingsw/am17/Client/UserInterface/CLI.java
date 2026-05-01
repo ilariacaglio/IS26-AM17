@@ -65,7 +65,9 @@ public class CLI implements UI {
                     case "pick cards":
                         pickCards(scanner);
                         break;
-                    // TODO: command to view the cards/pp/food of the other players
+                    case "view player":
+                        printPlayer(scanner);
+                        break;
                     case "help":
                         printHelp();
                         break;
@@ -97,6 +99,40 @@ public class CLI implements UI {
         System.out.println("- join: joins an existing game");
         System.out.println("- pick offering card: choose the offering card to take");
         System.out.println("- pick cards: choose the cards to take");
+    }
+
+    /**
+     * Asks the user for a player and prints its cards, food and points
+     */
+    private void printPlayer(Scanner scanner) {
+        System.out.print("\b\b");
+        System.out.print("Insert nickname > ");
+        String nickname = scanner.nextLine().trim();
+
+        // search for Player in ordered players
+        Player player;
+        player = game.getOrderedPlayers().stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst().orElse(null);
+
+        // if the player is not present in the stack, search in offering cards
+        if (player == null) {
+            OfferingCard offeringCard = game.getOfferingCards().stream()
+                    .filter(oc->oc.getPlayer()!= null && oc.getPlayer().getNickname().equals(nickname))
+                    .findFirst().orElse(null);
+            if(offeringCard != null) {
+                player = offeringCard.getPlayer();
+            }
+        }
+
+        // if player not found print error
+        if(player == null) {
+            System.out.println("Player " + nickname + " not found!");
+        }
+        else {
+            // print the player
+            System.out.println(player.toString());
+        }
     }
 
     /**
