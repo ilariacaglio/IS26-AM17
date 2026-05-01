@@ -344,4 +344,20 @@ public class Player implements Serializable {
     public int hashCode() {
         return Objects.hash(nickname, pp, food, color, characterCards, buildingCards);
     }
+
+    @Override
+    public String toString() {
+        String player = "Nickname: " + nickname +
+                "\nPp: " + pp +
+                "\nFood: " + food;
+        if(!characterCards.isEmpty() || !buildingCards.isEmpty())
+               player+= "\nCards: ";
+        for(CharacterCard c: this.characterCards){
+            player = player.concat(c.toString() +" ");
+        }
+        for(BuildingCard c: this.buildingCards){
+            player = player.concat(c.toString() +" ");
+        }
+        return player;
+    }
 }
