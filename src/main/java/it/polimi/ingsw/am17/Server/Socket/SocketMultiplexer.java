@@ -20,8 +20,8 @@ public class SocketMultiplexer {
         this.serverSockets = new ArrayList<>();
     }
 
-    public static void main(String[] args) {
-        SocketMultiplexer server = new SocketMultiplexer(new GamesController());
+    public static void start(GamesController controller) {
+        SocketMultiplexer server = new SocketMultiplexer(controller);
         server.start(5000);
     }
 

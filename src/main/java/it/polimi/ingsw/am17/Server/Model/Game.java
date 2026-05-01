@@ -145,18 +145,21 @@ public class Game extends Subject {
         switch (currentEra) {
             case 0:
                 era1();
+                notifyEra(currentEra);
                 break;
             case 1:
                 era2();
+                notifyEra(currentEra);
                 break;
             case 2:
                 era3();
+                notifyEra(currentEra);
                 break;
             default:
                 throw new IllegalStateException("Invalid era");
         }
 
-        notifyEra(currentEra);
+
         // notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
     }
 
@@ -399,24 +402,23 @@ public class Game extends Subject {
             throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
         }
 
+        //search for offering card index in list
+        int index = offeringCards.indexOf(offeringCard);
         //set player to offeringCard
-        offeringCard.setPlayer(player);
+        offeringCards.get(index).setPlayer(orderedPlayer.peek());
 
-        //notifyOfferingCards(offeringCards);
-
-        try {
-            orderedPlayer.pop();
-        } catch (EmptyStackException e) {
+        orderedPlayer.pop();
+        if(orderedPlayer.isEmpty()){
             //order player stack for next turn
-            orderedPlayer = offeringCards.stream()
-                    .filter(card -> card.getPlayer() != null)
-                    .sorted(Comparator.comparing(OfferingCard::getOrderLetter).reversed())
-                    .map(OfferingCard::getPlayer)
-                    .collect(Collectors.toCollection(Stack::new));
+            orderedPlayer.addAll(offeringCards.stream()
+                .filter(card -> card.getPlayer() != null)
+                .sorted(Comparator.comparing(OfferingCard::getOrderLetter).reversed())
+                .map(OfferingCard::getPlayer)
+                .collect(Collectors.toCollection(Stack::new)));
         }
 
-        // notifyPlayerStack(orderedPlayer);
-        notifyPlayerSelectOfferingCard(player, offeringCard);
+        notifyPlayerStack(orderedPlayer);
+        notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
     }
 
     /**
@@ -430,10 +432,10 @@ public class Game extends Subject {
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
 
         // Check if the player is current next player
-        if (player != currentOffering.getPlayer()) {
+        if (!player.equals(currentOffering.getPlayer())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
-
+        player = currentOffering.getPlayer();
         // check if cards selection is legal based on the offeringCard
         int numUpper = currentOffering.getNumCardsUpper();
         int numLower = currentOffering.getNumCardsLower();

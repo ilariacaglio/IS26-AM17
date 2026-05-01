@@ -27,6 +27,7 @@ public class Inventor extends CharacterCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Inventor inventor = (Inventor) o;
+        if(!this.getId().equals(inventor.getId())) return false;
         return icon == inventor.icon;
     }
 

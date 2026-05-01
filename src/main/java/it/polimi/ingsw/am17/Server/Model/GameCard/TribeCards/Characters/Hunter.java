@@ -27,6 +27,7 @@ public class Hunter extends CharacterCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Hunter hunter = (Hunter) o;
+        if(!this.getId().equals(hunter.getId())) return false;
         return withIcon == hunter.withIcon;
     }
 
