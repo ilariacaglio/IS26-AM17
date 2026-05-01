@@ -36,4 +36,9 @@ public class BuildingType4 extends BuildingCard {
         // The number of complete sets is determined by the character type with the fewest cards
         return bonusPoints * Collections.min(typeCounts.values()).intValue();
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: +6PP/each6";
+    }
 }

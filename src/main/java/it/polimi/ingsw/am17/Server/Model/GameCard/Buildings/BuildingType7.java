@@ -29,4 +29,9 @@ public class BuildingType7 extends BuildingCard {
     }
 
     // NOTE: counts two times! Can I share that calculation? No because different methods...
+
+    @Override
+    public String toString() {
+        return super.toString() + " Effect: +1PP+1F/hunter in HunterEvent ";
+    }
 }
