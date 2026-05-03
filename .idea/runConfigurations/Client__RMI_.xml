@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Client (RMI)" type="Application" factoryName="Application">
+  <configuration default="false" name="Client (RMI)" type="Application" factoryName="Application" singleton="false">
     <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am17.Client.ClientLauncher" />
     <module name="am17" />
     <method v="2">
