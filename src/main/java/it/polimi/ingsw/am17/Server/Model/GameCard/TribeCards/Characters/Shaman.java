@@ -15,9 +15,9 @@ public class Shaman extends CharacterCard {
     @JsonCreator
     public Shaman(
             @JsonProperty("era") int era,
-            @JsonProperty("minPlayers") int minPlayer,
+            @JsonProperty("minPlayers") int minPlayers,
             @JsonProperty("stars") int stars){
-        super(era, minPlayer, CardType.SHAMAN);
+        super(era, minPlayers, CardType.SHAMAN);
         this.stars = stars;
     }
 

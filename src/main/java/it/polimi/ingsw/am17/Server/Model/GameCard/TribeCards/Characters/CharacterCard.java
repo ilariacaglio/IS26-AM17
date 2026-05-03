@@ -8,19 +8,19 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import java.util.Objects;
 
 public class CharacterCard extends TribesCard {
-    private int minPlayer;
+    private int minPlayers;
 
-    public int getMinPlayer() {
-        return minPlayer;
+    public int getMinPlayers() {
+        return minPlayers;
     }
 
     @JsonCreator
     public CharacterCard(
             @JsonProperty("era") int era,
-            @JsonProperty("minPlayer") int minPlayer,
+            @JsonProperty("minPlayers") int minPlayers,
             @JsonProperty("cardType") CardType cardType) {
         super(era,  cardType);
-        this.minPlayer = minPlayer;
+        this.minPlayers = minPlayers;
     }
 
     @Override
@@ -29,11 +29,11 @@ public class CharacterCard extends TribesCard {
         if (o == null || getClass() != o.getClass()) return false;
         CharacterCard that = (CharacterCard) o;
         if(!this.getId().equals(that.getId())) return false;
-        return minPlayer == that.minPlayer;
+        return minPlayers == that.minPlayers;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(minPlayer);
+        return Objects.hashCode(minPlayers);
     }
 }
