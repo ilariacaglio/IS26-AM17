@@ -21,8 +21,8 @@ public class ServerActionMethods {
         new Thread(()->{
             System.err.println("getGamesList request received");
             try {
-                ((VirtualViewRMI)client).updateGamesIdList(controller.getGamesList());
-            } catch (RemoteException e) {
+                client.updateGamesIdList(controller.getGamesList());
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).start();
@@ -43,8 +43,8 @@ public class ServerActionMethods {
             controller.signUpAsObserver(client, id);
             // send gameId to client
             try {
-                ((VirtualViewRMI)client).updateGameId(id);
-            } catch (RemoteException e) {
+                client.updateGameId(id);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).start();
