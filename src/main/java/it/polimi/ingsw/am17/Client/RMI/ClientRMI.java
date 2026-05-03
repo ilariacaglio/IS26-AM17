@@ -86,4 +86,9 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
         ClientUpdateMethods.updatePlayerSelectTribeCards(model,userInterface,player,tribesCards,buildingCards);
     }
+
+    @Override
+    public void updateNotifyError(Exception e) throws RemoteException {
+        ClientUpdateMethods.updateNotifyError(model, userInterface, e);
+    }
 }

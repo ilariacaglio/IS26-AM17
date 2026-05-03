@@ -91,4 +91,11 @@ public class VirtualViewSocket implements VirtualView {
         message.send(socket);
     }
 
+    @Override
+    public void updateNotifyError(Exception e) throws Exception {
+        Message message = new Message(MessageType.UPDATE_ERROR);
+        message.setException(e);
+        message.send(socket);
+    }
+
 }

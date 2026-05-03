@@ -39,6 +39,7 @@ public class Message implements Serializable {
     private List<TribesCard> lowerRow;
     private List<BuildingCard> upperBuildingRow;
     private List<BuildingCard> lowerBuildingRow;
+    private Exception exception;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -170,4 +171,7 @@ public class Message implements Serializable {
     public void setLowerBuildingRow(List<BuildingCard> lowerBuildingRow) {
         this.lowerBuildingRow = lowerBuildingRow;
     }
+
+    public Exception getException() {return exception; }
+    public void setException(Exception e) {exception = e;}
 }

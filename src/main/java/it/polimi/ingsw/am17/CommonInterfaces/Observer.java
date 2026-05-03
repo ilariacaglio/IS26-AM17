@@ -26,4 +26,5 @@ public interface Observer {
     void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                          List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws  Exception;
 
+    void updateNotifyError(Exception e) throws Exception;
 }
