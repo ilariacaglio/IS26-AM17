@@ -9,4 +9,5 @@ public interface UI {
     void printGameId(UUID gameId);
     void printEra();
     void printGamesList();
+    void printError(Exception e);
 }
