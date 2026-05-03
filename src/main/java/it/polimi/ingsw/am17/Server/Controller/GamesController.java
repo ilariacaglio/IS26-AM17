@@ -56,6 +56,12 @@ public class GamesController {
             return id;
         }
         catch (Exception e){
+            try {
+                client.updateNotifyError(e);
+            }catch (Exception ex)
+            {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
     }
@@ -73,6 +79,13 @@ public class GamesController {
             }
         }
         catch (Exception e){
+
+            try {
+                client.updateNotifyError(e);
+            }catch (Exception ex)
+            {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
     }
@@ -92,7 +105,13 @@ public class GamesController {
             }
         }
         catch(Exception e){
-            throw new RuntimeException(e);
+            try {
+                client.updateNotifyError(e);
+            }catch (Exception ex)
+            {
+                throw new RuntimeException(ex);
+            }
+            //throw new RuntimeException(e);
         }
     }
 
@@ -111,7 +130,13 @@ public class GamesController {
                 game.pickTribeCards(player, characterCards, buildingCards);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            try {
+                client.updateNotifyError(e);
+            }catch (Exception ex)
+            {
+                throw new RuntimeException(ex);
+            }
+            //throw new RuntimeException(e);
         }
     }
 }
