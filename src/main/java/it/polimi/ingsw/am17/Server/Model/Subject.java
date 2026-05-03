@@ -20,6 +20,7 @@ public abstract class Subject {
      */
     public void attach(Observer observer) {
         observers.add(observer);
+        System.err.println("Added observer: " + observer.getClass().getSimpleName());
     }
 
     /**
