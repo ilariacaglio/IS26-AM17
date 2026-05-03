@@ -111,19 +111,9 @@ public class CLI implements UI {
 
         // search for Player in ordered players
         Player player;
-        player = game.getOrderedPlayers().stream()
-                .filter(p -> p.getNickname().equals(nickname))
+        player = game.getAllPlayers().stream()
+                .filter(p->p.getNickname().equals(nickname))
                 .findFirst().orElse(null);
-
-        // if the player is not present in the stack, search in offering cards
-        if (player == null) {
-            OfferingCard offeringCard = game.getOfferingCards().stream()
-                    .filter(oc->oc.getPlayer()!= null && oc.getPlayer().getNickname().equals(nickname))
-                    .findFirst().orElse(null);
-            if(offeringCard != null) {
-                player = offeringCard.getPlayer();
-            }
-        }
 
         // if player not found print error
         if(player == null) {
@@ -131,7 +121,7 @@ public class CLI implements UI {
         }
         else {
             // print the player
-            System.out.println(player.toString());
+            System.out.println(player);
         }
     }
 
