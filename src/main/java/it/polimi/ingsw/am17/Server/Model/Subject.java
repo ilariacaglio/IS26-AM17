@@ -56,7 +56,7 @@ public abstract class Subject {
             try {
                 observer.updatePlayerSelectOfferingCard(player, offeringCard);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Client not reachable: "+ e);
             }
         }
     }
@@ -66,7 +66,7 @@ public abstract class Subject {
             try {
                 observer.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Client not reachable: " + e);
             }
         }
     }
@@ -86,7 +86,7 @@ public abstract class Subject {
             try {
                 observer.updateEndTurn(newStack, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Client not reachable: "+ e.getMessage());
             }
         }
     }
@@ -97,7 +97,19 @@ public abstract class Subject {
             try {
                 observer.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Client not reachable: "+ e.getMessage());
+            }
+        }
+    }
+
+    void notifyError(Exception exception)
+    {
+        for(Observer observer: new ArrayList<>(observers))
+        {
+            try {
+                observer.updateNotifyError(exception);
+            } catch (Exception e) {
+                System.err.println("Client not reachable: "+ e);
             }
         }
     }
