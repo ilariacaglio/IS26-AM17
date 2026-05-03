@@ -20,7 +20,7 @@ public abstract class Subject {
      */
     public void attach(Observer observer) {
         observers.add(observer);
-    };
+    }
 
     /**
      * Detach an observer to the subject (stop observing).
@@ -35,7 +35,7 @@ public abstract class Subject {
             try {
                 observer.updateEra(era);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
@@ -45,7 +45,7 @@ public abstract class Subject {
             try {
                 observer.updatePlayerStack(orderedPlayer);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
@@ -56,7 +56,7 @@ public abstract class Subject {
             try {
                 observer.updatePlayerSelectOfferingCard(player, offeringCard);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
@@ -66,7 +66,7 @@ public abstract class Subject {
             try {
                 observer.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
@@ -86,7 +86,7 @@ public abstract class Subject {
             try {
                 observer.updateEndTurn(newStack, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
@@ -97,7 +97,7 @@ public abstract class Subject {
             try {
                 observer.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
