@@ -82,4 +82,18 @@ public class ClientUpdateMethods {
         model.removeBuildingCards(buildingCards);
         userInterface.drawInterface(model);
     }
+
+    public static void updateNotifyError(ClientModel model, UI userInterface, Exception e)
+    {
+        errorManagment(model, e);
+        userInterface.printError(e);
+    }
+
+    private static void errorManagment(ClientModel model, Exception e)
+    {
+        switch (e.getMessage()) {
+            default:
+                break;
+        }
+    }
 }
