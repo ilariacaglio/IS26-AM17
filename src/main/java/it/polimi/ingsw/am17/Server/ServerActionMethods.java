@@ -38,7 +38,7 @@ public class ServerActionMethods {
         new Thread(()->{
             System.err.println("createGame request received");
             // game id generation
-            UUID id = controller.createGame(player, numPlayers);
+            UUID id = controller.createGame(client, player, numPlayers);
             // the client signs up as observer for the game
             controller.signUpAsObserver(client, id);
             // send gameId to client
@@ -64,7 +64,7 @@ public class ServerActionMethods {
                 controller.signUpAsObserver(client, gameId);
                 // Notifica il client
                 client.updateGameId(gameId);
-                controller.joinGame(gameId, player);
+                controller.joinGame(client, gameId, player);
             } catch (Exception e) {
                 System.err.println("Errore durante la joinGame: " + e.getMessage());
                 try {
@@ -82,10 +82,10 @@ public class ServerActionMethods {
      * @param card
      * @throws RemoteException
      */
-    public static void pickOfferingCard(GamesController controller, UUID gameId, Player player, OfferingCard card){
+    public static void pickOfferingCard(GamesController controller, VirtualView client, UUID gameId, Player player, OfferingCard card){
         new Thread(()->{
             System.err.println("pickOfferingCard request received");
-            controller.pickOfferingCard(gameId, player, card);
+            controller.pickOfferingCard(client, gameId, player, card);
         }).start();
     }
 
@@ -97,9 +97,9 @@ public class ServerActionMethods {
      * @param buildingCards
      * @throws RemoteException
      */
-    public static void pickTribeCards(GamesController controller, UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    public static void pickTribeCards(GamesController controller, VirtualView client, UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         new Thread(()->{System.err.println("pickTribeCards request received");
-            controller.pickTribeCards(gameId, player, characterCards, buildingCards);
+            controller.pickTribeCards(client, gameId, player, characterCards, buildingCards);
         }).start();
     }
 }

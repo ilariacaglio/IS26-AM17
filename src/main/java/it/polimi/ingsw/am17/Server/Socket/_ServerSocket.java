@@ -46,8 +46,8 @@ public class _ServerSocket implements Runnable, VirtualServer {
                     case GET_GAMES_LIST -> getGamesList(client);
                     case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
                     case JOIN_GAME -> joinGame(client, message.getGameId(), message.getPlayer());
-                    case PICK_OFFERING_CARD -> pickOfferingCard(message.getGameId(), message.getPlayer(), message.getOfferingCard());
-                    case PICK_TRIBE_CARDS -> pickTribeCards(message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
+                    case PICK_OFFERING_CARD -> pickOfferingCard(client, message.getGameId(), message.getPlayer(), message.getOfferingCard());
+                    case PICK_TRIBE_CARDS -> pickTribeCards(client, message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
                     default -> System.err.println("Unknown message type: " + message.getType());
                 }
             }
@@ -76,12 +76,12 @@ public class _ServerSocket implements Runnable, VirtualServer {
     }
 
     @Override
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
-        ServerActionMethods.pickOfferingCard(this.controller, gameId, player, card);
+    public void pickOfferingCard(VirtualView client, UUID gameId, Player player, OfferingCard card) throws RemoteException {
+        ServerActionMethods.pickOfferingCard(this.controller, client, gameId, player, card);
     }
 
     @Override
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        ServerActionMethods.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
+    public void pickTribeCards(VirtualView client,UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
+        ServerActionMethods.pickTribeCards(this.controller, client, gameId, player, characterCards, buildingCards);
     }
 }

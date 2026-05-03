@@ -59,13 +59,13 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     }
 
     @Override
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
-        ServerActionMethods.pickOfferingCard(this.controller, gameId, player, card);
+    public void pickOfferingCard(VirtualView client, UUID gameId, Player player, OfferingCard card) throws RemoteException {
+        ServerActionMethods.pickOfferingCard(this.controller, client, gameId, player, card);
     }
 
     @Override
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        ServerActionMethods.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
+    public void pickTribeCards(VirtualView client, UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
+        ServerActionMethods.pickTribeCards(this.controller, client, gameId, player, characterCards, buildingCards);
     }
 
 

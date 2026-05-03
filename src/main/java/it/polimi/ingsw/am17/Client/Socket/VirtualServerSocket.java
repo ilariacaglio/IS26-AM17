@@ -50,7 +50,7 @@ public class VirtualServerSocket implements VirtualServer {
     }
 
     @Override
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws Exception {
+    public void pickOfferingCard(VirtualView client, UUID gameId, Player player, OfferingCard card) throws Exception {
         Message message = new Message(MessageType.PICK_OFFERING_CARD);
         message.setGameId(gameId);
         message.setPlayer(player);
@@ -59,7 +59,7 @@ public class VirtualServerSocket implements VirtualServer {
     }
 
     @Override
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
+    public void pickTribeCards(VirtualView client, UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
         Message message = new Message(MessageType.PICK_TRIBE_CARDS);
         message.setGameId(gameId);
         message.setPlayer(player);

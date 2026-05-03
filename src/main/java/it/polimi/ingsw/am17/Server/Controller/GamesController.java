@@ -43,7 +43,7 @@ public class GamesController {
      * @param player
      * @param numPlayers
      */
-    public UUID createGame(Player player, int numPlayers){
+    public UUID createGame(VirtualView client ,Player player, int numPlayers){
         try{
             // game creation
             UUID id = UUID.randomUUID();
@@ -65,7 +65,7 @@ public class GamesController {
      * @param gameId
      * @param player
      */
-    public void joinGame(UUID gameId, Player player){
+    public void joinGame(VirtualView client ,UUID gameId, Player player){
         try{
             Game game = GamesListHandler.getGameFromId(gameId);
             synchronized (game){
@@ -84,7 +84,7 @@ public class GamesController {
      * @param player
      * @param card
      */
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card){
+    public void pickOfferingCard(VirtualView client, UUID gameId, Player player, OfferingCard card){
         try{
             Game game = GamesListHandler.getGameFromId(gameId);
             synchronized (game){
@@ -104,7 +104,7 @@ public class GamesController {
      * @param characterCards
      * @param buildingCards
      */
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
+    public void pickTribeCards(VirtualView client, UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
         try {
             Game game = GamesListHandler.getGameFromId(gameId);
             synchronized (game){
