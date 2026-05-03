@@ -280,7 +280,7 @@ public class CLI implements UI {
 
         // call server method
         try{
-            virtualServer.pickTribeCards(game.getGameId(),game.getLocalPlayer(),characterCards,buildingCards);
+            virtualServer.pickTribeCards(client, game.getGameId(),game.getLocalPlayer(),characterCards,buildingCards);
         }
         catch (Exception e) {}
     }
@@ -413,7 +413,7 @@ public class CLI implements UI {
         try {
             System.out.print("Insert card number (position from 0) > ");
             int numCard = Integer.parseInt(scanner.nextLine());
-            virtualServer.pickOfferingCard(game.getGameId(), game.getLocalPlayer(), game.getOfferingCards().get(numCard));
+            virtualServer.pickOfferingCard(client, game.getGameId(), game.getLocalPlayer(), game.getOfferingCards().get(numCard));
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
