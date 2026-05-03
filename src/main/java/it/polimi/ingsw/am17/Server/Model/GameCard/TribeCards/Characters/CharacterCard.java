@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 
@@ -12,7 +14,11 @@ public class CharacterCard extends TribesCard {
         return minPlayer;
     }
 
-    public CharacterCard(int era, int minPlayer, CardType cardType) {
+    @JsonCreator
+    public CharacterCard(
+            @JsonProperty("era") int era,
+            @JsonProperty("minPlayer") int minPlayer,
+            @JsonProperty("cardType") CardType cardType) {
         super(era,  cardType);
         this.minPlayer = minPlayer;
     }
