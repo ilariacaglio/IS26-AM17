@@ -286,7 +286,7 @@ public class CLI implements UI {
             virtualServer.pickTribeCards(game.getGameId(),game.getLocalPlayer(),characterCards,buildingCards);
         }
         catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            System.err.println("CLI error while calling pickTribeCards on the virtualServer: " + e.getMessage());
         }
     }
 
