@@ -33,4 +33,8 @@ public class Shaman extends CharacterCard {
     public int hashCode() {
         return Objects.hashCode(stars);
     }
+
+    public String toString() {
+        return super.toString() + " " + stars + "★";
+    }
 }
