@@ -265,13 +265,19 @@ public class CLI implements UI {
         List<BuildingCard> buildingCards = new ArrayList<>();
         for(Integer i : cardIndexes) {
             if(i< sizeUpperTribeRow) {
-                characterCards.add((CharacterCard) upperTRow.get(i));
+                TribesCard card = upperTRow.get(i);
+                if (card.getCardType().isCharacter()) {
+                    characterCards.add((CharacterCard) card);
+                }
             }
             else if (i < sizeUpperRow) {
                 buildingCards.add(upperBRow.get(i - sizeUpperTribeRow));
             }
             else if (i < sizeUpperRow + sizeLowerTribeRow) {
-                characterCards.add((CharacterCard) lowerTRow.get(i -sizeUpperRow));
+                TribesCard card = lowerTRow.get(i - sizeUpperRow);
+                if (card.getCardType().isCharacter()) {
+                    characterCards.add((CharacterCard) card);
+                }
             }
             else{
                 buildingCards.add(lowerBRow.get(i-sizeUpperRow-sizeLowerTribeRow));
