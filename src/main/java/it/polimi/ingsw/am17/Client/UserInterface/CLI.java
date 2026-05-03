@@ -32,12 +32,9 @@ public class CLI implements UI {
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;
 
-            //ask user for nickname
+            // Set up the user
             String nickname = askNickname(scanner);
-            // ask user for color
-            System.out.println("Choose your color");
             Color color = chooseColor(scanner);
-            //create new player with nickname and color
             game.createLocalPlayer(nickname, color);
 
             while (running) {
@@ -102,7 +99,7 @@ public class CLI implements UI {
     }
 
     /**
-     * Asks the user for a player and prints its cards, food and points
+     * Asks the user for a player and prints its cards, food, and points.
      */
     private void printPlayer(Scanner scanner) {
         System.out.print("\b\b");
@@ -288,7 +285,9 @@ public class CLI implements UI {
         try{
             virtualServer.pickTribeCards(game.getGameId(),game.getLocalPlayer(),characterCards,buildingCards);
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+            System.err.println("CLI error: " + e.getMessage());
+        }
     }
 
     /**
@@ -334,6 +333,7 @@ public class CLI implements UI {
     private Color chooseColor(Scanner scanner) {
         Color[] colors = Color.values();
 
+        System.out.println("Choose your color");
         while (true) {
             System.out.println("Available colors:");
             for (int i = 0; i < colors.length; i++) {
@@ -384,8 +384,7 @@ public class CLI implements UI {
         while (nickname.isEmpty()) {
             System.out.print("Insert your nickname (max 10 char) > ");
             nickname = scanner.nextLine().trim();
-            if(nickname.length() >10 ) {
-                nickname = "";
+            if(nickname.length() > 10) {
                 System.out.print("Your nickname has more than 10 characters!\n");
             }
         }
