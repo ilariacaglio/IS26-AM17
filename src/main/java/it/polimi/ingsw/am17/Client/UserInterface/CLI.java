@@ -520,7 +520,7 @@ public class CLI implements UI {
         if(!offeringCards.isEmpty()){
             System.out.print("Bidding trail: ");
             for(OfferingCard c : offeringCards) {
-                System.out.print(c.toString().concat("\t"));
+                System.out.print("[" + c.toString() + "] ");
             }
             System.out.println();
         }
