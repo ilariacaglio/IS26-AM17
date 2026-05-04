@@ -495,8 +495,8 @@ public class CLI implements UI {
             buildingRow = game.getLowerBuildingRow();
         }
         if(!(tribeRow.isEmpty() && buildingRow.isEmpty())){
-            if(upper) System.out.print("Upper row: ");
-            else System.out.print("Lower row: ");
+            if(upper) System.out.print("Upper row:     ");
+            else System.out.print("Lower row:     ");
 
             if(!tribeRow.isEmpty()) {
                 for (TribesCard c : tribeRow) {
