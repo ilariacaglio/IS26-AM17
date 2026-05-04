@@ -161,8 +161,9 @@ public class CLI implements UI {
     /**
      * Draws the game configuration.
      * @param game  the model to be drawn.
+     * @param errorMessagge message you want to print
      */
-    public void drawInterface(ClientModel game)
+    public void drawInterface(ClientModel game, String errorMessagge)
     {
         try{
             // update game data
@@ -176,6 +177,11 @@ public class CLI implements UI {
             // TODO: remove this loop for real terminal execution
             for (int i = 0; i < 50; i++) {
                 System.out.println();
+            }
+
+            if(errorMessagge != null && !errorMessagge.isBlank()) {
+                System.err.println(errorMessagge);
+                System.out.flush(); //ensure error message is before the interface
             }
 
             int currentEra = game.getCurrentEra();
@@ -292,6 +298,9 @@ public class CLI implements UI {
             return;
         }
 
+        System.out.println("You can pick " + myOfferingCard.getNumCardsUpper() + " card from upper row and "
+        + myOfferingCard.getNumCardsLower() +" card from lower row");
+
         // list of pickable cards
         List<Object> pickableCards = new ArrayList<>();
 
@@ -332,10 +341,10 @@ public class CLI implements UI {
                 if (numCard >= 0 && numCard < pickableCards.size()) {
                     if (!cardIndexes.add(numCard)) {
                         // if the set already contains the index print the error
-                        System.out.println("Card already selected. Choose a different one.");
+                        System.err.println("Card already selected. Choose a different one.");
                     }
                 } else {
-                    System.out.println("Index out of bounds!");
+                    System.err.println("Index out of bounds!");
                 }
             }
             catch (NumberFormatException e) {
@@ -627,6 +636,16 @@ public class CLI implements UI {
                 System.out.print("[" + c.toString() + "] ");
             }
             System.out.println();
+        }
+    }
+
+    /**
+     * Sets the phase of the game to pick tribe cards if condition met
+     */
+    private void evaluateGamePhase(){
+        if( game.getOrderedPlayers().size() == game.getNumPlayers() &&
+            game.everyPlayerInOfferingCard()){
+            game.setPickOfferingCardPhase(false);
         }
     }
 }
