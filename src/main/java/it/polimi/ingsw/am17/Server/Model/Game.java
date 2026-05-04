@@ -85,7 +85,7 @@ public class Game extends Subject {
      */
     private OfferingCard getNextOccupiedOfferingCard() {
         OfferingCard offCard = offeringCards.stream()
-                .filter(card -> card.getPlayer() != null && card.getOrderLetter()!='A')
+                .filter(card -> card.getPlayer() != null)
                 .min(Comparator.comparing(OfferingCard::getOrderLetter))
                 .orElse(null);
         if (offCard != null) {
@@ -295,9 +295,6 @@ public class Game extends Subject {
         // remove player from buildingType2 offering card
         building2OfferingCard.setPlayer(null);
 
-        // remove player from offering card with letter A
-        freeAOfferingCard();
-
         //notifyPlayerStack(orderedPlayer);
         //notifyTribesCards(upperRow, lowerRow);
         notifyEndTurn(orderedPlayer, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
@@ -416,8 +413,6 @@ public class Game extends Subject {
 
         //set player to offeringCard
         selectedOc.setPlayer(orderedPlayer.peek());
-        //apply effect of offering card with letter A
-        resolveAOfferingCard(selectedOc);
 
         orderedPlayer.pop();
         if(orderedPlayer.isEmpty()){
@@ -442,6 +437,16 @@ public class Game extends Subject {
     public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
+
+        // if a player has selected the offering card with letter A
+        if (currentOffering.getOrderLetter()=='A') {
+            // give +3 food to the player
+            giveFoodFromOfferingCardWithLetterA(currentOffering);
+            // remove player from offering card
+            freeOfferingCardWithLetterA();
+            // recalculate next occupied offering card
+            currentOffering = getNextOccupiedOfferingCard();
+        }
 
         // Check if the player is current next player
         if (!player.equals(currentOffering.getPlayer())) {
@@ -509,16 +514,14 @@ public class Game extends Subject {
      * Adds food to player if it has selected 'A' offering card.
      * @param offeringCard  the offering card selected
      */
-    private void resolveAOfferingCard(OfferingCard offeringCard) {
-        if(offeringCard.getOrderLetter()=='A') {
-            offeringCard.getPlayer().addFood(3);
-        }
+    private void giveFoodFromOfferingCardWithLetterA(OfferingCard offeringCard) {
+        offeringCard.getPlayer().addFood(3);
     }
 
     /**
      * Sets player to null in offering card with letter 'A'.
      */
-    private void freeAOfferingCard() {
+    private void freeOfferingCardWithLetterA() {
         offeringCards.stream()
                 .filter(card -> card.getOrderLetter() == 'A')
                 .findFirst()
