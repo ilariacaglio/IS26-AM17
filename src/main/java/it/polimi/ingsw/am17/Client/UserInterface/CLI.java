@@ -262,9 +262,9 @@ public class CLI implements UI {
             pickableCards.addAll(game.getLowerBuildingRow());
 
         // print the upper row
-        printPickableRow(true);
+        int upperPrintIndex = printPickableRow(true,1);
         // print the lower row
-        printPickableRow(false);
+        printPickableRow(false, upperPrintIndex);
 
         // selected cards indexes
         Set<Integer> cardIndexes = new HashSet<>();
@@ -278,7 +278,7 @@ public class CLI implements UI {
                 break;
             }
             try {
-                int numCard = Integer.parseInt(input);
+                int numCard = Integer.parseInt(input)-1;
                 // check if the index is valid
                 if (numCard >= 0 && numCard < pickableCards.size()) {
                     if (!cardIndexes.add(numCard)) {
@@ -320,10 +320,10 @@ public class CLI implements UI {
      * Prints all the character and building cards in the row
      * @param upper if true prints the upper row, if false prints the lower row
      */
-    private void printPickableRow(boolean upper){
+    private int printPickableRow(boolean upper, int startingIndex){
         List<TribesCard> tribeRow;
         List<BuildingCard> buildingRow;
-        int lowerSpan = 0;
+        // set lists basing on upper value
         if(upper){
             tribeRow = game.getUpperTribeRow();
             buildingRow = game.getUpperBuildingRow();
@@ -333,21 +333,26 @@ public class CLI implements UI {
             tribeRow = game.getLowerTribeRow();
             buildingRow = game.getLowerBuildingRow();
             System.out.print("Lower row:");
-            lowerSpan = game.getUpperTribeRow().size() + game.getUpperBuildingRow().size();
         }
-        int span = tribeRow.size();
-
+        // set the starting index for the card display numbering
+        int currentIndex = startingIndex;
         // print character cards
-        for(int i=0; i< span; i++){
-            if(tribeRow.get(i).getCardType().isCharacter()){
-                System.out.print((i+lowerSpan) + ") " + tribeRow.get(i) + "\t");
+        for (TribesCard card : tribeRow) {
+            if (card.getCardType().isCharacter()) {
+                System.out.print(currentIndex + ") " + card + "\t");
+                // increase number only when the card is printed
+                currentIndex++;
             }
         }
         // print building cards
-        for(int i=0; i< buildingRow.size(); i++){
-            System.out.print((i+span+lowerSpan) + ") " + buildingRow.get(i) + "\t");
+        for (BuildingCard card : buildingRow) {
+            System.out.print(currentIndex + ") " + card + "\t");
+            // increase number only when the card is printed
+            currentIndex++;
         }
         System.out.print("\n");
+        // return the current index for the next print
+        return currentIndex;
     }
 
     /**
