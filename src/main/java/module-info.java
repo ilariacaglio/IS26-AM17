@@ -29,4 +29,5 @@ module it.polimi.ingsw.am17 {
     opens it.polimi.ingsw.am17.Server.Model.GameCard to tools.jackson.databind;
     exports it.polimi.ingsw.am17.Server.Model.Decks;
     opens it.polimi.ingsw.am17.Server.Model.Decks to tools.jackson.databind;
+    exports it.polimi.ingsw.am17.Server.Utility;
 }
