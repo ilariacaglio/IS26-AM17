@@ -443,7 +443,7 @@ public class Game extends Subject {
             // give +3 food to the player
             giveFoodFromOfferingCardWithLetterA(currentOffering);
             // remove player from offering card
-            freeOfferingCardWithLetterA();
+            currentOffering.setPlayer(null);
             // recalculate next occupied offering card
             currentOffering = getNextOccupiedOfferingCard();
         }
@@ -516,16 +516,6 @@ public class Game extends Subject {
      */
     private void giveFoodFromOfferingCardWithLetterA(OfferingCard offeringCard) {
         offeringCard.getPlayer().addFood(3);
-    }
-
-    /**
-     * Sets player to null in offering card with letter 'A'.
-     */
-    private void freeOfferingCardWithLetterA() {
-        offeringCards.stream()
-                .filter(card -> card.getOrderLetter() == 'A')
-                .findFirst()
-                .ifPresent(letterAOffCard -> letterAOffCard.setPlayer(null));
     }
 
     public UUID getId() {
