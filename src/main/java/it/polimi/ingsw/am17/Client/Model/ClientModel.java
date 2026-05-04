@@ -171,7 +171,7 @@ public class ClientModel {
                 break;
             }
         }
-//        updateAllPlayers();
+        updateAllPlayers();
     }
 
     public void removePlayerFromOfferingCard(Player player){
@@ -197,7 +197,7 @@ public class ClientModel {
     }
 
     public void setAllPlayers(List<Player> allPlayers) {
-        this.allPlayers = allPlayers;
+        this.allPlayers = new ArrayList<>(allPlayers);
     }
 
     public List<Player> getAllPlayers() {
@@ -211,5 +211,10 @@ public class ClientModel {
                 allPlayers.set(index, p);
             }
         }
+    }
+
+    public void setNullOfferingCardAPlayer() {
+        offeringCards.stream().filter(card -> card.getOrderLetter()=='A')
+                .findFirst().ifPresent(card -> card.setPlayer(null));
     }
 }
