@@ -226,37 +226,69 @@ public class CLI implements UI {
      * @param scanner
      */
     private void pickCards(Scanner scanner) {
+        // get players offering card
         OfferingCard myOfferingCard = game.getOfferingCards().stream()
                 .filter(c->c.getPlayer()!= null && c.getPlayer().equals(game.getLocalPlayer()))
                 .findFirst().orElse(null);
-        int totalCards = (myOfferingCard != null ? myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower() : 0);
 
-        // get game rows
-        var upperTRow = game.getUpperTribeRow();
-        var lowerTRow = game.getLowerTribeRow();
-        var upperBRow = game.getUpperBuildingRow();
-        var lowerBRow = game.getLowerBuildingRow();
+        // if not found, return
+        if (myOfferingCard == null) {
+            System.out.println("No offering card chosen!");
+            return;
+        }
 
-        // calculate rows sizes
-        int sizeUpperTribeRow = upperTRow.size();
-        int sizeLowerTribeRow = lowerTRow.size();
-        int sizeUpperBuildingRow = upperBRow.size();
-        int sizeLowerBuildingRow = lowerBRow.size();
-        int sizeUpperRow = sizeUpperTribeRow + sizeUpperBuildingRow;
-        int sizeLowerRow = sizeLowerTribeRow + sizeLowerBuildingRow;
+        // calculate the number of cards the user can pick
+        int totalCards = myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower();
 
-        // selected cards indexes
-        List<Integer> cardIndexes = new ArrayList<>();
+        // if card with letter A, no card can be chosen
+        if(totalCards == 0) {
+            System.out.println("You can't pick any card!");
+            return;
+        }
+
+        // list of pickable cards
+        List<Object> pickableCards = new ArrayList<>();
+
+        // add upper character cards
+        pickableCards.addAll(game.getUpperTribeRow().stream()
+                .filter(c->c.getCardType().isCharacter()).toList());
+
+        // add upper building cards
+        pickableCards.addAll(game.getUpperBuildingRow());
+
+        // add lower character cards
+        pickableCards.addAll(game.getLowerTribeRow().stream()
+                .filter(c->c.getCardType().isCharacter()).toList());
+
+        // add upper building cards
+        if(!game.getLowerBuildingRow().isEmpty())
+            pickableCards.addAll(game.getLowerBuildingRow());
+
         // print the upper row
         printPickableRow(true);
         // print the lower row
         printPickableRow(false);
+
+        // selected cards indexes
+        Set<Integer> cardIndexes = new HashSet<>();
+
         // cards selection
         while (cardIndexes.size() < totalCards) {
             System.out.print("Type the card number > ");
-            int numCard = Integer.parseInt(scanner.nextLine());
-            if (numCard >= 0 && numCard <= sizeUpperRow+sizeLowerRow) {
-                cardIndexes.add(numCard);
+            try {
+                int numCard = Integer.parseInt(scanner.nextLine())-1;
+                // check if the index is valid
+                if (numCard >= 0 && numCard < pickableCards.size()) {
+                    if (!cardIndexes.add(numCard)) {
+                        // if the set already contains the index print the error
+                        System.out.println("Card already selected. Choose a different one.");
+                    }
+                } else {
+                    System.out.println("Index out of bounds!");
+                }
+            }
+            catch (NumberFormatException e) {
+                System.err.println("Invalid input, please enter a valid number.");
             }
         }
 
@@ -264,17 +296,12 @@ public class CLI implements UI {
         List<CharacterCard> characterCards = new ArrayList<>();
         List<BuildingCard> buildingCards = new ArrayList<>();
         for(Integer i : cardIndexes) {
-            if(i< sizeUpperTribeRow) {
-                characterCards.add((CharacterCard) upperTRow.get(i));
+            Object pickedCard = pickableCards.get(i);
+            try {
+                characterCards.add((CharacterCard) pickedCard);
             }
-            else if (i < sizeUpperRow) {
-                buildingCards.add(upperBRow.get(i - sizeUpperTribeRow));
-            }
-            else if (i < sizeUpperRow + sizeLowerTribeRow) {
-                characterCards.add((CharacterCard) lowerTRow.get(i -sizeUpperRow));
-            }
-            else{
-                buildingCards.add(lowerBRow.get(i-sizeUpperRow-sizeLowerTribeRow));
+            catch (ClassCastException e) {
+                buildingCards.add((BuildingCard) pickedCard);
             }
         }
 
