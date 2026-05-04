@@ -61,7 +61,6 @@ public class ClientUpdateMethods {
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setTribeCards(upperRow, lowerRow);
         model.setPickOfferingCardPhase(true);
-        model.setNullOfferingCardAPlayer();
 
         userInterface.drawInterface(model);
     }
@@ -81,6 +80,7 @@ public class ClientUpdateMethods {
         model.removePlayerFromOfferingCard(player);
         model.removeTribeCards(tribesCards);
         model.removeBuildingCards(buildingCards);
+        model.setNullOfferingCardAPlayer();
         userInterface.drawInterface(model);
     }
 }

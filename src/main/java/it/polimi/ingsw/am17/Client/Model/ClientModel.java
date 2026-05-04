@@ -214,7 +214,7 @@ public class ClientModel {
     }
 
     public void setNullOfferingCardAPlayer() {
-        offeringCards.stream().filter(card -> card.getOrderLetter()=='A')
+        offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
                 .findFirst().ifPresent(card -> card.setPlayer(null));
     }
 }
