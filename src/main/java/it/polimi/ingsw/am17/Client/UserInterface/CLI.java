@@ -213,7 +213,7 @@ public class CLI implements UI {
         }
         System.out.print("\nPlayers: ");
         for(Player p : players) {
-            System.out.print(p.getNickname().concat(" "));
+            System.out.print("[" + p.getNickname() + " " + p.getFood() + "F " + p.getPp() + "PP" + "] ");
         }
         System.out.println();
     }
