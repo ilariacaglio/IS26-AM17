@@ -41,35 +41,34 @@ public class CLI implements UI {
                 System.out.print("> ");
                 String input = scanner.nextLine().trim().toLowerCase();
                 switch (input) {
-                    case "get games":
+                    case "get games", "gg":
                         getGamesList();
                         break;
-                    case "change nickname":
+                    case "change nickname", "cn":
                         changeNickname(scanner);
                         break;
-                    case "change color":
+                    case "change color", "cc":
                         changeColor(scanner);
                         break;
-                    case "create":
+                    case "create", "c":
                         createGame(scanner);
                         break;
-                    case "pick offering card":
+                    case "pick offering card", "po":
                         pickOfferingCard(scanner);
                         break;
-                    case "join":
+                    case "join", "j":
                         joinGame(scanner);
                         break;
-                    case "pick cards":
+                    case "pick cards", "p":
                         pickCards(scanner);
                         break;
-                    case "view player":
+                    case "view player", "vp":
                         printPlayer(scanner);
                         break;
-                    case "help":
+                    case "help", "h":
                         printHelp();
                         break;
-                    case "quit":
-                    case "exit":
+                    case "exit", "quit", "q":
                         System.out.println("Goodbye!");
                         running = false;
                         break;
@@ -87,15 +86,16 @@ public class CLI implements UI {
      */
     private void printHelp() {
         System.out.println("Available commands:");
-        System.out.println("- help: shows this menu");
-        System.out.println("- exit: closes the application");
-        System.out.println("- change color: changes the player's color");
-        System.out.println("- change nickname: changes the player's nickname");
-        System.out.println("- get games: get the list of incomplete games");
-        System.out.println("- create: creates a new game");
-        System.out.println("- join: joins an existing game");
-        System.out.println("- pick offering card: choose the offering card to take");
-        System.out.println("- pick cards: choose the cards to take");
+        System.out.println("- help, h: shows this menu");
+        System.out.println("- exit, quit, q: closes the application");
+        System.out.println("- get games, gg: get the list of starting games");
+        System.out.println("- change nickname, cn: changes the player's nickname");
+        System.out.println("- change color, cc: changes the player's color");
+        System.out.println("- create, c: creates a new game");
+        System.out.println("- join, j: joins an existing game");
+        System.out.println("- pick offering card, po: choose the offering card to take");
+        System.out.println("- pick cards, p: choose the cards to take");
+        System.out.println("- view player, vp: shows a player's cards, food, and points");
     }
 
     /**
