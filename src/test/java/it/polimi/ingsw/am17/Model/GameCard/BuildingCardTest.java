@@ -27,22 +27,22 @@ class BuildingCardTest {
         List<CharacterCard> cc = new ArrayList<>();
 
         for (int i = 0; i < hunter; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.HUNTER));
+            cc.add(new CharacterCard(1, 1, CardType.HUNTER, null));
         }
         for (int i = 0; i < art; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.ARTIST));
+            cc.add(new CharacterCard(1, 1, CardType.ARTIST, null));
         }
         for (int i = 0; i < build; i++) {
-            cc.add(new Builder(1, 1, r.nextInt(5), r.nextInt(5)));
+            cc.add(new Builder(1, 1, r.nextInt(5), r.nextInt(5), null));
         }
         for (int i = 0; i < inv; i++) {
-            cc.add(new Inventor(1, 1, InventorIconType.values()[r.nextInt(10)]));
+            cc.add(new Inventor(1, 1, InventorIconType.values()[r.nextInt(10)], null));
         }
         for (int i = 0; i < sham; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.SHAMAN));
+            cc.add(new CharacterCard(1, 1, CardType.SHAMAN, null));
         }
         for (int i = 0; i < bind; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.BINDER));
+            cc.add(new CharacterCard(1, 1, CardType.BINDER, null));
         }
 
         return cc;

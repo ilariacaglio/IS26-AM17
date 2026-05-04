@@ -373,7 +373,7 @@ public class GameTest {
             setFirstPlayerToOffering(0);
             List<CharacterCard> characterList = new ArrayList<>();
             // add a random card to list
-            characterList.add(new Binder(2,4));
+            characterList.add(new Binder(2,4, null));
             assertThrows(IllegalStateException.class, () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
         }
 

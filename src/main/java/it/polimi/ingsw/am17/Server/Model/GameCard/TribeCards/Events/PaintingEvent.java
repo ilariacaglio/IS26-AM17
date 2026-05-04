@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class PaintingEvent extends EventCard {
     private final int pointsLow;
@@ -31,8 +32,9 @@ public class PaintingEvent extends EventCard {
             @JsonProperty("pointsMax") int pointsMax,
             @JsonProperty("numMax") int numMax,
             @JsonProperty("Final") boolean Final,
-            @JsonProperty("era") int era) {
-        super(Final, era, CardType.PAINTING_EVENT);
+            @JsonProperty("era") int era,
+            @JsonProperty("id") UUID id) {
+        super(Final, era, CardType.PAINTING_EVENT, id);
         this.pointsLow = pointsLow;
         this.pointsMax = pointsMax;
         this.numMax = numMax;

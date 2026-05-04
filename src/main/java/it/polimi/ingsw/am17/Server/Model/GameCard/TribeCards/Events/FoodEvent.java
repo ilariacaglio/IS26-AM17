@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class FoodEvent extends EventCard{
     private final int pointLost;
@@ -19,8 +20,9 @@ public class FoodEvent extends EventCard{
     public FoodEvent(
            @JsonProperty("pointLost") int pointLost,
            @JsonProperty("Final") boolean Final,
-           @JsonProperty("era") int era){
-        super(Final, era, CardType.FOOD_EVENT);
+           @JsonProperty("era") int era,
+           @JsonProperty("id") UUID id){
+        super(Final, era, CardType.FOOD_EVENT, id);
         this.pointLost = pointLost;
     }
 

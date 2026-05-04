@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class CharacterCard extends TribesCard {
     private int minPlayers;
@@ -18,8 +19,9 @@ public class CharacterCard extends TribesCard {
     public CharacterCard(
             @JsonProperty("era") int era,
             @JsonProperty("minPlayers") int minPlayers,
-            @JsonProperty("cardType") CardType cardType) {
-        super(era,  cardType);
+            @JsonProperty("cardType") CardType cardType,
+            @JsonProperty("id") UUID id) {
+        super(era,  cardType, id);
         this.minPlayers = minPlayers;
     }
 

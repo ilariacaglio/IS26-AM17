@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class HuntingEvent extends EventCard {
     private final int pointEarned;
@@ -19,9 +20,10 @@ public class HuntingEvent extends EventCard {
     public HuntingEvent(
             @JsonProperty("pointEarned") int pointEarned,
             @JsonProperty("Final") boolean Final,
-            @JsonProperty("era") int era){
+            @JsonProperty("era") int era,
+            @JsonProperty("id") UUID id){
         this.pointEarned = pointEarned;
-        super(Final, era, CardType.HUNTING_EVENT);
+        super(Final, era, CardType.HUNTING_EVENT, id);
     }
 
     @Override

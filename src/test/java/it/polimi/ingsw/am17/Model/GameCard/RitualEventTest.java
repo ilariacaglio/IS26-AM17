@@ -20,7 +20,7 @@ class RitualEventTest {
 
     @BeforeEach
     void setUp() {
-        ritualEvent = new RitualEvent(false,2,10,5);
+        ritualEvent = new RitualEvent(false,2,10,5, null);
     }
 
     //everyone has the same star number and player A has BuildingType8
@@ -32,8 +32,8 @@ class RitualEventTest {
         list.add(A);
         list.add(B);
 
-        TribesCard cardA = new Shaman(2, 2, 2);
-        TribesCard cardB = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(2, 2, 2, null );
+        TribesCard cardB = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
 
@@ -54,8 +54,8 @@ class RitualEventTest {
         list.add(A);
         list.add(B);
 
-        TribesCard cardA = new Shaman(2, 2, 2);
-        TribesCard cardB = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(2, 2, 2, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
 
@@ -75,8 +75,8 @@ class RitualEventTest {
         list.add(A);
         list.add(B);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
 
@@ -99,8 +99,8 @@ class RitualEventTest {
         list.add(A);
         list.add(B);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
 
@@ -122,9 +122,9 @@ class RitualEventTest {
         list.add(B);
         list.add(C);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(3, 2, 3);
-        TribesCard cardC = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(3, 2, 3, null);
+        TribesCard cardC = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
         C.addCharacter(cardC);
@@ -151,9 +151,9 @@ class RitualEventTest {
         list.add(B);
         list.add(C);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(3, 2, 3);
-        TribesCard cardC = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(3, 2, 3, null);
+        TribesCard cardC = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
         C.addCharacter(cardC);
@@ -177,9 +177,9 @@ class RitualEventTest {
         list.add(B);
         list.add(C);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(2, 2, 2);
-        TribesCard cardC = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
+        TribesCard cardC = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
         C.addCharacter(cardC);
@@ -206,9 +206,9 @@ class RitualEventTest {
         list.add(B);
         list.add(C);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(2, 2, 2);
-        TribesCard cardC = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
+        TribesCard cardC = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
         C.addCharacter(cardC);

@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class RitualEvent extends EventCard {
     private final int pointMax;
@@ -24,8 +25,9 @@ public class RitualEvent extends EventCard {
     public RitualEvent(@JsonProperty("Final") boolean Final,
                        @JsonProperty("era") int era,
                        @JsonProperty("pointMax") int pointMax,
-                       @JsonProperty("pointMin") int pointMin){
-        super(Final, era, CardType.RITUAL_EVENT);
+                       @JsonProperty("pointMin") int pointMin,
+                       @JsonProperty("id") UUID id){
+        super(Final, era, CardType.RITUAL_EVENT, id);
         this.pointMax = pointMax;
         this.pointMin = pointMin;
     }

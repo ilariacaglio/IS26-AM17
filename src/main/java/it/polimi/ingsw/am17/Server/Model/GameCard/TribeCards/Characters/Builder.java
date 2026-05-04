@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Builder extends CharacterCard {
     private final int pointBonus;
@@ -23,8 +24,9 @@ public class Builder extends CharacterCard {
             @JsonProperty("era") int era,
             @JsonProperty("minPlayers") int minPlayers,
             @JsonProperty("pointsBonus") int pointsBonus,
-            @JsonProperty("foodReduction") int foodReduction) {
-        super(era, minPlayers, CardType.BUILDER);
+            @JsonProperty("foodReduction") int foodReduction,
+            @JsonProperty("id") UUID id) {
+        super(era, minPlayers, CardType.BUILDER, id);
         this.pointBonus = pointsBonus;
         this.foodReduction = foodReduction;
     }

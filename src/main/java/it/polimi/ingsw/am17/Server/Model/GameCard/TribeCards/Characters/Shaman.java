@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Shaman extends CharacterCard {
     private final int stars;
@@ -16,8 +17,9 @@ public class Shaman extends CharacterCard {
     public Shaman(
             @JsonProperty("era") int era,
             @JsonProperty("minPlayers") int minPlayers,
-            @JsonProperty("stars") int stars){
-        super(era, minPlayers, CardType.SHAMAN);
+            @JsonProperty("stars") int stars,
+            @JsonProperty("id") UUID id){
+        super(era, minPlayers, CardType.SHAMAN, id);
         this.stars = stars;
     }
 
