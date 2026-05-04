@@ -395,9 +395,9 @@ public class Game extends Subject {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
-        //check card is free
-        if (offeringCard == null || offeringCard.getPlayer() != null) {
-            throw new IllegalStateException("The offering card was already selected");
+        //check card is not null
+        if (offeringCard == null) {
+            throw new IllegalStateException("No offering card selected");
         }
 
         //check if offeringCard is valid
@@ -407,8 +407,14 @@ public class Game extends Subject {
 
         //search for offering card index in list
         int index = offeringCards.indexOf(offeringCard);
-        //set player to offeringCard
         OfferingCard selectedOc = offeringCards.get(index);
+
+        // check if offering card is free
+        if(selectedOc.getPlayer() != null) {
+            throw new IllegalStateException("Illegal card selection. (Card already selected)");
+        }
+
+        //set player to offeringCard
         selectedOc.setPlayer(orderedPlayer.peek());
         //apply effect of offering card with letter A
         resolveAOfferingCard(selectedOc);
