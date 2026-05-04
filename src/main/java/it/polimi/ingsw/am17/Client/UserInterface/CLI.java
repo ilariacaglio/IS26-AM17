@@ -481,7 +481,7 @@ public class CLI implements UI {
 
     /**
      * Draws the tribe and building row
-     * @param upper if true prints upper row, if false prints the lower row
+     * @param upper if true prints the upper row, if false prints the lower row
      */
     private void drawRow(boolean upper){
         List<TribesCard> tribeRow;
@@ -495,20 +495,17 @@ public class CLI implements UI {
             buildingRow = game.getLowerBuildingRow();
         }
         if(!(tribeRow.isEmpty() && buildingRow.isEmpty())){
-            if(upper) {
-                System.out.print("Upper row: ");
-            }
-            else {
-                System.out.print("Lower row: ");
-            }
+            if(upper) System.out.print("Upper row: ");
+            else System.out.print("Lower row: ");
+
             if(!tribeRow.isEmpty()) {
                 for (TribesCard c : tribeRow) {
-                    System.out.print(c.toString().concat("\t"));
+                    System.out.print("[" + c.toString().concat("\t") + "]");
                 }
             }
             if(!buildingRow.isEmpty()){
                 for(BuildingCard c : buildingRow) {
-                    System.out.print(c.toString().concat("\t"));
+                    System.out.print("[" + c.toString().concat("\t") + "]");
                 }
             }
             System.out.println();
