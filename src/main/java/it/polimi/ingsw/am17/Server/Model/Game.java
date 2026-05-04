@@ -392,9 +392,9 @@ public class Game extends Subject {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
-        //check card is free
-        if (offeringCard == null || offeringCard.getPlayer() != null) {
-            throw new IllegalStateException("The offering card was already selected");
+        //check card is not null
+        if (offeringCard == null) {
+            throw new IllegalStateException("No offering card selected");
         }
 
         //check if offeringCard is valid
@@ -404,8 +404,15 @@ public class Game extends Subject {
 
         //search for offering card index in list
         int index = offeringCards.indexOf(offeringCard);
+        OfferingCard selectedOc = offeringCards.get(index);
+
+        // check if offering card is free
+        if(selectedOc.getPlayer() != null) {
+            throw new IllegalStateException("Illegal card selection. (Card already selected)");
+        }
+
         //set player to offeringCard
-        offeringCards.get(index).setPlayer(orderedPlayer.peek());
+        selectedOc.setPlayer(orderedPlayer.peek());
 
         orderedPlayer.pop();
         if(orderedPlayer.isEmpty()){
@@ -430,6 +437,13 @@ public class Game extends Subject {
     public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
+
+        // if a player has selected the offering card with letter A
+        if (currentOffering.getOrderLetter()=='A') {
+            handleOfferingCardWithLetterA(currentOffering);
+            // recalculate next occupied offering card
+            currentOffering = getNextOccupiedOfferingCard();
+        }
 
         // Check if the player is current next player
         if (!player.equals(currentOffering.getPlayer())) {
@@ -478,6 +492,13 @@ public class Game extends Subject {
 //            notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
 //        }
 
+    }
+
+    private void handleOfferingCardWithLetterA(OfferingCard offeringCard) {
+        // give +3 food to the player
+        offeringCard.getPlayer().addFood(3);
+        // remove player from offering card
+        offeringCard.setPlayer(null);
     }
 
 

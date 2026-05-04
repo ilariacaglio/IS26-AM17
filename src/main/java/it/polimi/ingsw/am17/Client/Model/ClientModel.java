@@ -144,7 +144,7 @@ public class ClientModel {
         }
         else {
             OfferingCard oc =  offeringCards.stream()
-                    .filter(c -> c.getPlayer() != null)
+                    .filter(c -> c.getPlayer() != null && c.getOrderLetter()!='A')
                     .min(Comparator.comparing(OfferingCard::getOrderLetter))
                     .orElse(null);
             if(oc != null)
@@ -171,7 +171,7 @@ public class ClientModel {
                 break;
             }
         }
-//        updateAllPlayers();
+        updateAllPlayers();
     }
 
     public void removePlayerFromOfferingCard(Player player){
@@ -197,7 +197,7 @@ public class ClientModel {
     }
 
     public void setAllPlayers(List<Player> allPlayers) {
-        this.allPlayers = allPlayers;
+        this.allPlayers = new ArrayList<>(allPlayers);
     }
 
     public List<Player> getAllPlayers() {
@@ -211,5 +211,10 @@ public class ClientModel {
                 allPlayers.set(index, p);
             }
         }
+    }
+
+    public void setNullOfferingCardAPlayer() {
+        offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
+                .findFirst().ifPresent(card -> card.setPlayer(null));
     }
 }
