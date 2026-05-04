@@ -278,7 +278,7 @@ public class CLI implements UI {
                 break;
             }
             try {
-                int numCard = Integer.parseInt(input) -1;
+                int numCard = Integer.parseInt(input);
                 // check if the index is valid
                 if (numCard >= 0 && numCard < pickableCards.size()) {
                     if (!cardIndexes.add(numCard)) {
