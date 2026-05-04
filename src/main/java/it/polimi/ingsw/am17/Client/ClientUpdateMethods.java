@@ -46,7 +46,7 @@ public class ClientUpdateMethods {
         model.setPickOfferingCardPhase(true);
         model.setNumPlayers(players.size());
         model.setOrderedPlayers(players);
-        model.setAllPlayers(players.stream().toList());
+        model.setAllPlayers(players.stream().toList()); // TODO: this creates an immutable object (later changed) FIX
         model.setTribeCards(upperRow, lowerRow);
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setOfferingCards(offeringCards);

@@ -63,6 +63,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                         case UPDATE_PLAYER_STACK -> updatePlayerStack(message.getOrderedPlayer());
                         case UPDATE_PLAYER_SELECT_OFFERING_CARD ->
                                 updatePlayerSelectOfferingCard(message.getPlayer(), message.getOfferingCard());
+                        case UPDATE_PLAYER_SELECT_TRIBE_CARDS -> updatePlayerSelectTribeCards(message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
                         case UPDATE_END_TURN ->
                                 updateEndTurn(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow());
                         case UPDATE_START_GAME ->
