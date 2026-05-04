@@ -9,6 +9,8 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
+
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
@@ -165,6 +167,7 @@ public class CLI implements UI {
         try{
             // update game data
             this.game = game;
+            evaluateGamePhase();
             // cancel arrow
             System.out.print("\b\b");
             //clear console
