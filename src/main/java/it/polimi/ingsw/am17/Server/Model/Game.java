@@ -8,6 +8,8 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
+
 import static it.polimi.ingsw.am17.Server.Utility.CardParser.loadOfferingCards;
 
 import java.util.*;
@@ -336,45 +338,13 @@ public class Game extends Subject {
      * @param characterCards       Selected character cards.
      * @param buildingCards        Selected building cards.
      */
-    private void validateCardChoice(int numToSelectFromUpper, int numToSelectFromLower, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    private void validateCardChoice(int numToSelectFromUpper, int numToSelectFromLower, List<CharacterCard> characterCards,
+                                    List<BuildingCard> buildingCards) throws Exception {
 
-        // get character cards from tribe rows (filter out events)
-        List<CharacterCard> upperRowCharacterCards = new ArrayList<>(upperRow.stream()
-                .filter(card -> card.getCardType().isCharacter())
-                .map(CharacterCard.class::cast)
-                .toList());
-        List<CharacterCard> lowerRowCharacterCards = new ArrayList<>(lowerRow.stream()
-                .filter(card -> card.getCardType().isCharacter())
-                .map(CharacterCard.class::cast)
-                .toList());
-
-        // decrease the number of cards the player has to (still) select when a match is found
-        for (CharacterCard card : characterCards) {
-            if (upperRowCharacterCards.contains(card)) {
-                numToSelectFromUpper--;
-                upperRowCharacterCards.remove(card);
-            } else if (lowerRowCharacterCards.contains(card)) {
-                numToSelectFromLower--;
-                lowerRowCharacterCards.remove(card);
-            } else {
-                throw new IllegalStateException("Illegal character selection. (Card not in any row)");
-            }
-        }
-        for (BuildingCard card : buildingCards) {
-            if (upperBuildingRow.contains(card)) {
-                numToSelectFromUpper--;
-            } else if (lowerBuildingRow.contains(card)) {
-                numToSelectFromLower--;
-            } else {
-                throw new IllegalStateException("Illegal building selection. (Card not in any row)");
-            }
-        }
-
-        // if the player still has cards to select (counters != 0),
-        // AND it is possible to select more cards (i.e. row not empty), the choice is not valid.
-        if ((numToSelectFromUpper != 0 && !upperRowCharacterCards.isEmpty()) || (numToSelectFromLower != 0 && !lowerRowCharacterCards.isEmpty())) {
-            throw new IllegalStateException("Illegal card selection. (Wrong number of cards)");
-        }
+        Exception e = MoveValidator.validateCardChoice(numToSelectFromUpper, numToSelectFromLower,
+                characterCards, buildingCards, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+        if(e != null)
+            throw e;
 
     }
 
@@ -434,7 +404,7 @@ public class Game extends Subject {
      * @param characterCards TODO: check null
      * @param buildingCards  TODO: check null
      */
-    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
 
