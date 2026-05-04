@@ -85,7 +85,7 @@ public class Game extends Subject {
      */
     private OfferingCard getNextOccupiedOfferingCard() {
         OfferingCard offCard = offeringCards.stream()
-                .filter(card -> card.getPlayer() != null)
+                .filter(card -> card.getPlayer() != null && card.getOrderLetter()!='A')
                 .min(Comparator.comparing(OfferingCard::getOrderLetter))
                 .orElse(null);
         if (offCard != null) {
