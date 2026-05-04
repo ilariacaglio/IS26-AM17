@@ -339,14 +339,14 @@ public class CLI implements UI {
         // print character cards
         for (TribesCard card : tribeRow) {
             if (card.getCardType().isCharacter()) {
-                System.out.print(currentIndex + ") " + card + "\t");
+                System.out.print(" " + currentIndex + ") [" + card + "] ");
                 // increase number only when the card is printed
                 currentIndex++;
             }
         }
         // print building cards
         for (BuildingCard card : buildingRow) {
-            System.out.print(currentIndex + ") " + card + "\t");
+            System.out.print(" " + currentIndex + ") [" + card + "] ");
             // increase number only when the card is printed
             currentIndex++;
         }
