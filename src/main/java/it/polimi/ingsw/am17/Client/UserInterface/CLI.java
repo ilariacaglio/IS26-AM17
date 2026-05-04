@@ -137,7 +137,7 @@ public class CLI implements UI {
      */
     public void printGamesList(){
         System.out.print("\b\b");
-        System.out.println("Incomplete games:");
+        System.out.println("Open games:");
         for(int i=0; i< game.getGamesIdList().size(); i++){
             System.out.println(i+"\t"+game.getGamesIdList().get(i));
         }
