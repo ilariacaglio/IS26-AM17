@@ -353,6 +353,23 @@ public class CLI implements UI {
             }
         }
 
+        //check if move is valid
+        Exception mE = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
+                characterCards, buildingCards, game.getUpperTribeRow(), game.getLowerTribeRow(), game.getUpperBuildingRow(), game.getLowerBuildingRow());
+        if(mE != null)
+        {
+            drawInterface(game, mE.getMessage());
+            return;
+        }
+
+        //check if player can buy the buildings
+        if(!buildingCards.isEmpty() && !game.getLocalPlayer().canBuyBuidings(buildingCards)) {
+            drawInterface(game, "Not enough food to buy building cards");
+            return;
+        }
+
+
+
         // call server method
         try{
             virtualServer.pickTribeCards(game.getGameId(),game.getLocalPlayer(),characterCards,buildingCards);
@@ -496,6 +513,16 @@ public class CLI implements UI {
         try {
             System.out.print("Insert card number (position from 0) > ");
             int numCard = Integer.parseInt(scanner.nextLine());
+            //check if nuber is plausible
+            if(numCard<0 || numCard>=game.getOfferingCards().size()){
+                drawInterface(game, "number out of bound");
+                return;
+            }
+            //check if card is free
+            if(game.getOfferingCards().get(numCard).getPlayer() != null) {
+                drawInterface(game, "card already taken");
+                return;
+            }
             virtualServer.pickOfferingCard(game.getGameId(), game.getLocalPlayer(), game.getOfferingCards().get(numCard));
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
