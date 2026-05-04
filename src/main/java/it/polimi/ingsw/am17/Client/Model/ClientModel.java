@@ -144,7 +144,7 @@ public class ClientModel {
         }
         else {
             OfferingCard oc =  offeringCards.stream()
-                    .filter(c -> c.getPlayer() != null)
+                    .filter(c -> c.getPlayer() != null && c.getOrderLetter()!='A')
                     .min(Comparator.comparing(OfferingCard::getOrderLetter))
                     .orElse(null);
             if(oc != null)
