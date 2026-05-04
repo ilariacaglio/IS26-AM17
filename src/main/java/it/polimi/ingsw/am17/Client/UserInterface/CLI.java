@@ -500,12 +500,12 @@ public class CLI implements UI {
 
             if(!tribeRow.isEmpty()) {
                 for (TribesCard c : tribeRow) {
-                    System.out.print("[" + c.toString().concat("\t") + "]");
+                    System.out.print("[" + c.toString() + "] ");
                 }
             }
             if(!buildingRow.isEmpty()){
                 for(BuildingCard c : buildingRow) {
-                    System.out.print("[" + c.toString().concat("\t") + "]");
+                    System.out.print("[" + c.toString() + "] ");
                 }
             }
             System.out.println();
