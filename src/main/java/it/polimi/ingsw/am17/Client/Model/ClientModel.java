@@ -16,6 +16,9 @@ public class ClientModel {
     private int currentEra = 0;
 
     private boolean isPickOfferingCardPhase;
+
+    // used to keep a list of player when removing from stack
+    // TODO: Review
     private List<Player> allPlayers;
 
     private Player myPlayer;
@@ -93,7 +96,7 @@ public class ClientModel {
         this.upperBuildingRow.clear();
         this.upperBuildingRow.addAll(upperBuildingRow);
         this.lowerBuildingRow.clear();
-        this.lowerBuildingRow.addAll(lowerBuildingRow);
+        if (lowerBuildingRow != null) this.lowerBuildingRow.addAll(lowerBuildingRow);
     }
 
     public void setGameIdList(List<UUID> gamesIdList){
@@ -168,7 +171,7 @@ public class ClientModel {
                 break;
             }
         }
-        updateAllPlayers();
+//        updateAllPlayers();
     }
 
     public void removePlayerFromOfferingCard(Player player){

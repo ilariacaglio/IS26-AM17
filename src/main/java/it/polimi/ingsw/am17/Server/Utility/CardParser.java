@@ -50,7 +50,7 @@ public class CardParser {
     public static List<Artist> artistsParser(int numPlayers){
         try {
             List<Artist> list = mapper.readValue(CardParser.class.getResourceAsStream("/Artist.json"), new TypeReference<ArrayList<Artist>>() {});
-            return list.stream().filter(c->numPlayers >= c.getMinPlayer()).toList();
+            return list.stream().filter(c->numPlayers >= c.getMinPlayers()).toList();
         }
         catch(Exception ex) {
             throw new RuntimeException("Error while loading artists", ex);
@@ -60,7 +60,7 @@ public class CardParser {
     public static List<Binder> bindersParser (int numPlayers){
         try {
             List<Binder> list = mapper.readValue(CardParser.class.getResourceAsStream("/Binder.json"), new TypeReference<ArrayList<Binder>>() {});
-            return list.stream().filter(c->numPlayers >= c.getMinPlayer()).toList();
+            return list.stream().filter(c->numPlayers >= c.getMinPlayers()).toList();
         }
         catch(Exception ex) {
             throw new RuntimeException("Error while loading binders", ex);
@@ -70,7 +70,7 @@ public class CardParser {
     public static List<Builder> buildersParser(int numPlayers){
         try {
             List<Builder> list = mapper.readValue(CardParser.class.getResourceAsStream("/Builder.json"), new TypeReference<ArrayList<Builder>>() {});
-            return list.stream().filter(c->numPlayers >= c.getMinPlayer()).toList();
+            return list.stream().filter(c->numPlayers >= c.getMinPlayers()).toList();
         }
         catch(Exception ex) {
             throw new RuntimeException("Error while loading builders", ex);
@@ -80,7 +80,7 @@ public class CardParser {
     public static List<Hunter> huntersParser(int numPlayers){
         try {
             List<Hunter> list = mapper.readValue(CardParser.class.getResourceAsStream("/Hunter.json"), new TypeReference<ArrayList<Hunter>>() {});
-            return list.stream().filter(c->numPlayers >= c.getMinPlayer()).toList();
+            return list.stream().filter(c->numPlayers >= c.getMinPlayers()).toList();
         }
         catch(Exception ex) {
             throw new RuntimeException("Error while loading hunters", ex);
@@ -90,7 +90,7 @@ public class CardParser {
     public static List<Inventor> inventorParser(int numPlayers){
         try {
             List<Inventor> list = mapper.readValue(CardParser.class.getResourceAsStream("/Inventor.json"), new TypeReference<ArrayList<Inventor>>() {});
-            return list.stream().filter(c->numPlayers >= c.getMinPlayer()).toList();
+            return list.stream().filter(c->numPlayers >= c.getMinPlayers()).toList();
         }
         catch(Exception ex) {
             throw new RuntimeException("Error while loading inventors", ex);
@@ -100,7 +100,7 @@ public class CardParser {
     public static List<Shaman> shamansParser(int numPlayers){
         try {
             List<Shaman> list = mapper.readValue(CardParser.class.getResourceAsStream("/Shaman.json"), new TypeReference<ArrayList<Shaman>>() {});
-            return list.stream().filter(c->numPlayers >= c.getMinPlayer()).toList();
+            return list.stream().filter(c->numPlayers >= c.getMinPlayers()).toList();
         }
         catch(Exception ex) {
             throw new RuntimeException("Error while loading shamans", ex);
