@@ -235,7 +235,7 @@ public class CLI implements UI {
         }
 
         // calculate the number of cards the user can pick
-        int totalCards = myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower();
+        int totalCards = totalCards = myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower();
 
         // if card with letter A, no card can be chosen
         if(totalCards == 0) {
@@ -271,9 +271,14 @@ public class CLI implements UI {
 
         // cards selection
         while (cardIndexes.size() < totalCards) {
-            System.out.print("Type the card number > ");
+            System.out.print("Type the card number (or 'quit' to stop) > ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (input.equals("quit")) {
+                System.out.println("Selection stopped.");
+                break;
+            }
             try {
-                int numCard = Integer.parseInt(scanner.nextLine())-1;
+                int numCard = Integer.parseInt(input) -1;
                 // check if the index is valid
                 if (numCard >= 0 && numCard < pickableCards.size()) {
                     if (!cardIndexes.add(numCard)) {
@@ -285,7 +290,7 @@ public class CLI implements UI {
                 }
             }
             catch (NumberFormatException e) {
-                System.err.println("Invalid input, please enter a valid number.");
+                System.err.println("Invalid input, please enter a valid number or 'quit' to stop.");
             }
         }
 
