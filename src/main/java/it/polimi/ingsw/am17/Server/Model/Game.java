@@ -440,10 +440,7 @@ public class Game extends Subject {
 
         // if a player has selected the offering card with letter A
         if (currentOffering.getOrderLetter()=='A') {
-            // give +3 food to the player
-            giveFoodFromOfferingCardWithLetterA(currentOffering);
-            // remove player from offering card
-            currentOffering.setPlayer(null);
+            handleOfferingCardWithLetterA(currentOffering);
             // recalculate next occupied offering card
             currentOffering = getNextOccupiedOfferingCard();
         }
@@ -497,6 +494,13 @@ public class Game extends Subject {
 
     }
 
+    private void handleOfferingCardWithLetterA(OfferingCard offeringCard) {
+        // give +3 food to the player
+        offeringCard.getPlayer().addFood(3);
+        // remove player from offering card
+        offeringCard.setPlayer(null);
+    }
+
 
     /**
      * Checks if the player has the BuildingType2 card and sets it to buildingType2OfferingCard
@@ -508,14 +512,6 @@ public class Game extends Subject {
         if (player.hasBuilding2()) {
             building2OfferingCard.setPlayer(player);
         }
-    }
-
-    /**
-     * Adds food to player if it has selected 'A' offering card.
-     * @param offeringCard  the offering card selected
-     */
-    private void giveFoodFromOfferingCardWithLetterA(OfferingCard offeringCard) {
-        offeringCard.getPlayer().addFood(3);
     }
 
     public UUID getId() {
