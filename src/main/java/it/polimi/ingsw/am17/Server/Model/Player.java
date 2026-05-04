@@ -138,6 +138,9 @@ public class Player implements Serializable {
             }
         }
 
+        if(!canBuyBuidings(buildingCards))
+            throw new IllegalStateException("Not enough food to buy building cards");
+
         for (BuildingCard card : buildingCards){
             int cost = calculateBuildingCost(card);
             try {
@@ -147,6 +150,16 @@ public class Player implements Serializable {
             }
             addBuilding(card);
         }
+    }
+
+    public boolean canBuyBuidings(List<BuildingCard> buildingsToBuy)
+    {
+        int totalCost = 0;
+        for (BuildingCard card : buildingsToBuy){
+            int cost = calculateBuildingCost(card);
+            totalCost+= cost;
+        }
+        return totalCost <= food;
     }
 
     public int calculateBuildingCost(BuildingCard card) {
