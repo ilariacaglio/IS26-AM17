@@ -162,7 +162,12 @@ public class ClientModel {
     }
 
     public void setPlayerInStack(Player player){
-        orderedPlayer.replaceAll(p -> p.equals(player) ? player : p);
+        for (int i = 0; i < orderedPlayer.size(); i++) {
+            if (orderedPlayer.get(i).equals(player)) {
+                orderedPlayer.set(i,player);
+                break;
+            }
+        }
         updateAllPlayers();
     }
 
@@ -197,10 +202,11 @@ public class ClientModel {
     }
 
     public void updateAllPlayers() {
-        this.allPlayers = new ArrayList<>(this.allPlayers);
-
-        for (Player p : orderedPlayer) {
-            allPlayers.replaceAll(existingPlayer -> existingPlayer.equals(p) ? p : existingPlayer);
+        for(Player p : orderedPlayer) {
+            if(allPlayers.contains(p)){
+                int index = allPlayers.indexOf(p);
+                allPlayers.set(index, p);
+            }
         }
     }
 }
