@@ -84,10 +84,9 @@ public class OfferingCard implements Serializable {
     public String toString() {
         String nickname = (player != null) ? player.getNickname() : " ";
 
-        return  orderLetter + " "
-                + foodBonus + "F " +
-                + numCardsUpper + "↑ "
-                + numCardsLower + "↓"
-                + "(" + nickname + ")";
+        return  numCardsUpper + "↑ "
+                + numCardsLower + "↓ "
+                + "(" + nickname + ") "
+                + foodBonus + "F " ;
     }
 }
