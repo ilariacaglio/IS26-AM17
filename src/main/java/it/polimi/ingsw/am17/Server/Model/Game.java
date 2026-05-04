@@ -295,6 +295,9 @@ public class Game extends Subject {
         // remove player from buildingType2 offering card
         building2OfferingCard.setPlayer(null);
 
+        // remove player from offering card with letter A
+        freeAOfferingCard();
+
         //notifyPlayerStack(orderedPlayer);
         //notifyTribesCards(upperRow, lowerRow);
         notifyEndTurn(orderedPlayer, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
@@ -405,7 +408,10 @@ public class Game extends Subject {
         //search for offering card index in list
         int index = offeringCards.indexOf(offeringCard);
         //set player to offeringCard
-        offeringCards.get(index).setPlayer(orderedPlayer.peek());
+        OfferingCard selectedOc = offeringCards.get(index);
+        selectedOc.setPlayer(orderedPlayer.peek());
+        //apply effect of offering card with letter A
+        resolveAOfferingCard(selectedOc);
 
         orderedPlayer.pop();
         if(orderedPlayer.isEmpty()){
@@ -491,6 +497,26 @@ public class Game extends Subject {
         if (player.hasBuilding2()) {
             building2OfferingCard.setPlayer(player);
         }
+    }
+
+    /**
+     * Adds food to player if it has selected 'A' offering card.
+     * @param offeringCard  the offering card selected
+     */
+    private void resolveAOfferingCard(OfferingCard offeringCard) {
+        if(offeringCard.getOrderLetter()=='A') {
+            offeringCard.getPlayer().addFood(3);
+        }
+    }
+
+    /**
+     * Sets player to null in offering card with letter 'A'.
+     */
+    private void freeAOfferingCard() {
+        offeringCards.stream()
+                .filter(card -> card.getOrderLetter() == 'A')
+                .findFirst()
+                .ifPresent(letterAOffCard -> letterAOffCard.setPlayer(null));
     }
 
     public UUID getId() {
