@@ -133,15 +133,6 @@ public class Game extends Subject {
             throw new IllegalStateException(message);
         }
 
-        /*double check
-        if (orderedPlayer.size() >= numPlayers) {
-            throw new IllegalStateException("The game lobby is full (max " + numPlayers + " players).");
-        }
-        */
-        if (orderedPlayer.contains(p)) {
-            throw new IllegalArgumentException("This player is already in the lobby.");
-        }
-
         orderedPlayer.add(p);
         notifyPlayerStack(orderedPlayer);
 
@@ -422,7 +413,6 @@ public class Game extends Subject {
      * @param offeringCard offering card picked
      */
     public void selectOfferingCard(Player player, OfferingCard offeringCard) {
-        logger.info("Player " + player.getNickname() + " wants offering card " + offeringCard.getOrderLetter());
 
         //check if is player turn
         if (!player.equals(orderedPlayer.peek())) {
@@ -434,6 +424,7 @@ public class Game extends Subject {
             throw new IllegalStateException("No offering card selected");
         }
 
+        logger.info("Player " + player.getNickname() + " wants offering card " + offeringCard.getOrderLetter());
         //check if offeringCard is valid
         if (!offeringCards.contains(offeringCard) && !offeringCard.equals(building2OfferingCard)) {
             throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
