@@ -33,7 +33,7 @@ public class BuildingCard implements Serializable {
     public int GetAdditionalFinalPoints(List<CharacterCard> characterCards) { return 0; }
     public int GetFoodDiscountInFoodEvent(List<CharacterCard> characterCards) { return 0; }
     public int AddFoodPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: HuntingEvent
-    public int AddFoodPerHunterInPaintingEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: PaintingEvent
+    public int AddFoodPerArtistInPaintingEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: PaintingEvent
     public int GetFoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) { return 0; } // CardEffect
     public int GetFoodBonusFromTurnOrder() { return 0; } // TurnEffect
     public int AddPointPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; }
