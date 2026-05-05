@@ -9,10 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.rmi.RemoteException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 
 public class ClientUpdateMethods {
 
@@ -23,7 +20,7 @@ public class ClientUpdateMethods {
         userInterface.printEra();
     }
 
-    public static void updatePlayerStack(ClientModel model, UI userInterface, LinkedList<Player> orderedPlayer) {
+    public static void updatePlayerStack(ClientModel model, UI userInterface, Queue<Player> orderedPlayer) {
         model.setOrderedPlayers(orderedPlayer);
         // UI communication
         userInterface.drawInterface(model);
@@ -40,7 +37,7 @@ public class ClientUpdateMethods {
         userInterface.printGamesList();
     }
 
-    public static void updateStartGame(ClientModel model, UI userInterface, Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    public static void updateStartGame(ClientModel model, UI userInterface, Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
 
         model.setCurrentEra(1);
@@ -55,7 +52,7 @@ public class ClientUpdateMethods {
         userInterface.drawInterface(model);
     }
 
-    public static void updateEndTurn(ClientModel model, UI userInterface, Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+    public static void updateEndTurn(ClientModel model, UI userInterface, Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         for(Player player : players) {
             updatePlayerValue(model.getPlayer(player), player);
         }
@@ -77,7 +74,7 @@ public class ClientUpdateMethods {
     }
 
     public static void updatePlayerSelectTribeCards(ClientModel model, UI userInterface, Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) {
-        model.setPlayerInStack(player);
+        model.setPlayerInQueue(player);
         model.removePlayerFromOfferingCard(player);
         model.removeTribeCards(tribesCards);
         model.removeBuildingCards(buildingCards);
