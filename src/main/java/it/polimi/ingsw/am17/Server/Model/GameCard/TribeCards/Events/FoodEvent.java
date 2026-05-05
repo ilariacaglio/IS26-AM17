@@ -10,9 +10,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class FoodEvent extends EventCard{
-    private final int pointLost;
+    private final Integer pointLost;
 
-    public int getPointLost() {
+    public Integer getPointLost() {
         return pointLost;
     }
 

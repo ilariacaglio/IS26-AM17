@@ -8,23 +8,23 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Builder extends CharacterCard {
-    private final int pointBonus;
-    private final int foodReduction;
+    private final Integer pointBonus;
+    private final Integer foodReduction;
 
-    public int getFoodReduction() {
+    public Integer getFoodReduction() {
         return foodReduction;
     }
 
-    public int getPointBonus() {
+    public Integer getPointBonus() {
         return pointBonus;
     }
 
     @JsonCreator
     public Builder(
-            @JsonProperty("era") int era,
-            @JsonProperty("minPlayers") int minPlayers,
-            @JsonProperty("pointsBonus") int pointsBonus,
-            @JsonProperty("foodReduction") int foodReduction,
+            @JsonProperty("era") Integer era,
+            @JsonProperty("minPlayers") Integer minPlayers,
+            @JsonProperty("pointsBonus") Integer pointsBonus,
+            @JsonProperty("foodReduction") Integer foodReduction,
             @JsonProperty("id") UUID id) {
         super(era, minPlayers, CardType.BUILDER, id);
         this.pointBonus = pointsBonus;
