@@ -439,10 +439,8 @@ public class Game extends Subject {
         //set player to offeringCard
         selectedOc.setPlayer(orderedPlayers.peek());
 
-        // remove player from queue
-        Player lastPlayer = orderedPlayers.poll();
-        // add player as last element of queue
-        orderedPlayers.add(lastPlayer);
+        // dequeue and enqueue the player in last position
+        movePlayerInQueue();
 
         // when all player have an offering card recalculate queue
         if (allPlayersPickedOfferingCards()) {
@@ -475,7 +473,7 @@ public class Game extends Subject {
      */
     private Boolean allPlayersPickedOfferingCards() {
         return orderedPlayers.stream().allMatch(player ->
-                offeringCards.stream().anyMatch(card -> card.getPlayer().equals(player))
+                offeringCards.stream().anyMatch(card -> card.getPlayer() != null && card.getPlayer().equals(player))
         );
     }
 
@@ -529,6 +527,7 @@ public class Game extends Subject {
         }
 
         currentOffering.setPlayer(null);
+        movePlayerInQueue();
 
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
 
@@ -551,6 +550,18 @@ public class Game extends Subject {
         offeringCard.getPlayer().addFood(3);
         // remove player from offering card
         offeringCard.setPlayer(null);
+        // move the player to last position in queue
+        movePlayerInQueue();
+    }
+
+    /**
+     * Dequeues and enqueues the player
+     */
+    private void movePlayerInQueue() {
+        // remove player from queue
+        Player lastPlayer = orderedPlayers.poll();
+        // add player as last element of queue
+        orderedPlayers.add(lastPlayer);
     }
 
 
