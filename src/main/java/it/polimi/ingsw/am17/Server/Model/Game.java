@@ -230,7 +230,6 @@ public class Game extends Subject {
 
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
 
-        // notifyTribesCards(upperRow,lowerRow);
         notifyStartGame(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
@@ -274,7 +273,7 @@ public class Game extends Subject {
                 int foodFromBuilding = p.addFoodToTurnFood();
                 p.addFood(turnFoodPoints[i] + foodFromBuilding);
             }
-            i--;
+            i++;
         }
     }
 
@@ -320,8 +319,6 @@ public class Game extends Subject {
         // remove player from buildingType2 offering card
         building2OfferingCard.setPlayer(null);
 
-        //notifyPlayerStack(orderedPlayer);
-        //notifyTribesCards(upperRow, lowerRow);
         notifyEndTurn(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
@@ -443,18 +440,12 @@ public class Game extends Subject {
         //set player to offeringCard
         selectedOc.setPlayer(orderedPlayers.peek());
 
-        // TODO: review this part
-        // TODO: coda deve essere circolare
-        orderedPlayers.poll();
-        if(orderedPlayers.isEmpty()){
-            //order player stack for next turn
-            orderedPlayers.addAll(offeringCards.stream()
-                .filter(card -> card.getPlayer() != null)
-                .sorted(Comparator.comparing(OfferingCard::getOrderLetter).reversed())
-                .map(OfferingCard::getPlayer)
-                .collect(Collectors.toCollection(Stack::new)));
-        }
+        // remove player from queue
+        Player lastPlayer = orderedPlayers.poll();
+        // add player as last element of queue
+        orderedPlayers.add(lastPlayer);
 
+        // notify changes
         notifyPlayerQueue(orderedPlayers);
         notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
     }
@@ -462,8 +453,8 @@ public class Game extends Subject {
     /**
      * Emulates a player action (picking cards).
      * @param player            the player that has picked the cards
-     * @param characterCards TODO: check null
-     * @param buildingCards  TODO: check null
+     * @param characterCards
+     * @param buildingCards
      */
     public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info("Player " + player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards);
@@ -518,15 +509,12 @@ public class Game extends Subject {
             // the round has ended
             endRound();
         }
-//        else {
-//            // TODO: improve, too much data
-//            notifyOfferingCards(offeringCards);
-//            notifyTribesCards(upperRow, lowerRow);
-//            notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
-//        }
-
     }
 
+    /**
+     * Adds food to player in the offering card with letter A, then sets player to null
+     * @param offeringCard reference to offering card with letter A
+     */
     private void handleOfferingCardWithLetterA(OfferingCard offeringCard) {
         logger.fine("Handling offering card with letter A.");
 
