@@ -80,6 +80,7 @@ public class ClientUpdateMethods {
         model.removePlayerFromOfferingCard(player);
         model.removeTribeCards(tribesCards);
         model.removeBuildingCards(buildingCards);
+        model.setNullOfferingCardAPlayer();
         userInterface.drawInterface(model);
     }
 }

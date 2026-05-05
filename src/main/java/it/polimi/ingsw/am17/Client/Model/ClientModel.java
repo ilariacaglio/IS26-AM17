@@ -144,7 +144,7 @@ public class ClientModel {
         }
         else {
             OfferingCard oc =  offeringCards.stream()
-                    .filter(c -> c.getPlayer() != null)
+                    .filter(c -> c.getPlayer() != null && c.getOrderLetter()!='A')
                     .min(Comparator.comparing(OfferingCard::getOrderLetter))
                     .orElse(null);
             if(oc != null)
@@ -165,13 +165,8 @@ public class ClientModel {
     }
 
     public void setPlayerInStack(Player player){
-        for (int i = 0; i < orderedPlayer.size(); i++) {
-            if (orderedPlayer.get(i).equals(player)) {
-                orderedPlayer.set(i,player);
-                break;
-            }
-        }
-//        updateAllPlayers();
+        orderedPlayer.replaceAll(p -> p.equals(player) ? player : p);
+        updateAllPlayers();
     }
 
     public void removePlayerFromOfferingCard(Player player){
@@ -197,7 +192,7 @@ public class ClientModel {
     }
 
     public void setAllPlayers(List<Player> allPlayers) {
-        this.allPlayers = allPlayers;
+        this.allPlayers = new ArrayList<>(allPlayers);
     }
 
     public List<Player> getAllPlayers() {
@@ -205,11 +200,15 @@ public class ClientModel {
     }
 
     public void updateAllPlayers() {
-        for(Player p : orderedPlayer) {
-            if(allPlayers.contains(p)){
-                int index = allPlayers.indexOf(p);
-                allPlayers.set(index, p);
-            }
+        this.allPlayers = new ArrayList<>(this.allPlayers);
+
+        for (Player p : orderedPlayer) {
+            allPlayers.replaceAll(existingPlayer -> existingPlayer.equals(p) ? p : existingPlayer);
         }
+    }
+
+    public void setNullOfferingCardAPlayer() {
+        offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
+                .findFirst().ifPresent(card -> card.setPlayer(null));
     }
 }
