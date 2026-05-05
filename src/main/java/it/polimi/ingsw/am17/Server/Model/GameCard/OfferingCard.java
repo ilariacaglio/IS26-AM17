@@ -9,19 +9,19 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class OfferingCard implements Serializable {
-    private final int minPlayers;
-    private final char orderLetter;
-    private final int foodBonus;
-    private final int numCardsUpper;
-    private final int numCardsLower;
+    private final Integer minPlayers;
+    private final Character orderLetter;
+    private final Integer foodBonus;
+    private final Integer numCardsUpper;
+    private final Integer numCardsLower;
     private Player player;
 
     @JsonCreator
-    public OfferingCard(@JsonProperty("minPlayers") int minPlayers,
-    @JsonProperty("orderLetter") char orderLetter,
-    @JsonProperty("foodBonus") int foodBonus,
-    @JsonProperty("numCardsUpper") int numCardsUpper,
-    @JsonProperty("numCardsLower") int numCardsLower) {
+    public OfferingCard(@JsonProperty("minPlayers") Integer minPlayers,
+    @JsonProperty("orderLetter") Character orderLetter,
+    @JsonProperty("foodBonus") Integer foodBonus,
+    @JsonProperty("numCardsUpper") Integer numCardsUpper,
+    @JsonProperty("numCardsLower") Integer numCardsLower) {
         this.minPlayers = minPlayers;
         this.orderLetter = orderLetter;
         this.foodBonus = foodBonus;
@@ -42,23 +42,23 @@ public class OfferingCard implements Serializable {
         }
     }
 
-    public char getOrderLetter() {
+    public Character getOrderLetter() {
         return orderLetter;
     }
 
-    public int getFoodBonus() {
+    public Integer getFoodBonus() {
         return foodBonus;
     }
 
-    public int getNumCardsLower() {
+    public Integer getNumCardsLower() {
         return numCardsLower;
     }
 
-    public int getMinPlayers() {
+    public Integer getMinPlayers() {
         return minPlayers;
     }
 
-    public int getNumCardsUpper() {
+    public Integer getNumCardsUpper() {
         return numCardsUpper;
     }
 

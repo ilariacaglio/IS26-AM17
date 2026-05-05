@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class TribesCard implements Serializable {
     private final CardType cardType;
-    private final int era;
+    private final Integer era;
     private final UUID id;
 
     public CardType getCardType() {
@@ -19,7 +19,7 @@ public class TribesCard implements Serializable {
     }
 
     @JsonCreator
-    public TribesCard(@JsonProperty("era") int era, @JsonProperty("cardType") CardType cardType, @JsonProperty("id") UUID id){
+    public TribesCard(@JsonProperty("era") Integer era, @JsonProperty("cardType") CardType cardType, @JsonProperty("id") UUID id){
         this.cardType=cardType;
         this.era=era;
         //If id is null generate a new one, otherwise use id.

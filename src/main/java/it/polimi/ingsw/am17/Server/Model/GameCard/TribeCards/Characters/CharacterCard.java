@@ -9,16 +9,16 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class CharacterCard extends TribesCard {
-    private int minPlayers;
+    private Integer minPlayers;
 
-    public int getMinPlayers() {
+    public Integer getMinPlayers() {
         return minPlayers;
     }
 
     @JsonCreator
     public CharacterCard(
-            @JsonProperty("era") int era,
-            @JsonProperty("minPlayers") int minPlayers,
+            @JsonProperty("era") Integer era,
+            @JsonProperty("minPlayers") Integer minPlayers,
             @JsonProperty("cardType") CardType cardType,
             @JsonProperty("id") UUID id) {
         super(era,  cardType, id);
