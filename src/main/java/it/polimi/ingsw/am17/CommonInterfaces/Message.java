@@ -22,7 +22,7 @@ import java.util.UUID;
 /**
  * Message class for socket communication.
  */
-// @JsonInclude(JsonInclude.Include.NON_NULL) // removes null values when serializing TODO: issues in deserialization, it's not trivial to find and ignore null values inside e.g. a list of tribes cards
+@JsonInclude(JsonInclude.Include.NON_NULL) // removes null values when serializing
 public class Message implements Serializable {
     private final MessageType type;
 
