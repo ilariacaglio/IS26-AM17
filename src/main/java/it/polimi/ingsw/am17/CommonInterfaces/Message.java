@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class Message implements Serializable {
 
     private List<UUID> gamesIdList;
     private int era;
-    private Stack<Player> orderedPlayer;
+    private Queue<Player> orderedPlayer;
     private List<OfferingCard> offeringCards;
     private List<TribesCard> upperRow;
     private List<TribesCard> lowerRow;
@@ -123,11 +124,11 @@ public class Message implements Serializable {
         this.era = era;
     }
 
-    public Stack<Player> getOrderedPlayer() {
+    public Queue<Player> getOrderedPlayer() {
         return orderedPlayer;
     }
 
-    public void setOrderedPlayer(Stack<Player> orderedPlayer) {
+    public void setOrderedPlayer(Queue<Player> orderedPlayer) {
         this.orderedPlayer = orderedPlayer;
     }
 

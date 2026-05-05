@@ -44,7 +44,7 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updatePlayerStack(LinkedList<Player> orderedPlayer) throws Exception {
+    public void updatePlayerQueue(Queue<Player> orderedPlayer) throws Exception {
         Message message = new Message(MessageType.UPDATE_PLAYER_STACK);
         message.setOrderedPlayer(orderedPlayer);
         message.send(socket);

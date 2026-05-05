@@ -88,7 +88,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updatePlayerStack(LinkedList<Player> orderedPlayer) {
+    public void updatePlayerQueue(Queue<Player> orderedPlayer) {
         ClientUpdateMethods.updatePlayerStack(model, userInterface, orderedPlayer);
     }
 
