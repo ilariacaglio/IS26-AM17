@@ -77,7 +77,6 @@ public abstract class Subject {
                     Player copy = new Player(p.getNickname(), p.getColor());
                     copy.addFood(p.getFood());
                     copy.addPp(p.getPp());
-                    // Poiché non hai impostato le carte, rimangono null/vuote di default
                     return copy;
                 })
                 .collect(Collectors.toCollection(LinkedList::new));
