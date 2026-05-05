@@ -10,29 +10,29 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class PaintingEvent extends EventCard {
-    private final int pointsLow;
-    private final int pointsMax;
-    private final int numMax;
+    private final Integer pointsLow;
+    private final Integer pointsMax;
+    private final Integer numMax;
 
-    public int getNumMax() {
+    public Integer getNumMax() {
         return numMax;
     }
 
-    public int getPointsLow() {
+    public Integer getPointsLow() {
         return pointsLow;
     }
 
-    public int getPointsMax() {
+    public Integer getPointsMax() {
         return pointsMax;
     }
 
     @JsonCreator
     public PaintingEvent(
-            @JsonProperty("pointsLow") int pointsLow,
-            @JsonProperty("pointsMax") int pointsMax,
-            @JsonProperty("numMax") int numMax,
+            @JsonProperty("pointsLow") Integer pointsLow,
+            @JsonProperty("pointsMax") Integer pointsMax,
+            @JsonProperty("numMax") Integer numMax,
             @JsonProperty("Final") boolean Final,
-            @JsonProperty("era") int era,
+            @JsonProperty("era") Integer era,
             @JsonProperty("id") UUID id) {
         super(Final, era, CardType.PAINTING_EVENT, id);
         this.pointsLow = pointsLow;
