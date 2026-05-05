@@ -11,7 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,7 +28,7 @@ class RitualEventTest {
     //everyone has the same star number and player A has BuildingType8
     @Test
     void shouldAllEqualBuildingType8(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         list.add(A);
@@ -48,7 +50,7 @@ class RitualEventTest {
     //everyone has the same star number and nobody has BuildingType8
     @Test
     void shouldAllEqualNoBuildingType8(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         list.add(A);
@@ -69,7 +71,7 @@ class RitualEventTest {
     //B has min stars and BuildingType12
     @Test
     void shouldAMaxBMinAndBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         list.add(A);
@@ -93,7 +95,7 @@ class RitualEventTest {
     //B has min stars and no BuildingType12
     @Test
     void shouldAMaxBMinAndNoBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         list.add(A);
@@ -114,7 +116,7 @@ class RitualEventTest {
     //C min and BuildingType12
     @Test
     void shouldABMaxCMinAndBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         Player C = new Player("playerC", Color.RED);
@@ -143,7 +145,7 @@ class RitualEventTest {
     //C min and no BuildingType12
     @Test
     void shouldABMaxCMinNoBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         Player C = new Player("playerC", Color.RED);
@@ -169,7 +171,7 @@ class RitualEventTest {
     //B and C min and C has BuildingType12
     @Test
     void shouldAMaxBCMinAndBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         Player C = new Player("playerC", Color.RED);
@@ -198,7 +200,7 @@ class RitualEventTest {
     //B and C min and no BuildingType12
     @Test
     void shouldAMaxBCMinAndNoBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         Player C = new Player("playerC", Color.RED);
