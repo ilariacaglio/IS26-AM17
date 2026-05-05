@@ -18,9 +18,9 @@ public class FoodEvent extends EventCard{
 
     @JsonCreator
     public FoodEvent(
-           @JsonProperty("pointLost") int pointLost,
-           @JsonProperty("Final") boolean Final,
-           @JsonProperty("era") int era,
+           @JsonProperty("pointLost") Integer pointLost,
+           @JsonProperty("Final") Boolean Final,
+           @JsonProperty("era") Integer era,
            @JsonProperty("id") UUID id){
         super(Final, era, CardType.FOOD_EVENT, id);
         this.pointLost = pointLost;
