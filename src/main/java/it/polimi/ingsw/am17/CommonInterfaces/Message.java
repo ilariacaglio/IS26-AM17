@@ -170,4 +170,9 @@ public class Message implements Serializable {
     public void setLowerBuildingRow(List<BuildingCard> lowerBuildingRow) {
         this.lowerBuildingRow = lowerBuildingRow;
     }
+
+    @Override
+    public String toString() {
+        return mapper.writeValueAsString(this);
+    }
 }
