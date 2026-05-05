@@ -58,9 +58,6 @@ public class RitualEvent extends EventCard {
             if(allEqual){//give and then take Pp for each player
                 list.get(i).addPp(pointMax);
                 list.get(i).addPp(pointMin*(-1));
-                if(doublePoints){//if player has BuildingType8
-                    list.get(i).addPp(pointMax);
-                }
             }
             else{
                 if(stars[i] == max){
