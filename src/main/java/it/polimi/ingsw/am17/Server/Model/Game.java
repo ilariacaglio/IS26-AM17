@@ -404,7 +404,7 @@ public class Game extends Subject {
      * @param characterCards TODO: check null
      * @param buildingCards  TODO: check null
      */
-    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
+    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
 
@@ -423,7 +423,12 @@ public class Game extends Subject {
         // check if cards selection is legal based on the offeringCard
         int numUpper = currentOffering.getNumCardsUpper();
         int numLower = currentOffering.getNumCardsLower();
-        validateCardChoice(numUpper, numLower, characterCards, buildingCards);
+        try {
+            validateCardChoice(numUpper, numLower, characterCards, buildingCards);
+        }catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
 
         // selection legal: obtain cards
         try {
