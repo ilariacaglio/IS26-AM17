@@ -195,7 +195,7 @@ public class GameTest {
         @Test
         void testEndRound_ChangeEra_3() {
             //play turns
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 5; i++) {
                 game.endRound();
             }
             //get upper building row value
@@ -221,13 +221,13 @@ public class GameTest {
             assertEquals(2, game.getCurrentEra());
             game.endRound();
             game.endRound();
-            game.endRound();
             assertEquals(2, game.getCurrentEra());
             game.endRound();
             assertEquals(3, game.getCurrentEra());
             game.endRound();
             game.endRound();
             assertEquals(3, game.getCurrentEra());
+            game.endRound();
             game.endRound();
             //check if the game has ended
             assertEquals(-1, game.getCurrentEra());
