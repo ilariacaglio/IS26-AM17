@@ -444,6 +444,7 @@ public class Game extends Subject {
         Player lastPlayer = orderedPlayers.poll();
         // add player as last element of queue
         orderedPlayers.add(lastPlayer);
+        // TODO: add logic to implement pick cards order
 
         // notify changes
         notifyPlayerQueue(orderedPlayers);
@@ -453,8 +454,8 @@ public class Game extends Subject {
     /**
      * Emulates a player action (picking cards).
      * @param player            the player that has picked the cards
-     * @param characterCards
-     * @param buildingCards
+     * @param characterCards    the character cards picked by the player
+     * @param buildingCards     the building cards picked by the player
      */
     public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info("Player " + player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards);
