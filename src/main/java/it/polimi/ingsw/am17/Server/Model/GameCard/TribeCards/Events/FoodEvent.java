@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
 
 public class FoodEvent extends EventCard{
     private final int pointLost;
@@ -25,7 +26,7 @@ public class FoodEvent extends EventCard{
     }
 
     @Override
-    public void computeScore(List<Player> list){
+    public void computeScore(Queue<Player> list){
         for (Player player : list) {
             player.solveFoodEvent(pointLost);
         }

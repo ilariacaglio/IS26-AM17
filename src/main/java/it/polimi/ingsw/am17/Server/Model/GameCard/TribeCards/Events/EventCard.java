@@ -5,6 +5,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
+import java.util.Queue;
 
 public class EventCard extends TribesCard {
     private boolean Final;
@@ -14,7 +15,7 @@ public class EventCard extends TribesCard {
         super(era,cardType);
     }
 
-    public void computeScore(List<Player> list){}
+    public void computeScore(Queue<Player> list){}
 
     public boolean isFinal() {return Final;}
 }
