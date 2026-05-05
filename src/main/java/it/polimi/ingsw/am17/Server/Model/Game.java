@@ -20,7 +20,7 @@ public class Game extends Subject {
     private final int numPlayers;
     private int currentEra;
 
-    private Stack<Player> orderedPlayer;
+    private Queue<Player> orderedPlayers;
 
     private final List<OfferingCard> offeringCards;
 
@@ -47,7 +47,7 @@ public class Game extends Subject {
 
         this.numPlayers = numPlayers;
         currentEra = 0;
-        orderedPlayer = new Stack<>();
+        orderedPlayers = new LinkedList<Player>();
         offeringCards = loadOfferingCards(numPlayers);
 
         tribesDeck = new TribesDeck(numPlayers);
@@ -120,24 +120,24 @@ public class Game extends Subject {
         if (isStarted()) {
             throw new IllegalStateException("The game has already started.");
         }
-        if (orderedPlayer.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
+        if (orderedPlayers.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
             throw new IllegalStateException("The game has already a player with the same nickname.");
         }
-        if (orderedPlayer.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
+        if (orderedPlayers.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
             String message = "The game has already a player with the same color. Unused colors: ";
             //Get All colors
             EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
             //Remove the colors that are currently in use
-            orderedPlayer.forEach(player -> unusedColors.remove(player.getColor()));
+            orderedPlayers.forEach(player -> unusedColors.remove(player.getColor()));
             message = message.concat(unusedColors.toString());
             throw new IllegalStateException(message);
         }
 
-        orderedPlayer.add(p);
-        notifyPlayerStack(orderedPlayer);
+        orderedPlayers.add(p);
+        notifyPlayerStack(orderedPlayers);
 
         //if we reached the number of players for the game we start the game
-        if (orderedPlayer.size() == numPlayers)
+        if (orderedPlayers.size() == numPlayers)
             nextEra();
     }
 
@@ -184,10 +184,10 @@ public class Game extends Subject {
         logger.fine("Giving starting food to players.");
 
         int[] startingFood = {2, 3, 3, 4, 4};
-        for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
-            // stack contains players in reverse order
-            // reverse indexes in get
-            orderedPlayer.get(numPlayers-1-i).addFood(startingFood[i]);
+        int i = 0;
+        for (Player player : orderedPlayers) {
+            player.addFood(startingFood[i]);
+            i++;
         }
     }
 
@@ -203,8 +203,8 @@ public class Game extends Subject {
 
         // Set era and shuffle players
         this.currentEra = 1;
-        Collections.shuffle(orderedPlayer);
-        // notifyPlayerStack(orderedPlayer);
+        // TODO: method to shuffle queue
+        //Collections.shuffle(Arrays.asList(orderedPlayers.toArray()));
 
         giveFoodToPlayers();
 
@@ -229,7 +229,7 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
 
         // notifyTribesCards(upperRow,lowerRow);
-        notifyStartGame(orderedPlayer, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
+        notifyStartGame(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
     /**
@@ -258,9 +258,8 @@ public class Game extends Subject {
     private void turnOrderFoodBonus() {
         logger.fine("Calculating turn order food bonus.");
 
-        // reverse index to match stack
-        int i = numPlayers - 1;
-        for (Player p : orderedPlayer) {
+        int i = 0;
+        for (Player p : orderedPlayers) {
             //check if turnFood > 0
             if (turnFoodPoints[i] < 0) {
                 //if not, check if player can pay the food (food price is not higher than 1)
@@ -293,10 +292,10 @@ public class Game extends Subject {
 
         // 1. Solve events leaving food_event(s) last.
         events.stream().filter(e -> e.getCardType() != CardType.FOOD_EVENT).toList().forEach(
-                event -> event.computeScore(orderedPlayer)
+                event -> event.computeScore(orderedPlayers)
         );
         events.stream().filter(e -> e.getCardType() == CardType.FOOD_EVENT).toList().forEach(
-                event -> event.computeScore(orderedPlayer)
+                event -> event.computeScore(orderedPlayers)
         );
 
         // 2. 3. 4. Reorganize cards.
@@ -321,7 +320,7 @@ public class Game extends Subject {
 
         //notifyPlayerStack(orderedPlayer);
         //notifyTribesCards(upperRow, lowerRow);
-        notifyEndTurn(orderedPlayer, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+        notifyEndTurn(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     /**
@@ -340,18 +339,18 @@ public class Game extends Subject {
 
         // Solve events leaving food_event(s) last.
         events.stream().filter(e -> e.getCardType() != CardType.FOOD_EVENT).toList().forEach(
-                event -> event.computeScore(orderedPlayer)
+                event -> event.computeScore(orderedPlayers)
         );
         events.stream().filter(e -> e.getCardType() == CardType.FOOD_EVENT).toList().forEach(
-                event -> event.computeScore(orderedPlayer)
+                event -> event.computeScore(orderedPlayers)
         );
 
-        for (Player player : orderedPlayer) {
+        for (Player player : orderedPlayers) {
             player.calculateFinalPoints();
         }
 
         notifyEra(currentEra);
-        notifyPlayerStack(orderedPlayer);
+        notifyPlayerStack(orderedPlayers);
     }
 
     /**
@@ -415,7 +414,7 @@ public class Game extends Subject {
     public void selectOfferingCard(Player player, OfferingCard offeringCard) {
 
         //check if is player turn
-        if (!player.equals(orderedPlayer.peek())) {
+        if (!player.equals(orderedPlayers.peek())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
@@ -440,19 +439,21 @@ public class Game extends Subject {
         }
 
         //set player to offeringCard
-        selectedOc.setPlayer(orderedPlayer.peek());
+        selectedOc.setPlayer(orderedPlayers.peek());
 
-        orderedPlayer.pop();
-        if(orderedPlayer.isEmpty()){
+        // TODO: review this part
+        // TODO: coda deve essere circolare
+        orderedPlayers.poll();
+        if(orderedPlayers.isEmpty()){
             //order player stack for next turn
-            orderedPlayer.addAll(offeringCards.stream()
+            orderedPlayers.addAll(offeringCards.stream()
                 .filter(card -> card.getPlayer() != null)
                 .sorted(Comparator.comparing(OfferingCard::getOrderLetter).reversed())
                 .map(OfferingCard::getPlayer)
                 .collect(Collectors.toCollection(Stack::new)));
         }
 
-        notifyPlayerStack(orderedPlayer);
+        notifyPlayerStack(orderedPlayers);
         notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
     }
 
@@ -553,7 +554,7 @@ public class Game extends Subject {
     }
 
     public List<Player> getPlayers() {
-        return orderedPlayer;
+        return orderedPlayers.stream().toList();
     }
 
     /// only for testing
@@ -588,6 +589,6 @@ public class Game extends Subject {
 
     /// only for testing
     public Player getCurrentPlayer() {
-        return orderedPlayer.peek();
+        return orderedPlayers.peek();
     }
 }
