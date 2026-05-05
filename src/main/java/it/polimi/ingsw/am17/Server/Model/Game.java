@@ -134,7 +134,7 @@ public class Game extends Subject {
         }
 
         orderedPlayers.add(p);
-        notifyPlayerStack(orderedPlayers);
+        notifyPlayerQueue(orderedPlayers);
 
         //if we reached the number of players for the game we start the game
         if (orderedPlayers.size() == numPlayers)
@@ -350,7 +350,7 @@ public class Game extends Subject {
         }
 
         notifyEra(currentEra);
-        notifyPlayerStack(orderedPlayers);
+        notifyPlayerQueue(orderedPlayers);
     }
 
     /**
@@ -453,7 +453,7 @@ public class Game extends Subject {
                 .collect(Collectors.toCollection(Stack::new)));
         }
 
-        notifyPlayerStack(orderedPlayers);
+        notifyPlayerQueue(orderedPlayers);
         notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
     }
 
