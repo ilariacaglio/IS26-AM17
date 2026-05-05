@@ -23,11 +23,11 @@ public class Builder extends CharacterCard {
     public Builder(
             @JsonProperty("era") Integer era,
             @JsonProperty("minPlayers") Integer minPlayers,
-            @JsonProperty("pointsBonus") Integer pointsBonus,
+            @JsonProperty("pointBonus") Integer pointBonus,
             @JsonProperty("foodReduction") Integer foodReduction,
             @JsonProperty("id") UUID id) {
         super(era, minPlayers, CardType.BUILDER, id);
-        this.pointBonus = pointsBonus;
+        this.pointBonus = pointBonus;
         this.foodReduction = foodReduction;
     }
 
