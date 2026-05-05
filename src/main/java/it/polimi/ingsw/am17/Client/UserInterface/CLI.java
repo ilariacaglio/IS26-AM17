@@ -20,6 +20,9 @@ public class CLI implements UI {
     private final VirtualView client;
     private ClientModel game;
 
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
     public CLI (VirtualServer server, VirtualView client, ClientModel game) {
         this.virtualServer = server;
         this.client = client;
@@ -180,7 +183,7 @@ public class CLI implements UI {
             }
 
             if(errorMessagge != null && !errorMessagge.isBlank()) {
-                System.err.println(errorMessagge);
+                System.out.println(ANSI_RED+errorMessagge+ANSI_RESET);
                 System.out.flush(); //ensure error message is before the interface
             }
 
