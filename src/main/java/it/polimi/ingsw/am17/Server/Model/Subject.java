@@ -6,9 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.CommonInterfaces.Observer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Subject {
@@ -41,10 +39,10 @@ public abstract class Subject {
         }
     }
 
-    void notifyPlayerStack(Stack<Player> orderedPlayer) {
+    void notifyPlayerQueue(Queue<Player> orderedPlayer) {
         for (Observer observer : new ArrayList<>(observers)) {
             try {
-                observer.updatePlayerStack(orderedPlayer);
+                observer.updatePlayerQueue(orderedPlayer);
             } catch (Exception e) {
                 System.err.println("Subject method failed to call client update" + e.getMessage());
             }
@@ -72,8 +70,9 @@ public abstract class Subject {
         }
     }
 
-    void notifyEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
+        // TODO: use queue
         Stack<Player> newStack = players.stream()
                 .map(p -> {
                     Player copy = new Player(p.getNickname(), p.getColor());
@@ -92,7 +91,7 @@ public abstract class Subject {
         }
     }
 
-    void notifyStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
         for (Observer observer : new ArrayList<>(observers)) {
             try {
