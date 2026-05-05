@@ -20,7 +20,7 @@ public class ClientUpdateMethods {
         userInterface.printEra();
     }
 
-    public static void updatePlayerStack(ClientModel model, UI userInterface, Queue<Player> orderedPlayer) {
+    public static void updatePlayerQueue(ClientModel model, UI userInterface, Queue<Player> orderedPlayer) {
         model.setOrderedPlayers(orderedPlayer);
         // UI communication
         userInterface.drawInterface(model);
@@ -41,10 +41,8 @@ public class ClientUpdateMethods {
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
 
         model.setCurrentEra(1);
-        model.setPickOfferingCardPhase(true);
         model.setNumPlayers(players.size());
         model.setOrderedPlayers(players);
-        model.setAllPlayers(players.stream().toList()); // TODO: this creates an immutable object (later changed) FIX
         model.setTribeCards(upperRow, lowerRow);
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setOfferingCards(offeringCards);
@@ -58,7 +56,6 @@ public class ClientUpdateMethods {
         }
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setTribeCards(upperRow, lowerRow);
-        model.setPickOfferingCardPhase(true);
 
         userInterface.drawInterface(model);
     }

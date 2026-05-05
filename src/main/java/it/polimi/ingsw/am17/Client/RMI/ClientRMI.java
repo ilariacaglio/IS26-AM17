@@ -51,7 +51,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
     @Override
     public void updatePlayerQueue(Queue<Player> orderedPlayer) throws RemoteException {
-        ClientUpdateMethods.updatePlayerStack(model,userInterface,orderedPlayer);
+        ClientUpdateMethods.updatePlayerQueue(model,userInterface,orderedPlayer);
     }
 
     @Override

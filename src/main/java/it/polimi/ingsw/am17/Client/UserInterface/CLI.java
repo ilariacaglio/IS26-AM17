@@ -108,7 +108,7 @@ public class CLI implements UI {
 
         // search for Player in ordered players
         Player player;
-        player = game.getAllPlayers().stream()
+        player = game.getOrderedPlayers().stream()
                 .filter(p->p.getNickname().equals(nickname))
                 .findFirst().orElse(null);
 
@@ -164,7 +164,6 @@ public class CLI implements UI {
         try{
             // update game data
             this.game = game;
-            evaluateGamePhase();
             // cancel arrow
             System.out.print("\b\b");
             //clear console
@@ -204,13 +203,7 @@ public class CLI implements UI {
      * Prints on the terminal the players list
      */
     private void printPlayers() {
-        Collection<Player> players;
-        if(game.getCurrentEra()<1){
-            players = game.getOrderedPlayers();
-        }
-        else{
-            players = game.getAllPlayers();
-        }
+        Collection<Player> players = game.getOrderedPlayers();
         System.out.print("\nPlayers: ");
         for(Player p : players) {
             System.out.print("[" + p.getNickname() + " " + p.getFood() + "F " + p.getPp() + "PP" + "] ");
@@ -528,16 +521,6 @@ public class CLI implements UI {
                 System.out.print("[" + c.toString() + "] ");
             }
             System.out.println();
-        }
-    }
-
-    /**
-     * Sets the phase of the game to pick tribe cards if condition met
-     */
-    private void evaluateGamePhase(){
-        if( game.getOrderedPlayers().size() == game.getNumPlayers() &&
-            game.everyPlayerInOfferingCard()){
-            game.setPickOfferingCardPhase(false);
         }
     }
 }

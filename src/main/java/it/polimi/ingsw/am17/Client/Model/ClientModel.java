@@ -15,12 +15,6 @@ public class ClientModel {
     private int numPlayers;
     private int currentEra = 0;
 
-    private boolean isPickOfferingCardPhase;
-
-    // used to keep a list of player when removing from stack
-    // TODO: Review
-    private List<Player> allPlayers;
-
     private Player myPlayer;
 
     private List<UUID> gamesIdList = new ArrayList<>();
@@ -53,10 +47,6 @@ public class ClientModel {
 
     public Player getLocalPlayer() {
         return myPlayer;
-    }
-
-    public void setPickOfferingCardPhase(boolean value) {
-        this.isPickOfferingCardPhase = value;
     }
 
     public int getNumPlayers() {
@@ -139,19 +129,7 @@ public class ClientModel {
     public boolean isPlayerTurn(){
         if(currentEra<1)
             return false;
-        if (isPickOfferingCardPhase){
-            return orderedPlayer.peek().equals(myPlayer);
-        }
-        else {
-            OfferingCard oc =  offeringCards.stream()
-                    .filter(c -> c.getPlayer() != null && c.getOrderLetter()!='A')
-                    .min(Comparator.comparing(OfferingCard::getOrderLetter))
-                    .orElse(null);
-            if(oc != null)
-                return oc.getPlayer().equals(myPlayer);
-            else
-                return false;
-        }
+        return orderedPlayer.peek().equals(myPlayer);
     }
 
     public void removeTribeCards(List<CharacterCard> tribeCards){
@@ -169,7 +147,8 @@ public class ClientModel {
         players.replaceAll(p -> p.equals(player) ? player : p);
         orderedPlayer.clear();
         orderedPlayer.addAll(players);
-        updateAllPlayers();
+        Player lastPlayer = orderedPlayer.poll();
+        orderedPlayer.add(lastPlayer);
     }
 
     public void removePlayerFromOfferingCard(Player player){
@@ -184,7 +163,7 @@ public class ClientModel {
     }
 
     public boolean everyPlayerInOfferingCard(){
-        for(Player p : allPlayers){
+        for(Player p : orderedPlayer){
             OfferingCard oc = offeringCards.stream()
                     .filter(c-> c.getPlayer()!= null && c.getPlayer().equals(p))
                     .findFirst().orElse(null);
@@ -192,22 +171,6 @@ public class ClientModel {
                 return false;
         }
         return true;
-    }
-
-    public void setAllPlayers(List<Player> allPlayers) {
-        this.allPlayers = new ArrayList<>(allPlayers);
-    }
-
-    public List<Player> getAllPlayers() {
-        return Collections.unmodifiableList(allPlayers);
-    }
-
-    public void updateAllPlayers() {
-        this.allPlayers = new ArrayList<>(this.allPlayers);
-
-        for (Player p : orderedPlayer) {
-            allPlayers.replaceAll(existingPlayer -> existingPlayer.equals(p) ? p : existingPlayer);
-        }
     }
 
     public void setNullOfferingCardAPlayer() {
