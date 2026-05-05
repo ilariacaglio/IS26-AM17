@@ -194,7 +194,9 @@ public class Game extends Subject {
 
         int[] startingFood = {2, 3, 3, 4, 4};
         for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
-            orderedPlayer.get(i).addFood(startingFood[i]);
+            // stack contains players in reverse order
+            // reverse indexes in get
+            orderedPlayer.get(numPlayers-1-i).addFood(startingFood[i]);
         }
     }
 
@@ -265,7 +267,8 @@ public class Game extends Subject {
     private void turnOrderFoodBonus() {
         logger.fine("Calculating turn order food bonus.");
 
-        int i = 0;
+        // reverse index to match stack
+        int i = numPlayers - 1;
         for (Player p : orderedPlayer) {
             //check if turnFood > 0
             if (turnFoodPoints[i] < 0) {
@@ -279,7 +282,7 @@ public class Game extends Subject {
                 int foodFromBuilding = p.addFoodToTurnFood();
                 p.addFood(turnFoodPoints[i] + foodFromBuilding);
             }
-            i++;
+            i--;
         }
     }
 
