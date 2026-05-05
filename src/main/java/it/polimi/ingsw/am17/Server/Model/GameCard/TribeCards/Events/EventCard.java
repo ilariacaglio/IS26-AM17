@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.UUID;
 
 public class EventCard extends TribesCard {
-    private boolean Final;
+    private Boolean Final;
 
-    public EventCard(boolean Final, int era, CardType cardType, UUID id) {
+    public EventCard(Boolean Final, Integer era, CardType cardType, UUID id) {
         this.Final = Final;
-        super(era,cardType, id);
+        super(era, cardType, id);
     }
 
     public void computeScore(List<Player> list){}
 
-    public boolean isFinal() {return Final;}
+    public Boolean isFinal() {return Final;}
 }
