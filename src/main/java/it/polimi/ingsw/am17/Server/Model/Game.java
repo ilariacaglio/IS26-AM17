@@ -12,7 +12,6 @@ import static it.polimi.ingsw.am17.Server.Utility.CardParser.loadOfferingCards;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Game extends Subject {
@@ -20,7 +19,7 @@ public class Game extends Subject {
     private final int numPlayers;
     private int currentEra;
 
-    private Queue<Player> orderedPlayers;
+    private final Queue<Player> orderedPlayers;
 
     private final List<OfferingCard> offeringCards;
 
@@ -444,11 +443,40 @@ public class Game extends Subject {
         Player lastPlayer = orderedPlayers.poll();
         // add player as last element of queue
         orderedPlayers.add(lastPlayer);
-        // TODO: add logic to implement pick cards order
+
+        // when all player have an offering card recalculate queue
+        if (allPlayersPickedOfferingCards()) {
+            recalculatePlayerQueue();
+        }
 
         // notify changes
         notifyPlayerQueue(orderedPlayers);
         notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
+    }
+
+    /**
+     * Replaces player queue with new order from offering cards
+     */
+    private void recalculatePlayerQueue() {
+        // get players from offering cards
+        List <Player> playersList = offeringCards.stream()
+                .filter(card -> card.getPlayer()!=null)
+                .sorted(Comparator.comparing(OfferingCard::getOrderLetter))
+                .map(OfferingCard::getPlayer)
+                .toList();
+        // insert them in queue
+        orderedPlayers.clear();
+        orderedPlayers.addAll(playersList);
+    }
+
+    /**
+     * Checks that every player is set into an offering card
+     * @return true if they are, false otherwise
+     */
+    private Boolean allPlayersPickedOfferingCards() {
+        return orderedPlayers.stream().allMatch(player ->
+                offeringCards.stream().anyMatch(card -> card.getPlayer().equals(player))
+        );
     }
 
     /**
