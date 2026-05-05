@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.rmi.RemoteException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
@@ -22,7 +23,7 @@ public class ClientUpdateMethods {
         userInterface.printEra();
     }
 
-    public static void updatePlayerStack(ClientModel model, UI userInterface, Stack<Player> orderedPlayer) {
+    public static void updatePlayerStack(ClientModel model, UI userInterface, LinkedList<Player> orderedPlayer) {
         model.setOrderedPlayers(orderedPlayer);
         // UI communication
         userInterface.drawInterface(model);

@@ -18,9 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Sets up the socket connection with the server.
@@ -60,7 +58,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
                         case UPDATE_ERA -> updateEra(message.getEra());
-                        case UPDATE_PLAYER_STACK -> updatePlayerStack(message.getOrderedPlayer());
+                        case UPDATE_PLAYER_STACK -> updatePlayerQueue(message.getOrderedPlayer());
                         case UPDATE_PLAYER_SELECT_OFFERING_CARD ->
                                 updatePlayerSelectOfferingCard(message.getPlayer(), message.getOfferingCard());
                         case UPDATE_PLAYER_SELECT_TRIBE_CARDS -> updatePlayerSelectTribeCards(message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
@@ -90,7 +88,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updatePlayerStack(Stack<Player> orderedPlayer) {
+    public void updatePlayerStack(LinkedList<Player> orderedPlayer) {
         ClientUpdateMethods.updatePlayerStack(model, userInterface, orderedPlayer);
     }
 
@@ -105,14 +103,14 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) {
 
         ClientUpdateMethods.updateStartGame(model, userInterface, players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
     @Override
-    public void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         ClientUpdateMethods.updateEndTurn(model, userInterface, players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
