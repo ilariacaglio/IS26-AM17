@@ -10,17 +10,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class HuntingEvent extends EventCard {
-    private final int pointEarned;
+    private final Integer pointEarned;
 
-    public int getPointEarned() {
+    public Integer getPointEarned() {
         return pointEarned;
     }
 
     @JsonCreator
     public HuntingEvent(
-            @JsonProperty("pointEarned") int pointEarned,
+            @JsonProperty("pointEarned") Integer pointEarned,
             @JsonProperty("Final") boolean Final,
-            @JsonProperty("era") int era,
+            @JsonProperty("era") Integer era,
             @JsonProperty("id") UUID id){
         this.pointEarned = pointEarned;
         super(Final, era, CardType.HUNTING_EVENT, id);
