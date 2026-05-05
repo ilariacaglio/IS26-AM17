@@ -88,7 +88,7 @@ public class GameTest {
         // add player to game
         game.addPlayer(p);
         // check duplicate player
-        assertThrows(IllegalArgumentException.class, () -> game.addPlayer(p));
+        assertThrows(IllegalStateException.class, () -> game.addPlayer(p));
     }
 
     @Nested
