@@ -274,7 +274,7 @@ public class Player implements Serializable {
 
        //find additional food given by buildingCard
        for(BuildingCard c: buildingCards){
-           additionalFood =+ c.AddFoodPerArtistInPaintingEvent(this.characterCards);
+           additionalFood += c.AddFoodPerArtistInPaintingEvent(this.characterCards);
        }
        //add additionalFood
        addFood(additionalFood);
