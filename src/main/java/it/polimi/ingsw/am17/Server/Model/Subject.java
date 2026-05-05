@@ -72,19 +72,18 @@ public abstract class Subject {
 
     void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
-        // TODO: use queue
-        Stack<Player> newStack = players.stream()
+        Queue<Player> newQueue = players.stream()
                 .map(p -> {
                     Player copy = new Player(p.getNickname(), p.getColor());
                     copy.addFood(p.getFood());
                     copy.addPp(p.getPp());
-                    // Since you didn't set the cards, they remain null/empty by default
+                    // Poiché non hai impostato le carte, rimangono null/vuote di default
                     return copy;
                 })
-                .collect(Collectors.toCollection(Stack::new));
+                .collect(Collectors.toCollection(LinkedList::new));
         for (Observer observer : new ArrayList<>(observers)) {
             try {
-                observer.updateEndTurn(newStack, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+                observer.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
             } catch (Exception e) {
                 System.err.println("Subject method failed to call client update" + e.getMessage());
             }
