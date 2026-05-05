@@ -194,7 +194,9 @@ public class Game extends Subject {
 
         int[] startingFood = {2, 3, 3, 4, 4};
         for (int i = 0; i < numPlayers && i < startingFood.length; i++) {
-            orderedPlayer.get(i).addFood(startingFood[i]);
+            // stack contains players in reverse order
+            // reverse indexes in get
+            orderedPlayer.get(numPlayers-1-i).addFood(startingFood[i]);
         }
     }
 
