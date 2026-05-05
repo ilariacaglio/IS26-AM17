@@ -31,7 +31,7 @@ public class PaintingEvent extends EventCard {
             @JsonProperty("pointsLow") Integer pointsLow,
             @JsonProperty("pointsMax") Integer pointsMax,
             @JsonProperty("numMax") Integer numMax,
-            @JsonProperty("Final") boolean Final,
+            @JsonProperty("Final") Boolean Final,
             @JsonProperty("era") Integer era,
             @JsonProperty("id") UUID id) {
         super(Final, era, CardType.PAINTING_EVENT, id);

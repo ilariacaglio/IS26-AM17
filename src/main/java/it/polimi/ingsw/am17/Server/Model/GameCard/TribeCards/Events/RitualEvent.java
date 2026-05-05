@@ -22,10 +22,10 @@ public class RitualEvent extends EventCard {
     }
 
     @JsonCreator
-    public RitualEvent(@JsonProperty("Final") boolean Final,
-                       @JsonProperty("era") int era,
-                       @JsonProperty("pointMax") int pointMax,
-                       @JsonProperty("pointMin") int pointMin,
+    public RitualEvent(@JsonProperty("Final") Boolean Final,
+                       @JsonProperty("era") Integer era,
+                       @JsonProperty("pointMax") Integer pointMax,
+                       @JsonProperty("pointMin") Integer pointMin,
                        @JsonProperty("id") UUID id){
         super(Final, era, CardType.RITUAL_EVENT, id);
         this.pointMax = pointMax;

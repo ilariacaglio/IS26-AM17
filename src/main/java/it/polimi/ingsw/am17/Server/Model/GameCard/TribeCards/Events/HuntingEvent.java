@@ -19,7 +19,7 @@ public class HuntingEvent extends EventCard {
     @JsonCreator
     public HuntingEvent(
             @JsonProperty("pointEarned") Integer pointEarned,
-            @JsonProperty("Final") boolean Final,
+            @JsonProperty("Final") Boolean Final,
             @JsonProperty("era") Integer era,
             @JsonProperty("id") UUID id){
         this.pointEarned = pointEarned;
