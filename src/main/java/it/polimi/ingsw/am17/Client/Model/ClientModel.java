@@ -25,7 +25,7 @@ public class ClientModel {
 
     private List<UUID> gamesIdList = new ArrayList<>();
 
-    private final Stack<Player> orderedPlayer = new Stack<>();
+    private final Queue<Player> orderedPlayer = new LinkedList<>();
 
     private List<OfferingCard> offeringCards = new ArrayList<>();
 
@@ -71,7 +71,7 @@ public class ClientModel {
         return currentEra;
     }
 
-    public void setOrderedPlayers(Stack<Player> orderedPlayers){
+    public void setOrderedPlayers(Queue<Player> orderedPlayers){
         this.orderedPlayer.clear();
         this.orderedPlayer.addAll(orderedPlayers);
     }
@@ -164,8 +164,11 @@ public class ClientModel {
         lowerBuildingRow.removeAll(buildingCards);
     }
 
-    public void setPlayerInStack(Player player){
-        orderedPlayer.replaceAll(p -> p.equals(player) ? player : p);
+    public void setPlayerInQueue(Player player){
+        List<Player> players = new ArrayList<>(orderedPlayer);
+        players.replaceAll(p -> p.equals(player) ? player : p);
+        orderedPlayer.clear();
+        orderedPlayer.addAll(players);
         updateAllPlayers();
     }
 
