@@ -460,7 +460,7 @@ public class Game extends Subject {
      * @param characterCards    the character cards picked by the player
      * @param buildingCards     the building cards picked by the player
      */
-    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
+    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
         logger.info("Player " + player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards);
 
         // Get leftmost occupied offering card.
@@ -481,7 +481,12 @@ public class Game extends Subject {
         // check if cards selection is legal based on the offeringCard
         int numUpper = currentOffering.getNumCardsUpper();
         int numLower = currentOffering.getNumCardsLower();
-        validateCardChoice(numUpper, numLower, characterCards, buildingCards);
+        try {
+            validateCardChoice(numUpper, numLower, characterCards, buildingCards);
+        }catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
 
         // selection legal: obtain cards
         try {
