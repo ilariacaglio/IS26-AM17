@@ -47,7 +47,7 @@ public class Game extends Subject {
 
         this.numPlayers = numPlayers;
         currentEra = 0;
-        orderedPlayers = new LinkedList<Player>();
+        orderedPlayers = new LinkedList<>();
         offeringCards = loadOfferingCards(numPlayers);
 
         tribesDeck = new TribesDeck(numPlayers);
@@ -152,7 +152,6 @@ public class Game extends Subject {
         switch (currentEra) {
             case 0:
                 era1();
-                notifyEra(currentEra);
                 break;
             case 1:
                 era2();
@@ -165,9 +164,6 @@ public class Game extends Subject {
             default:
                 throw new IllegalStateException("Invalid era");
         }
-
-
-        // notifyBuildingCards(upperBuildingRow, lowerBuildingRow);
     }
 
     private void moveDownBuildingCards() {
@@ -191,6 +187,13 @@ public class Game extends Subject {
         }
     }
 
+    private void shuffleQueue() {
+        List<Player> players = new ArrayList<>(orderedPlayers);
+        Collections.shuffle(players);
+        orderedPlayers.clear();
+        orderedPlayers.addAll(players);
+    }
+
     /**
      * Starts the game by entering the first era.
      */
@@ -203,8 +206,7 @@ public class Game extends Subject {
 
         // Set era and shuffle players
         this.currentEra = 1;
-        // TODO: method to shuffle queue
-        //Collections.shuffle(Arrays.asList(orderedPlayers.toArray()));
+        shuffleQueue();
 
         giveFoodToPlayers();
 
