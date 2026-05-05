@@ -41,35 +41,34 @@ public class CLI implements UI {
                 System.out.print("> ");
                 String input = scanner.nextLine().trim().toLowerCase();
                 switch (input) {
-                    case "get games":
+                    case "get games", "gg":
                         getGamesList();
                         break;
-                    case "change nickname":
+                    case "change nickname", "cn":
                         changeNickname(scanner);
                         break;
-                    case "change color":
+                    case "change color", "cc":
                         changeColor(scanner);
                         break;
-                    case "create":
+                    case "create", "c":
                         createGame(scanner);
                         break;
-                    case "pick offering card":
+                    case "pick offering card", "po":
                         pickOfferingCard(scanner);
                         break;
-                    case "join":
+                    case "join", "j":
                         joinGame(scanner);
                         break;
-                    case "pick cards":
+                    case "pick cards", "p":
                         pickCards(scanner);
                         break;
-                    case "view player":
+                    case "view player", "vp":
                         printPlayer(scanner);
                         break;
-                    case "help":
+                    case "help", "h":
                         printHelp();
                         break;
-                    case "quit":
-                    case "exit":
+                    case "exit", "quit", "q":
                         System.out.println("Goodbye!");
                         running = false;
                         break;
@@ -87,15 +86,16 @@ public class CLI implements UI {
      */
     private void printHelp() {
         System.out.println("Available commands:");
-        System.out.println("- help: shows this menu");
-        System.out.println("- exit: closes the application");
-        System.out.println("- change color: changes the player's color");
-        System.out.println("- change nickname: changes the player's nickname");
-        System.out.println("- get games: get the list of incomplete games");
-        System.out.println("- create: creates a new game");
-        System.out.println("- join: joins an existing game");
-        System.out.println("- pick offering card: choose the offering card to take");
-        System.out.println("- pick cards: choose the cards to take");
+        System.out.println("- help, h: shows this menu");
+        System.out.println("- exit, quit, q: closes the application");
+        System.out.println("- get games, gg: get the list of starting games");
+        System.out.println("- change nickname, cn: changes the player's nickname");
+        System.out.println("- change color, cc: changes the player's color");
+        System.out.println("- create, c: creates a new game");
+        System.out.println("- join, j: joins an existing game");
+        System.out.println("- pick offering card, po: choose the offering card to take");
+        System.out.println("- pick cards, p: choose the cards to take");
+        System.out.println("- view player, vp: shows a player's cards, food, and points");
     }
 
     /**
@@ -137,7 +137,7 @@ public class CLI implements UI {
      */
     public void printGamesList(){
         System.out.print("\b\b");
-        System.out.println("Incomplete games:");
+        System.out.println("Open games:");
         for(int i=0; i< game.getGamesIdList().size(); i++){
             System.out.println(i+"\t"+game.getGamesIdList().get(i));
         }
@@ -213,7 +213,7 @@ public class CLI implements UI {
         }
         System.out.print("\nPlayers: ");
         for(Player p : players) {
-            System.out.print(p.getNickname().concat(" "));
+            System.out.print("[" + p.getNickname() + " " + p.getFood() + "F " + p.getPp() + "PP" + "] ");
         }
         System.out.println();
     }
@@ -262,9 +262,9 @@ public class CLI implements UI {
             pickableCards.addAll(game.getLowerBuildingRow());
 
         // print the upper row
-        printPickableRow(true);
+        int upperPrintIndex = printPickableRow(true,1);
         // print the lower row
-        printPickableRow(false);
+        printPickableRow(false, upperPrintIndex);
 
         // selected cards indexes
         Set<Integer> cardIndexes = new HashSet<>();
@@ -278,7 +278,7 @@ public class CLI implements UI {
                 break;
             }
             try {
-                int numCard = Integer.parseInt(input);
+                int numCard = Integer.parseInt(input)-1;
                 // check if the index is valid
                 if (numCard >= 0 && numCard < pickableCards.size()) {
                     if (!cardIndexes.add(numCard)) {
@@ -320,10 +320,10 @@ public class CLI implements UI {
      * Prints all the character and building cards in the row
      * @param upper if true prints the upper row, if false prints the lower row
      */
-    private void printPickableRow(boolean upper){
+    private int printPickableRow(boolean upper, int startingIndex){
         List<TribesCard> tribeRow;
         List<BuildingCard> buildingRow;
-        int lowerSpan = 0;
+        // set lists basing on upper value
         if(upper){
             tribeRow = game.getUpperTribeRow();
             buildingRow = game.getUpperBuildingRow();
@@ -333,21 +333,26 @@ public class CLI implements UI {
             tribeRow = game.getLowerTribeRow();
             buildingRow = game.getLowerBuildingRow();
             System.out.print("Lower row:");
-            lowerSpan = game.getUpperTribeRow().size() + game.getUpperBuildingRow().size();
         }
-        int span = tribeRow.size();
-
+        // set the starting index for the card display numbering
+        int currentIndex = startingIndex;
         // print character cards
-        for(int i=0; i< span; i++){
-            if(tribeRow.get(i).getCardType().isCharacter()){
-                System.out.print((i+lowerSpan) + ") " + tribeRow.get(i) + "\t");
+        for (TribesCard card : tribeRow) {
+            if (card.getCardType().isCharacter()) {
+                System.out.print(" " + currentIndex + ") [" + card + "] ");
+                // increase number only when the card is printed
+                currentIndex++;
             }
         }
         // print building cards
-        for(int i=0; i< buildingRow.size(); i++){
-            System.out.print((i+span+lowerSpan) + ") " + buildingRow.get(i) + "\t");
+        for (BuildingCard card : buildingRow) {
+            System.out.print(" " + currentIndex + ") [" + card + "] ");
+            // increase number only when the card is printed
+            currentIndex++;
         }
         System.out.print("\n");
+        // return the current index for the next print
+        return currentIndex;
     }
 
     /**
@@ -481,7 +486,7 @@ public class CLI implements UI {
 
     /**
      * Draws the tribe and building row
-     * @param upper if true prints upper row, if false prints the lower row
+     * @param upper if true prints the upper row, if false prints the lower row
      */
     private void drawRow(boolean upper){
         List<TribesCard> tribeRow;
@@ -495,20 +500,17 @@ public class CLI implements UI {
             buildingRow = game.getLowerBuildingRow();
         }
         if(!(tribeRow.isEmpty() && buildingRow.isEmpty())){
-            if(upper) {
-                System.out.print("Upper row: ");
-            }
-            else {
-                System.out.print("Lower row: ");
-            }
+            if(upper) System.out.print("Upper row:     ");
+            else System.out.print("Lower row:     ");
+
             if(!tribeRow.isEmpty()) {
                 for (TribesCard c : tribeRow) {
-                    System.out.print(c.toString().concat("\t"));
+                    System.out.print("[" + c.toString() + "] ");
                 }
             }
             if(!buildingRow.isEmpty()){
                 for(BuildingCard c : buildingRow) {
-                    System.out.print(c.toString().concat("\t"));
+                    System.out.print("[" + c.toString() + "] ");
                 }
             }
             System.out.println();
@@ -523,7 +525,7 @@ public class CLI implements UI {
         if(!offeringCards.isEmpty()){
             System.out.print("Bidding trail: ");
             for(OfferingCard c : offeringCards) {
-                System.out.print(c.toString().concat("\t"));
+                System.out.print("[" + c.toString() + "] ");
             }
             System.out.println();
         }

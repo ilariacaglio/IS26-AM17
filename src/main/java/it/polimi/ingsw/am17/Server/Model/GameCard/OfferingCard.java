@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Model.GameCard;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import tools.jackson.databind.node.StringNode;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -81,17 +82,12 @@ public class OfferingCard implements Serializable {
 
     @Override
     public String toString() {
-        if(player!=null)
-            return  orderLetter + " "
-                + foodBonus + "Food" +
-                + numCardsUpper + "↑"
-                + numCardsLower + "↓"
-                + "(" + player.getNickname() + ")";
-        else
-            return  orderLetter + " "
-                    + foodBonus + "Food" +
-                    + numCardsUpper + "↑"
-                    + numCardsLower + "↓"
-                    + "(  )";
+        String nickname = (player != null) ? player.getNickname() : "";
+
+        return  numCardsUpper + "↑ "
+                + numCardsLower + "↓ "
+                + foodBonus + "F "
+                + "(" + nickname + ")"
+                ;
     }
 }
