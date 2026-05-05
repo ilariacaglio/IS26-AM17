@@ -8,17 +8,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Hunter extends CharacterCard {
-    private final boolean withIcon;
+    private final Boolean withIcon;
 
-    public boolean isWithIcon() {
+    public Boolean isWithIcon() {
         return withIcon;
     }
 
     @JsonCreator
     public Hunter(
-            @JsonProperty("era") int era,
-            @JsonProperty("minPlayers") int minPlayers,
-            @JsonProperty("withIcon") boolean withIcon,
+            @JsonProperty("era") Integer era,
+            @JsonProperty("minPlayers") Integer minPlayers,
+            @JsonProperty("withIcon") Boolean withIcon,
             @JsonProperty("id") UUID id) {
         super(era, minPlayers, CardType.HUNTER, id);
         this.withIcon = withIcon;
