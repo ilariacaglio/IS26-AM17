@@ -17,11 +17,16 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Forwards requests from a single client to the controller.
  */
 public class _ServerSocket implements Runnable, VirtualServer {
+    private static final Logger logger = Logger.getLogger(_ServerSocket.class.getName());
+
+
     private final Socket socket;
     private final GamesController controller;
     private final VirtualView client;
@@ -41,7 +46,9 @@ public class _ServerSocket implements Runnable, VirtualServer {
             String line;
             while ((line = in.readLine()) != null) {
                 Message message = mapper.readValue(line, Message.class);
-
+                logger.setLevel(Level.FINE);
+                logger.fine("Parsing message:" + line);
+                logger.info("Received message: " + message.toString());
                 switch (message.getType()) {
                     case GET_GAMES_LIST -> getGamesList(client);
                     case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
