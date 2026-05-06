@@ -38,7 +38,7 @@ public class FoodEvent extends EventCard{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FoodEvent foodEvent = (FoodEvent) o;
-        return pointLost == foodEvent.pointLost;
+        return pointLost.equals(foodEvent.pointLost);
     }
 
     @Override

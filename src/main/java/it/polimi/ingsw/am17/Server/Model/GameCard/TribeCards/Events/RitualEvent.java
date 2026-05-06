@@ -10,14 +10,14 @@ import java.util.Queue;
 import java.util.UUID;
 
 public class RitualEvent extends EventCard {
-    private final int pointMax;
-    private final int pointMin;
+    private final Integer pointMax;
+    private final Integer pointMin;
 
-    public int getPointMax() {
+    public Integer getPointMax() {
         return pointMax;
     }
 
-    public int getPointMin() {
+    public Integer getPointMin() {
         return pointMin;
     }
 
@@ -86,7 +86,7 @@ public class RitualEvent extends EventCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RitualEvent that = (RitualEvent) o;
-        return pointMax == that.pointMax && pointMin == that.pointMin;
+        return pointMax.equals(that.pointMax) && pointMin.equals(that.pointMin);
     }
 
     @Override

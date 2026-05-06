@@ -52,7 +52,7 @@ public class PaintingEvent extends EventCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PaintingEvent that = (PaintingEvent) o;
-        return pointsLow == that.pointsLow && pointsMax == that.pointsMax && numMax == that.numMax;
+        return pointsLow.equals(that.pointsLow) && pointsMax.equals(that.pointsMax) && numMax.equals(that.numMax);
     }
 
     @Override
