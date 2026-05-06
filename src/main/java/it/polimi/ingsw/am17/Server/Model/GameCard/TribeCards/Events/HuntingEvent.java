@@ -7,8 +7,10 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 public class HuntingEvent extends EventCard {
+    private static final Logger logger = Logger.getLogger(HuntingEvent.class.getName());
     private final int pointEarned;
 
     public int getPointEarned() {
@@ -25,9 +27,12 @@ public class HuntingEvent extends EventCard {
     }
 
     @Override
-    public void computeScore(List<Player> list){
+    public void computeScore(List<Player> list) {
         for(Player player: list){
            player.solveHuntingEvent(pointEarned);
+            logger.info("Solved Hunting Event. ");
+            logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
+                    + player.getPp() + " points after Hunting Event");
         }
     }
 

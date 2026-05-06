@@ -217,7 +217,7 @@ public class Player implements Serializable {
            int lostPp = pointLost * remaining;
 
            addPp(lostPp * (-1));
-           addFood(food * (-1));
+           addFood(food * (-1));//TODO:mandare anche questa modifica
        } //if food is enough
        else {
            addFood(foodPrice * (-1));

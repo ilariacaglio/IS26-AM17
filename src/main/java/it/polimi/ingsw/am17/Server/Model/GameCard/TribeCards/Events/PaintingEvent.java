@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
+import javax.smartcardio.Card;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 public class PaintingEvent extends EventCard {
+    private static final Logger logger = Logger.getLogger(PaintingEvent.class.getName());
     private final int pointsLow;
     private final int pointsMax;
     private final int numMax;
@@ -42,6 +45,9 @@ public class PaintingEvent extends EventCard {
     public void computeScore(List<Player> list) {
         for (Player player : list) {
             player.solvePaintingEvent(numMax, pointsMax, pointsLow);
+            logger.info("Solved Painting Event. ");
+            logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
+                    + player.getPp() + " points after Painting Event");
         }
     }
 

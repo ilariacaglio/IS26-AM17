@@ -2,13 +2,16 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 public class FoodEvent extends EventCard{
+    private static final Logger logger = Logger.getLogger(FoodEvent.class.getName());
     private final int pointLost;
 
     public int getPointLost() {
@@ -28,6 +31,10 @@ public class FoodEvent extends EventCard{
     public void computeScore(List<Player> list){
         for (Player player : list) {
             player.solveFoodEvent(pointLost);
+            logger.info("Solved Food Event. ");
+            logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
+                            + player.getPp() + " points after Food Event");
+
         }
     }
 

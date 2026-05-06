@@ -36,7 +36,7 @@ public class Game extends Subject {
     private final OfferingCard building2OfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
     private final int[] turnFoodPoints;
 
-    private final Logger logger = Logger.getLogger(Game.class.getName());
+    private static final Logger logger = Logger.getLogger(Game.class.getName());
 
     public Game(UUID id, int numPlayers) {
         logger.info("Instantiated new game for " + numPlayers + " players with id: " + id);
@@ -65,6 +65,7 @@ public class Game extends Subject {
         logger.fine("Checking number of players: " + numPlayers);
 
         if (numPlayers < 2 || numPlayers > 5) {
+//            logger.warning("Invalid number of players: " + numPlayers);
             throw new IllegalArgumentException("Wrong number of players");
         }
     }
@@ -118,12 +119,15 @@ public class Game extends Subject {
         logger.info("Adding player " + p.getNickname() + " to game with id " + id);
 
         if (isStarted()) {
+//            logger.warning("in Game, in addPlayer(), problem in if(isStarted()) ");
             throw new IllegalStateException("The game has already started.");
         }
         if (orderedPlayer.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
+//            logger.warning("The nickname " + p.getNickname() + " is not available.");
             throw new IllegalStateException("The game has already a player with the same nickname.");
         }
         if (orderedPlayer.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
+//            logger.warning("The color " + p.getColor() + " is not available");
             String message = "The game has already a player with the same color. Unused colors: ";
             //Get All colors
             EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
@@ -197,6 +201,8 @@ public class Game extends Subject {
             // stack contains players in reverse order
             // reverse indexes in get
             orderedPlayer.get(numPlayers-1-i).addFood(startingFood[i]);
+            logger.info("Player " + orderedPlayer.get(numPlayers-1-i).getNickname() + " was given "
+                        + orderedPlayer.get(numPlayers-1-i).getFood() + " beginning food.");
         }
     }
 
@@ -277,10 +283,14 @@ public class Game extends Subject {
                     p.addPp(-2);
                 else
                     p.addFood(turnFoodPoints[i]);
+                logger.info("Player " + p.getNickname() + " has " +  p.getFood() + " food and "
+                        + p.getPp() + " points end round.");
             } else {
                 //check if player has food bonus from buildings
                 int foodFromBuilding = p.addFoodToTurnFood();
                 p.addFood(turnFoodPoints[i] + foodFromBuilding);
+                logger.info("Player " + p.getNickname() + " has " +  p.getFood() + " food and "
+                        + p.getPp() + " points end round.");
             }
             i--;
         }

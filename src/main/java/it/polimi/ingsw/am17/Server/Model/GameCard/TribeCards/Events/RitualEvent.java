@@ -7,8 +7,10 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 public class RitualEvent extends EventCard {
+    private static final Logger logger = Logger.getLogger(RitualEvent.class.getName());
     private final int pointMax;
     private final int pointMin;
 
@@ -31,6 +33,7 @@ public class RitualEvent extends EventCard {
     }
     @Override
     public void computeScore(List<Player> list){
+
         //array for counting stars of each player
         int[] stars = new int[list.size()];
         //counting stars icon for each player
@@ -78,8 +81,11 @@ public class RitualEvent extends EventCard {
                     }
                 }
             }
+            logger.info("Solved Ritual Event. ");
+            logger.info("Player " + list.get(i).getNickname() + " has "
+                    + list.get(i).getFood() + " food "
+                    + list.get(i).getPp() + " points after Ritual Event");
         }
-
     }
 
     @Override
