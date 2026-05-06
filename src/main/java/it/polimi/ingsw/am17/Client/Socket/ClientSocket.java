@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Sets up the socket connection with the server.
@@ -30,6 +32,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
     UI userInterface;
     Socket socket;
     ObjectMapper mapper;
+
+    private final Logger logger = Logger.getLogger(Game.class.getName());
 
     public ClientSocket() {
         this.model = new ClientModel();
@@ -52,8 +56,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()))) {
                 String line;
                 while ((line = in.readLine()) != null) {
-                    System.out.println("Received: " + line);
                     Message message = mapper.readValue(line, Message.class);
+                    logger.info("Received message: " + message.toString());
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());

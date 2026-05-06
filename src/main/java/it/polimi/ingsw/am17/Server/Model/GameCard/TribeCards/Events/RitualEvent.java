@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.UUID;
 
 public class RitualEvent extends EventCard {
     private final int pointMax;
@@ -22,11 +22,12 @@ public class RitualEvent extends EventCard {
     }
 
     @JsonCreator
-    public RitualEvent(@JsonProperty("Final") boolean Final,
-                       @JsonProperty("era") int era,
-                       @JsonProperty("pointMax") int pointMax,
-                       @JsonProperty("pointMin") int pointMin){
-        super(Final, era, CardType.RITUAL_EVENT);
+    public RitualEvent(@JsonProperty("Final") Boolean Final,
+                       @JsonProperty("era") Integer era,
+                       @JsonProperty("pointMax") Integer pointMax,
+                       @JsonProperty("pointMin") Integer pointMin,
+                       @JsonProperty("id") UUID id){
+        super(Final, era, CardType.RITUAL_EVENT, id);
         this.pointMax = pointMax;
         this.pointMin = pointMin;
     }

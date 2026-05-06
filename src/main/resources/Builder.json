@@ -2,73 +2,73 @@
   {
     "era": 1,
     "minPlayers": 5,
-    "pointsBonus": 1,
+    "pointBonus": 1,
     "foodReduction": 2
   },
   {
     "era": 1,
     "minPlayers": 2,
-    "pointsBonus": 0,
+    "pointBonus": 0,
     "foodReduction": 2
   },
   {
     "era": 1,
     "minPlayers": 2,
-    "pointsBonus": 3,
+    "pointBonus": 3,
     "foodReduction": 1
   },
   {
     "era": 1,
     "minPlayers": 2,
-    "pointsBonus": 2,
+    "pointBonus": 2,
     "foodReduction": 1
   },
   {
     "era": 2,
     "minPlayers": 3,
-    "pointsBonus": 2,
+    "pointBonus": 2,
     "foodReduction": 1
   },
   {
     "era": 2,
     "minPlayers": 2,
-    "pointsBonus": 4,
+    "pointBonus": 4,
     "foodReduction": 1
   },
   {
     "era": 2,
     "minPlayers": 2,
-    "pointsBonus": 1,
+    "pointBonus": 1,
     "foodReduction": 2
   },
   {
     "era": 2,
     "minPlayers": 2,
-    "pointsBonus": 3,
+    "pointBonus": 3,
     "foodReduction": 2
   },
   {
     "era": 3,
     "minPlayers": 5,
-    "pointsBonus": 4,
+    "pointBonus": 4,
     "foodReduction": 1
   },
   {
     "era": 3,
     "minPlayers": 2,
-    "pointsBonus": 2,
+    "pointBonus": 2,
     "foodReduction": 2
   },
   {
     "era": 3,
     "minPlayers": 2,
-    "pointsBonus": 3,
+    "pointBonus": 3,
     "foodReduction": 2
   },
   {
     "era": 3,
     "minPlayers": 2,
-    "pointsBonus": 5,
+    "pointBonus": 5,
     "foodReduction": 1
   }
 ]

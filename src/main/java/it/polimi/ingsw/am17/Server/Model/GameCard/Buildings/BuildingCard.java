@@ -9,25 +9,25 @@ import java.util.List;
 import java.util.Objects;
 
 public class BuildingCard implements Serializable {
-    private final int foodCost;
-    private final int bonusPoints;
-    private final int era;
+    private final Integer foodCost;
+    private final Integer bonusPoints;
+    private final Integer era;
 
     @JsonCreator
     public BuildingCard(
-            @JsonProperty("era") int era,
-            @JsonProperty("foodCost") int foodCost,
-            @JsonProperty("bonusPoints") int bonusPoints) {
+            @JsonProperty("era") Integer era,
+            @JsonProperty("foodCost") Integer foodCost,
+            @JsonProperty("bonusPoints") Integer bonusPoints) {
         this.era = era;
         this.foodCost = foodCost;
         this.bonusPoints = bonusPoints;
     }
 
-    public int getFoodCost() {
+    public Integer getFoodCost() {
         return foodCost;
     }
-    public int getEra() { return era; }
-    public int getBonusPoints() { return bonusPoints; }
+    public Integer getEra() { return era; }
+    public Integer getBonusPoints() { return bonusPoints; }
 
     // effects implemented
     public int GetAdditionalFinalPoints(List<CharacterCard> characterCards) { return 0; }

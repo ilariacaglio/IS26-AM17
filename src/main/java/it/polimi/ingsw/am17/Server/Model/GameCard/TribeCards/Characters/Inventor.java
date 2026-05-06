@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Inventor extends CharacterCard {
     private final InventorIconType icon;
@@ -17,8 +18,9 @@ public class Inventor extends CharacterCard {
     public  Inventor(
             @JsonProperty("era") int era,
             @JsonProperty("minPlayers") int minPlayers,
-            @JsonProperty("icon") InventorIconType icon) {
-        super(era, minPlayers, CardType.INVENTOR);
+            @JsonProperty("icon") InventorIconType icon,
+            @JsonProperty("id") UUID id) {
+        super(era, minPlayers, CardType.INVENTOR, id);
         this.icon = icon;
     }
 

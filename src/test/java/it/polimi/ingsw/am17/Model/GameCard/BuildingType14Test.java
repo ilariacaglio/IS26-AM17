@@ -37,13 +37,13 @@ class BuildingType14Test extends BuildingCardTest{
             int numInv = r.nextInt(2,5);
             List<CharacterCard> ccNever = createCharacterCardList(numHunter, numArtist, numBuilder, numInv, 0, 0);
 
-            int fpNever = building.GetFoodBonusFromCardAcquisition(ccNever, new Shaman(0,0,0));
+            int fpNever = building.GetFoodBonusFromCardAcquisition(ccNever, new Shaman(0,0,0, null));
 
             int numSham = r.nextInt(2,5);
             int numBind = 1;
             List<CharacterCard> cc = createCharacterCardList(numHunter, numArtist, numBuilder, numInv, numSham, numBind);
-            int fpLow = building.GetFoodBonusFromCardAcquisition(cc, new Shaman(0,0,0));
-            int fpHigh = building.GetFoodBonusFromCardAcquisition(cc, new Binder(0,0));
+            int fpLow = building.GetFoodBonusFromCardAcquisition(cc, new Shaman(0,0,0, null));
+            int fpHigh = building.GetFoodBonusFromCardAcquisition(cc, new Binder(0,0, null));
 
 
 
