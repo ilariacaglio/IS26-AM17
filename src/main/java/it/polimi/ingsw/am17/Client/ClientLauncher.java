@@ -17,7 +17,7 @@ public class ClientLauncher {
         if (socket) {
             new ClientSocket().start("127.0.0.1", gui);
         } else {
-            new ClientRMI().start("127.0.0.1", gui);
+            new ClientRMI().start("127.0.0.1", true);
         }
     }
 }
