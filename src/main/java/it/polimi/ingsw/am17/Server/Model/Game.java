@@ -311,6 +311,7 @@ public class Game extends Subject {
             catch (IllegalStateException e) {
                 if (e.getMessage().equals("No more cards left in the deck.")) {
                     endGame();
+                    return;
                 }
             }
         }
