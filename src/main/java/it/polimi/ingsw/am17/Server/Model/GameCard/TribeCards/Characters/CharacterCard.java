@@ -31,7 +31,7 @@ public class CharacterCard extends TribesCard {
         if (o == null || getClass() != o.getClass()) return false;
         CharacterCard that = (CharacterCard) o;
         if(!this.getId().equals(that.getId())) return false;
-        return minPlayers == that.minPlayers;
+        return minPlayers.equals(that.minPlayers);
     }
 
     @Override
