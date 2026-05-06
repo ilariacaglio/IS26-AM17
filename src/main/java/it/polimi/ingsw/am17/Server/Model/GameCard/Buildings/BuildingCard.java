@@ -47,7 +47,7 @@ public class BuildingCard implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildingCard that = (BuildingCard) o;
-        return foodCost == that.foodCost && bonusPoints == that.bonusPoints && era == that.era;
+        return foodCost.equals(that.foodCost) && bonusPoints.equals(that.bonusPoints) && era.equals(that.era);
     }
 
     @Override
