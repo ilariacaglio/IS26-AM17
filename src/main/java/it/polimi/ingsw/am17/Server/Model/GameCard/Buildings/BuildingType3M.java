@@ -29,6 +29,16 @@ public class BuildingType3M extends BuildingCard {
         this.pointsFromEachCharacter = pointsFromEachCharacter;
     }
 
+    @SuppressWarnings("unused") // needed for jackson
+    public Integer getPointsFromEachCharacter() {
+        return pointsFromEachCharacter;
+    }
+
+    @SuppressWarnings("unused") // needed for jackson
+    public Integer getEra() {
+        return era;
+    }
+
     @Override
     public int GetAdditionalFinalPoints(List<CharacterCard> playerCharacterCards) {
         int characterCount = (int) playerCharacterCards.stream().filter(card -> card.getCardType() == characterType).count();
