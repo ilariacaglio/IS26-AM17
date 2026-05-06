@@ -14,15 +14,16 @@ import java.util.Objects;
  * MULTIPLE
  */
 public class BuildingType3M extends BuildingCard {
-    private final int pointsFromEachCharacter; // amount from each characterType
+    private final Integer pointsFromEachCharacter; // amount from each characterType
     private final CardType characterType;
     private static final int era = 3;
+
     @JsonCreator
     public BuildingType3M(
-            @JsonProperty("foodCost") int foodCost,
-            @JsonProperty("bonusPoints") int bonusPoints,
+            @JsonProperty("foodCost") Integer foodCost,
+            @JsonProperty("bonusPoints") Integer bonusPoints,
             @JsonProperty("characterType") CardType characterType,
-            @JsonProperty("pointsFromEachCharacter") int pointsFromEachCharacter) {
+            @JsonProperty("pointsFromEachCharacter") Integer pointsFromEachCharacter) {
         super(era, foodCost, bonusPoints);
         this.characterType = characterType;
         this.pointsFromEachCharacter = pointsFromEachCharacter;
