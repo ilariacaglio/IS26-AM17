@@ -18,12 +18,16 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Message class for socket communication.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL) // removes null values when serializing
 public class Message implements Serializable {
+    private static final Logger logger = Logger.getLogger(Message.class.getName());
+
     private final MessageType type;
 
     private UUID gameId;
@@ -129,7 +133,9 @@ public class Message implements Serializable {
 
     // TODO: comments, synchronize?
     public void send(Socket socket) throws Exception {
-        System.err.println("Sending message:" + mapper.writeValueAsString(this));
+        logger.setLevel(Level.FINE);
+        logger.fine("Parsing message:" + this);
+        logger.info("Sending message:" + mapper.writeValueAsString(this));
         String json = mapper.writeValueAsString(this);
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         out.println(json);
