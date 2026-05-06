@@ -181,21 +181,42 @@ public class CLI implements UI {
                 System.out.println("Waiting for "+ playersToWait + " more players to join...");
             }
 
-            //draw upper row
-            drawRow(true);
+            if(game.getCurrentEra()>0) {
+                //draw upper row
+                drawRow(true);
 
-            //draw offering card
-            drawOfferingCard();
+                //draw offering card
+                drawOfferingCard();
 
-            //draw lower row
-            drawRow(false);
+                //draw lower row
+                drawRow(false);
 
-            // if the game has begun notify the players turn
-            if(game.isPlayerTurn())
-                System.out.println("It's your turn!");
-            System.out.print("> ");
+                // if the game has begun notify the players turn
+                if(game.isPlayerTurn())
+                    System.out.println("It's your turn!");
+                System.out.print("> ");
+            }
+            else {
+                drawRanking();
+            }
+
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * prints the ranking of the players when game ends
+     */
+    private void drawRanking() {
+        System.out.println("--- FINAL RANKING---");
+        List<Player> sortedPlayers = game.getOrderedPlayers().stream()
+                .sorted(Comparator.comparingInt(Player::getPp).reversed())
+                .toList();
+        int rank = 1;
+        for (Player player : sortedPlayers) {
+            System.out.println(rank + "° place: " + player.getNickname() + " - Points: " + player.getPp());
+            rank++;
         }
     }
 
