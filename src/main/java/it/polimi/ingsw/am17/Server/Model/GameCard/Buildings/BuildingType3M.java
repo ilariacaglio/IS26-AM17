@@ -45,7 +45,7 @@ public class BuildingType3M extends BuildingCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildingType3M that = (BuildingType3M) o;
-        return pointsFromEachCharacter == that.pointsFromEachCharacter && characterType == that.characterType;
+        return pointsFromEachCharacter.equals(that.pointsFromEachCharacter) && characterType == that.characterType;
     }
 
     @Override
