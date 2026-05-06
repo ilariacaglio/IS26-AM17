@@ -48,7 +48,7 @@ public class ClientModel {
     }
 
     public void createLocalPlayer(String nickname, Color color) {
-        myPlayer = new Player(nickname, color);
+        myPlayer = new Player(nickname, color, new ArrayList<>(), new ArrayList<>());
     }
 
     public Player getLocalPlayer() {

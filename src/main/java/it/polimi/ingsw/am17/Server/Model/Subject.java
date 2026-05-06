@@ -76,7 +76,7 @@ public abstract class Subject {
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         Stack<Player> newStack = players.stream()
                 .map(p -> {
-                    Player copy = new Player(p.getNickname(), p.getColor());
+                    Player copy = new Player(p.getNickname(), p.getColor(), new ArrayList<>(), new ArrayList<>());
                     copy.addFood(p.getFood());
                     copy.addPp(p.getPp());
                     // Since you didn't set the cards, they remain null/empty by default

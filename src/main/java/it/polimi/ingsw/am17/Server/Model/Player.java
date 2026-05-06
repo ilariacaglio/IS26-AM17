@@ -19,11 +19,14 @@ public class Player implements Serializable {
     private List<BuildingCard> buildingCards;
 
     @JsonCreator
-    public Player(@JsonProperty("nickname") String nickname, @JsonProperty("color") Color color) {
+    public Player(@JsonProperty("nickname") String nickname,
+                  @JsonProperty("color") Color color,
+                  @JsonProperty("characterCards") List<CharacterCard> characterCards,
+                  @JsonProperty("buildingCards") List<BuildingCard> buildingCards) {
         this.nickname = nickname;
         this.color = color;
-        this.characterCards = new ArrayList<>();
-        this.buildingCards = new ArrayList<>();
+        this.characterCards = characterCards;
+        this.buildingCards = buildingCards;
     }
 
     public Color getColor() {
