@@ -72,12 +72,12 @@ public class OfferingCard implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OfferingCard that = (OfferingCard) o;
-        return minPlayers == that.minPlayers && orderLetter == that.orderLetter && foodBonus == that.foodBonus && numCardsUpper == that.numCardsUpper && numCardsLower == that.numCardsLower;
+        return minPlayers.equals(that.minPlayers) && orderLetter.equals(that.orderLetter) && foodBonus.equals(that.foodBonus) && numCardsUpper.equals(that.numCardsUpper)  && numCardsLower.equals(that.numCardsLower);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(minPlayers, orderLetter, foodBonus, numCardsUpper, numCardsLower, player);
+        return Objects.hash(minPlayers, orderLetter, foodBonus, numCardsUpper, numCardsLower);
     }
 
     @Override
