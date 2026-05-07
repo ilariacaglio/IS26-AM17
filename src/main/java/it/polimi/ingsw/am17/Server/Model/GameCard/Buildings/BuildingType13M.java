@@ -15,6 +15,12 @@ import java.util.Objects;
  */
 public class BuildingType13M extends BuildingCard {
     private final CardType characterType;
+
+    @SuppressWarnings("unused") // needed for jackson
+    public CardType getCharacterType() {
+        return characterType;
+    }
+
     @JsonCreator
     public BuildingType13M(
             @JsonProperty("era") int era,

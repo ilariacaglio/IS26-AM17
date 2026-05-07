@@ -61,13 +61,13 @@ class BuildingType3MTest extends BuildingCardTest {
         List<CharacterCard> cc = new ArrayList<>();
 
         for (int i = 0; i < hunter; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.HUNTER));
+            cc.add(new CharacterCard(1, 1, CardType.HUNTER, null));
         }
         for (int i = 0; i < art; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.ARTIST));
+            cc.add(new CharacterCard(1, 1, CardType.ARTIST, null));
         }
         for (int i = 0; i < build; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.BUILDER));
+            cc.add(new CharacterCard(1, 1, CardType.BUILDER, null));
         }
 
         return cc;

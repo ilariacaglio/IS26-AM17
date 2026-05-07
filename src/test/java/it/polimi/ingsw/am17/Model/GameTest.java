@@ -47,8 +47,8 @@ public class GameTest {
         // add player to game
         game.addPlayer(p1);
         // check that the list contains the players and its size is 1
-        assertTrue(game.getPlayers().contains(p1));
-        assertEquals(1, game.getPlayers().size());
+        assertTrue(game.getPlayersList().contains(p1));
+        assertEquals(1, game.getPlayersList().size());
     }
 
     @Test
@@ -62,10 +62,10 @@ public class GameTest {
         game.addPlayer(p2);
         game.addPlayer(p3);
         // check that every player is in the list and the size is 3
-        assertTrue(game.getPlayers().contains(p1));
-        assertTrue(game.getPlayers().contains(p2));
-        assertTrue(game.getPlayers().contains(p3));
-        assertEquals(3, game.getPlayers().size());
+        assertTrue(game.getPlayersList().contains(p1));
+        assertTrue(game.getPlayersList().contains(p2));
+        assertTrue(game.getPlayersList().contains(p3));
+        assertEquals(3, game.getPlayersList().size());
         // check the game has started
         //check current era updated to 1
         assertEquals(1, game.getCurrentEra());
@@ -107,7 +107,7 @@ public class GameTest {
         }
 
         private Player pickWrongPlayer(){
-            return game.getPlayers().stream()
+            return game.getPlayersList().stream()
                     .filter(p -> !p.equals(game.getCurrentPlayer()))
                     .toList().getFirst();
         }
@@ -373,7 +373,7 @@ public class GameTest {
             setFirstPlayerToOffering(0);
             List<CharacterCard> characterList = new ArrayList<>();
             // add a random card to list
-            characterList.add(new Binder(2,4));
+            characterList.add(new Binder(2,4, null));
             assertThrows(IllegalStateException.class, () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
         }
 
