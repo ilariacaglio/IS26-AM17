@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class Player implements Serializable {
     private String nickname;
@@ -25,6 +26,8 @@ public class Player implements Serializable {
         this.characterCards = new ArrayList<>();
         this.buildingCards = new ArrayList<>();
     }
+
+    private static final Logger logger = Logger.getLogger(Game.class.getName());
 
     public Color getColor() {
         return color;
@@ -217,10 +220,13 @@ public class Player implements Serializable {
            int lostPp = pointLost * remaining;
 
            addPp(lostPp * (-1));
-           addFood(food * (-1));//TODO:mandare anche questa modifica
+           addFood(food * (-1));
+           logger.info("Player " + getNickname() + " has lost all food and " + lostPp
+                    + " points from FoodEvent.");
        } //if food is enough
        else {
            addFood(foodPrice * (-1));
+           logger.info("Player " + getNickname() + " has lost " + foodPrice + " food from FoodEvent.");
        }
    }
 
@@ -237,6 +243,8 @@ public class Player implements Serializable {
 
            this.addFood(gainFood);
            this.addPp(gainPp);
+           logger.info("Player " + getNickname() + " had gained " + gainFood + " food and "
+                   + gainPp + " points from HuntingEvent.");
 
        }
 
@@ -254,6 +262,8 @@ public class Player implements Serializable {
        //add additionalFood and additionalPp
        this.addFood(additionalFood);
        this.addPp(additionalPp);
+       logger.info("Player " + getNickname() + " had gained " + additionalFood + " food and "
+                + additionalPp + " points from HuntingEvent.");
    }
 
    public void solvePaintingEvent(int numMax, int pointsMax, int pointsLow){
@@ -264,9 +274,13 @@ public class Player implements Serializable {
        //assign PP based on number of artists
        if(numArtist>=numMax){
            addPp(numArtist * pointsMax);
+           logger.info("Player " + getNickname() + " had gained " + numArtist*pointsMax
+                   + " points for PaintingEvent.");
        }
        else {
            addPp(pointsLow*(-1));
+           logger.info("Player " + getNickname() + " had gained " + pointsLow
+                   + " points for PaintingEvent.");
        }
 
        int additionalFood=0;
@@ -278,6 +292,8 @@ public class Player implements Serializable {
        }
        //add additionalFood
        addFood(additionalFood);
+       logger.info("Player " + getNickname() + " had gained " + additionalFood
+               + " food for PaintingEvent.");
    }
 
    public int calculateStarPoints()
