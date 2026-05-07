@@ -5,20 +5,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Hunter extends CharacterCard {
-    private final boolean withIcon;
+    private final Boolean withIcon;
 
-    public boolean isWithIcon() {
+    public Boolean isWithIcon() {
         return withIcon;
     }
 
     @JsonCreator
     public Hunter(
-            @JsonProperty("era") int era,
-            @JsonProperty("minPlayers") int minPlayers,
-            @JsonProperty("withIcon") boolean withIcon) {
-        super(era, minPlayers, CardType.HUNTER);
+            @JsonProperty("era") Integer era,
+            @JsonProperty("minPlayers") Integer minPlayers,
+            @JsonProperty("withIcon") Boolean withIcon,
+            @JsonProperty("id") UUID id) {
+        super(era, minPlayers, CardType.HUNTER, id);
         this.withIcon = withIcon;
     }
 
@@ -28,7 +30,7 @@ public class Hunter extends CharacterCard {
         if (o == null || getClass() != o.getClass()) return false;
         Hunter hunter = (Hunter) o;
         if(!this.getId().equals(hunter.getId())) return false;
-        return withIcon == hunter.withIcon;
+        return withIcon.equals(hunter.withIcon);
     }
 
     @Override

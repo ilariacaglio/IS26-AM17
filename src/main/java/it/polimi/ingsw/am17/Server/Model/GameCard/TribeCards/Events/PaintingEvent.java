@@ -5,41 +5,43 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.UUID;
 
 public class PaintingEvent extends EventCard {
-    private final int pointsLow;
-    private final int pointsMax;
-    private final int numMax;
+    private final Integer pointsLow;
+    private final Integer pointsMax;
+    private final Integer numMax;
 
-    public int getNumMax() {
+    public Integer getNumMax() {
         return numMax;
     }
 
-    public int getPointsLow() {
+    public Integer getPointsLow() {
         return pointsLow;
     }
 
-    public int getPointsMax() {
+    public Integer getPointsMax() {
         return pointsMax;
     }
 
     @JsonCreator
     public PaintingEvent(
-            @JsonProperty("pointsLow") int pointsLow,
-            @JsonProperty("pointsMax") int pointsMax,
-            @JsonProperty("numMax") int numMax,
-            @JsonProperty("Final") boolean Final,
-            @JsonProperty("era") int era) {
-        super(Final, era, CardType.PAINTING_EVENT);
+            @JsonProperty("pointsLow") Integer pointsLow,
+            @JsonProperty("pointsMax") Integer pointsMax,
+            @JsonProperty("numMax") Integer numMax,
+            @JsonProperty("Final") Boolean Final,
+            @JsonProperty("era") Integer era,
+            @JsonProperty("id") UUID id) {
+        super(Final, era, CardType.PAINTING_EVENT, id);
         this.pointsLow = pointsLow;
         this.pointsMax = pointsMax;
         this.numMax = numMax;
     }
 
     @Override
-    public void computeScore(List<Player> list) {
+    public void computeScore(Queue<Player> list) {
         for (Player player : list) {
             player.solvePaintingEvent(numMax, pointsMax, pointsLow);
         }
@@ -50,7 +52,7 @@ public class PaintingEvent extends EventCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PaintingEvent that = (PaintingEvent) o;
-        return pointsLow == that.pointsLow && pointsMax == that.pointsMax && numMax == that.numMax;
+        return pointsLow.equals(that.pointsLow) && pointsMax.equals(that.pointsMax) && numMax.equals(that.numMax);
     }
 
     @Override

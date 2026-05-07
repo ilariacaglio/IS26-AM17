@@ -5,37 +5,41 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.UUID;
 
 public class RitualEvent extends EventCard {
-    private final int pointMax;
-    private final int pointMin;
+    private final Integer pointMax;
+    private final Integer pointMin;
 
-    public int getPointMax() {
+    public Integer getPointMax() {
         return pointMax;
     }
 
-    public int getPointMin() {
+    public Integer getPointMin() {
         return pointMin;
     }
 
     @JsonCreator
-    public RitualEvent(@JsonProperty("Final") boolean Final,
-                       @JsonProperty("era") int era,
-                       @JsonProperty("pointMax") int pointMax,
-                       @JsonProperty("pointMin") int pointMin){
-        super(Final, era, CardType.RITUAL_EVENT);
+    public RitualEvent(@JsonProperty("Final") Boolean Final,
+                       @JsonProperty("era") Integer era,
+                       @JsonProperty("pointMax") Integer pointMax,
+                       @JsonProperty("pointMin") Integer pointMin,
+                       @JsonProperty("id") UUID id){
+        super(Final, era, CardType.RITUAL_EVENT, id);
         this.pointMax = pointMax;
         this.pointMin = pointMin;
     }
     @Override
-    public void computeScore(List<Player> list){
+    public void computeScore(Queue<Player> list){
         //array for counting stars of each player
         int[] stars = new int[list.size()];
         //counting stars icon for each player
-        for(int i=0; i<list.size(); i++){
-            stars[i] = list.get(i).calculateStarPoints();
+        int index = 0;
+        for (Player player : list) {
+            stars[index] = player.calculateStarPoints();
+            index++;
         }
 
         int max = stars[0];
@@ -49,29 +53,28 @@ public class RitualEvent extends EventCard {
         boolean allEqual = (max == min);
 
         //add Pp based on the number of the stars for each player
-        for(int i = 0; i < list.size(); i++){
-
-            boolean doublePoints= list.get(i).hasDoubleRitualEventPoints();
-            boolean shield = list.get(i).hasShieldFromRitualEvent();
-
+        int j = 0;
+        for (Player player : list) {
+            boolean doublePoints= player.hasDoubleRitualEventPoints();
+            boolean shield = player.hasShieldFromRitualEvent();
             //give or take Pp
             if(allEqual){//give and then take Pp for each player
-                list.get(i).addPp(pointMax);
-                list.get(i).addPp(pointMin*(-1));
+                player.addPp(pointMax);
+                player.addPp(pointMin*(-1));
             }
             else{
-                if(stars[i] == max){
-                    list.get(i).addPp(pointMax);
+                if(stars[j] == max){
+                    player.addPp(pointMax);
                     if(doublePoints){//if player has BuildingType8
-                        list.get(i).addPp(pointMax);
+                        player.addPp(pointMax);
                     }
                 }
-                if(stars[i] == min){
+                if(stars[j] == min){
                     if(shield){//protected from losing Pp by BuildingType12
-                        list.get(i).addPp(0);
+                        player.addPp(0);
                     }
                     else {
-                        list.get(i).addPp(pointMin * (-1));
+                        player.addPp(pointMin * (-1));
                     }
                 }
             }
@@ -84,7 +87,7 @@ public class RitualEvent extends EventCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RitualEvent that = (RitualEvent) o;
-        return pointMax == that.pointMax && pointMin == that.pointMin;
+        return pointMax.equals(that.pointMax) && pointMin.equals(that.pointMin);
     }
 
     @Override
