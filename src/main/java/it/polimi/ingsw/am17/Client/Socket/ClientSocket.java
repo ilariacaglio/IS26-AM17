@@ -33,7 +33,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
     Socket socket;
     ObjectMapper mapper;
 
-    private final Logger logger = Logger.getLogger(Game.class.getName());
+    private final Logger logger = Logger.getLogger(ClientSocket.class.getName());
 
     public ClientSocket() {
         this.model = new ClientModel();
