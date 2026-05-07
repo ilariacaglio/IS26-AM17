@@ -584,7 +584,7 @@ public class Game extends Subject {
         return id;
     }
 
-    public List<Player> getPlayers() {
+    public List<Player> getPlayersList() {
         return orderedPlayers.stream().toList();
     }
 
