@@ -19,7 +19,7 @@ public class BuildingType5 extends BuildingCard {
     }
 
     @Override
-    public int AddFoodPerHunterInPaintingEvent(List<CharacterCard> playerCharacterCards) {
+    public int AddFoodPerArtistInPaintingEvent(List<CharacterCard> playerCharacterCards) {
         return (int) playerCharacterCards.stream().filter(card -> card.getCardType() == ARTIST).count();
     }
 
