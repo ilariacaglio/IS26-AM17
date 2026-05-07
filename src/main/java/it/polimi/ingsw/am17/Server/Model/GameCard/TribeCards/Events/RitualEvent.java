@@ -51,6 +51,14 @@ public class RitualEvent extends EventCard {
         }
         //if max==min, it means that all players have the same stars number
         boolean allEqual = (max == min);
+        // check if more than one player has max stars
+        int maxCount = 0;
+        for (int star : stars) {
+            if (star == max) {
+                maxCount++;
+            }
+        }
+        boolean uniqueWinner = (maxCount == 1);
 
         //add Pp based on the number of the stars for each player
         int j = 0;
@@ -58,28 +66,28 @@ public class RitualEvent extends EventCard {
             boolean doublePoints= player.hasDoubleRitualEventPoints();
             boolean shield = player.hasShieldFromRitualEvent();
             //give or take Pp
-            if(allEqual){//give and then take Pp for each player
+            if(allEqual){
+                //give and then take Pp for each player
                 player.addPp(pointMax);
-                player.addPp(pointMin*(-1));
+                player.addPp(pointMin * (-1));
             }
             else{
                 if(stars[j] == max){
                     player.addPp(pointMax);
-                    if(doublePoints){//if player has BuildingType8
+                    // if player has BuildingType8
+                    if (doublePoints && uniqueWinner) {
                         player.addPp(pointMax);
                     }
                 }
                 if(stars[j] == min){
-                    if(shield){//protected from losing Pp by BuildingType12
-                        player.addPp(0);
-                    }
-                    else {
+                    //protected from losing Pp by BuildingType12
+                    if (!shield) {
                         player.addPp(pointMin * (-1));
                     }
                 }
             }
+            j++;
         }
-
     }
 
     @Override
