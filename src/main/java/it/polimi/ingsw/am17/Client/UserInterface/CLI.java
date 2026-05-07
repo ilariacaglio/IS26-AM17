@@ -174,32 +174,33 @@ public class CLI implements UI {
                 System.out.println();
             }
 
-            // print players list
-            printPlayers();
-            if(game.getCurrentEra()<1) {
-                int playersToWait = game.getNumPlayers()+game.getOrderedPlayers().size();
-                System.out.println("Waiting for "+ playersToWait + " more players to join...");
-            }
+            int currentEra = game.getCurrentEra();
 
-            if(game.getCurrentEra()>0) {
-                //draw upper row
-                drawRow(true);
+            if (currentEra >= 0) {
+                // print players list
+                printPlayers();
+                if(currentEra == 0){
+                    System.out.println("Waiting for more players to join...");
+                }
+                else {
+                    //draw upper row
+                    drawRow(true);
 
-                //draw offering card
-                drawOfferingCard();
+                    //draw offering card
+                    drawOfferingCard();
 
-                //draw lower row
-                drawRow(false);
+                    //draw lower row
+                    drawRow(false);
 
-                // if the game has begun notify the players turn
-                if(game.isPlayerTurn())
-                    System.out.println("It's your turn!");
-                System.out.print("> ");
+                    // if the game has begun notify the players turn
+                    if(game.isPlayerTurn())
+                        System.out.println("It's your turn!");
+                    System.out.print("> ");
+                }
             }
             else {
                 drawRanking();
             }
-
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
