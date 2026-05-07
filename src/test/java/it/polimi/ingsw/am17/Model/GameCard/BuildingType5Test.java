@@ -36,7 +36,7 @@ class BuildingType5Test extends BuildingCardTest{
             int numSham = r.nextInt(5);
             int numBind = r.nextInt(5);
             List<CharacterCard> cc = createCharacterCardList(numHunter, numArtist, numBuilder, numInv, numSham, numBind);
-            int fp = building.AddFoodPerHunterInPaintingEvent(cc);
+            int fp = building.AddFoodPerArtistInPaintingEvent(cc);
 
             assertEquals(numArtist, fp);
         }

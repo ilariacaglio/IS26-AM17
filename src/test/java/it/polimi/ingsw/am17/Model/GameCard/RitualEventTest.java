@@ -11,7 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,20 +22,20 @@ class RitualEventTest {
 
     @BeforeEach
     void setUp() {
-        ritualEvent = new RitualEvent(false,2,10,5);
+        ritualEvent = new RitualEvent(false,2,10,5, null);
     }
 
     //everyone has the same star number and player A has BuildingType8
     @Test
     void shouldAllEqualBuildingType8(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         list.add(A);
         list.add(B);
 
-        TribesCard cardA = new Shaman(2, 2, 2);
-        TribesCard cardB = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(2, 2, 2, null );
+        TribesCard cardB = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
 
@@ -48,14 +50,14 @@ class RitualEventTest {
     //everyone has the same star number and nobody has BuildingType8
     @Test
     void shouldAllEqualNoBuildingType8(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         list.add(A);
         list.add(B);
 
-        TribesCard cardA = new Shaman(2, 2, 2);
-        TribesCard cardB = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(2, 2, 2, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
 
@@ -69,14 +71,14 @@ class RitualEventTest {
     //B has min stars and BuildingType12
     @Test
     void shouldAMaxBMinAndBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         list.add(A);
         list.add(B);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
 
@@ -93,14 +95,14 @@ class RitualEventTest {
     //B has min stars and no BuildingType12
     @Test
     void shouldAMaxBMinAndNoBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         list.add(A);
         list.add(B);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
 
@@ -114,7 +116,7 @@ class RitualEventTest {
     //C min and BuildingType12
     @Test
     void shouldABMaxCMinAndBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         Player C = new Player("playerC", Color.RED);
@@ -122,9 +124,9 @@ class RitualEventTest {
         list.add(B);
         list.add(C);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(3, 2, 3);
-        TribesCard cardC = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(3, 2, 3, null);
+        TribesCard cardC = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
         C.addCharacter(cardC);
@@ -143,7 +145,7 @@ class RitualEventTest {
     //C min and no BuildingType12
     @Test
     void shouldABMaxCMinNoBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         Player C = new Player("playerC", Color.RED);
@@ -151,9 +153,9 @@ class RitualEventTest {
         list.add(B);
         list.add(C);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(3, 2, 3);
-        TribesCard cardC = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(3, 2, 3, null);
+        TribesCard cardC = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
         C.addCharacter(cardC);
@@ -169,7 +171,7 @@ class RitualEventTest {
     //B and C min and C has BuildingType12
     @Test
     void shouldAMaxBCMinAndBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         Player C = new Player("playerC", Color.RED);
@@ -177,9 +179,9 @@ class RitualEventTest {
         list.add(B);
         list.add(C);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(2, 2, 2);
-        TribesCard cardC = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
+        TribesCard cardC = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
         C.addCharacter(cardC);
@@ -198,7 +200,7 @@ class RitualEventTest {
     //B and C min and no BuildingType12
     @Test
     void shouldAMaxBCMinAndNoBuildings(){
-        List<Player> list = new ArrayList<>();
+        Queue<Player> list = new LinkedList<>();
         Player A = new Player("playerA", Color.BLACK);
         Player B = new Player("playerB", Color.WHITE);
         Player C = new Player("playerC", Color.RED);
@@ -206,9 +208,9 @@ class RitualEventTest {
         list.add(B);
         list.add(C);
 
-        TribesCard cardA = new Shaman(3, 2, 3);
-        TribesCard cardB = new Shaman(2, 2, 2);
-        TribesCard cardC = new Shaman(2, 2, 2);
+        TribesCard cardA = new Shaman(3, 2, 3, null);
+        TribesCard cardB = new Shaman(2, 2, 2, null);
+        TribesCard cardC = new Shaman(2, 2, 2, null);
         A.addCharacter(cardA);
         B.addCharacter(cardB);
         C.addCharacter(cardC);
