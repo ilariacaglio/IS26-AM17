@@ -21,6 +21,7 @@ public class GUI extends Application implements UI {
     private static ClientModel staticGame;
 
     private VBox root;
+    private Scene scene;
 
     // This method allows your main logic to "prepare" the data before launching
     public GUI(VirtualServer server, VirtualView view, ClientModel model) {
@@ -57,8 +58,9 @@ public class GUI extends Application implements UI {
     }
     @Override
     public void start(Stage stage) {
-        drawInterface(staticGame);
-        stage.setScene(new Scene(root, 400, 300));
+        drawStartInterface();
+        scene = new Scene(root, 400, 300);
+        stage.setScene(scene);
         stage.setTitle("MESOS table gameboard");
         stage.setOnCloseRequest(e -> {
             Platform.exit();
@@ -110,12 +112,35 @@ public class GUI extends Application implements UI {
         //add components to root
         root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox);
     }
+
+    private void drawStartInterface(){
+        root = new VBox(10);
+        root.setPadding(new Insets(10));
+        //create Buttons
+        Button createGameButton = new Button("CREATE GAME");
+        Button  joinGameButton = new Button("JOIN GAME");
+        Button exitButton = new Button("EXIT");
+        HBox startButtons = new HBox(10, createGameButton, joinGameButton, exitButton);
+        //createGameButton opens drawInterface only for testing purposes
+        createGameButton.setOnAction(e -> {
+
+            drawInterface(staticGame);
+
+            scene.setRoot(root);
+        });
+
+        //add Buttons to root
+        root.getChildren().add(startButtons);
+    }
+    @Override
     public void printGameId(UUID gameId) {
 
     }
+    @Override
     public void printEra(){
 
     }
+    @Override
     public void printGamesList(){
 
     }
