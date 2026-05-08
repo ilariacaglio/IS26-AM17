@@ -148,6 +148,62 @@ public class GUI extends Application implements UI {
         root.getChildren().add(startButtons);
     }
 
+    private void drawStartInterface(){
+        // 1. Create the container
+        root = new VBox(15); // 15px spacing between elements
+        root.setPadding(new Insets(20));
+        root.setAlignment(Pos.CENTER); // Keep everything centered
+
+        // 2. Title Label
+        Label title = new Label("!!!WELCOME TO MESOS!!!");
+        title.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+
+        // 3. Input Grid for alignment
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(15);
+        grid.setAlignment(Pos.CENTER);
+
+        // Nickname field
+        TextField nicknameField = new TextField();
+        nicknameField.setPromptText("Enter nickname...");
+
+        // Color ComboBox
+        ComboBox<Color> colorPicker = new ComboBox<>();
+        colorPicker.getItems().setAll(Color.values());
+        colorPicker.setValue(Color.values()[0]); // Default to first enum value
+
+        // Add to grid
+        grid.add(new Label("Nickname:"), 0, 0);
+        grid.add(nicknameField, 1, 0);
+        grid.add(new Label("Your Color:"), 0, 1);
+        grid.add(colorPicker, 1, 1);
+
+        // 4. Action Button
+        Button startButton = new Button("START ADVENTURE");//nome voluto da sara (non è vero)
+        startButton.setPrefWidth(200);
+
+
+        startButton.setOnAction(e -> {
+            String name = nicknameField.getText();
+            Color color = colorPicker.getValue();
+
+            //check if nickname empty
+            if (name.trim().isEmpty()) {
+                nicknameField.setStyle("-fx-border-color: red;");
+                return; // Don't proceed if empty
+            }
+
+            staticGame.createLocalPlayer(name, color);
+
+            drawConnectionInterface();
+            scene.setRoot(root);
+        });
+
+        // 5. Assemble and return
+        root.getChildren().addAll(title, grid, startButton);
+    }
+
     private void createGame(){
         root = new VBox(10);
         root.setPadding(new Insets(10));
