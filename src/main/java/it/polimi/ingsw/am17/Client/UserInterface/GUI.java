@@ -84,31 +84,31 @@ public class GUI extends Application implements UI {
         //create cards like buttons so player can select them
         //upperCards
         HBox upperCardsBox =new HBox(10);
-        for(TribesCard card : game.getUpperTribeRow()){
-            Button upperCards = new Button(card.toString());
+        for(int i=0; i<4; i++){
+            CardGUI upperCards = new CardGUI(null);
             upperCardsBox.getChildren().add(upperCards);
         }
         //turnCard and offeringCard in the same HBox
         HBox offeringCardBox = new HBox(10);
         //turnCard first
         //turnCard
-        Button turnCard = new Button("Turn Card");
+        CardGUI turnCard = new CardGUI(null);
         offeringCardBox.getChildren().add(turnCard);
         //offeringCards
         for(int i=0; i<5; i++){
-            Button offeringCard = new Button("Offering Card " + i);
+            CardGUI offeringCard = new CardGUI(null);
             offeringCardBox.getChildren().add(offeringCard);
         }
         //lowerCards
         HBox lowerCardsBox =  new HBox(10);
         for(int i=0; i<6; i++){
-            Button lowerCards = new Button("Lower Card " + i);
+            CardGUI lowerCards = new CardGUI(null);
             lowerCardsBox.getChildren().add(lowerCards);
         }
         //other players card buttons
         HBox playersCardsBox =  new HBox(10);
         for(int i=0; i<3; i++){
-            Button playerCards = new Button("Cards' Player " + i);
+            Button playerCards = new Button("Player " + i);
             playersCardsBox.getChildren().add(playerCards);
         }
         //player cards
