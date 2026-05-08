@@ -9,32 +9,30 @@ import javafx.scene.image.ImageView;
 public class CardGUI extends StackPane {
 
     public CardGUI(String imagePath) {
-        // 1. Background of the card
+        //card form and size
         Rectangle border = new Rectangle(100, 140);
         border.setArcWidth(15);
         border.setArcHeight(15);
         border.setFill(javafx.scene.paint.Color.WHITE);
         border.setStroke(javafx.scene.paint.Color.BLACK);
 
-        // ADD BORDER ALWAYS
+        //add border
         this.getChildren().add(border);
-
+//if is used only for test purposes
         if (imagePath != null) {
-        // 2. The Image
+        //load image
         Image img = new Image(getClass().getResourceAsStream(imagePath));
         ImageView view = new ImageView(img);
 
-        // 3. Scale the image to fit the card
-        view.setFitWidth(90);  // Leave a small margin
+        //fit the card in rectangle
+        view.setFitWidth(90);
         view.setPreserveRatio(true);
         view.setSmooth(true);
-
-
 
         // Add everything to the StackPane
         this.getChildren().addAll(border, view);
         }
-
+        //click the card
         this.setOnMouseClicked(e -> {
             System.out.println("carta cliccata");
         });

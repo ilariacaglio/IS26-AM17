@@ -4,6 +4,8 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.Color;
+import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import javafx.application.Application;
@@ -75,17 +77,20 @@ public class GUI extends Application implements UI {
         this.staticGame = game;
         root = new VBox(10);
         root.setPadding(new Insets(10));
-        //TODO: use list.size() in all for (used random numbers for testing)
-        //TODO: use getter methods in ClientModel for list.size()
         //TODO: add graphics
         //TODO: add buttons methods with setOnAction()
         //TODO: fix dimension
-
         //create cards like buttons so player can select them
         //upperCards
+        //tribes cards
         HBox upperCardsBox =new HBox(10);
-        for(int i=0; i<4; i++){
-            CardGUI upperCards = new CardGUI(null);
+        for(TribesCard card : game.getUpperTribeRow()){
+            CardGUI upperCards = new CardGUI(card.toString());
+            upperCardsBox.getChildren().add(upperCards);
+        }
+        //building cards
+        for(BuildingCard card : game.getUpperBuildingRow()){
+            CardGUI upperCards = new CardGUI(card.toString());
             upperCardsBox.getChildren().add(upperCards);
         }
         //turnCard and offeringCard in the same HBox
@@ -95,14 +100,20 @@ public class GUI extends Application implements UI {
         CardGUI turnCard = new CardGUI(null);
         offeringCardBox.getChildren().add(turnCard);
         //offeringCards
-        for(int i=0; i<5; i++){
-            CardGUI offeringCard = new CardGUI(null);
+        for(OfferingCard card : game.getOfferingCards()){
+            CardGUI offeringCard = new CardGUI(card.toString());
             offeringCardBox.getChildren().add(offeringCard);
         }
         //lowerCards
+        //tribe cards
         HBox lowerCardsBox =  new HBox(10);
-        for(int i=0; i<6; i++){
-            CardGUI lowerCards = new CardGUI(null);
+        for(TribesCard card : game.getLowerTribeRow()){
+            CardGUI lowerCards = new CardGUI(card.toString());
+            lowerCardsBox.getChildren().add(lowerCards);
+        }
+        //building cards
+        for(BuildingCard card : game.getLowerBuildingRow()){
+            CardGUI lowerCards = new CardGUI(card.toString());
             lowerCardsBox.getChildren().add(lowerCards);
         }
         //other players card buttons
@@ -112,6 +123,7 @@ public class GUI extends Application implements UI {
             playersCardsBox.getChildren().add(playerCards);
         }
         //player cards
+        //TODO: show my cards always, no button
         Button personalCards = new Button("My Cards");
         HBox personalCardsBox =  new HBox(10);
         personalCardsBox.getChildren().add(personalCards);
