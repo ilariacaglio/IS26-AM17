@@ -42,7 +42,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         // Todo: remove null when gui
         UI userInterface = null;
         if(graphic){
-            userInterface = new GUI();
+            userInterface = new GUI(server, this, model);
         }
         else {
             userInterface = new CLI(server,this);
