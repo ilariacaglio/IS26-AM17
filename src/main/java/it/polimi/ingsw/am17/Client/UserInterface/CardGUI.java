@@ -13,9 +13,13 @@ public class CardGUI extends StackPane {
         Rectangle border = new Rectangle(100, 140);
         border.setArcWidth(15);
         border.setArcHeight(15);
-        //border.setFill(Color.WHITE);
-        //border.setStroke(Color.BLACK);
+        border.setFill(javafx.scene.paint.Color.WHITE);
+        border.setStroke(javafx.scene.paint.Color.BLACK);
 
+        // ADD BORDER ALWAYS
+        this.getChildren().add(border);
+
+        if (imagePath != null) {
         // 2. The Image
         Image img = new Image(getClass().getResourceAsStream(imagePath));
         ImageView view = new ImageView(img);
@@ -25,7 +29,14 @@ public class CardGUI extends StackPane {
         view.setPreserveRatio(true);
         view.setSmooth(true);
 
+
+
         // Add everything to the StackPane
         this.getChildren().addAll(border, view);
+        }
+
+        this.setOnMouseClicked(e -> {
+            System.out.println("carta cliccata");
+        });
     }
 }
