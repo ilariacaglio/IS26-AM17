@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -22,6 +23,8 @@ public class GUI extends Application implements UI {
 
     private VBox root;
     private Scene scene;
+    private Label food;
+    private Label points;
 
     // This method allows your main logic to "prepare" the data before launching
     public GUI(VirtualServer server, VirtualView view, ClientModel model) {
@@ -51,7 +54,7 @@ public class GUI extends Application implements UI {
         primaryStage.setScene(scene);
         primaryStage.show();
     }*/
-
+//TODO: find a way to add all the CLI functions (like choose color)
     @Override
     public void start() {
         Application.launch(GUI.class);
@@ -80,11 +83,7 @@ public class GUI extends Application implements UI {
         //TODO: add graphics
         //TODO: add buttons methods with setOnAction()
         //TODO: fix dimension
-        //TODO: create Buttons for "create new game", "join game",
-        // "exit"(new private method, new VBox)
-        //TODO: find a way to add all the CLI functions (like choose color)
-        //TODO: create Buttons to view other players' cards
-        //TODO: find a way to show the player their cards
+
         //create cards like buttons so player can select them
         //upperCards
         HBox upperCardsBox =new HBox(10);
@@ -109,8 +108,25 @@ public class GUI extends Application implements UI {
             Button lowerCards = new Button("Lower Card " + i);
             lowerCardsBox.getChildren().add(lowerCards);
         }
+        //other players card buttons
+        HBox playersCardsBox =  new HBox(10);
+        for(int i=0; i<3; i++){
+            Button playerCards = new Button("Cards' Player " + i);
+            playersCardsBox.getChildren().add(playerCards);
+        }
+        //player cards
+        Button personalCards = new Button("My Cards");
+        HBox personalCardsBox =  new HBox(10);
+        personalCardsBox.getChildren().add(personalCards);
+        //food and PP
+        food = new Label("Food: ");//TODO: add logic to update + borders (layout problem)
+        points = new Label("Points: ");
+        HBox playerResourcesBox =  new HBox(10);
+        playerResourcesBox.getChildren().addAll(points, food);
+
         //add components to root
-        root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox);
+        root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox, playerResourcesBox,
+                personalCardsBox, playersCardsBox);
     }
 
     private void drawStartInterface(){
@@ -131,6 +147,12 @@ public class GUI extends Application implements UI {
 
         //add Buttons to root
         root.getChildren().add(startButtons);
+    }
+
+    private void createGame(){
+        root = new VBox(10);
+        root.setPadding(new Insets(10));
+        //ask how many players and let the player put the number
     }
     @Override
     public void printGameId(UUID gameId) {
