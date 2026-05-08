@@ -82,12 +82,12 @@ public class OfferingCard implements Serializable {
 
     @Override
     public String toString() {
-        String nickname = (player != null) ? player.getNickname() : "";
+        StringBuilder sb = new StringBuilder().append(orderLetter).append(" ");
+        if (numCardsUpper > 0) sb.append(numCardsUpper).append("↑ ");
+        if (numCardsLower > 0) sb.append(numCardsLower).append("↓ ");
+        if (foodBonus > 0) sb.append(foodBonus).append("F ");
+        sb.append("(").append(player != null ? player.getNickname() : " ").append(")");
 
-        return  numCardsUpper + "↑ "
-                + numCardsLower + "↓ "
-                + foodBonus + "F "
-                + "(" + nickname + ")"
-                ;
+        return sb.toString();
     }
 }
