@@ -36,7 +36,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         this.server = (VirtualServerRMI) registry.lookup(serverName);
         this.model = new ClientModel();
         if(graphic){
-            userInterface = new GUI();
+            userInterface = new GUI(server, this, model);
         }
         else {
             userInterface=new CLI(server,this, model);

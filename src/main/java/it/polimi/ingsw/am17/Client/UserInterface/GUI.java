@@ -3,20 +3,35 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Model.Color;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.Player;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.UUID;
+import javafx.scene.control.TextField;
+
+
 
 public class GUI extends Application implements UI {
+
+    private static final double START_WINDOW_WIDTH = 400;
+    private static final double START_WINDOW_HEIGHT = 300;
+    private static final double GAME_WINDOW_WIDTH = 1200;
+    private static final double GAME_WINDOW_HEIGHT = 800;
+
     private static VirtualServer staticServer;
     private static VirtualView staticClient;
     private static ClientModel staticGame;
@@ -36,24 +51,6 @@ public class GUI extends Application implements UI {
     // MANDATORY: No-argument constructor (or just let Java provide the default one)
     public GUI() {}
 
-    /*@Override
-    public void start(Stage primaryStage) {
-        // 1. Create a component (Node)
-        Button btn = new Button("Click Me");
-        btn.setOnAction(e -> System.out.println("Hello World!"));
-
-        // 2. Arrange components in a Layout (Root Node)
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-
-        // 3. Create the Scene
-        Scene scene = new Scene(root, 300, 250);
-
-        // 4. Configure the Stage
-        primaryStage.setTitle("My JavaFX App");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }*/
 //TODO: find a way to add all the CLI functions (like choose color)
     @Override
     public void start() {
@@ -62,7 +59,7 @@ public class GUI extends Application implements UI {
     @Override
     public void start(Stage stage) {
         drawStartInterface();
-        scene = new Scene(root, 400, 300);
+        scene = new Scene(root, START_WINDOW_WIDTH, START_WINDOW_HEIGHT);
         stage.setScene(scene);
         stage.setTitle("MESOS table gameboard");
         stage.setOnCloseRequest(e -> {
@@ -87,8 +84,8 @@ public class GUI extends Application implements UI {
         //create cards like buttons so player can select them
         //upperCards
         HBox upperCardsBox =new HBox(10);
-        for(int i=0; i<4; i++){
-            Button upperCards = new Button("Upper Card " + i);
+        for(TribesCard card : game.getUpperTribeRow()){
+            Button upperCards = new Button(card.toString());
             upperCardsBox.getChildren().add(upperCards);
         }
         //turnCard and offeringCard in the same HBox
@@ -129,7 +126,7 @@ public class GUI extends Application implements UI {
                 personalCardsBox, playersCardsBox);
     }
 
-    private void drawStartInterface(){
+    private void drawConnectionInterface(){
         root = new VBox(10);
         root.setPadding(new Insets(10));
         //create Buttons
@@ -141,7 +138,9 @@ public class GUI extends Application implements UI {
         createGameButton.setOnAction(e -> {
 
             drawInterface(staticGame);
-
+            Stage stage = (Stage) scene.getWindow();
+            stage.setHeight(GAME_WINDOW_HEIGHT);
+            stage.setWidth(GAME_WINDOW_WIDTH);
             scene.setRoot(root);
         });
 
@@ -166,5 +165,6 @@ public class GUI extends Application implements UI {
     public void printGamesList(){
 
     }
+
 
 }
