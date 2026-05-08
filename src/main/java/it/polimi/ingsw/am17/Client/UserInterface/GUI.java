@@ -4,9 +4,13 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.UUID;
@@ -15,6 +19,8 @@ public class GUI extends Application implements UI {
     private static VirtualServer staticServer;
     private static VirtualView staticClient;
     private static ClientModel staticGame;
+
+    private VBox root;
 
     // This method allows your main logic to "prepare" the data before launching
     public GUI(VirtualServer server, VirtualView view, ClientModel model) {
@@ -26,7 +32,7 @@ public class GUI extends Application implements UI {
     // MANDATORY: No-argument constructor (or just let Java provide the default one)
     public GUI() {}
 
-    @Override
+    /*@Override
     public void start(Stage primaryStage) {
         // 1. Create a component (Node)
         Button btn = new Button("Click Me");
@@ -43,16 +49,66 @@ public class GUI extends Application implements UI {
         primaryStage.setTitle("My JavaFX App");
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
+    }*/
 
     @Override
     public void start() {
         Application.launch(GUI.class);
     }
+    @Override
+    public void start(Stage stage) {
+        drawInterface(staticGame);
+        stage.setScene(new Scene(root, 400, 300));
+        stage.setTitle("MESOS table gameboard");
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
+        stage.show();
+
+    }
 
     @Override
     public void drawInterface(ClientModel game) {
-
+        this.staticGame = game;
+        root = new VBox(10);
+        root.setPadding(new Insets(10));
+        //TODO: use list.size() in all for (used random numbers for testing)
+        //TODO: use getter methods in ClientModel for list.size()
+        //TODO: add graphics
+        //TODO: add buttons methods with setOnAction()
+        //TODO: fix dimension
+        //TODO: create Buttons for "create new game", "join game",
+        // "exit"(new private method, new VBox)
+        //TODO: find a way to add all the CLI functions (like choose color)
+        //TODO: create Buttons to view other players' cards
+        //TODO: find a way to show the player their cards
+        //create cards like buttons so player can select them
+        //upperCards
+        HBox upperCardsBox =new HBox(10);
+        for(int i=0; i<4; i++){
+            Button upperCards = new Button("Upper Card " + i);
+            upperCardsBox.getChildren().add(upperCards);
+        }
+        //turnCard and offeringCard in the same HBox
+        HBox offeringCardBox = new HBox(10);
+        //turnCard first
+        //turnCard
+        Button turnCard = new Button("Turn Card");
+        offeringCardBox.getChildren().add(turnCard);
+        //offeringCards
+        for(int i=0; i<5; i++){
+            Button offeringCard = new Button("Offering Card " + i);
+            offeringCardBox.getChildren().add(offeringCard);
+        }
+        //lowerCards
+        HBox lowerCardsBox =  new HBox(10);
+        for(int i=0; i<6; i++){
+            Button lowerCards = new Button("Lower Card " + i);
+            lowerCardsBox.getChildren().add(lowerCards);
+        }
+        //add components to root
+        root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox);
     }
     public void printGameId(UUID gameId) {
 
