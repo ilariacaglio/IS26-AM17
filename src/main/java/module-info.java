@@ -6,6 +6,8 @@ module it.polimi.ingsw.am17 {
     requires tools.jackson.databind;
     requires java.rmi;
     requires java.logging;
+    requires io.github.cdimascio.dotenv.java;
+    requires java.sql;
 
     // Add this line to allow RMI to access your client interfaces
     exports it.polimi.ingsw.am17.Client.RMI to java.rmi;
