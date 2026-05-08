@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Server.RMI;
 
+import it.polimi.ingsw.am17.Client.Socket.ClientSocket;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -9,6 +10,7 @@ import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.ServerActionMethods;
 import it.polimi.ingsw.am17.Server.ServerInterface;
+import it.polimi.ingsw.am17.ServerLauncher;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -17,10 +19,14 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
     final GamesController controller;
     final List<VirtualViewRMI> clients;
+
+    private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
+
 
     public ServerRMI(GamesController controller) throws RemoteException {
         super();
@@ -40,7 +46,34 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     public void connect(VirtualView client) throws RemoteException {
         synchronized (this.clients) {
             this.clients.add((VirtualViewRMI) client);
+            logger.info("RMI Client connected" + client.toString());
         }
+
+        // heartbeat for each client
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                try {
+                    ((VirtualViewRMI) client).ping();
+                    logger.fine("Client pinged");
+                } catch (RemoteException e) {
+                    logger.severe("Client unreachable");
+                    throw new RuntimeException(e);
+                } finally {
+                    clients.remove(client);
+                    // call for closeGame or similar, passing the dead client.
+                }
+            }
+        }).start();
+    }
+
+    private void pinger(VirtualView client) throws RemoteException {
+
     }
 
     @Override

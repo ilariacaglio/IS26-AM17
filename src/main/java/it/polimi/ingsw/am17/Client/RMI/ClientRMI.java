@@ -55,6 +55,11 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     }
 
     @Override
+    public void ping() {
+
+    }
+
+    @Override
     public void updateGameId(UUID gameId) throws RemoteException {
         ClientUpdateMethods.updateGameId(model,userInterface,gameId);
     }
