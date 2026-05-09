@@ -13,6 +13,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -111,6 +112,11 @@ public class ClientSocket implements VirtualView, ClientInterface {
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) {
 
         ClientUpdateMethods.updateStartGame(model, userInterface, players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
+    }
+
+    @Override
+    public void updateRanking(List<RankingEntry> ranking) {
+        ClientUpdateMethods.updateRanking(model, userInterface, ranking);
     }
 
     @Override

@@ -10,6 +10,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.PaintingEven
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.PrintWriter;
@@ -163,6 +164,8 @@ public class Message implements Serializable {
     })
     private List<BuildingCard> lowerBuildingRow;
 
+    private List<RankingEntry> ranking;
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     @JsonCreator
@@ -295,6 +298,10 @@ public class Message implements Serializable {
     public void setLowerBuildingRow(List<BuildingCard> lowerBuildingRow) {
         this.lowerBuildingRow = lowerBuildingRow;
     }
+
+    public List<RankingEntry> getRanking() {return ranking;}
+
+    public void setRanking(List<RankingEntry> ranking) {this.ranking = ranking;}
 
     @Override
     public String toString() {

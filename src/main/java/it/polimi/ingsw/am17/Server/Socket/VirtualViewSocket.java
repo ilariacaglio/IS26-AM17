@@ -8,6 +8,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.net.Socket;
 import java.util.*;
@@ -89,4 +90,10 @@ public class VirtualViewSocket implements VirtualView {
         message.send(socket);
     }
 
+    @Override
+    public void updateRanking(List<RankingEntry> ranking) throws Exception {
+        Message message = new Message(MessageType.UPDATE_RANKING);
+        message.setRanking(ranking);
+        message.send(socket);
+    }
 }
