@@ -71,6 +71,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                                 updateEndTurn(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow());
                         case UPDATE_START_GAME ->
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
+                        case UPDATE_RANKING ->  updateRanking(message.getRanking());
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
