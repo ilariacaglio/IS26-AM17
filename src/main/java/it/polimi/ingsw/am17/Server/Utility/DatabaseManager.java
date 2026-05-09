@@ -41,6 +41,24 @@ public class DatabaseManager {
     }
 
     public void insertPlayer (String nickname, UUID gameId, int finalPoints) {
+        // query structure
+        String playerInsertQuery = "INSERT INTO Player(nickname, gameid, finalpoints) VALUES(?, ?)";
+        try (   // establish connection to database
+                Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
+                // pre-compile the query
+                PreparedStatement statement = connection.prepareStatement(playerInsertQuery);){
+
+            // bind parameters to placeholders
+            statement.setString(1, nickname);
+            statement.setObject(2, gameId);
+            statement.setInt(3, finalPoints);
+
+            // send the query to db
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+
+        }
     }
 }
