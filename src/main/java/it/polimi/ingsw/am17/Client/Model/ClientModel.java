@@ -185,4 +185,8 @@ public class ClientModel {
         this.ranking.clear();
         this.ranking.addAll(ranking);
     }
+
+    public List<RankingEntry> getRanking(){
+        return Collections.unmodifiableList(ranking);
+    }
 }
