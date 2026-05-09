@@ -5,6 +5,8 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -107,5 +109,37 @@ public class DatabaseManager {
         } catch (SQLException e) {
             logger.severe(e.getMessage());
         }
+    }
+
+    public static List<RankingEntry> getRanking (int numPlayers) {
+        logger.info("Getting ranking of games with " + numPlayers + " players");
+        List<RankingEntry> ranking = new ArrayList<>();
+        String query = """
+            SELECT g.gameid, g.date, p.nickname, p.finalpoints
+            FROM Player p
+            JOIN Game g ON p.gameid = g.gameid
+            ORDER BY p.finalpoints DESC
+            """;
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            // get query results
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                // get values
+                UUID gameId = resultSet.getObject("gameid", UUID.class);
+                LocalDate date = resultSet.getDate("date").toLocalDate();
+                String nickname = resultSet.getString("nickname");
+                int finalPoints = resultSet.getInt("finalpoints");
+
+                // insert entry into list
+                ranking.add(new RankingEntry(gameId, date, nickname, finalPoints));
+            }
+
+        } catch (SQLException e) {
+            logger.severe(e.getMessage());
+        }
+        return ranking;
     }
 }
