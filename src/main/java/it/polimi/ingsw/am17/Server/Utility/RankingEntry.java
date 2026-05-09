@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Server.Utility;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -7,7 +8,7 @@ public record RankingEntry(
         UUID gameId,
         LocalDate date,
         String nickname,
-        int finalPoints) {
+        int finalPoints) implements Serializable {
 
     @Override
     public String toString() {

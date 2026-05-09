@@ -4,11 +4,9 @@ import io.github.cdimascio.dotenv.Dotenv;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 // TODO: connection pool?
@@ -117,8 +115,8 @@ public class DatabaseManager {
         String query = """
             SELECT g.gameid, g.date, p.nickname, p.finalpoints
             FROM Game g
-            WHERE g.numplayers = ?
             JOIN Player p ON p.gameid = g.gameid
+            WHERE g.numplayers = ?
             ORDER BY p.finalpoints DESC
             """;
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -146,4 +144,18 @@ public class DatabaseManager {
         }
         return ranking;
     }
+
+//    static void main() {
+//        Player p1 = new Player("ila", Color.BLACK);
+//        p1.addPp(75);
+//        Player p2 = new Player("blu", Color.BLUE);
+//        p2.addPp(63);
+//        Queue<Player> players = new LinkedList<>();
+//        players.add(p1);
+//        players.add(p2);
+//        insertGameData(UUID.randomUUID(), 2, players);
+//
+//        var list = getRanking(2);
+//        System.out.println(list);
+//    }
 }

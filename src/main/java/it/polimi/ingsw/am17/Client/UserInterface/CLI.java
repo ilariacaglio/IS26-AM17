@@ -214,7 +214,7 @@ public class CLI implements UI {
     private void drawGlobalRanking(){
         List<RankingEntry> ranking = game.getRanking();
         if (!ranking.isEmpty()) {
-            System.out.println("--- YOUR POSITION IN GLOBAL RANKING ---");
+            System.out.println("\n--- YOUR POSITION IN GLOBAL RANKING ---");
             RankingEntry userEntry = ranking.stream()
                     .filter(e -> e.getGameId().equals(game.getGameId())
                             && e.getNickname().equals(game.getLocalPlayer().getNickname()))
@@ -227,7 +227,7 @@ public class CLI implements UI {
                 System.out.println("Player data not found!");
             }
 
-            System.out.println("--- GLOBAL RANKING ---");
+            System.out.println("\n--- GLOBAL RANKING ---");
             int rank = 1;
             for (RankingEntry entry: game.getRanking()) {
                 System.out.println(rank + ")\t" + entry);
