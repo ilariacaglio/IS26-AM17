@@ -116,12 +116,16 @@ public class DatabaseManager {
         List<RankingEntry> ranking = new ArrayList<>();
         String query = """
             SELECT g.gameid, g.date, p.nickname, p.finalpoints
-            FROM Player p
-            JOIN Game g ON p.gameid = g.gameid
+            FROM Game g
+            WHERE g.numplayers = ?
+            JOIN Player p ON p.gameid = g.gameid
             ORDER BY p.finalpoints DESC
             """;
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(query)) {
+
+            // set numPlayers parameter
+            statement.setInt(1, numPlayers);
 
             // get query results
             ResultSet resultSet = statement.executeQuery();
