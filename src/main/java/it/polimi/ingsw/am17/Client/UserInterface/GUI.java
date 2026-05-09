@@ -12,6 +12,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -39,7 +41,7 @@ public class GUI extends Application implements UI {
     private static ClientModel staticGame;
 
     private VBox root;
-    private Scene scene;
+    public static Scene scene;
     private Label food;
     private Label points;
 
@@ -74,7 +76,24 @@ public class GUI extends Application implements UI {
 
     @Override
     public void drawInterface(ClientModel game) {
-        this.staticGame = game;
+        staticGame = game;
+        Platform.runLater(() -> {
+            // Ora sei nel thread giusto!
+            // Se 'scene' è una variabile globale della classe GUI:
+            if (GUI.scene != null && GUI.scene.getWindow() != null) {
+                GUI.scene.setRoot(drawGameInterface());
+            } else {
+                System.err.println("La scena o la finestra non sono ancora pronte!");
+            }
+        });
+    }
+
+
+
+    public Parent drawGameInterface() {
+        Stage stage = (Stage) scene.getWindow();
+        stage.setHeight(GAME_WINDOW_HEIGHT);
+        stage.setWidth(GAME_WINDOW_WIDTH);
         root = new VBox(10);
         root.setPadding(new Insets(10));
         //TODO: add graphics
@@ -84,12 +103,12 @@ public class GUI extends Application implements UI {
         //upperCards
         //tribes cards
         HBox upperCardsBox =new HBox(10);
-        for(TribesCard card : game.getUpperTribeRow()){
+        for(TribesCard card : staticGame.getUpperTribeRow()){
             CardGUI upperCards = new CardGUI(card.toString());
             upperCardsBox.getChildren().add(upperCards);
         }
         //building cards
-        for(BuildingCard card : game.getUpperBuildingRow()){
+        for(BuildingCard card : staticGame.getUpperBuildingRow()){
             CardGUI upperCards = new CardGUI(card.toString());
             upperCardsBox.getChildren().add(upperCards);
         }
@@ -100,19 +119,19 @@ public class GUI extends Application implements UI {
         CardGUI turnCard = new CardGUI(null);
         offeringCardBox.getChildren().add(turnCard);
         //offeringCards
-        for(OfferingCard card : game.getOfferingCards()){
+        for(OfferingCard card : staticGame.getOfferingCards()){
             CardGUI offeringCard = new CardGUI(card.toString());
             offeringCardBox.getChildren().add(offeringCard);
         }
         //lowerCards
         //tribe cards
         HBox lowerCardsBox =  new HBox(10);
-        for(TribesCard card : game.getLowerTribeRow()){
+        for(TribesCard card : staticGame.getLowerTribeRow()){
             CardGUI lowerCards = new CardGUI(card.toString());
             lowerCardsBox.getChildren().add(lowerCards);
         }
         //building cards
-        for(BuildingCard card : game.getLowerBuildingRow()){
+        for(BuildingCard card : staticGame.getLowerBuildingRow()){
             CardGUI lowerCards = new CardGUI(card.toString());
             lowerCardsBox.getChildren().add(lowerCards);
         }
@@ -136,67 +155,82 @@ public class GUI extends Application implements UI {
         //add components to root
         root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox, playerResourcesBox,
                 personalCardsBox, playersCardsBox);
+        return root;
     }
 
-    private void drawConnectionInterface(){
-        root = new VBox(10);
-        root.setPadding(new Insets(10));
+    private Parent drawConnectionInterface(){
+        root = new VBox(25); // Increased spacing between elements
+        root.setAlignment(Pos.CENTER); // Centered menu
+        root.setPadding(new Insets(50));
         //create Buttons
         Button createGameButton = new Button("CREATE GAME");
         Button  joinGameButton = new Button("JOIN GAME");
         Button exitButton = new Button("EXIT");
-        HBox startButtons = new HBox(10, createGameButton, joinGameButton, exitButton);
+
+        // Apply style and width to all
+        for (Button b : new Button[]{createGameButton, joinGameButton, exitButton}) {
+            b.setPrefWidth(250);
+            b.setCursor(Cursor.HAND);
+        }
+
+        Label title = new Label("MESOS GAME");
+        title.setStyle("-fx-font-size: 30px; -fx-font-family: 'Arial Black';");
+
+        // Use a VBox for the buttons so they stack vertically (standard for game menus)
+        VBox buttonContainer = new VBox(15, createGameButton, joinGameButton, exitButton);
+        buttonContainer.setAlignment(Pos.CENTER);
         //createGameButton opens drawInterface only for testing purposes
         createGameButton.setOnAction(e -> {
-
-            drawInterface(staticGame);
-            Stage stage = (Stage) scene.getWindow();
-            stage.setHeight(GAME_WINDOW_HEIGHT);
-            stage.setWidth(GAME_WINDOW_WIDTH);
-            scene.setRoot(root);
+            scene.setRoot(drawPlayerCountSelection());
+        });
+        joinGameButton.setOnAction(e -> {
+            // Cambia la radice della scena con l'interfaccia per l'ID
+            joinGameButton.getScene().setRoot(drawJoinInterface());
         });
 
         //add Buttons to root
-        root.getChildren().add(startButtons);
+        root.getChildren().addAll(title,buttonContainer);
+        return root;
     }
 
     private void drawStartInterface(){
-        // 1. Create the container
+        // Create the container
         root = new VBox(15); // 15px spacing between elements
         root.setPadding(new Insets(20));
         root.setAlignment(Pos.CENTER); // Keep everything centered
 
-        // 2. Title Label
+        // Title Label
         Label title = new Label("!!!WELCOME TO MESOS!!!");
         title.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
 
-        // 3. Input Grid for alignment
+        // Input Grid for alignment
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(15);
         grid.setAlignment(Pos.CENTER);
 
-        // Nickname field
+        // create nickname field
         TextField nicknameField = new TextField();
         nicknameField.setPromptText("Enter nickname...");
 
-        // Color ComboBox
+        // create color ComboBox
         ComboBox<Color> colorPicker = new ComboBox<>();
         colorPicker.getItems().setAll(Color.values());
         colorPicker.setValue(Color.values()[0]); // Default to first enum value
 
-        // Add to grid
+        // add textfield and combobox to grid with labels
         grid.add(new Label("Nickname:"), 0, 0);
         grid.add(nicknameField, 1, 0);
         grid.add(new Label("Your Color:"), 0, 1);
         grid.add(colorPicker, 1, 1);
 
-        // 4. Action Button
+        // create start button
         Button startButton = new Button("START ADVENTURE");//nome voluto da sara (non è vero)
         startButton.setPrefWidth(200);
 
 
         startButton.setOnAction(e -> {
+            //get input values
             String name = nicknameField.getText();
             Color color = colorPicker.getValue();
 
@@ -206,21 +240,96 @@ public class GUI extends Application implements UI {
                 return; // Don't proceed if empty
             }
 
+            //create local player
             staticGame.createLocalPlayer(name, color);
 
+            //go to next interface
             drawConnectionInterface();
             scene.setRoot(root);
         });
 
-        // 5. Assemble and return
         root.getChildren().addAll(title, grid, startButton);
     }
 
-    private void createGame(){
-        root = new VBox(10);
-        root.setPadding(new Insets(10));
-        //ask how many players and let the player put the number
+    private Parent drawPlayerCountSelection() {
+        VBox layout = new VBox(20);
+        layout.setAlignment(Pos.CENTER);
+        layout.setStyle("-fx-background-color: #243b55;");
+
+        Label title = new Label("QUANTI GIOCATORI?");
+        title.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
+
+        HBox options = new HBox(15);
+        options.setAlignment(Pos.CENTER);
+
+        // Creiamo un bottone per ogni opzione (2, 3, 4 giocatori)
+        for (int i = 2; i <= 4; i++) {
+            int count = i;
+            Button btn = new Button(String.valueOf(count));
+            btn.setPrefSize(60, 60);
+            btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: 18px; -fx-font-weight: bold;");
+
+            btn.setOnAction(e -> {
+                try {
+                    staticServer.createGame(staticClient, staticGame.getLocalPlayer(), count);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            });
+
+            options.getChildren().add(btn);
+        }
+
+        Button backButton = new Button("INDIETRO");
+        backButton.setOnAction(e -> backButton.getScene().setRoot(drawConnectionInterface()));
+
+        layout.getChildren().addAll(title, options, backButton);
+        return layout;
     }
+
+    private Parent drawJoinInterface() {
+        VBox layout = new VBox(20);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: #243b55;"); // Sfondo coerente
+
+        Label title = new Label("INSERISCI ID PARTITA");
+        title.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
+
+        // Campo per l'ID
+        TextField idField = new TextField();
+        idField.setPromptText("Esempio: 1234");
+        idField.setMaxWidth(200);
+        idField.setStyle("-fx-font-size: 16px; -fx-alignment: center;");
+
+        // Bottone per unirsi
+        Button joinBtn = new Button("UNISCITI");
+        joinBtn.setPrefWidth(200);
+        joinBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        joinBtn.setOnAction(e -> {
+            String gameID = idField.getText().trim();
+            if (!gameID.isEmpty()) {
+                try {
+                    // Chiamata RMI per unirsi
+                    staticServer.joinGame(staticClient, UUID.fromString(gameID),staticGame.getLocalPlayer());
+
+                } catch (Exception ex) {
+                    // Se l'ID è sbagliato o il server dà errore, mostra un alert
+                    idField.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+                    System.err.println("Errore nel join: " + ex.getMessage());
+                }
+            }
+        });
+
+        Button backBtn = new Button("INDIETRO");
+        backBtn.setOnAction(e -> backBtn.getScene().setRoot(drawConnectionInterface()));
+
+        layout.getChildren().addAll(title, idField, joinBtn, backBtn);
+        return layout;
+    }
+
     @Override
     public void printGameId(UUID gameId) {
 
