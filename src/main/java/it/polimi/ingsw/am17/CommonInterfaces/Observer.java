@@ -5,6 +5,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,4 +29,5 @@ public interface Observer {
     void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                          List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws  Exception;
 
+    void updateRanking(List<RankingEntry> ranking) throws Exception;
 }
