@@ -351,11 +351,12 @@ public class Game extends Subject {
             player.calculateFinalPoints();
         }
 
-        notifyEra(currentEra);
-        notifyPlayerQueue(orderedPlayers);
-
         // insert data into db
         DatabaseManager.insertGameData(this.id, this.numPlayers, orderedPlayers);
+
+        notifyEra(currentEra);
+        notifyPlayerQueue(orderedPlayers);
+        notifyRanking(DatabaseManager.getRanking(this.numPlayers));
     }
 
     /**
