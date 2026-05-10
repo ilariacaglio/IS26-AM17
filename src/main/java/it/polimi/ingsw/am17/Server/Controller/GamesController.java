@@ -60,6 +60,8 @@ public class GamesController {
         }
     }
 
+    //** CLIENT ACTIONS **//
+
     /**
      * Adds the player to the game
      * @param gameId
@@ -76,6 +78,23 @@ public class GamesController {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Closes a game (unexpectedly).
+     */
+    public void exitGame(UUID gameId, Player player) {
+        try{
+            Game game = GamesListHandler.getGameFromId(gameId);
+            synchronized (game){
+//                game.stopGame(player); // can call endGame or implement a different logic.
+            }
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    //** PLAYER ACTIONS **//
 
     /**
      * Picks the offering card of the player.
