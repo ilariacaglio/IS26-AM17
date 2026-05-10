@@ -12,8 +12,7 @@ public record RankingEntry(
 
     @Override
     public String toString() {
-        return String.format("[%s]\t[%s]\t%s\t%d",
-                gameId.toString(),
+        return String.format("[%s]\t%-15s\t%d",
                 date.toString(),
                 nickname,
                 finalPoints);

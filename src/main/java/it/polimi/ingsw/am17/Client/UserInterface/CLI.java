@@ -228,6 +228,7 @@ public class CLI implements UI {
             }
 
             System.out.println("\n--- GLOBAL RANKING ---");
+            System.out.printf("N.\t%-12s\t%-15s\t%s%n", "DATA", "NICKNAME", "SCORE");
             int rank = 1;
             for (RankingEntry entry: game.getRanking()) {
                 System.out.println(rank + ")\t" + entry);
