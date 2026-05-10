@@ -80,13 +80,13 @@ public class GamesController {
     }
 
     /**
-     * Closes a game (unexpectedly).
+     * Closes a game when a player leaves (unexpectedly).
      */
-    public void exitGame(UUID gameId, Player player) {
+    public void removePlayer(UUID gameId, Player player) {
         try{
             Game game = GamesListHandler.getGameFromId(gameId);
             synchronized (game){
-//                game.stopGame(player); // can call endGame or implement a different logic.
+                game.removePlayerEndGame(player);
             }
         }
         catch (Exception e){
