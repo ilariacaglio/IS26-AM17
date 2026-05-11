@@ -75,6 +75,14 @@ public class ClientModel {
         this.numPlayers = numPlayers;
     }
 
+    public void createLocalPlayer(String nickname, Color color) {
+        myPlayer = new Player(nickname, color);
+    }
+
+    public Player getLocalPlayer() {
+        return orderedPlayer.stream().filter(p -> p.equals(myPlayer)).findFirst().orElse(myPlayer) ;
+    }
+
     public int getNumPlayers() {
         return numPlayers;
     }
