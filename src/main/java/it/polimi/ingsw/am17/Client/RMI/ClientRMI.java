@@ -11,6 +11,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.RMI.VirtualViewRMI;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -68,6 +69,11 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws RemoteException {
         ClientUpdateMethods.updateStartGame(model,userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow,offeringCards);
+    }
+
+    @Override
+    public void updateRanking(List<RankingEntry> ranking) throws RemoteException {
+        ClientUpdateMethods.updateRanking(model,userInterface,ranking);
     }
 
     @Override

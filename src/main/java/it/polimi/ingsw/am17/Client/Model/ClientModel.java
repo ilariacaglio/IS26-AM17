@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +29,8 @@ public class ClientModel {
 
     private final List<BuildingCard> upperBuildingRow = new ArrayList<>();
     private final List<BuildingCard> lowerBuildingRow  = new ArrayList<>();
+
+    private final List<RankingEntry> ranking = new ArrayList<>();
 
     public void setGameId(UUID id) {
         this.id = id;
@@ -176,5 +179,14 @@ public class ClientModel {
     public void setNullOfferingCardAPlayer() {
         offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
                 .findFirst().ifPresent(card -> card.setPlayer(null));
+    }
+
+    public void setRanking (List<RankingEntry> ranking) {
+        this.ranking.clear();
+        this.ranking.addAll(ranking);
+    }
+
+    public List<RankingEntry> getRanking(){
+        return Collections.unmodifiableList(ranking);
     }
 }

@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -26,4 +27,6 @@ public interface VirtualViewRMI extends Remote, VirtualView {
 
     void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                          List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws  RemoteException;
+
+    void updateRanking(List<RankingEntry> ranking) throws RemoteException;
 }

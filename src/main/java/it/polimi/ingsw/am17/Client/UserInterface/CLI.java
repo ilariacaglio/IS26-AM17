@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 
@@ -199,7 +200,8 @@ public class CLI implements UI {
                 }
             }
             else {
-                drawRanking();
+                drawLocalRanking();
+                drawGlobalRanking();
             }
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -207,10 +209,39 @@ public class CLI implements UI {
     }
 
     /**
-     * prints the ranking of the players when game ends
+     * prints the ranking of the player in global ranking when game ends
      */
-    private void drawRanking() {
-        System.out.println("--- FINAL RANKING---");
+    private void drawGlobalRanking(){
+        List<RankingEntry> ranking = game.getRanking();
+        if (!ranking.isEmpty()) {
+            System.out.println("\n--- YOUR POSITION IN GLOBAL RANKING ---");
+            RankingEntry userEntry = ranking.stream()
+                    .filter(e -> e.getGameId().equals(game.getGameId())
+                            && e.getNickname().equals(game.getLocalPlayer().getNickname()))
+                    .findFirst().orElse(null);
+            if (userEntry != null) {
+                int pos = ranking.indexOf(userEntry) + 1;
+                System.out.println(pos + ")\t"+userEntry.getNickname()+"\t"+ userEntry.getFinalPoints());
+            }
+            else {
+                System.out.println("Player data not found!");
+            }
+
+            System.out.println("\n--- GLOBAL RANKING ---");
+            System.out.printf("N.\t%-12s\t%-15s\t%s%n", "DATA", "NICKNAME", "SCORE");
+            int rank = 1;
+            for (RankingEntry entry: game.getRanking()) {
+                System.out.println(rank + ")\t" + entry);
+                rank++;
+            }
+        }
+    }
+
+    /**
+     * prints the ranking of the local players when game ends
+     */
+    private void drawLocalRanking() {
+        System.out.println("--- FINAL GAME RANKING ---");
         List<Player> sortedPlayers = game.getOrderedPlayers().stream()
                 .sorted(Comparator.comparingInt(Player::getPp).reversed())
                 .toList();
