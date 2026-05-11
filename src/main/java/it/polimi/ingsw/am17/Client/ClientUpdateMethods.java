@@ -82,6 +82,6 @@ public class ClientUpdateMethods {
 
     public static void updateRanking(ClientModel model, UI userInterface, List<RankingEntry> ranking) {
         model.setRanking(ranking);
-        userInterface.drawInterface(model);
+        userInterface.drawInterface(model, null);
     }
 }

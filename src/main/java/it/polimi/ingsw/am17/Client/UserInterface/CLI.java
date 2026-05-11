@@ -171,7 +171,6 @@ public class CLI implements UI {
         try{
             // update game data
             this.game = game;
-            evaluateGamePhase();
             // cancel arrow
             System.out.print("\b\b");
             //clear console
@@ -639,16 +638,6 @@ public class CLI implements UI {
                 System.out.print("[" + c.toString() + "] ");
             }
             System.out.println();
-        }
-    }
-
-    /**
-     * Sets the phase of the game to pick tribe cards if condition met
-     */
-    private void evaluateGamePhase(){
-        if( game.getOrderedPlayers().size() == game.getNumPlayers() &&
-            game.everyPlayerInOfferingCard()){
-            game.setPickOfferingCardPhase(false);
         }
     }
 }
