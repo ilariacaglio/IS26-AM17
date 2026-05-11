@@ -47,7 +47,7 @@ public class ClientModel {
     }
 
     public Player getLocalPlayer() {
-        return myPlayer;
+        return orderedPlayer.stream().filter(p -> p.equals(myPlayer)).findFirst().orElse(myPlayer) ;
     }
 
     public int getNumPlayers() {
