@@ -105,6 +105,6 @@ public class RitualEvent extends EventCard {
 
     @Override
     public String getImagePath() {
-        return "";
+        return "/Images/Events/ritual_event_"+pointMax+"PP_"+pointMin+"PP.png";
     }
 }

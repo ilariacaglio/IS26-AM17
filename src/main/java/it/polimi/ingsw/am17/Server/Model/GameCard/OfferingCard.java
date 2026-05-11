@@ -93,6 +93,6 @@ public class OfferingCard implements Serializable {
 
     public String getImagePath()
     {
-        return "/Images/offeringCard_"+ minPlayers +"P_"+ orderLetter +".png";
+        return "/Images/OfferingCard/offeringCard_"+ orderLetter +".png";
     }
 }

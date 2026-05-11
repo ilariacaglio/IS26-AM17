@@ -11,7 +11,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ClientModel {
-    private UUID id;
+
+    private String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";    private UUID id;
     private int numPlayers;
     private int currentEra = 0;
 
@@ -176,5 +177,9 @@ public class ClientModel {
     public void setNullOfferingCardAPlayer() {
         offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
                 .findFirst().ifPresent(card -> card.setPlayer(null));
+    }
+
+    public String getTURN_CARD_IMAGE_PATH() {
+        return TURN_CARD_IMAGE_PATH + numPlayers + ".png";
     }
 }

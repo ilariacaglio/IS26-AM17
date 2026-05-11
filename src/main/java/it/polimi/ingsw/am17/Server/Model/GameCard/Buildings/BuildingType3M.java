@@ -62,4 +62,10 @@ public class BuildingType3M extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: +PP/each " + characterType.toString();
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building3_3_"+characterType.toString().toLowerCase() +".png";
+    }
 }

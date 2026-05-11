@@ -27,4 +27,10 @@ public class BuildingType1 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: +25PP";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building3_1.png";
+    }
 }

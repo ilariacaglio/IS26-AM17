@@ -62,6 +62,6 @@ public class PaintingEvent extends EventCard {
 
     @Override
     public String getImagePath() {
-        return "";
+        return "/Images/Events/painting_event_"+ pointsLow +"PP_"+pointsMax+"PP_"+numMax+".png";
     }
 }
