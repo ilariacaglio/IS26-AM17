@@ -142,8 +142,8 @@ public class GUI extends Application implements UI {
         }
         //other players card buttons
         HBox playersCardsBox =  new HBox(10);
-        for(int i=0; i<3; i++){
-            Button playerCards = new Button("Player " + i);
+        for(Player p : staticGame.getOrderedPlayers()){
+            Button playerCards = new Button(p.getNickname() );
             playersCardsBox.getChildren().add(playerCards);
         }
         //player cards
@@ -152,12 +152,24 @@ public class GUI extends Application implements UI {
         HBox personalCardsBox =  new HBox(10);
         personalCardsBox.getChildren().add(personalCards);
         //food and PP
-        food = new Label("Food: ");//TODO: add logic to update + borders (layout problem)
-        points = new Label("Points: ");
+        food = new Label("Food: " +staticGame.getLocalPlayer().getFood());//TODO: add logic to update + borders (layout problem)
+        points = new Label("Points: "+staticGame.getLocalPlayer().getPp());
         HBox playerResourcesBox =  new HBox(10);
         playerResourcesBox.getChildren().addAll(points, food);
 
         //add components to root
+        // Center the upper cards
+        upperCardsBox.setAlignment(Pos.CENTER);
+
+        // Center the offering cards
+        offeringCardBox.setAlignment(Pos.CENTER);
+
+        // Center the lower cards
+        lowerCardsBox.setAlignment(Pos.CENTER);
+
+        // Center the player buttons
+        playersCardsBox.setAlignment(Pos.CENTER);
+
         root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox, playerResourcesBox,
                 personalCardsBox, playersCardsBox);
         return root;
