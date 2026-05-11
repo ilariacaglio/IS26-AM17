@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Hunter;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
@@ -148,9 +149,14 @@ public class GUI extends Application implements UI {
         }
         //player cards
         //TODO: show my cards always, no button
-        Button personalCards = new Button("My Cards");
+        Label personalCards = new Label("My Cards");
         HBox personalCardsBox =  new HBox(10);
         personalCardsBox.getChildren().add(personalCards);
+        for(CharacterCard card : staticGame.getLocalPlayer().getCharacterCards()){
+            CardGUI characterCard = new CardGUI(card.getImagePath());
+            personalCardsBox.getChildren().add(characterCard);
+        }
+
         //food and PP
         food = new Label("Food: " +staticGame.getLocalPlayer().getFood());//TODO: add logic to update + borders (layout problem)
         points = new Label("Points: "+staticGame.getLocalPlayer().getPp());
