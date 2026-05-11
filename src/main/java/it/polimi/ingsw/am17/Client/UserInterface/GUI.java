@@ -17,9 +17,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -27,8 +25,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.UUID;
-import javafx.scene.control.TextField;
-
 
 
 public class GUI extends Application implements UI {
@@ -253,6 +249,34 @@ public class GUI extends Application implements UI {
         root.getChildren().addAll(title, grid, startButton);
     }
 
+    private VBox createWaitingOverlay() {
+        // create the container
+        VBox overlay = new VBox(10); // 10px spacing
+        overlay.setAlignment(Pos.CENTER);
+
+        // Modify Background: Semi-transparent black/grey
+        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+
+        // Add 10 pixels of padding at the top
+        overlay.setPadding(new Insets(10, 0, 0, 0));
+
+        // Add loading circle
+        ProgressIndicator progress = new ProgressIndicator();
+        progress.setPrefSize(60, 60);
+        progress.setStyle("-fx-progress-color: white;");
+
+        //add text
+        Label text = new Label("Waiting for other players...");
+        text.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+
+        overlay.getChildren().addAll(progress, text);
+
+        //hide
+        overlay.setVisible(false);
+        return overlay;
+    }
+
+
     private Parent drawPlayerCountSelection() {
         VBox layout = new VBox(20);
         layout.setAlignment(Pos.CENTER);
@@ -264,29 +288,34 @@ public class GUI extends Application implements UI {
         HBox options = new HBox(15);
         options.setAlignment(Pos.CENTER);
 
+        //create waiting overlay
+        VBox waitingOverlay = createWaitingOverlay();
+
         // Creiamo un bottone per ogni opzione (2, 3, 4 giocatori)
-        for (int i = 2; i <= 4; i++) {
-            int count = i;
-            Button btn = new Button(String.valueOf(count));
-            btn.setPrefSize(60, 60);
-            btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: 18px; -fx-font-weight: bold;");
+            for (int i = 2; i <= 5; i++) {
+                int count = i;
+                Button btn = new Button(String.valueOf(count));
+                btn.setPrefSize(60, 60);
+                btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: 18px; -fx-font-weight: bold;");
 
-            btn.setOnAction(e -> {
-                try {
-                    staticServer.createGame(staticClient, staticGame.getLocalPlayer(), count);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+                btn.setOnAction(e -> {
+                    try {
+                        waitingOverlay.setVisible(true);
+                        options.setDisable(true);
+                        staticServer.createGame(staticClient, staticGame.getLocalPlayer(), count);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
 
-            });
+                });
 
-            options.getChildren().add(btn);
-        }
+                options.getChildren().add(btn);
+            }
 
         Button backButton = new Button("INDIETRO");
         backButton.setOnAction(e -> backButton.getScene().setRoot(drawConnectionInterface()));
 
-        layout.getChildren().addAll(title, options, backButton);
+        layout.getChildren().addAll(title, options, backButton, waitingOverlay);
         return layout;
     }
 
@@ -298,6 +327,9 @@ public class GUI extends Application implements UI {
 
         Label title = new Label("INSERISCI ID PARTITA");
         title.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
+
+        //create waiting overlay
+        VBox waitingOverlay = createWaitingOverlay();
 
         // Campo per l'ID
         TextField idField = new TextField();
@@ -315,6 +347,7 @@ public class GUI extends Application implements UI {
             if (!gameID.isEmpty()) {
                 try {
                     // Chiamata RMI per unirsi
+                    waitingOverlay.setVisible(true);
                     staticServer.joinGame(staticClient, UUID.fromString(gameID),staticGame.getLocalPlayer());
 
                 } catch (Exception ex) {
@@ -328,7 +361,7 @@ public class GUI extends Application implements UI {
         Button backBtn = new Button("INDIETRO");
         backBtn.setOnAction(e -> backBtn.getScene().setRoot(drawConnectionInterface()));
 
-        layout.getChildren().addAll(title, idField, joinBtn, backBtn);
+        layout.getChildren().addAll(title, idField, joinBtn, backBtn, waitingOverlay);
         return layout;
     }
 
