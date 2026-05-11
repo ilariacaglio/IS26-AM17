@@ -351,4 +351,12 @@ public class Player implements Serializable {
         }
         return player;
     }
+
+    public List<CharacterCard> getCharacterCards() {
+        return characterCards;
+    }
+
+    public List<BuildingCard> getBuildingCards() {
+        return buildingCards;
+    }
 }
