@@ -48,4 +48,10 @@ public class Builder extends CharacterCard {
     public String toString() {
         return super.toString() + "(-" + foodReduction + "F, +" + pointBonus + "P" + ")";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Builder/builder_" + pointBonus +"PP_" + foodReduction +"F.png";
+    }
 }

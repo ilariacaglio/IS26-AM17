@@ -14,4 +14,9 @@ public class Artist extends CharacterCard {
             @JsonProperty("id") UUID id){
         super(era, minPlayers, CardType.ARTIST, id);
     }
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/artist.png";
+    }
 }

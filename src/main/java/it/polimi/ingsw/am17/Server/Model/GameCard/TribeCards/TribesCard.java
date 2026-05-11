@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class TribesCard implements Serializable {
+public abstract class TribesCard implements Serializable {
     private final CardType cardType;
     private final Integer era;
     private final UUID id;
@@ -34,4 +34,6 @@ public class TribesCard implements Serializable {
     public String toString() {
         return cardType.toString();
     }
+
+    public abstract String getImagePath();
 }

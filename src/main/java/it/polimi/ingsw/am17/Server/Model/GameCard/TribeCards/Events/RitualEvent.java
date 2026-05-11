@@ -102,4 +102,9 @@ public class RitualEvent extends EventCard {
     public int hashCode() {
         return Objects.hash(pointMax, pointMin);
     }
+
+    @Override
+    public String getImagePath() {
+        return "";
+    }
 }

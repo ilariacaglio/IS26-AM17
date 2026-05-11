@@ -40,4 +40,9 @@ public class Shaman extends CharacterCard {
     public String toString() {
         return super.toString() + " " + stars + "★";
     }
+
+    @Override
+    public String getImagePath() {
+        return "";
+    }
 }

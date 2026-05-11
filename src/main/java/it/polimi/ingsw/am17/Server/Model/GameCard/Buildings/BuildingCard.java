@@ -59,4 +59,8 @@ public class BuildingCard implements Serializable {
     public String toString() {
         return foodCost + "F " + bonusPoints + "BP";
     }
+
+    public String getImagePath(){
+        return "";
+    }
 }

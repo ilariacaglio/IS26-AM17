@@ -45,4 +45,9 @@ public class HuntingEvent extends EventCard {
     public int hashCode() {
         return Objects.hashCode(pointEarned);
     }
+
+    @Override
+    public String getImagePath() {
+        return "";
+    }
 }
