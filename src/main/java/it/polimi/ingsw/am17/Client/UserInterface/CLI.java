@@ -207,7 +207,8 @@ public class CLI implements UI {
                     // if the game has begun notify the players turn
                     if(game.isPlayerTurn())
                         System.out.println("It's your turn!");
-                    System.out.print("> ");
+                    if(errorMessagge == null || errorMessagge.isBlank())
+                        System.out.print("> ");
                 }
             }
             else {
