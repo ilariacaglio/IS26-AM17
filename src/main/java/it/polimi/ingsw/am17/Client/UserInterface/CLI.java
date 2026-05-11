@@ -509,10 +509,33 @@ public class CLI implements UI {
     private void joinGame(Scanner scanner){
         try {
             if (game.getGameId() == null) {
-                System.out.print("Insert the gameID > ");
-                UUID gameId = UUID.fromString(scanner.nextLine().trim());
-                System.out.println("Trying to connect...");
-                virtualServer.joinGame(client, gameId, game.getLocalPlayer());
+                System.out.print("Insert the gameID or index in gameList > ");
+                String input = scanner.nextLine().trim();
+                UUID gameId = null;
+
+                // Try to treat input as an index (Integer)
+                if (input.matches("\\d+")) {
+                    int index = Integer.parseInt(input);
+                    if (index >= 0 && index < game.getGamesIdList().size()) {
+                        gameId = game.getGamesIdList().get(index);
+                    } else {
+                        System.out.println("Index out of bounds.");
+                    }
+                }
+                //Otherwise, try to treat input as a UUID
+                else {
+                    try {
+                        gameId = UUID.fromString(input);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid format. Please enter a number or a valid UUID.");
+                    }
+                }
+
+                //If we successfully got a gameId, proceed
+                if (gameId != null) {
+                    System.out.println("Trying to connect...");
+                    virtualServer.joinGame(client, gameId, game.getLocalPlayer());
+                }
             } else {
                 System.out.println("Already in a game!");
             }
