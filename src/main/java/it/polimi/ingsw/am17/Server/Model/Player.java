@@ -469,4 +469,12 @@ public class Player implements Serializable {
         columnMaxLength.put(CardType.BINDER, 8  + fixedGap);
         return columnMaxLength;
     }
+
+    public List<CharacterCard> getCharacterCards() {
+        return characterCards;
+    }
+
+    public List<BuildingCard> getBuildingCards() {
+        return buildingCards;
+    }
 }
