@@ -30,7 +30,7 @@ public class CardGUI extends StackPane {
         view.setSmooth(true);
 
         // Add everything to the StackPane
-        this.getChildren().addAll(border, view);
+        this.getChildren().add(view);
         }
         //click the card
         this.setOnMouseClicked(e -> {
