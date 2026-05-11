@@ -7,7 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import java.util.Queue;
 import java.util.UUID;
 
-public class EventCard extends TribesCard {
+public abstract class EventCard extends TribesCard {
     private Boolean Final;
 
     public EventCard(Boolean Final, Integer era, CardType cardType, UUID id) {
@@ -18,4 +18,6 @@ public class EventCard extends TribesCard {
     public void computeScore(Queue<Player> list){}
 
     public Boolean isFinal() {return Final;}
+
+
 }

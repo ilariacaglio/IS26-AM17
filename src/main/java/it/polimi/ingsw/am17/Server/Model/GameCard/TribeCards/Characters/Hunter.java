@@ -43,4 +43,11 @@ public class Hunter extends CharacterCard {
         if (withIcon) return super.getDetails() + "+";
         else return super.getDetails();
     }
+    @Override
+    public String getImagePath()
+    {
+        if(withIcon)
+            return "/Images/Hunter/hunter_withIcon.png";
+        return "/Images/Hunter/hunter.png";
+    }
 }

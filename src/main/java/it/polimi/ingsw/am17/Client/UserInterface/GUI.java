@@ -6,6 +6,8 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Hunter;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import javafx.application.Application;
@@ -104,12 +106,12 @@ public class GUI extends Application implements UI {
         //tribes cards
         HBox upperCardsBox =new HBox(10);
         for(TribesCard card : staticGame.getUpperTribeRow()){
-            CardGUI upperCards = new CardGUI(card.toString());
+            CardGUI upperCards = new CardGUI(card.getImagePath());
             upperCardsBox.getChildren().add(upperCards);
         }
         //building cards
         for(BuildingCard card : staticGame.getUpperBuildingRow()){
-            CardGUI upperCards = new CardGUI(card.toString());
+            CardGUI upperCards = new CardGUI(card.getImagePath());
             upperCardsBox.getChildren().add(upperCards);
         }
         //turnCard and offeringCard in the same HBox
@@ -120,19 +122,19 @@ public class GUI extends Application implements UI {
         offeringCardBox.getChildren().add(turnCard);
         //offeringCards
         for(OfferingCard card : staticGame.getOfferingCards()){
-            CardGUI offeringCard = new CardGUI(card.toString());
+            CardGUI offeringCard = new CardGUI(card.getImagePath());
             offeringCardBox.getChildren().add(offeringCard);
         }
         //lowerCards
         //tribe cards
         HBox lowerCardsBox =  new HBox(10);
         for(TribesCard card : staticGame.getLowerTribeRow()){
-            CardGUI lowerCards = new CardGUI(card.toString());
+            CardGUI lowerCards = new CardGUI(card.getImagePath());
             lowerCardsBox.getChildren().add(lowerCards);
         }
         //building cards
         for(BuildingCard card : staticGame.getLowerBuildingRow()){
-            CardGUI lowerCards = new CardGUI(card.toString());
+            CardGUI lowerCards = new CardGUI(card.getImagePath());
             lowerCardsBox.getChildren().add(lowerCards);
         }
         //other players card buttons

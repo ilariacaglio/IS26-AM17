@@ -58,4 +58,8 @@ public class BuildingCard extends GameCard implements Serializable {
     public String toString() {
         return "[" + foodCost + "F " + bonusPoints + "BP";
     }
+
+    public String getImagePath(){
+        return "";
+    }
 }

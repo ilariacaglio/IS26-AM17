@@ -9,16 +9,21 @@ import java.util.UUID;
 
 public class TribesCard extends GameCard implements Serializable {
     private final CardType cardType;
+    private final Integer era;
     private final UUID id;
 
     public CardType getCardType() {
         return cardType;
+    }
+    public int getEra() {
+        return era;
     }
 
     @JsonCreator
     public TribesCard(@JsonProperty("era") Integer era, @JsonProperty("cardType") CardType cardType, @JsonProperty("id") UUID id){
         super(false, era);
         this.cardType=cardType;
+        this.era=era;
         //If id is null generate a new one, otherwise use id.
         this.id = (id == null) ? UUID.randomUUID() : id;
     }
@@ -34,5 +39,10 @@ public class TribesCard extends GameCard implements Serializable {
 
     protected String getDetails(){
         return cardType.toString();
+    }
+
+    public  String getImagePath()
+    {
+        return "";
     }
 }

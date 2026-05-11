@@ -14,4 +14,9 @@ public class Binder extends CharacterCard {
             @JsonProperty("id") UUID id){
         super(era, minPlayers, CardType.BINDER, id);
     }
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/binder.png";
+    }
 }
