@@ -48,6 +48,6 @@ public class FoodEvent extends EventCard{
 
     @Override
     public String getImagePath() {
-        return "";
+        return "/Images/Events/food_event_" + pointLost + "PP.png";
     }
 }

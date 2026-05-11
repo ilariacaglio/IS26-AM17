@@ -34,6 +34,7 @@ public class GUI extends Application implements UI {
     private static final double GAME_WINDOW_WIDTH = 1200;
     private static final double GAME_WINDOW_HEIGHT = 800;
 
+
     private static VirtualServer staticServer;
     private static VirtualView staticClient;
     private static ClientModel staticGame;
@@ -63,7 +64,7 @@ public class GUI extends Application implements UI {
         drawStartInterface();
         scene = new Scene(root, START_WINDOW_WIDTH, START_WINDOW_HEIGHT);
         stage.setScene(scene);
-        stage.setTitle("MESOS table gameboard");
+        stage.setTitle("MESOS");
         stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
@@ -94,41 +95,47 @@ public class GUI extends Application implements UI {
         stage.setWidth(GAME_WINDOW_WIDTH);
         root = new VBox(10);
         root.setPadding(new Insets(10));
+
         //TODO: add graphics
         //TODO: add buttons methods with setOnAction()
         //TODO: fix dimension
+
         //create cards like buttons so player can select them
         //upperCards
-        //tribes cards
+
+        //tribes cards first
         HBox upperCardsBox =new HBox(10);
         for(TribesCard card : staticGame.getUpperTribeRow()){
             CardGUI upperCards = new CardGUI(card.getImagePath());
             upperCardsBox.getChildren().add(upperCards);
         }
-        //building cards
+        //building cards second
         for(BuildingCard card : staticGame.getUpperBuildingRow()){
             CardGUI upperCards = new CardGUI(card.getImagePath());
             upperCardsBox.getChildren().add(upperCards);
         }
-        //turnCard and offeringCard in the same HBox
+
+        //put turnCard and offeringCard in the same HBox
         HBox offeringCardBox = new HBox(10);
         //turnCard first
-        //turnCard
-        CardGUI turnCard = new CardGUI(null);
+        CardGUI turnCard = new CardGUI(staticGame.getTURN_CARD_IMAGE_PATH());
         offeringCardBox.getChildren().add(turnCard);
-        //offeringCards
+
+        //offeringCards second
         for(OfferingCard card : staticGame.getOfferingCards()){
             CardGUI offeringCard = new CardGUI(card.getImagePath());
             offeringCardBox.getChildren().add(offeringCard);
         }
+
+
         //lowerCards
-        //tribe cards
+        //tribe cards first
         HBox lowerCardsBox =  new HBox(10);
         for(TribesCard card : staticGame.getLowerTribeRow()){
             CardGUI lowerCards = new CardGUI(card.getImagePath());
             lowerCardsBox.getChildren().add(lowerCards);
         }
-        //building cards
+        //building cards second
         for(BuildingCard card : staticGame.getLowerBuildingRow()){
             CardGUI lowerCards = new CardGUI(card.getImagePath());
             lowerCardsBox.getChildren().add(lowerCards);

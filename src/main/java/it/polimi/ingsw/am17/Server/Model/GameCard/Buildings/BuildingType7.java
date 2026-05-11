@@ -34,4 +34,10 @@ public class BuildingType7 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: +1PP+1F/hunter in HunterEvent] ";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building2_7.png";
+    }
 }

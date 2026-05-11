@@ -48,6 +48,6 @@ public class HuntingEvent extends EventCard {
 
     @Override
     public String getImagePath() {
-        return "";
+        return "/Images/Events/hunting_event_" + pointEarned +"PP.png";
     }
 }

@@ -53,4 +53,9 @@ public class BuildingType13M extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: -1PP/" + characterType.toString() + " in FoodEvent] ";
     }
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building"+ getEra() +"_13_"+characterType.toString().toLowerCase()+".png";
+    }
 }

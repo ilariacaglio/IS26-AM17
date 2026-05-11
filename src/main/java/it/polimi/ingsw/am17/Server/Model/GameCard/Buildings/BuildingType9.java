@@ -26,4 +26,9 @@ public class BuildingType9 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: +3★ in RitualEvent if won] ";
     }
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building2_9.png";
+    }
 }
