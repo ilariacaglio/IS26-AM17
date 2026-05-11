@@ -47,6 +47,7 @@ public class DatabaseManager {
 
     /**
      * Inserts a player into the player table
+     * NB: a player is linked to a specific game
      *
      * @param nickname      the nickname to be inserted
      * @param gameId        the gameId to be inserted
@@ -109,6 +110,11 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * gets the ranking of all players of games with the specified number of players
+     * @param numPlayers    the specified number of players
+     * @return              the raking as a list
+     */
     public static List<RankingEntry> getRanking (int numPlayers) {
         logger.info("Getting ranking of games with " + numPlayers + " players");
         List<RankingEntry> ranking = new ArrayList<>();
@@ -144,18 +150,4 @@ public class DatabaseManager {
         }
         return ranking;
     }
-
-//    static void main() {
-//        Player p1 = new Player("ila", Color.BLACK);
-//        p1.addPp(75);
-//        Player p2 = new Player("blu", Color.BLUE);
-//        p2.addPp(63);
-//        Queue<Player> players = new LinkedList<>();
-//        players.add(p1);
-//        players.add(p2);
-//        insertGameData(UUID.randomUUID(), 2, players);
-//
-//        var list = getRanking(2);
-//        System.out.println(list);
-//    }
 }
