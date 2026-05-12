@@ -9,7 +9,7 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 
-public interface VirtualView extends Observer {
+public interface VirtualView {
     //new
     void updateGameId(UUID gameId) throws Exception;
     void updateGamesIdList(List<UUID> gamesIdList) throws Exception;
