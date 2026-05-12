@@ -144,7 +144,7 @@ public class Game extends Subject {
 
     /**
      * Removes a player from the game AND ENDS THE GAME (re-join not implemented).
-     * @param p player initiating game closure
+     * TODO: player that closed the game
      */
     public void forceEndGame() {
         logger.severe("Forcibly closed game with id: " + id);
