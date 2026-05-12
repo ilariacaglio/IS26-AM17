@@ -378,11 +378,13 @@ public class Player implements Serializable {
         String result = "Nickname: " + nickname +
                 "\nPp: " + pp +
                 "\nFood: " + food;
-        if(!characterCards.isEmpty() || !buildingCards.isEmpty()) {
+        if(!characterCards.isEmpty()) {
             result += "\nCharacter cards: ";
             for (CharacterCard c : this.characterCards) {
                 result = result.concat("[" + c.toString() + "] ");
             }
+        }
+        if (!buildingCards.isEmpty()) {
             result += "\nBuilding cards: ";
             for (BuildingCard c : this.buildingCards) {
                 result = result.concat("[" + c.toString() + "] ");
