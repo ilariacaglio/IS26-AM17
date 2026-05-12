@@ -65,8 +65,6 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
                     logger.severe("Client unreachable");
                     clients.remove(client);
                     controller.closeGame(client);
-                    // call for closeGame or similar, passing the dead client.
-                    // throw new RuntimeException(e);
                 }
             }
         }).start();

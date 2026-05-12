@@ -30,5 +30,5 @@ public interface VirtualView extends Observer {
 
     void updateRanking(List<RankingEntry> ranking) throws Exception;
 
-    void notifyPlayerDisconnection(String nickname);
+    void notifyEndGame();
 }

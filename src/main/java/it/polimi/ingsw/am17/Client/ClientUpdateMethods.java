@@ -85,7 +85,7 @@ public class ClientUpdateMethods {
         userInterface.drawInterface(model);
     }
 
-    public static void updatePlayerDisconnection(ClientModel model, UI userInterface, String nickname) {
+    public static void notifyEndGame(ClientModel model, UI userInterface) {
         model.setCurrentEra(-1);
         // notify user interface that the game has ended due to the disconnection of player with "nickname"
     }

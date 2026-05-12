@@ -8,14 +8,21 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.GamesListHandler;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class GamesController {
+    private static final Map<VirtualView, UUID> mapping = new HashMap<>();
     public GamesController(){}
 
-    public void signUpAsObserver(VirtualView client, UUID gameId){
+    public void signUpAsObserver(VirtualView client, UUID gameId) {
         Game game = GamesListHandler.getGameFromId(gameId);
+
+        // add client to game mapping
+        mapping.put(client, gameId);
+
         synchronized (game) {
             game.attach(client);
         }
@@ -83,11 +90,14 @@ public class GamesController {
      * Closes a game when a player disconnects [unexpectedly].
      */
     public void closeGame(VirtualView client) {
-        // TODO: get game id and player from client
-        // removeClientAsObserver();
+        UUID uuid = mapping.get(client);
+        Game game = GamesListHandler.getGameFromId(uuid);
+        game.detach(client);
+        removeClientAsObserver(client, uuid);
+        mapping.remove(client);
         try{
             synchronized (game){
-                game.forceEndGame(player);
+                game.forceEndGame();
             }
         }
         catch (Exception e){

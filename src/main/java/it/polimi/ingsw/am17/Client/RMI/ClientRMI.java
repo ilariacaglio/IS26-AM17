@@ -77,8 +77,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     }
 
     @Override
-    public void notifyPlayerDisconnection(String nickname) {
-        ClientUpdateMethods.updatePlayerDisconnection(model, userInterface, nickname);
+    public void notifyEndGame() {
+        ClientUpdateMethods.notifyEndGame(model, userInterface);
     }
 
     @Override
