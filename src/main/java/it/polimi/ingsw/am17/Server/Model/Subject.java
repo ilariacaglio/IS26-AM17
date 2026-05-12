@@ -73,17 +73,17 @@ public abstract class Subject {
 
     void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
-//        Queue<Player> newQueue = players.stream()
-//                .map(p -> {
-//                    Player copy = new Player(p.getNickname(), p.getColor());
-//                    copy.addFood(p.getFood());
-//                    copy.addPp(p.getPp());
-//                    return copy;
-//                })
-//                .collect(Collectors.toCollection(LinkedList::new));
+        Queue<Player> newQueue = players.stream()
+                .map(p -> {
+                    Player copy = new Player(p.getNickname(), p.getColor());
+                    copy.addFood(p.getFood());
+                    copy.addPp(p.getPp());
+                    return copy;
+                })
+                .collect(Collectors.toCollection(LinkedList::new));
         for (Observer observer : new ArrayList<>(observers)) {
             try {
-                observer.updateEndTurn(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+                observer.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
             } catch (Exception e) {
                 System.err.println("Subject method failed to call client update" + e.getMessage());
             }
