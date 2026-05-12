@@ -119,9 +119,9 @@ public abstract class Subject {
     }
 
     void notifyEndGame() {
-        for (Observer observer : observers) {
+        for (VirtualView client : clients) {
             try {
-                observer.notifyEndGame();
+                client.notifyEndGame();
             } catch (Exception e) {
                 System.err.println("Subject method failed to call client update" + e.getMessage());
             }
