@@ -129,14 +129,12 @@ public class Player implements Serializable {
             );
         }
         //if player has buildingType14 (and all conditions from building are met add food)
-        if (buildingCards != null) {
-            int foodFromBuildingType14 = 0;
-            for(BuildingCard buildingCard : buildingCards) {
-                foodFromBuildingType14+= buildingCard.GetFoodBonusFromCardAcquisition(characterCards, (CharacterCard)card);
-            }
-            addFood(foodFromBuildingType14);
+        int foodFromBuildingType14 = 0;
+        for(BuildingCard buildingCard : buildingCards)
+        {
+            foodFromBuildingType14+= buildingCard.GetFoodBonusFromCardAcquisition(characterCards, (CharacterCard)card);
         }
-
+        addFood(foodFromBuildingType14);
         characterCards.add((CharacterCard) card);
     }
 
@@ -164,6 +162,9 @@ public class Player implements Serializable {
             }
         }
 
+        if(!canBuyBuidings(buildingCards))
+            throw new IllegalStateException("Not enough food to buy building cards");
+
         for (BuildingCard card : buildingCards){
             int cost = calculateBuildingCost(card);
             try {
@@ -173,6 +174,16 @@ public class Player implements Serializable {
             }
             addBuilding(card);
         }
+    }
+
+    public boolean canBuyBuidings(List<BuildingCard> buildingsToBuy)
+    {
+        int totalCost = 0;
+        for (BuildingCard card : buildingsToBuy){
+            int cost = calculateBuildingCost(card);
+            totalCost+= cost;
+        }
+        return totalCost <= food;
     }
 
     public int calculateBuildingCost(BuildingCard card) {
@@ -364,15 +375,19 @@ public class Player implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Nickname: ").append(nickname)
-                .append("\nPp: ").append(pp)
-                .append("\nFood: ").append(food)
-                .append("\nCards: ");
-
-        if (characterCards != null) for (CharacterCard c : characterCards) sb.append(c).append(" ");
-        if (buildingCards != null) for (BuildingCard c : buildingCards) sb.append(c).append(" ");
-
-        return sb.toString();
+        String result = "Nickname: " + nickname +
+                "\nPp: " + pp +
+                "\nFood: " + food;
+        if(!characterCards.isEmpty() || !buildingCards.isEmpty()) {
+            result += "\nCharacter cards: ";
+            for (CharacterCard c : this.characterCards) {
+                result = result.concat("[" + c.toString() + "] ");
+            }
+            result += "\nBuilding cards: ";
+            for (BuildingCard c : this.buildingCards) {
+                result = result.concat("[" + c.toString() + "] ");
+            }
+        }
+        return result;
     }
 }

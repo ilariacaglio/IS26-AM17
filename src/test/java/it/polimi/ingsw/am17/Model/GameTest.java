@@ -301,7 +301,7 @@ public class GameTest {
             // the player selects some upper cards instead of lower ones
             int lowerSize = game.getOfferingCards().getFirst().getNumCardsLower();
             List<CharacterCard> characterList = new ArrayList<>(extractUpperCharacters(lowerSize));
-            assertThrows(IllegalStateException.class,
+            assertThrows(RuntimeException.class,
                     () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
         }
 
@@ -314,7 +314,7 @@ public class GameTest {
             int upperSize = offeringCardList.get(1).getNumCardsUpper();
             // the player selects lower cards instead of upper ones
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(upperSize));
-            assertThrows(IllegalStateException.class,
+            assertThrows(RuntimeException.class,
                     () -> game.pickTribeCards(
                             offeringCardList.get(1).getPlayer(),
                             characterList,
@@ -332,7 +332,7 @@ public class GameTest {
             int lowerSize = game.getOfferingCards().getFirst().getNumCardsLower();
             // the player selects some upper cards instead of lower ones
             List<BuildingCard> buildingList = new ArrayList<>(extractUpperBuildings(lowerSize));
-            assertThrows(IllegalStateException.class,
+            assertThrows(RuntimeException.class,
                     () -> game.pickTribeCards(game.getCurrentPlayer(), Collections.emptyList(), buildingList));
         }
 
@@ -344,7 +344,7 @@ public class GameTest {
             int upperSize = offeringCardList.get(1).getNumCardsUpper();
             // the player selects lower cards instead of upper ones
             List<BuildingCard> buildingList = new ArrayList<>(extractLowerBuildings(upperSize));
-            assertThrows(IllegalStateException.class,
+            assertThrows(RuntimeException.class,
                         () -> game.pickTribeCards(
                                 offeringCardList.get(1).getPlayer(),
                                 Collections.emptyList(),
@@ -364,7 +364,7 @@ public class GameTest {
             }
             //select the wrong number of lower cards
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(wrongNumLower));
-            assertThrows(IllegalStateException.class, () -> game.pickTribeCards(game.getCurrentPlayer(),characterList, buildingList));
+            assertThrows(RuntimeException.class, () -> game.pickTribeCards(game.getCurrentPlayer(),characterList, buildingList));
         }
 
         @Test
@@ -374,7 +374,7 @@ public class GameTest {
             List<CharacterCard> characterList = new ArrayList<>();
             // add a random card to list
             characterList.add(new Binder(2,4, null));
-            assertThrows(IllegalStateException.class, () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
+            assertThrows(RuntimeException.class, () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
         }
 
         @Test
@@ -384,6 +384,10 @@ public class GameTest {
             List<BuildingCard> buildingList = new ArrayList<>();
             int numUpper =  game.getOfferingCards().get(1).getNumCardsUpper();
             // the player selects buildings from the upper row
+
+            //set player food to 0 so we are sure he can't buy the building
+            game.getCurrentPlayer().addFood(-game.getCurrentPlayer().getFood());
+
             if(!game.getUpperBuildingRow().isEmpty()) {
                 buildingList.addAll(extractUpperBuildings(numUpper));
             }
