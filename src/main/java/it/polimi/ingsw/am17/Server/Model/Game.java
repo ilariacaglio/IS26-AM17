@@ -8,6 +8,8 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Utility.DatabaseManager;
+
 import static it.polimi.ingsw.am17.Server.Utility.CardParser.loadOfferingCards;
 
 import java.util.*;
@@ -338,7 +340,8 @@ public class Game extends Subject {
     private void endGame() {
         logger.info("Ending game.");
 
-        this.currentEra = -1; //put era to -1 to signal game has ended
+        //put era to -1 to signal game has ended
+        this.currentEra = -1;
         // Solve events
         // Get all events from both rows. N.B. we solve the food events from BOTH rows at the end.
         List<EventCard> events = Stream.concat(lowerRow.stream(), upperRow.stream())
@@ -358,8 +361,12 @@ public class Game extends Subject {
             player.calculateFinalPoints();
         }
 
+        // insert data into db
+        DatabaseManager.insertGameData(this.id, this.numPlayers, orderedPlayers);
+
         notifyEra(currentEra);
         notifyPlayerQueue(orderedPlayers);
+        notifyRanking(DatabaseManager.getRanking(this.numPlayers));
     }
 
     /**

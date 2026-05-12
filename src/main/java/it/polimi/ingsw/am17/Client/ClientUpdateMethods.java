@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -76,6 +77,11 @@ public class ClientUpdateMethods {
         model.removeTribeCards(tribesCards);
         model.removeBuildingCards(buildingCards);
         model.setNullOfferingCardAPlayer();
+        userInterface.drawInterface(model);
+    }
+
+    public static void updateRanking(ClientModel model, UI userInterface, List<RankingEntry> ranking) {
+        model.setRanking(ranking);
         userInterface.drawInterface(model);
     }
 

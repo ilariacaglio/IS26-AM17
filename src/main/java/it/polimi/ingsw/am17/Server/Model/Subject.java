@@ -5,6 +5,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.CommonInterfaces.Observer;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,6 +96,17 @@ public abstract class Subject {
             try {
                 observer.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
             } catch (Exception e) {
+                System.err.println("Subject method failed to call client update" + e.getMessage());
+            }
+        }
+    }
+
+    void notifyRanking (List<RankingEntry> ranking) {
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updateRanking(ranking);
+            }
+            catch (Exception e) {
                 System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }
