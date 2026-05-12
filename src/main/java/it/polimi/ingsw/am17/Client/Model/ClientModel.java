@@ -279,6 +279,11 @@ public class ClientModel {
         return TURN_CARD_IMAGE_PATH + numPlayers + ".png";
     }
 
+    public boolean isPickTribesCard(){
+        return offeringCards.stream().filter(offeringCard -> offeringCard.getPlayer()!=null)
+                .anyMatch(card -> card.getPlayer().equals(orderedPlayer.peek()));
+    }
+
     /**
      * Checks if it is the turn of the local player.
      * @return true if it is players turn, false otherwise.

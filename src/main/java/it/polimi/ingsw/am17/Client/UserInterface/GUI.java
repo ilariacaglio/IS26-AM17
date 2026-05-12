@@ -45,6 +45,8 @@ public class GUI extends Application implements UI {
     private static List<BuildingCard> buildingSelected = new ArrayList<>();
     private static OfferingCard offeringSelected = null;
 
+    private static List<CardGUI> offeringCardGUI = new ArrayList<>();
+
     private static VirtualServer staticServer;
     private static VirtualView staticClient;
     private static ClientModel staticGame;
@@ -138,12 +140,12 @@ public class GUI extends Application implements UI {
         //tribes cards first
         HBox upperCardsBox =new HBox(10);
         for(TribesCard card : staticGame.getUpperTribeRow()){
-            CardGUI upperCards = new CardGUI(card.getImagePath());
+            CardGUI upperCards = new CardGUI(card);
             upperCardsBox.getChildren().add(upperCards);
         }
         //building cards second
         for(BuildingCard card : staticGame.getUpperBuildingRow()){
-            CardGUI upperCards = new CardGUI(card.getImagePath());
+            CardGUI upperCards = new CardGUI(card);
             upperCardsBox.getChildren().add(upperCards);
         }
 
@@ -155,7 +157,8 @@ public class GUI extends Application implements UI {
 
         //offeringCards second
         for(OfferingCard card : staticGame.getOfferingCards()){
-            CardGUI offeringCard = new CardGUI(card.getImagePath());
+            CardGUI offeringCard = new CardGUI(card);
+            offeringCardGUI.add(offeringCard);
             offeringCardBox.getChildren().add(offeringCard);
         }
 
@@ -164,12 +167,12 @@ public class GUI extends Application implements UI {
         //tribe cards first
         HBox lowerCardsBox =  new HBox(10);
         for(TribesCard card : staticGame.getLowerTribeRow()){
-            CardGUI lowerCards = new CardGUI(card.getImagePath());
+            CardGUI lowerCards = new CardGUI(card);
             lowerCardsBox.getChildren().add(lowerCards);
         }
         //building cards second
         for(BuildingCard card : staticGame.getLowerBuildingRow()){
-            CardGUI lowerCards = new CardGUI(card.getImagePath());
+            CardGUI lowerCards = new CardGUI(card);
             lowerCardsBox.getChildren().add(lowerCards);
         }
 
@@ -183,10 +186,15 @@ public class GUI extends Application implements UI {
                 } else {
                     staticServer.pickTribeCards(staticGame.getGameId(), staticGame.getLocalPlayer(), tribesSelected, buildingSelected);
                 }
+                offeringSelected = null;
+                buildingSelected = new ArrayList<>();
+                tribesSelected =  new ArrayList<>();
+                offeringCardGUI = new ArrayList<>();
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
+
 
 
         //other players card buttons
@@ -224,7 +232,7 @@ public class GUI extends Application implements UI {
         // Center the player buttons
         playersCardsBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox, playerResourcesBox,
+        root.getChildren().addAll(turnOverlay, upperCardsBox, offeringCardBox, lowerCardsBox, sendButton, playerResourcesBox,
                 personalCardsBox, playersCardsBox);
         return root;
     }
@@ -498,8 +506,13 @@ public class GUI extends Application implements UI {
         if(offeringSelected == card)
             offeringSelected = null;
         else
-
             offeringSelected = card;
+
+        for(CardGUI cardGUI : offeringCardGUI)
+        {
+            cardGUI.selected = false;
+            cardGUI.setSelected();
+        }
     }
 
     private void updateGameList(TextArea gameList) {
@@ -511,6 +524,10 @@ public class GUI extends Application implements UI {
 
     }
 
+    public static boolean isPickTribesCard()
+    {
+        return staticGame.isPickTribesCard();
+    }
 
     @Override
     public void printGameId(UUID gameId) {
