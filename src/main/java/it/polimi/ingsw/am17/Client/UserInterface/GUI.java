@@ -27,10 +27,14 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import java.util.List;
 import java.util.UUID;
 
 
 public class GUI extends Application implements UI {
+
+    private String TURN_CARD_IMAGE_PATH = "/Images/background_game.png";
 
     private static final double START_WINDOW_WIDTH = 400;
     private static final double START_WINDOW_HEIGHT = 300;
@@ -126,12 +130,12 @@ public class GUI extends Application implements UI {
         //tribes cards first
         HBox upperCardsBox =new HBox(10);
         for(TribesCard card : staticGame.getUpperTribeRow()){
-            CardGUI upperCards = new CardGUI(card);
+            CardGUI upperCards = new CardGUI(card.getImagePath());
             upperCardsBox.getChildren().add(upperCards);
         }
         //building cards second
         for(BuildingCard card : staticGame.getUpperBuildingRow()){
-            CardGUI upperCards = new CardGUI(card);
+            CardGUI upperCards = new CardGUI(card.getImagePath());
             upperCardsBox.getChildren().add(upperCards);
         }
 
@@ -143,7 +147,7 @@ public class GUI extends Application implements UI {
 
         //offeringCards second
         for(OfferingCard card : staticGame.getOfferingCards()){
-            CardGUI offeringCard = new CardGUI(card);
+            CardGUI offeringCard = new CardGUI(card.getImagePath());
             offeringCardBox.getChildren().add(offeringCard);
         }
 
@@ -152,12 +156,12 @@ public class GUI extends Application implements UI {
         //tribe cards first
         HBox lowerCardsBox =  new HBox(10);
         for(TribesCard card : staticGame.getLowerTribeRow()){
-            CardGUI lowerCards = new CardGUI(card);
+            CardGUI lowerCards = new CardGUI(card.getImagePath());
             lowerCardsBox.getChildren().add(lowerCards);
         }
         //building cards second
         for(BuildingCard card : staticGame.getLowerBuildingRow()){
-            CardGUI lowerCards = new CardGUI(card);
+            CardGUI lowerCards = new CardGUI(card.getImagePath());
             lowerCardsBox.getChildren().add(lowerCards);
         }
 
@@ -189,10 +193,9 @@ public class GUI extends Application implements UI {
         HBox personalCardsBox =  new HBox(10);
         personalCardsBox.getChildren().add(personalCards);
         for(CharacterCard card : staticGame.getLocalPlayer().getCharacterCards()){
-            CardGUI characterCard = new CardGUI(card);
+            CardGUI characterCard = new CardGUI(card.getImagePath());
             personalCardsBox.getChildren().add(characterCard);
         }
-
 
         //food and PP
         food = new Label("Food: " +staticGame.getLocalPlayer().getFood());//TODO: add logic to update + borders (layout problem)
@@ -213,7 +216,7 @@ public class GUI extends Application implements UI {
         // Center the player buttons
         playersCardsBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(turnOverlay,upperCardsBox, offeringCardBox, lowerCardsBox, sendButton, playerResourcesBox,
+        root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox, playerResourcesBox,
                 personalCardsBox, playersCardsBox);
         return root;
     }
@@ -244,10 +247,21 @@ public class GUI extends Application implements UI {
             scene.setRoot(drawPlayerCountSelection());
         });
         joinGameButton.setOnAction(e -> {
+            try {
+                //ask server for gameList
+                staticServer.getGamesList(staticClient);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+
             // Cambia la radice della scena con l'interfaccia per l'ID
             joinGameButton.getScene().setRoot(drawJoinInterface());
         });
 
+        exitButton.setOnAction(e -> {
+            Platform.exit();//close window
+            //TODO: chiudere connessione con socket e RMI
+        });
         //add Buttons to root
         root.getChildren().addAll(title,buttonContainer);
         return root;
@@ -428,7 +442,28 @@ public class GUI extends Application implements UI {
         Button backBtn = new Button("INDIETRO");
         backBtn.setOnAction(e -> backBtn.getScene().setRoot(drawConnectionInterface()));
 
-        layout.getChildren().addAll(title, idField, joinBtn, backBtn, waitingOverlay);
+        TextArea gameList = new TextArea();
+
+        gameList.setEditable(false);
+        gameList.setWrapText(true);
+
+        gameList.setOnMouseClicked(event -> {
+            int caretPos = gameList.getCaretPosition();
+            String text = gameList.getText();
+
+            int start = text.lastIndexOf('\n', caretPos - 1) + 1;
+            int end = text.indexOf('\n', caretPos);
+            if (end == -1) end = text.length();
+
+            String line = text.substring(start, end);
+            idField.setText(line);
+        });
+
+        HBox idGame = new HBox(10);
+        idGame.getChildren().addAll(idField, joinBtn);
+        layout.getChildren().addAll(title, gameList, idGame, backBtn, waitingOverlay);
+        updateGameList(gameList);
+
         return layout;
     }
 
@@ -458,6 +493,16 @@ public class GUI extends Application implements UI {
 
             offeringSelected = card;
     }
+
+    private void updateGameList(TextArea gameList) {
+        Platform.runLater(() -> {
+            gameList.setText(staticGame.getGamesIdList().stream()
+                    .map(UUID::toString)
+                    .collect(java.util.stream.Collectors.joining("\n")));
+        });
+
+    }
+
 
     @Override
     public void printGameId(UUID gameId) {
