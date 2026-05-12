@@ -9,24 +9,26 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 
+/**
+ * Represents a client in the observer pattern (observer).
+ */
 public interface VirtualView {
-    //new
+    // lobby methods
     void updateGameId(UUID gameId) throws Exception;
     void updateGamesIdList(List<UUID> gamesIdList) throws Exception;
 
-    void updateEra(int era) throws Exception;
-
+    // game methods
     void updatePlayerQueue(Queue<Player> orderedPlayer) throws Exception;
-
-    void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws Exception;
-
-    void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws Exception;
-
+    void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                         List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws  Exception;
+    void updateEra(int era) throws Exception;
     void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws  Exception;
 
-    void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                         List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws  Exception;
+    // player methods
+    void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws Exception;
+    void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws Exception;
 
+    // ending methods
     void updateRanking(List<RankingEntry> ranking) throws Exception;
 }
