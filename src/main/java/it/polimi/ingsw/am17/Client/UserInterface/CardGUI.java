@@ -19,7 +19,7 @@ public class CardGUI extends StackPane {
     private final TribesCard tribesCard;
     private final BuildingCard buildingCard;
     private final OfferingCard offeringCard;
-    private boolean selected = false;
+    public boolean selected = false;
     private boolean selectable;
 
     private Rectangle border;
@@ -76,10 +76,14 @@ public class CardGUI extends StackPane {
         border.setFill(javafx.scene.paint.Color.WHITE);
         border.setStroke(javafx.scene.paint.Color.BLACK);
 
-        if(!selectable){
-            border.setStroke(Color.RED);
-            border.setStrokeWidth(2);
-        }
+        if(selectable)
+            selectable = (offeringCard == null && GUI.isPickTribesCard()) ||
+                    (offeringCard != null && !GUI.isPickTribesCard());
+
+//        if(!selectable){
+//            border.setStroke(Color.RED);
+//            border.setStrokeWidth(2);
+//        }
         if(offeringCard != null)
         {
             Player p =offeringCard.getPlayer();
@@ -92,6 +96,7 @@ public class CardGUI extends StackPane {
                 border.setStrokeWidth(2);
             }
         }
+
         //add border
         this.getChildren().add(border);
 //if is used only for test purposes
@@ -120,20 +125,20 @@ public class CardGUI extends StackPane {
                     alert.showAndWait();
                     return;
                 }
-                selected = !selected;
-                setSelected(selected);
+
                 if (tribesCard != null)
                     GUI.tribesSelected((CharacterCard) tribesCard);
                 if (offeringCard != null)
                     GUI.offeringSelected(offeringCard);
                 if (buildingCard != null)
                     GUI.buildingSelected(buildingCard);
-                System.out.println("carta cliccata");
+                selected = !selected;
+                setSelected();
             });
         }
     }
 
-    public void setSelected(boolean selected) {
+    public void setSelected() {
         if (selected) {
             // Light blue border
             border.setStroke(Color.LIGHTBLUE);
@@ -146,4 +151,8 @@ public class CardGUI extends StackPane {
             border.setStrokeWidth(1);
         }
     }
+
+
+
+
 }
