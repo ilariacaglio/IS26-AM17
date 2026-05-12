@@ -29,8 +29,8 @@ public class Player implements Serializable {
                   @JsonProperty("buildingCards") List<BuildingCard> buildingCards) {
         this.nickname = nickname;
         this.color = color;
-        this.characterCards = characterCards;
-        this.buildingCards = buildingCards;
+        this.characterCards = characterCards != null ? characterCards : new ArrayList<>();
+        this.buildingCards = buildingCards != null ? buildingCards : new ArrayList<>();
     }
 
 
@@ -61,6 +61,14 @@ public class Player implements Serializable {
         this.nickname=nickname;
     }
 
+    public List<CharacterCard> getCharacterCards() {
+        return characterCards;
+    }
+
+    public List<BuildingCard> getBuildingCards() {
+        return buildingCards;
+    }
+
     public void addPp(int quantity){
         this.pp+=quantity;
     }
@@ -74,8 +82,6 @@ public class Player implements Serializable {
     }
 
     public void calculateFinalPoints(){
-        boolean iconPresent;
-
         // add pp of builders
         int pointsBuilders = characterCards.stream()
                     .filter(g ->g.getCardType().equals(CardType.BUILDER))
@@ -125,8 +131,7 @@ public class Player implements Serializable {
         //if player has buildingType14 (and all conditions from building are met add food)
         if (buildingCards != null) {
             int foodFromBuildingType14 = 0;
-            for(BuildingCard buildingCard : buildingCards)
-            {
+            for(BuildingCard buildingCard : buildingCards) {
                 foodFromBuildingType14+= buildingCard.GetFoodBonusFromCardAcquisition(characterCards, (CharacterCard)card);
             }
             addFood(foodFromBuildingType14);
