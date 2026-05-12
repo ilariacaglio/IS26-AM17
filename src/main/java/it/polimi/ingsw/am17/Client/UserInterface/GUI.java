@@ -268,6 +268,7 @@ public class GUI extends Application implements UI {
 
         exitButton.setOnAction(e -> {
             Platform.exit();//close window
+            System.exit(0);
             //TODO: chiudere connessione con socket e RMI
         });
         //add Buttons to root
