@@ -365,8 +365,8 @@ public class Player implements Serializable {
                 .append("\nFood: ").append(food)
                 .append("\nCards: ");
 
-        for (CharacterCard c : characterCards) sb.append(c).append(" ");
-        for (BuildingCard c : buildingCards) sb.append(c).append(" ");
+        if (characterCards != null) for (CharacterCard c : characterCards) sb.append(c).append(" ");
+        if (buildingCards != null) for (BuildingCard c : buildingCards) sb.append(c).append(" ");
 
         return sb.toString();
     }
