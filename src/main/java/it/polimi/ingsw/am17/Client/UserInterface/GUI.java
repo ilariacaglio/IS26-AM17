@@ -25,6 +25,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -35,6 +37,9 @@ public class GUI extends Application implements UI {
     private static final double GAME_WINDOW_WIDTH = 1200;
     private static final double GAME_WINDOW_HEIGHT = 800;
 
+    private static List<CharacterCard> tribesSelected = new ArrayList<>();
+    private static List<BuildingCard> buildingSelected = new ArrayList<>();
+    private static OfferingCard offeringSelected = null;
 
     private static VirtualServer staticServer;
     private static VirtualView staticClient;
@@ -88,6 +93,11 @@ public class GUI extends Application implements UI {
         });
     }
 
+    public static boolean isPlayerTurn()
+    {
+        return staticGame.isPlayerTurn();
+    }
+
 
 
     public Parent drawGameInterface() {
@@ -96,6 +106,15 @@ public class GUI extends Application implements UI {
         stage.setWidth(GAME_WINDOW_WIDTH);
         root = new VBox(10);
         root.setPadding(new Insets(10));
+
+        VBox turnOverlay = new VBox(10); // 10px spacing
+        turnOverlay.setAlignment(Pos.CENTER);
+        Label turnText = new Label("It's your turn");
+        turnOverlay.getChildren().addAll(turnText);
+        turnOverlay.setVisible(false);
+        if(staticGame.isPlayerTurn()){
+            turnOverlay.setVisible(true);
+        }
 
         //TODO: add graphics
         //TODO: add buttons methods with setOnAction()
@@ -107,12 +126,12 @@ public class GUI extends Application implements UI {
         //tribes cards first
         HBox upperCardsBox =new HBox(10);
         for(TribesCard card : staticGame.getUpperTribeRow()){
-            CardGUI upperCards = new CardGUI(card.getImagePath());
+            CardGUI upperCards = new CardGUI(card);
             upperCardsBox.getChildren().add(upperCards);
         }
         //building cards second
         for(BuildingCard card : staticGame.getUpperBuildingRow()){
-            CardGUI upperCards = new CardGUI(card.getImagePath());
+            CardGUI upperCards = new CardGUI(card);
             upperCardsBox.getChildren().add(upperCards);
         }
 
@@ -124,7 +143,7 @@ public class GUI extends Application implements UI {
 
         //offeringCards second
         for(OfferingCard card : staticGame.getOfferingCards()){
-            CardGUI offeringCard = new CardGUI(card.getImagePath());
+            CardGUI offeringCard = new CardGUI(card);
             offeringCardBox.getChildren().add(offeringCard);
         }
 
@@ -133,14 +152,31 @@ public class GUI extends Application implements UI {
         //tribe cards first
         HBox lowerCardsBox =  new HBox(10);
         for(TribesCard card : staticGame.getLowerTribeRow()){
-            CardGUI lowerCards = new CardGUI(card.getImagePath());
+            CardGUI lowerCards = new CardGUI(card);
             lowerCardsBox.getChildren().add(lowerCards);
         }
         //building cards second
         for(BuildingCard card : staticGame.getLowerBuildingRow()){
-            CardGUI lowerCards = new CardGUI(card.getImagePath());
+            CardGUI lowerCards = new CardGUI(card);
             lowerCardsBox.getChildren().add(lowerCards);
         }
+
+        //send button
+        Button sendButton = new Button("SEND");
+        sendButton.setOnAction(e ->
+        {
+            try {
+                if (offeringSelected != null) {
+                    staticServer.pickOfferingCard(staticGame.getGameId(), staticGame.getLocalPlayer(), offeringSelected);
+                } else {
+                    staticServer.pickTribeCards(staticGame.getGameId(), staticGame.getLocalPlayer(), tribesSelected, buildingSelected);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+
         //other players card buttons
         HBox playersCardsBox =  new HBox(10);
         for(Player p : staticGame.getOrderedPlayers()){
@@ -153,9 +189,10 @@ public class GUI extends Application implements UI {
         HBox personalCardsBox =  new HBox(10);
         personalCardsBox.getChildren().add(personalCards);
         for(CharacterCard card : staticGame.getLocalPlayer().getCharacterCards()){
-            CardGUI characterCard = new CardGUI(card.getImagePath());
+            CardGUI characterCard = new CardGUI(card);
             personalCardsBox.getChildren().add(characterCard);
         }
+
 
         //food and PP
         food = new Label("Food: " +staticGame.getLocalPlayer().getFood());//TODO: add logic to update + borders (layout problem)
@@ -176,7 +213,7 @@ public class GUI extends Application implements UI {
         // Center the player buttons
         playersCardsBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(upperCardsBox, offeringCardBox, lowerCardsBox, playerResourcesBox,
+        root.getChildren().addAll(turnOverlay,upperCardsBox, offeringCardBox, lowerCardsBox, sendButton, playerResourcesBox,
                 personalCardsBox, playersCardsBox);
         return root;
     }
@@ -345,6 +382,11 @@ public class GUI extends Application implements UI {
     }
 
     private Parent drawJoinInterface() {
+        offeringSelected = null;
+        tribesSelected = new ArrayList<>();
+        buildingSelected = new ArrayList<>();
+
+
         VBox layout = new VBox(20);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
@@ -388,6 +430,33 @@ public class GUI extends Application implements UI {
 
         layout.getChildren().addAll(title, idField, joinBtn, backBtn, waitingOverlay);
         return layout;
+    }
+
+    public static void tribesSelected(CharacterCard card)
+    {
+        if(tribesSelected.contains(card))
+            tribesSelected.remove(card);
+        else
+            tribesSelected.add(card);
+    }
+
+    public static void buildingSelected(BuildingCard card)
+    {
+        if(buildingSelected.contains(card))
+            buildingSelected.remove(card);
+        else
+            buildingSelected.add(card);
+    }
+
+
+
+    public static void offeringSelected(OfferingCard card)
+    {
+        if(offeringSelected == card)
+            offeringSelected = null;
+        else
+
+            offeringSelected = card;
     }
 
     @Override
