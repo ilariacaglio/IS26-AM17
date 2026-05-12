@@ -7,6 +7,7 @@ module it.polimi.ingsw.am17 {
     requires java.rmi;
     requires java.logging;
     requires javafx.graphics;
+    requires java.desktop;
 
     // Add this line to allow RMI to access your client interfaces
     exports it.polimi.ingsw.am17.Client.RMI to java.rmi;
