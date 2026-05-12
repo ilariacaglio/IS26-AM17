@@ -53,7 +53,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
         new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -62,7 +62,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
                     ((VirtualViewRMI) client).ping();
                     logger.fine("Client pinged");
                 } catch (RemoteException e) {
-                    logger.severe("Client unreachable");
+                    logger.severe("Client " + client + " unreachable");
                     clients.remove(client);
                     controller.closeGame(client);
                 }
