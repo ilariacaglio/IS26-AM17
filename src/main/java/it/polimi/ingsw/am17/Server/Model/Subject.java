@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 /**
  * Implements a subject in the observer pattern (an observable "game").
  */
-public abstract class VirtualServer {
+public abstract class Subject {
     private final List<VirtualView> clients = new ArrayList<>();
-    private final static Logger logger = Logger.getLogger(VirtualServer.class.getName());
+    private final static Logger logger = Logger.getLogger(Subject.class.getName());
 
     /**
      * Attach a client to the subject (start observing).

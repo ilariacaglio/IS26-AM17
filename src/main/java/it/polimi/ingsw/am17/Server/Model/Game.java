@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-public class Game extends VirtualServer {
+public class Game extends Subject {
     private final UUID id;
     private final int numPlayers;
     private int currentEra;
