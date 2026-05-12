@@ -72,6 +72,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                         case UPDATE_START_GAME ->
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
                         case UPDATE_RANKING ->  updateRanking(message.getRanking());
+                        case END_GAME -> notifyEndGame();
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -122,7 +123,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     @Override
     public void notifyEndGame() {
-        // TODO
+        ClientUpdateMethods.notifyEndGame(model, userInterface);
     }
 
     @Override

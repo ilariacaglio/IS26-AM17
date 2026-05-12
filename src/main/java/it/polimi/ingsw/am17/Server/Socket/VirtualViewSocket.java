@@ -98,7 +98,8 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void notifyEndGame() {
-        // TODO
+    public void notifyEndGame() throws Exception {
+        Message message = new Message(MessageType.END_GAME);
+        message.send(socket);
     }
 }
