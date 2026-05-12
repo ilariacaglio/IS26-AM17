@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
+import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -51,6 +53,9 @@ public class ClientSocket implements VirtualView, ClientInterface {
         // create a VirtualServer to handle sending requests
         server = new VirtualServerSocket(socket);
 
+        // set the logger level
+//        logger.setLevel(Level.FINE);
+
         // TODO: comments
         // handle incoming messages
         new Thread(() -> {
@@ -58,7 +63,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                 String line;
                 while ((line = in.readLine()) != null) {
                     Message message = mapper.readValue(line, Message.class);
-                    logger.info("Received message: " + message.toString());
+                    if(message.getType() != MessageType.HEARTBEAT) logger.info("Received message: " + message.toString());
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
@@ -73,6 +78,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
                         case UPDATE_RANKING ->  updateRanking(message.getRanking());
                         case END_GAME -> notifyEndGame();
+                        case HEARTBEAT -> logger.finer("Received heartbeat");
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }

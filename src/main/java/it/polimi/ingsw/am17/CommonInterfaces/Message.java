@@ -175,9 +175,10 @@ public class Message implements Serializable {
 
     // TODO: comments, synchronize?
     public void send(Socket socket) throws Exception {
-        logger.setLevel(Level.FINE);
+//        logger.setLevel(Level.FINE);
         logger.fine("Parsing message:" + this);
-        logger.info("Sending message:" + mapper.writeValueAsString(this));
+        if(type != MessageType.HEARTBEAT) logger.info("Sending message:" + mapper.writeValueAsString(this));
+        else logger.finer("Sending heartbeat");
         String json = mapper.writeValueAsString(this);
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         out.println(json);

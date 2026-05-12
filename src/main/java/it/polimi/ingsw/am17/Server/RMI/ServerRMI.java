@@ -64,7 +64,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
                 } catch (RemoteException e) {
                     logger.severe("Client " + client + " unreachable");
                     clients.remove(client);
-                    controller.closeGame(client);
+                    controller.closeGame(client); // TODO: #271 move to method
                 }
             }
         }).start();

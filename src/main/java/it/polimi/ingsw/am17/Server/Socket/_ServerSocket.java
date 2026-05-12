@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Server.Socket;
 
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
+import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
@@ -17,6 +18,8 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +51,8 @@ public class _ServerSocket implements Runnable, VirtualServer {
                 Message message = mapper.readValue(line, Message.class);
                 logger.setLevel(Level.FINE);
                 logger.fine("Parsing message:" + line);
-                logger.info("Received message: " + message.toString());
+                if(message.getType() != MessageType.HEARTBEAT) logger.info("Received message:" + mapper.writeValueAsString(this));
+                else logger.fine("Received heartbeat");
                 switch (message.getType()) {
                     case GET_GAMES_LIST -> getGamesList(client);
                     case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
