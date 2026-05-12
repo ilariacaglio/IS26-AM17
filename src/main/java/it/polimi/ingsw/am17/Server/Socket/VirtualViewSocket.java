@@ -96,4 +96,9 @@ public class VirtualViewSocket implements VirtualView {
         message.setRanking(ranking);
         message.send(socket);
     }
+
+    @Override
+    public void notifyEndGame() {
+        // TODO
+    }
 }

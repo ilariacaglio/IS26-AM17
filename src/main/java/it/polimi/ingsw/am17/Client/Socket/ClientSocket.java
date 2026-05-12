@@ -121,6 +121,11 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
+    public void notifyEndGame() {
+        // TODO
+    }
+
+    @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         ClientUpdateMethods.updateEndTurn(model, userInterface, players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
