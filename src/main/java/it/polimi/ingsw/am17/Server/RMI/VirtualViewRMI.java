@@ -31,4 +31,5 @@ public interface VirtualViewRMI extends Remote, VirtualView {
                          List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws  RemoteException;
 
     void updateRanking(List<RankingEntry> ranking) throws RemoteException;
+    void notifyEndGame() throws RemoteException;
 }
