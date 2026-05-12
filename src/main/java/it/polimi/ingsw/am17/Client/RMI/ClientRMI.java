@@ -76,6 +76,11 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     }
 
     @Override
+    public void notifyPlayerDisconnection(String nickname) {
+        ClientUpdateMethods.updatePlayerDisconnection(model, userInterface, nickname);
+    }
+
+    @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
         ClientUpdateMethods.updateEndTurn(model, userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
     }

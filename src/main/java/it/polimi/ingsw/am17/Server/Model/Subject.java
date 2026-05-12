@@ -99,4 +99,14 @@ public abstract class Subject {
             }
         }
     }
+
+    void notifyPlayerDisconnection(String nickname) {
+        for (Observer observer : observers) {
+            try {
+                observer.notifyPlayerDisconnection(nickname);
+            } catch (Exception e) {
+                System.err.println("Subject method failed to call client update" + e.getMessage());
+            }
+        }
+    }
 }

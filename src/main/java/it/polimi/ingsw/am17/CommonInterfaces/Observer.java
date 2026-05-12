@@ -28,4 +28,5 @@ public interface Observer {
     void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                          List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws  Exception;
 
+    void notifyPlayerDisconnection(String nickname);
 }

@@ -144,11 +144,10 @@ public class Game extends Subject {
      * Removes a player from the game AND ENDS THE GAME (re-join not implemented).
      * @param p player initiating game closure
      */
-    public void removePlayerEndGame(Player p) {
-        logger.info("Removing player " + p.getNickname() + " from game with id " + id);
-        orderedPlayers.remove(p);
-        // TODO notifyPlayerDisconnection works similar to the error notification?
-        endGame(); // TODO check if that does what we want here
+    public void forceEndGame(Player p) {
+        logger.severe("Player " + p.getNickname() + " forcibly closed game with id: " + id);
+        notifyPlayerDisconnection(p.getNickname());
+        this.currentEra = -1;
     }
 
     /**

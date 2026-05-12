@@ -80,13 +80,14 @@ public class GamesController {
     }
 
     /**
-     * Closes a game when a player leaves (unexpectedly).
+     * Closes a game when a player disconnects [unexpectedly].
      */
-    public void removePlayer(UUID gameId, Player player) {
+    public void closeGame(VirtualView client) {
+        // TODO: get game id and player from client
+        // removeClientAsObserver();
         try{
-            Game game = GamesListHandler.getGameFromId(gameId);
             synchronized (game){
-                game.removePlayerEndGame(player);
+                game.forceEndGame(player);
             }
         }
         catch (Exception e){
