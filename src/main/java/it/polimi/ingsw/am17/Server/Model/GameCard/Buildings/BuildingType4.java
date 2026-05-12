@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Get 6 points for each 6 different set of characters.
+ * Get 6 points for each set of 6 different Character types.
  * Final effect
  * SINGLETON
  */
@@ -39,6 +39,6 @@ public class BuildingType4 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +6PP/each6";
+        return super.toString() + " Effect: +6PP/each 6 unique characters";
     }
 }

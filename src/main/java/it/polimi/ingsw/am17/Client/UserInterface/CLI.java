@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 
@@ -108,7 +109,7 @@ public class CLI implements UI {
 
         // search for Player in ordered players
         Player player;
-        player = game.getAllPlayers().stream()
+        player = game.getOrderedPlayers().stream()
                 .filter(p->p.getNickname().equals(nickname))
                 .findFirst().orElse(null);
 
@@ -164,7 +165,6 @@ public class CLI implements UI {
         try{
             // update game data
             this.game = game;
-            evaluateGamePhase();
             // cancel arrow
             System.out.print("\b\b");
             //clear console
@@ -175,28 +175,80 @@ public class CLI implements UI {
                 System.out.println();
             }
 
-            // print players list
-            printPlayers();
-            if(game.getCurrentEra()<1) {
-                int playersToWait = game.getNumPlayers()+game.getOrderedPlayers().size();
-                System.out.println("Waiting for "+ playersToWait + " more players to join...");
+            int currentEra = game.getCurrentEra();
+
+            if (currentEra >= 0) {
+                // print players list
+                printPlayers();
+                if(currentEra == 0){
+                    System.out.println("Waiting for more players to join...");
+                }
+                else {
+                    //draw upper row
+                    drawRow(true);
+
+                    //draw offering card
+                    drawOfferingCard();
+
+                    //draw lower row
+                    drawRow(false);
+
+                    // if the game has begun notify the players turn
+                    if(game.isPlayerTurn())
+                        System.out.println("It's your turn!");
+                    System.out.print("> ");
+                }
             }
-
-            //draw upper row
-            drawRow(true);
-
-            //draw offering card
-            drawOfferingCard();
-
-            //draw lower row
-            drawRow(false);
-
-            // if the game has begun notify the players turn
-            if(game.isPlayerTurn())
-                System.out.println("It's your turn!");
-            System.out.print("> ");
+            else {
+                drawLocalRanking();
+                drawGlobalRanking();
+            }
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * prints the ranking of the player in global ranking when game ends
+     */
+    private void drawGlobalRanking(){
+        List<RankingEntry> ranking = game.getRanking();
+        if (!ranking.isEmpty()) {
+            System.out.println("\n--- YOUR POSITION IN GLOBAL RANKING ---");
+            RankingEntry userEntry = ranking.stream()
+                    .filter(e -> e.getGameId().equals(game.getGameId())
+                            && e.getNickname().equals(game.getLocalPlayer().getNickname()))
+                    .findFirst().orElse(null);
+            if (userEntry != null) {
+                int pos = ranking.indexOf(userEntry) + 1;
+                System.out.println(pos + ")\t"+userEntry.getNickname()+"\t"+ userEntry.getFinalPoints());
+            }
+            else {
+                System.out.println("Player data not found!");
+            }
+
+            System.out.println("\n--- GLOBAL RANKING ---");
+            System.out.printf("N.\t%-12s\t%-15s\t%s%n", "DATA", "NICKNAME", "SCORE");
+            int rank = 1;
+            for (RankingEntry entry: game.getRanking()) {
+                System.out.println(rank + ")\t" + entry);
+                rank++;
+            }
+        }
+    }
+
+    /**
+     * prints the ranking of the local players when game ends
+     */
+    private void drawLocalRanking() {
+        System.out.println("--- FINAL GAME RANKING ---");
+        List<Player> sortedPlayers = game.getOrderedPlayers().stream()
+                .sorted(Comparator.comparingInt(Player::getPp).reversed())
+                .toList();
+        int rank = 1;
+        for (Player player : sortedPlayers) {
+            System.out.println(rank + "° place: " + player.getNickname() + " - Points: " + player.getPp());
+            rank++;
         }
     }
 
@@ -204,13 +256,7 @@ public class CLI implements UI {
      * Prints on the terminal the players list
      */
     private void printPlayers() {
-        Collection<Player> players;
-        if(game.getCurrentEra()<1){
-            players = game.getOrderedPlayers();
-        }
-        else{
-            players = game.getAllPlayers();
-        }
+        Collection<Player> players = game.getOrderedPlayers();
         System.out.print("\nPlayers: ");
         for(Player p : players) {
             System.out.print("[" + p.getNickname() + " " + p.getFood() + "F " + p.getPp() + "PP" + "] ");
@@ -463,10 +509,33 @@ public class CLI implements UI {
     private void joinGame(Scanner scanner){
         try {
             if (game.getGameId() == null) {
-                System.out.print("Insert the gameID > ");
-                UUID gameId = UUID.fromString(scanner.nextLine().trim());
-                System.out.println("Trying to connect...");
-                virtualServer.joinGame(client, gameId, game.getLocalPlayer());
+                System.out.print("Insert the gameID or index in gameList > ");
+                String input = scanner.nextLine().trim();
+                UUID gameId = null;
+
+                // Try to treat input as an index (Integer)
+                if (input.matches("\\d+")) {
+                    int index = Integer.parseInt(input);
+                    if (index >= 0 && index < game.getGamesIdList().size()) {
+                        gameId = game.getGamesIdList().get(index);
+                    } else {
+                        System.out.println("Index out of bounds.");
+                    }
+                }
+                //Otherwise, try to treat input as a UUID
+                else {
+                    try {
+                        gameId = UUID.fromString(input);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid format. Please enter a number or a valid UUID.");
+                    }
+                }
+
+                //If we successfully got a gameId, proceed
+                if (gameId != null) {
+                    System.out.println("Trying to connect...");
+                    virtualServer.joinGame(client, gameId, game.getLocalPlayer());
+                }
             } else {
                 System.out.println("Already in a game!");
             }
@@ -528,16 +597,6 @@ public class CLI implements UI {
                 System.out.print("[" + c.toString() + "] ");
             }
             System.out.println();
-        }
-    }
-
-    /**
-     * Sets the phase of the game to pick tribe cards if condition met
-     */
-    private void evaluateGamePhase(){
-        if( game.getOrderedPlayers().size() == game.getNumPlayers() &&
-            game.everyPlayerInOfferingCard()){
-            game.setPickOfferingCardPhase(false);
         }
     }
 }

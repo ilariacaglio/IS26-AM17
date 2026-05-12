@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,17 +16,11 @@ public class ClientModel {
     private int numPlayers;
     private int currentEra = 0;
 
-    private boolean isPickOfferingCardPhase;
-
-    // used to keep a list of player when removing from stack
-    // TODO: Review
-    private List<Player> allPlayers;
-
     private Player myPlayer;
 
     private List<UUID> gamesIdList = new ArrayList<>();
 
-    private final Stack<Player> orderedPlayer = new Stack<>();
+    private final Queue<Player> orderedPlayer = new LinkedList<>();
 
     private List<OfferingCard> offeringCards = new ArrayList<>();
 
@@ -34,6 +29,8 @@ public class ClientModel {
 
     private final List<BuildingCard> upperBuildingRow = new ArrayList<>();
     private final List<BuildingCard> lowerBuildingRow  = new ArrayList<>();
+
+    private final List<RankingEntry> ranking = new ArrayList<>();
 
     public void setGameId(UUID id) {
         this.id = id;
@@ -55,10 +52,6 @@ public class ClientModel {
         return myPlayer;
     }
 
-    public void setPickOfferingCardPhase(boolean value) {
-        this.isPickOfferingCardPhase = value;
-    }
-
     public int getNumPlayers() {
         return numPlayers;
     }
@@ -71,7 +64,7 @@ public class ClientModel {
         return currentEra;
     }
 
-    public void setOrderedPlayers(Stack<Player> orderedPlayers){
+    public void setOrderedPlayers(Queue<Player> orderedPlayers){
         this.orderedPlayer.clear();
         this.orderedPlayer.addAll(orderedPlayers);
     }
@@ -139,19 +132,7 @@ public class ClientModel {
     public boolean isPlayerTurn(){
         if(currentEra<1)
             return false;
-        if (isPickOfferingCardPhase){
-            return orderedPlayer.peek().equals(myPlayer);
-        }
-        else {
-            OfferingCard oc =  offeringCards.stream()
-                    .filter(c -> c.getPlayer() != null && c.getOrderLetter()!='A')
-                    .min(Comparator.comparing(OfferingCard::getOrderLetter))
-                    .orElse(null);
-            if(oc != null)
-                return oc.getPlayer().equals(myPlayer);
-            else
-                return false;
-        }
+        return orderedPlayer.peek().equals(myPlayer);
     }
 
     public void removeTribeCards(List<CharacterCard> tribeCards){
@@ -164,9 +145,13 @@ public class ClientModel {
         lowerBuildingRow.removeAll(buildingCards);
     }
 
-    public void setPlayerInStack(Player player){
-        orderedPlayer.replaceAll(p -> p.equals(player) ? player : p);
-        updateAllPlayers();
+    public void setPlayerInQueue(Player player){
+        List<Player> players = new ArrayList<>(orderedPlayer);
+        players.replaceAll(p -> p.equals(player) ? player : p);
+        orderedPlayer.clear();
+        orderedPlayer.addAll(players);
+        Player lastPlayer = orderedPlayer.poll();
+        orderedPlayer.add(lastPlayer);
     }
 
     public void removePlayerFromOfferingCard(Player player){
@@ -181,7 +166,7 @@ public class ClientModel {
     }
 
     public boolean everyPlayerInOfferingCard(){
-        for(Player p : allPlayers){
+        for(Player p : orderedPlayer){
             OfferingCard oc = offeringCards.stream()
                     .filter(c-> c.getPlayer()!= null && c.getPlayer().equals(p))
                     .findFirst().orElse(null);
@@ -191,24 +176,17 @@ public class ClientModel {
         return true;
     }
 
-    public void setAllPlayers(List<Player> allPlayers) {
-        this.allPlayers = new ArrayList<>(allPlayers);
-    }
-
-    public List<Player> getAllPlayers() {
-        return Collections.unmodifiableList(allPlayers);
-    }
-
-    public void updateAllPlayers() {
-        this.allPlayers = new ArrayList<>(this.allPlayers);
-
-        for (Player p : orderedPlayer) {
-            allPlayers.replaceAll(existingPlayer -> existingPlayer.equals(p) ? p : existingPlayer);
-        }
-    }
-
     public void setNullOfferingCardAPlayer() {
         offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
                 .findFirst().ifPresent(card -> card.setPlayer(null));
+    }
+
+    public void setRanking (List<RankingEntry> ranking) {
+        this.ranking.clear();
+        this.ranking.addAll(ranking);
+    }
+
+    public List<RankingEntry> getRanking(){
+        return Collections.unmodifiableList(ranking);
     }
 }

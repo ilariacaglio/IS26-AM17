@@ -7,20 +7,21 @@ import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Sets up the socket connection with the server.
@@ -32,6 +33,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
     UI userInterface;
     Socket socket;
     ObjectMapper mapper;
+
+    private final Logger logger = Logger.getLogger(ClientSocket.class.getName());
 
     public ClientSocket() {
         this.model = new ClientModel();
@@ -54,13 +57,13 @@ public class ClientSocket implements VirtualView, ClientInterface {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()))) {
                 String line;
                 while ((line = in.readLine()) != null) {
-                    System.out.println("Received: " + line);
                     Message message = mapper.readValue(line, Message.class);
+                    logger.info("Received message: " + message.toString());
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
                         case UPDATE_ERA -> updateEra(message.getEra());
-                        case UPDATE_PLAYER_STACK -> updatePlayerStack(message.getOrderedPlayer());
+                        case UPDATE_PLAYERS_DATA -> updatePlayerQueue(message.getOrderedPlayer());
                         case UPDATE_PLAYER_SELECT_OFFERING_CARD ->
                                 updatePlayerSelectOfferingCard(message.getPlayer(), message.getOfferingCard());
                         case UPDATE_PLAYER_SELECT_TRIBE_CARDS -> updatePlayerSelectTribeCards(message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
@@ -68,6 +71,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                                 updateEndTurn(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow());
                         case UPDATE_START_GAME ->
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
+                        case UPDATE_RANKING ->  updateRanking(message.getRanking());
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -90,8 +94,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updatePlayerStack(Stack<Player> orderedPlayer) {
-        ClientUpdateMethods.updatePlayerStack(model, userInterface, orderedPlayer);
+    public void updatePlayerQueue(Queue<Player> orderedPlayer) {
+        ClientUpdateMethods.updatePlayerQueue(model, userInterface, orderedPlayer);
     }
 
     @Override
@@ -105,14 +109,19 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) {
 
         ClientUpdateMethods.updateStartGame(model, userInterface, players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
     @Override
-    public void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+    public void updateRanking(List<RankingEntry> ranking) {
+        ClientUpdateMethods.updateRanking(model, userInterface, ranking);
+    }
+
+    @Override
+    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         ClientUpdateMethods.updateEndTurn(model, userInterface, players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 

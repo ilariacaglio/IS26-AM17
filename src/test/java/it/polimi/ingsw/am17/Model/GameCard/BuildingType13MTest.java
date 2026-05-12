@@ -23,8 +23,8 @@ class BuildingType13MTest {
     void ShouldGiveFoodDiscount() {
         List<CharacterCard> playerCharacterCards = new ArrayList<>();
 
-        CharacterCard A = new Artist(2, 2);
-        CharacterCard B = new Inventor(3,2, InventorIconType.BREAD);
+        CharacterCard A = new Artist(2, 2, null);
+        CharacterCard B = new Inventor(3,2, InventorIconType.BREAD, null);
         playerCharacterCards.add(A);
         playerCharacterCards.add(B);
 
@@ -37,8 +37,8 @@ class BuildingType13MTest {
     void ShouldNotGiveFoodDiscountWhenNoMatchingCharacterType() {
         List<CharacterCard> playerCharacterCards = new ArrayList<>();
 
-        CharacterCard A = new Binder(2, 2);
-        CharacterCard B = new Inventor(3,2, InventorIconType.BREAD);
+        CharacterCard A = new Binder(2, 2,null);
+        CharacterCard B = new Inventor(3,2, InventorIconType.BREAD, null);
         playerCharacterCards.add(A);
         playerCharacterCards.add(B);
 

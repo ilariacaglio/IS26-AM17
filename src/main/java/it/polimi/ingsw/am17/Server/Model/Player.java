@@ -229,34 +229,25 @@ public class Player implements Serializable {
 
    public void solveHuntingEvent(int pointEarned)
    {
+       int totalFood=0;
+       int totalPP=0;
        //count number of hunter
        long numHunter = this.characterCards.stream()
                .filter(c -> c.getCardType().equals(CardType.HUNTER))
                .count();
        //if player has hunter cards, they get food and PP
        if(numHunter!=0){
-           int gainFood = Math.toIntExact(numHunter);
-           int gainPp = Math.toIntExact(pointEarned * numHunter);
-
-           this.addFood(gainFood);
-           this.addPp(gainPp);
-
+           totalFood+= Math.toIntExact(numHunter);
+           totalPP = Math.toIntExact(pointEarned * numHunter);
        }
-
-       int additionalFood=0;
-       int additionalPp=0;
-
-       List<CharacterCard> characterList = this.characterCards.stream()
-               .map(c-> (CharacterCard)c)
-               .toList();
        //find additional food and PP given by buildingCard
        for(BuildingCard c: this.buildingCards){
-           additionalFood += c.AddFoodPerHunterInHuntingEvent(characterList);
-           additionalPp += c.AddPointPerHunterInHuntingEvent(characterList);
+           totalFood += c.AddFoodPerHunterInHuntingEvent(this.characterCards);
+           totalPP += c.AddPointPerHunterInHuntingEvent(this.characterCards);
        }
-       //add additionalFood and additionalPp
-       this.addFood(additionalFood);
-       this.addPp(additionalPp);
+       //add food and points
+       this.addFood(totalFood);
+       this.addPp(totalPP);
    }
 
    public void solvePaintingEvent(int numMax, int pointsMax, int pointsLow){
@@ -277,7 +268,7 @@ public class Player implements Serializable {
 
        //find additional food given by buildingCard
        for(BuildingCard c: buildingCards){
-           additionalFood =+ c.AddFoodPerHunterInPaintingEvent(this.characterCards);
+           additionalFood += c.AddFoodPerArtistInPaintingEvent(this.characterCards);
        }
        //add additionalFood
        addFood(additionalFood);

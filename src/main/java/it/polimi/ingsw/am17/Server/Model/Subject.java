@@ -5,10 +5,9 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.CommonInterfaces.Observer;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Subject {
@@ -41,10 +40,10 @@ public abstract class Subject {
         }
     }
 
-    void notifyPlayerStack(Stack<Player> orderedPlayer) {
+    void notifyPlayerQueue(Queue<Player> orderedPlayer) {
         for (Observer observer : new ArrayList<>(observers)) {
             try {
-                observer.updatePlayerStack(orderedPlayer);
+                observer.updatePlayerQueue(orderedPlayer);
             } catch (Exception e) {
                 System.err.println("Subject method failed to call client update" + e.getMessage());
             }
@@ -72,32 +71,42 @@ public abstract class Subject {
         }
     }
 
-    void notifyEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
-        Stack<Player> newStack = players.stream()
+        Queue<Player> newQueue = players.stream()
                 .map(p -> {
                     Player copy = new Player(p.getNickname(), p.getColor(), new ArrayList<>(), new ArrayList<>());
                     copy.addFood(p.getFood());
                     copy.addPp(p.getPp());
-                    // Since you didn't set the cards, they remain null/empty by default
                     return copy;
                 })
-                .collect(Collectors.toCollection(Stack::new));
+                .collect(Collectors.toCollection(LinkedList::new));
         for (Observer observer : new ArrayList<>(observers)) {
             try {
-                observer.updateEndTurn(newStack, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+                observer.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
             } catch (Exception e) {
                 System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
 
-    void notifyStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
         for (Observer observer : new ArrayList<>(observers)) {
             try {
                 observer.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
             } catch (Exception e) {
+                System.err.println("Subject method failed to call client update" + e.getMessage());
+            }
+        }
+    }
+
+    void notifyRanking (List<RankingEntry> ranking) {
+        for (Observer observer : new ArrayList<>(observers)) {
+            try {
+                observer.updateRanking(ranking);
+            }
+            catch (Exception e) {
                 System.err.println("Subject method failed to call client update" + e.getMessage());
             }
         }

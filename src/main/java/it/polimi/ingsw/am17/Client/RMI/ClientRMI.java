@@ -11,15 +11,14 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.RMI.VirtualViewRMI;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 
 public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, ClientInterface {
     private VirtualServerRMI server;
@@ -52,8 +51,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     }
 
     @Override
-    public void updatePlayerStack(Stack<Player> orderedPlayer) throws RemoteException {
-        ClientUpdateMethods.updatePlayerStack(model,userInterface,orderedPlayer);
+    public void updatePlayerQueue(Queue<Player> orderedPlayer) throws RemoteException {
+        ClientUpdateMethods.updatePlayerQueue(model,userInterface,orderedPlayer);
     }
 
     @Override
@@ -67,13 +66,18 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     }
 
     @Override
-    public void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws RemoteException {
+    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws RemoteException {
         ClientUpdateMethods.updateStartGame(model,userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow,offeringCards);
     }
 
     @Override
-    public void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
+    public void updateRanking(List<RankingEntry> ranking) throws RemoteException {
+        ClientUpdateMethods.updateRanking(model,userInterface,ranking);
+    }
+
+    @Override
+    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
         ClientUpdateMethods.updateEndTurn(model, userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
     }
 

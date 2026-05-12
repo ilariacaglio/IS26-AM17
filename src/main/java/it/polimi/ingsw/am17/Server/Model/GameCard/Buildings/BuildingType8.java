@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
 /**
- * Get double the points from RitualEvent if "won". Get the points even if tied.
+ * Get double the points from RitualEvent if "won".
  * Event effect
  * SINGLETON
  */

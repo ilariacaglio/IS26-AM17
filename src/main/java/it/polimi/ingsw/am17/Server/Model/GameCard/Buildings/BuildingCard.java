@@ -9,31 +9,31 @@ import java.util.List;
 import java.util.Objects;
 
 public class BuildingCard implements Serializable {
-    private final int foodCost;
-    private final int bonusPoints;
-    private final int era;
+    private final Integer foodCost;
+    private final Integer bonusPoints;
+    private final Integer era;
 
     @JsonCreator
     public BuildingCard(
-            @JsonProperty("era") int era,
-            @JsonProperty("foodCost") int foodCost,
-            @JsonProperty("bonusPoints") int bonusPoints) {
+            @JsonProperty("era") Integer era,
+            @JsonProperty("foodCost") Integer foodCost,
+            @JsonProperty("bonusPoints") Integer bonusPoints) {
         this.era = era;
         this.foodCost = foodCost;
         this.bonusPoints = bonusPoints;
     }
 
-    public int getFoodCost() {
+    public Integer getFoodCost() {
         return foodCost;
     }
-    public int getEra() { return era; }
-    public int getBonusPoints() { return bonusPoints; }
+    public Integer getEra() { return era; }
+    public Integer getBonusPoints() { return bonusPoints; }
 
     // effects implemented
     public int GetAdditionalFinalPoints(List<CharacterCard> characterCards) { return 0; }
     public int GetFoodDiscountInFoodEvent(List<CharacterCard> characterCards) { return 0; }
     public int AddFoodPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: HuntingEvent
-    public int AddFoodPerHunterInPaintingEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: PaintingEvent
+    public int AddFoodPerArtistInPaintingEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: PaintingEvent
     public int GetFoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) { return 0; } // CardEffect
     public int GetFoodBonusFromTurnOrder() { return 0; } // TurnEffect
     public int AddPointPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; }
@@ -47,7 +47,7 @@ public class BuildingCard implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildingCard that = (BuildingCard) o;
-        return foodCost == that.foodCost && bonusPoints == that.bonusPoints && era == that.era;
+        return foodCost.equals(that.foodCost) && bonusPoints.equals(that.bonusPoints) && era.equals(that.era);
     }
 
     @Override
