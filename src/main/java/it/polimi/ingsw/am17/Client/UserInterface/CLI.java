@@ -9,6 +9,8 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
+
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
@@ -17,6 +19,9 @@ public class CLI implements UI {
     private final VirtualServer virtualServer;
     private final VirtualView client;
     private ClientModel game;
+
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     public CLI (VirtualServer server, VirtualView client, ClientModel game) {
         this.virtualServer = server;
@@ -159,8 +164,9 @@ public class CLI implements UI {
     /**
      * Draws the game configuration.
      * @param game  the model to be drawn.
+     * @param errorMessagge message you want to print
      */
-    public void drawInterface(ClientModel game)
+    public void drawInterface(ClientModel game, String errorMessagge)
     {
         try{
             // update game data
@@ -173,6 +179,11 @@ public class CLI implements UI {
             // TODO: remove this loop for real terminal execution
             for (int i = 0; i < 50; i++) {
                 System.out.println();
+            }
+
+            if(errorMessagge != null && !errorMessagge.isBlank()) {
+                System.out.println(ANSI_RED+errorMessagge+ANSI_RESET);
+                System.out.flush(); //ensure error message is before the interface
             }
 
             int currentEra = game.getCurrentEra();
@@ -196,7 +207,8 @@ public class CLI implements UI {
                     // if the game has begun notify the players turn
                     if(game.isPlayerTurn())
                         System.out.println("It's your turn!");
-                    System.out.print("> ");
+                    if(errorMessagge == null || errorMessagge.isBlank())
+                        System.out.print("> ");
                 }
             }
             else {
@@ -289,6 +301,9 @@ public class CLI implements UI {
             return;
         }
 
+        System.out.println("You can pick " + myOfferingCard.getNumCardsUpper() + " card from upper row and "
+        + myOfferingCard.getNumCardsLower() +" card from lower row");
+
         // list of pickable cards
         List<Object> pickableCards = new ArrayList<>();
 
@@ -329,10 +344,10 @@ public class CLI implements UI {
                 if (numCard >= 0 && numCard < pickableCards.size()) {
                     if (!cardIndexes.add(numCard)) {
                         // if the set already contains the index print the error
-                        System.out.println("Card already selected. Choose a different one.");
+                        System.err.println("Card already selected. Choose a different one.");
                     }
                 } else {
-                    System.out.println("Index out of bounds!");
+                    System.err.println("Index out of bounds!");
                 }
             }
             catch (NumberFormatException e) {
@@ -352,6 +367,23 @@ public class CLI implements UI {
                 buildingCards.add((BuildingCard) pickedCard);
             }
         }
+
+        //check if move is valid
+        Exception mE = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
+                characterCards, buildingCards, game.getUpperTribeRow(), game.getLowerTribeRow(), game.getUpperBuildingRow(), game.getLowerBuildingRow());
+        if(mE != null)
+        {
+            drawInterface(game, mE.getMessage());
+            return;
+        }
+
+        //check if player can buy the buildings
+        if(!buildingCards.isEmpty() && !game.getLocalPlayer().canBuyBuidings(buildingCards)) {
+            drawInterface(game, "Not enough food to buy building cards");
+            return;
+        }
+
+
 
         // call server method
         try{
@@ -496,6 +528,16 @@ public class CLI implements UI {
         try {
             System.out.print("Insert card number (position from 0) > ");
             int numCard = Integer.parseInt(scanner.nextLine());
+            //check if nuber is plausible
+            if(numCard<0 || numCard>=game.getOfferingCards().size()){
+                drawInterface(game, "number out of bound");
+                return;
+            }
+            //check if card is free
+            if(game.getOfferingCards().get(numCard).getPlayer() != null) {
+                drawInterface(game, "card already taken");
+                return;
+            }
             virtualServer.pickOfferingCard(game.getGameId(), game.getLocalPlayer(), game.getOfferingCards().get(numCard));
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());

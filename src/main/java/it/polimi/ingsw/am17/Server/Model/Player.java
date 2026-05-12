@@ -138,6 +138,9 @@ public class Player implements Serializable {
             }
         }
 
+        if(!canBuyBuidings(buildingCards))
+            throw new IllegalStateException("Not enough food to buy building cards");
+
         for (BuildingCard card : buildingCards){
             int cost = calculateBuildingCost(card);
             try {
@@ -147,6 +150,16 @@ public class Player implements Serializable {
             }
             addBuilding(card);
         }
+    }
+
+    public boolean canBuyBuidings(List<BuildingCard> buildingsToBuy)
+    {
+        int totalCost = 0;
+        for (BuildingCard card : buildingsToBuy){
+            int cost = calculateBuildingCost(card);
+            totalCost+= cost;
+        }
+        return totalCost <= food;
     }
 
     public int calculateBuildingCost(BuildingCard card) {
@@ -338,17 +351,19 @@ public class Player implements Serializable {
 
     @Override
     public String toString() {
-        String player = "Nickname: " + nickname +
+        String result = "Nickname: " + nickname +
                 "\nPp: " + pp +
                 "\nFood: " + food;
-        if(!characterCards.isEmpty() || !buildingCards.isEmpty())
-               player+= "\nCards: ";
-        for(CharacterCard c: this.characterCards){
-            player = player.concat(c.toString() +" ");
+        if(!characterCards.isEmpty() || !buildingCards.isEmpty()) {
+            result += "\nCharacter cards: ";
+            for (CharacterCard c : this.characterCards) {
+                result = result.concat("[" + c.toString() + "] ");
+            }
+            result += "\nBuilding cards: ";
+            for (BuildingCard c : this.buildingCards) {
+                result = result.concat("[" + c.toString() + "] ");
+            }
         }
-        for(BuildingCard c: this.buildingCards){
-            player = player.concat(c.toString() +" ");
-        }
-        return player;
+        return result;
     }
 }
