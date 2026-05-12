@@ -18,6 +18,10 @@ public class Player implements Serializable {
     private List<CharacterCard> characterCards;
     private List<BuildingCard> buildingCards;
 
+
+    /**
+     * Used for (de)serialization.
+     */
     @JsonCreator
     public Player(@JsonProperty("nickname") String nickname,
                   @JsonProperty("color") Color color,
@@ -27,6 +31,17 @@ public class Player implements Serializable {
         this.color = color;
         this.characterCards = characterCards;
         this.buildingCards = buildingCards;
+    }
+
+
+    /**
+     * Used for actual creation of player.
+     */
+    public Player(String nickname, Color color) {
+        this.nickname = nickname;
+        this.color = color;
+        this.characterCards = new ArrayList<>();
+        this.buildingCards = new ArrayList<>();
     }
 
     public Color getColor() {
