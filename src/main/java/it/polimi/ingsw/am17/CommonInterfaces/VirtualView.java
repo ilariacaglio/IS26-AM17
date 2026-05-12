@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
+import java.rmi.RemoteException;
 import java.util.*;
 
 public interface VirtualView extends Observer {
@@ -30,5 +31,5 @@ public interface VirtualView extends Observer {
 
     void updateRanking(List<RankingEntry> ranking) throws Exception;
 
-    void notifyEndGame();
+    void notifyEndGame() throws Exception;
 }

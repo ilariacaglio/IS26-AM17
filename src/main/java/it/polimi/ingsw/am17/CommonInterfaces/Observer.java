@@ -30,5 +30,5 @@ public interface Observer {
                          List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) throws  Exception;
 
     void updateRanking(List<RankingEntry> ranking) throws Exception;
-    void notifyEndGame();
+    void notifyEndGame() throws Exception;
 }
