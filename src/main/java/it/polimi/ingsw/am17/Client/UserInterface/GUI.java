@@ -200,13 +200,55 @@ public class GUI extends Application implements UI {
                 throw new RuntimeException(ex);
             }
         });
-
-
-
         //other players card buttons
         HBox playersCardsBox =  new HBox(10);
         for(Player p : staticGame.getOrderedPlayers()){
             Button playerCards = new Button(p.getNickname() );
+            //set nickname color
+            Color nicknameColor = p.getColor();
+            switch (nicknameColor) {
+                case RED:
+                    playerCards.setStyle("""
+                              -fx-text-fill: red;
+                              -fx-background-color: #aaaaaa;
+                              -fx-font-weight: bold;
+                              -fx-font-size: 15px;
+                    """);
+                    break;
+                case BLUE:
+                    playerCards.setStyle("""
+                              -fx-text-fill: blue;
+                              -fx-background-color: #aaaaaa;
+                              -fx-font-weight: bold;
+                              -fx-font-size: 15px;
+                    """);
+                    break;
+                case WHITE:
+                    playerCards.setStyle("""
+                              -fx-text-fill: white;
+                              -fx-background-color: #aaaaaa;
+                              -fx-font-weight: bold;
+                              -fx-font-size: 15px;
+                    """);
+                    break;
+                case BLACK:
+                    playerCards.setStyle("""
+                              -fx-text-fill: black;
+                              -fx-background-color: #aaaaaa;
+                              -fx-font-weight: bold;
+                              -fx-font-size: 15px;
+                    """);
+                    break;
+                case YELLOW:
+                    playerCards.setStyle("""
+                              -fx-text-fill: yellow;
+                              -fx-background-color: #aaaaaa;
+                              -fx-font-weight: bold;
+                              -fx-font-size: 15px;
+                    """);
+                    break;
+            }
+
             playersCardsBox.getChildren().add(playerCards);
         }
         //player cards
