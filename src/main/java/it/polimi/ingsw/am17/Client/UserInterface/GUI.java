@@ -337,7 +337,7 @@ public class GUI extends Application implements UI {
         grid.add(colorPicker, 1, 1);
 
         // create start button
-        Button startButton = new Button("START ADVENTURE");//nome voluto da sara (non è vero)
+        Button startButton = new Button("START ADVENTURE");
         startButton.setPrefWidth(200);
 
 
