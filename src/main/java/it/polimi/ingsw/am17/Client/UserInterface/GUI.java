@@ -120,6 +120,14 @@ public class GUI extends Application implements UI {
             turnOverlay.setVisible(true);
         }
 
+        root.setStyle("-fx-background-image: url('/images/background_game.png');");
+        root.setStyle("""
+            -fx-background-image: url('/images/background_game.png');
+            -fx-background-size: cover;
+            -fx-background-position: center center;
+            -fx-background-repeat: no-repeat;
+        """);
+
         //TODO: add graphics
         //TODO: add buttons methods with setOnAction()
         //TODO: fix dimension
