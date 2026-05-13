@@ -14,6 +14,8 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Socket.VirtualViewSocket;
+import it.polimi.ingsw.am17.Server.Socket._ServerSocket;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
 
@@ -22,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,12 +92,28 @@ public class ClientSocket implements VirtualView, ClientInterface {
             }
         }).start();
 
+        // create a heartbeat thread
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
+
         if (gui) {
             // TODO: gui
         } else {
             userInterface = new CLI(server, this, model);
             userInterface.start(); // note: not threaded
         }
+    }
+
+    private Runnable pinger(Socket socket) {
+        return () -> {
+            try {
+                logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
+                new Message(MessageType.HEARTBEAT).send(socket); // this is not actually handled
+            } catch (Exception e) {
+                logger.severe("Socket server disconnected! (Failed heartbeat: " + e.getMessage() + ") Was at: " + socket.getRemoteSocketAddress());
+                System.exit(1);
+            }
+        };
     }
 
     @Override

@@ -19,11 +19,16 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.logging.Logger;
 
 public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, ClientInterface {
     private VirtualServerRMI server;
     private ClientModel model;
     private UI userInterface;
+
+    private final static Logger logger = Logger.getLogger(ClientRMI.class.getName());
 
     public ClientRMI() throws RemoteException {
         super();
@@ -43,6 +48,25 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         }
         this.server.connect(this);
         userInterface.start();
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(pinger(server, executor), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+
+    }
+
+    private Runnable pinger(VirtualServerRMI client, ScheduledExecutorService executor) {
+        return () -> {
+            logger.fine("Starting heartbeat thread.");
+
+            try {
+                ((VirtualViewRMI) client).ping();
+                logger.finer("Server pinged");
+            } catch (RemoteException e) {
+                logger.severe("Server disconnected! " + client);
+                executor.shutdown();
+                System.exit(1); // TODO review status, ok exiting here?
+            }
+        };
     }
 
     @Override

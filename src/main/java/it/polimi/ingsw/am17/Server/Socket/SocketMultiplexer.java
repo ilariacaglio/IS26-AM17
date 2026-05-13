@@ -49,7 +49,7 @@ public class SocketMultiplexer {
                 serverSockets.add(server);
                 new Thread(server).start();
 
-                // create a heartbeat thread
+                // heartbeat thread
                 ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
                 executor.scheduleAtFixedRate((pinger(socket, client, server)), 1, 1, TimeUnit.SECONDS);
 
