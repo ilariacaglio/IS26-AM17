@@ -5,223 +5,186 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType12;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType8;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Shaman;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent;
-import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RitualEventTest {
-    RitualEvent ritualEvent;
+    private RitualEvent ritualEvent;
+    private Queue<Player> list;
+    private Player playerA;
+    private Player playerB;
+    private Player playerC;
 
     @BeforeEach
     void setUp() {
-        ritualEvent = new RitualEvent(false,2,10,5, null);
+        ritualEvent = new RitualEvent(false, 2, 10, 5, null);
+
+        list = new LinkedList<>();
+        playerA = new Player("playerA", Color.BLACK);
+        playerB = new Player("playerB", Color.WHITE);
+        playerC = new Player("playerC", Color.RED);
     }
 
-    //everyone has the same star number and player A has BuildingType8
+    /**
+     * Creates shaman card and adds it to player.
+     * Then adds the player to te queue.
+     */
+    private void addPlayer(Player player, int era, int minPlayers, int stars) {
+        player.addCharacter(new Shaman(era, minPlayers, stars, null));
+        list.add(player);
+    }
+
     @Test
-    void shouldAllEqualBuildingType8(){
-        Queue<Player> list = new LinkedList<>();
-        Player A = new Player("playerA", Color.BLACK);
-        Player B = new Player("playerB", Color.WHITE);
-        list.add(A);
-        list.add(B);
+    void shouldAllEqualBuildingType8() {
+        addPlayer(playerA, 2, 2, 2);
+        addPlayer(playerB, 2, 2, 2);
 
-        TribesCard cardA = new Shaman(2, 2, 2, null );
-        TribesCard cardB = new Shaman(2, 2, 2, null);
-        A.addCharacter(cardA);
-        B.addCharacter(cardB);
-
-        A.addBuilding(new BuildingType8());
+        playerA.addBuilding(new BuildingType8());
 
         ritualEvent.computeScore(list);
 
-        assertEquals(15, A.getPp());
-        assertEquals(5, B.getPp());
+        // no extra point due to tie
+        assertEquals(5, playerA.getPp());
+        assertEquals(5, playerB.getPp());
     }
 
-    //everyone has the same star number and nobody has BuildingType8
     @Test
-    void shouldAllEqualNoBuildingType8(){
-        Queue<Player> list = new LinkedList<>();
-        Player A = new Player("playerA", Color.BLACK);
-        Player B = new Player("playerB", Color.WHITE);
-        list.add(A);
-        list.add(B);
-
-        TribesCard cardA = new Shaman(2, 2, 2, null);
-        TribesCard cardB = new Shaman(2, 2, 2, null);
-        A.addCharacter(cardA);
-        B.addCharacter(cardB);
+    void shouldAllEqualNoBuildingType8() {
+        addPlayer(playerA, 2, 2, 2);
+        addPlayer(playerB, 2, 2, 2);
 
         ritualEvent.computeScore(list);
 
-        assertEquals(5, A.getPp());
-        assertEquals(5, B.getPp());
+        assertEquals(5, playerA.getPp());
+        assertEquals(5, playerB.getPp());
     }
 
-    //A has max stars and BuildingType8
-    //B has min stars and BuildingType12
     @Test
-    void shouldAMaxBMinAndBuildings(){
-        Queue<Player> list = new LinkedList<>();
-        Player A = new Player("playerA", Color.BLACK);
-        Player B = new Player("playerB", Color.WHITE);
-        list.add(A);
-        list.add(B);
+    void shouldAMaxBMinAndBuildings() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 2, 2, 2);
 
-        TribesCard cardA = new Shaman(3, 2, 3, null);
-        TribesCard cardB = new Shaman(2, 2, 2, null);
-        A.addCharacter(cardA);
-        B.addCharacter(cardB);
-
-        A.addBuilding(new BuildingType8());
-        B.addBuilding(new BuildingType12());
+        playerA.addBuilding(new BuildingType8());
+        playerB.addBuilding(new BuildingType12());
 
         ritualEvent.computeScore(list);
 
-        assertEquals(20, A.getPp());
-        assertEquals(0, B.getPp());
+        assertEquals(20, playerA.getPp());
+        assertEquals(0, playerB.getPp());
     }
 
-    //A has max stars and  no BuildingType8
-    //B has min stars and no BuildingType12
     @Test
-    void shouldAMaxBMinAndNoBuildings(){
-        Queue<Player> list = new LinkedList<>();
-        Player A = new Player("playerA", Color.BLACK);
-        Player B = new Player("playerB", Color.WHITE);
-        list.add(A);
-        list.add(B);
-
-        TribesCard cardA = new Shaman(3, 2, 3, null);
-        TribesCard cardB = new Shaman(2, 2, 2, null);
-        A.addCharacter(cardA);
-        B.addCharacter(cardB);
+    void shouldAMaxBMinAndNoBuildings() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 2, 2, 2);
 
         ritualEvent.computeScore(list);
 
-        assertEquals(10, A.getPp());
-        assertEquals(-5, B.getPp());
+        assertEquals(10, playerA.getPp());
+        assertEquals(-5, playerB.getPp());
     }
 
-    //A and B max stars and A has BuildingType8
-    //C min and BuildingType12
     @Test
-    void shouldABMaxCMinAndBuildings(){
-        Queue<Player> list = new LinkedList<>();
-        Player A = new Player("playerA", Color.BLACK);
-        Player B = new Player("playerB", Color.WHITE);
-        Player C = new Player("playerC", Color.RED);
-        list.add(A);
-        list.add(B);
-        list.add(C);
+    void shouldNotApplyBuildingType8ToMinPlayer() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 1, 1, 1);
 
-        TribesCard cardA = new Shaman(3, 2, 3, null);
-        TribesCard cardB = new Shaman(3, 2, 3, null);
-        TribesCard cardC = new Shaman(2, 2, 2, null);
-        A.addCharacter(cardA);
-        B.addCharacter(cardB);
-        C.addCharacter(cardC);
-
-        A.addBuilding(new BuildingType8());
-        C.addBuilding(new BuildingType12());
+        playerB.addBuilding(new BuildingType8());
 
         ritualEvent.computeScore(list);
 
-        assertEquals(20, A.getPp());
-        assertEquals(10, B.getPp());
-        assertEquals(0, C.getPp());
+        assertEquals(10, playerA.getPp());
+        assertEquals(-5, playerB.getPp());
     }
 
-    //A and B max stars and no BuildingType8
-    //C min and no BuildingType12
     @Test
-    void shouldABMaxCMinNoBuildings(){
-        Queue<Player> list = new LinkedList<>();
-        Player A = new Player("playerA", Color.BLACK);
-        Player B = new Player("playerB", Color.WHITE);
-        Player C = new Player("playerC", Color.RED);
-        list.add(A);
-        list.add(B);
-        list.add(C);
+    void shouldNotApplyBuildingType12ToMaxPlayer() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 1, 1, 1);
 
-        TribesCard cardA = new Shaman(3, 2, 3, null);
-        TribesCard cardB = new Shaman(3, 2, 3, null);
-        TribesCard cardC = new Shaman(2, 2, 2, null);
-        A.addCharacter(cardA);
-        B.addCharacter(cardB);
-        C.addCharacter(cardC);
+        playerA.addBuilding(new BuildingType12());
 
         ritualEvent.computeScore(list);
 
-        assertEquals(10, A.getPp());
-        assertEquals(10, B.getPp());
-        assertEquals(-5, C.getPp());
+        assertEquals(10, playerA.getPp());
+        assertEquals(-5, playerB.getPp());
     }
 
-    //A max stars and BuildingType8
-    //B and C min and C has BuildingType12
     @Test
-    void shouldAMaxBCMinAndBuildings(){
-        Queue<Player> list = new LinkedList<>();
-        Player A = new Player("playerA", Color.BLACK);
-        Player B = new Player("playerB", Color.WHITE);
-        Player C = new Player("playerC", Color.RED);
-        list.add(A);
-        list.add(B);
-        list.add(C);
+    void shouldABMaxCMinAndBuildings() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 3, 2, 3);
+        addPlayer(playerC, 2, 2, 2);
 
-        TribesCard cardA = new Shaman(3, 2, 3, null);
-        TribesCard cardB = new Shaman(2, 2, 2, null);
-        TribesCard cardC = new Shaman(2, 2, 2, null);
-        A.addCharacter(cardA);
-        B.addCharacter(cardB);
-        C.addCharacter(cardC);
-
-        A.addBuilding(new BuildingType8());
-        C.addBuilding(new BuildingType12());
+        playerA.addBuilding(new BuildingType8());
+        playerC.addBuilding(new BuildingType12());
 
         ritualEvent.computeScore(list);
 
-        assertEquals(20, A.getPp());
-        assertEquals(-5, B.getPp());
-        assertEquals(0, C.getPp());
+        // not doubling points due to tie
+        assertEquals(10, playerA.getPp());
+        assertEquals(10, playerB.getPp());
+        assertEquals(0, playerC.getPp());
     }
 
-    //A max stars and no BuildingType8
-    //B and C min and no BuildingType12
     @Test
-    void shouldAMaxBCMinAndNoBuildings(){
-        Queue<Player> list = new LinkedList<>();
-        Player A = new Player("playerA", Color.BLACK);
-        Player B = new Player("playerB", Color.WHITE);
-        Player C = new Player("playerC", Color.RED);
-        list.add(A);
-        list.add(B);
-        list.add(C);
-
-        TribesCard cardA = new Shaman(3, 2, 3, null);
-        TribesCard cardB = new Shaman(2, 2, 2, null);
-        TribesCard cardC = new Shaman(2, 2, 2, null);
-        A.addCharacter(cardA);
-        B.addCharacter(cardB);
-        C.addCharacter(cardC);
+    void shouldABMaxCMinNoBuildings() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 3, 2, 3);
+        addPlayer(playerC, 2, 2, 2);
 
         ritualEvent.computeScore(list);
 
-        assertEquals(10, A.getPp());
-        assertEquals(-5, B.getPp());
-        assertEquals(-5, C.getPp());
+        assertEquals(10, playerA.getPp());
+        assertEquals(10, playerB.getPp());
+        assertEquals(-5, playerC.getPp());
     }
 
+    @Test
+    void shouldAMaxBCMinAndBuildings() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 2, 2, 2);
+        addPlayer(playerC, 2, 2, 2);
 
+        playerA.addBuilding(new BuildingType8());
+        playerC.addBuilding(new BuildingType12());
 
+        ritualEvent.computeScore(list);
+
+        assertEquals(20, playerA.getPp());
+        assertEquals(-5, playerB.getPp());
+        assertEquals(0, playerC.getPp());
+    }
+
+    @Test
+    void shouldAMaxBCMinAndNoBuildings() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 2, 2, 2);
+        addPlayer(playerC, 2, 2, 2);
+
+        ritualEvent.computeScore(list);
+
+        assertEquals(10, playerA.getPp());
+        assertEquals(-5, playerB.getPp());
+        assertEquals(-5, playerC.getPp());
+    }
+
+    @Test
+    void shouldIgnoreIntermediatePlayers() {
+        addPlayer(playerA, 3, 2, 3);
+        addPlayer(playerB, 2, 2, 2);
+        addPlayer(playerC, 1, 1, 1);
+
+        ritualEvent.computeScore(list);
+
+        assertEquals(10, playerA.getPp());
+        assertEquals(0, playerB.getPp());
+        assertEquals(-5, playerC.getPp());
+    }
 }
