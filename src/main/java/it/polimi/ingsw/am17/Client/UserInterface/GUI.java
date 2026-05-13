@@ -115,7 +115,13 @@ public class GUI extends Application implements UI {
 
         VBox turnOverlay = new VBox(10); // 10px spacing
         turnOverlay.setAlignment(Pos.CENTER);
-        Label turnText = new Label("It's your turn");
+        Label turnText = new Label("IT'S YOUR TURN!");
+        turnText.setStyle("""
+            -fx-text-fill: black;
+            -fx-font-weight: bold;
+            -fx-font-size: 30px;
+            -fx-background-color: white;
+        """);
         turnOverlay.getChildren().addAll(turnText);
         turnOverlay.setVisible(false);
         if(staticGame.isPlayerTurn()){
@@ -206,6 +212,11 @@ public class GUI extends Application implements UI {
         //player cards
         //TODO: show my cards always, no button
         Label personalCards = new Label("My Cards");
+        personalCards.setStyle("""
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-font-size: 30px;
+        """);
         HBox personalCardsBox =  new HBox(10);
         personalCardsBox.getChildren().add(personalCards);
         for(CharacterCard card : staticGame.getLocalPlayer().getCharacterCards()){
@@ -214,8 +225,18 @@ public class GUI extends Application implements UI {
         }
 
         //food and PP
-        food = new Label("Food: " +staticGame.getLocalPlayer().getFood());//TODO: add logic to update + borders (layout problem)
+        food = new Label("Food: " +staticGame.getLocalPlayer().getFood());
+        food.setStyle("""
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-font-size: 30px;
+        """);
         points = new Label("Points: "+staticGame.getLocalPlayer().getPp());
+        points.setStyle("""
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-font-size: 30px;
+        """);
         HBox playerResourcesBox =  new HBox(10);
         playerResourcesBox.getChildren().addAll(points, food);
 
