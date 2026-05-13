@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.Socket.ClientSocket;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -11,8 +12,11 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class ClientUpdateMethods {
+    private final static Logger logger = Logger.getLogger(ClientUpdateMethods.class.getName());
+
 
     public static void updateEra(ClientModel model, UI userInterface, int era) {
         // call model to update era
@@ -72,6 +76,7 @@ public class ClientUpdateMethods {
     }
 
     public static void updatePlayerSelectTribeCards(ClientModel model, UI userInterface, Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) {
+        logger.info(tribesCards.toString() + " " + buildingCards.toString());
         model.setPlayerInQueue(player);
         model.removePlayerFromOfferingCard(player);
         model.removeTribeCards(tribesCards);

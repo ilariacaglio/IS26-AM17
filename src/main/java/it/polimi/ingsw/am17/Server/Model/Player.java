@@ -18,8 +18,26 @@ public class Player implements Serializable {
     private List<CharacterCard> characterCards;
     private List<BuildingCard> buildingCards;
 
+
+    /**
+     * Used for (de)serialization.
+     */
     @JsonCreator
-    public Player(@JsonProperty("nickname") String nickname, @JsonProperty("color") Color color) {
+    public Player(@JsonProperty("nickname") String nickname,
+                  @JsonProperty("color") Color color,
+                  @JsonProperty("characterCards") List<CharacterCard> characterCards,
+                  @JsonProperty("buildingCards") List<BuildingCard> buildingCards) {
+        this.nickname = nickname;
+        this.color = color;
+        this.characterCards = characterCards != null ? characterCards : new ArrayList<>();
+        this.buildingCards = buildingCards != null ? buildingCards : new ArrayList<>();
+    }
+
+
+    /**
+     * Used for actual creation of player.
+     */
+    public Player(String nickname, Color color) {
         this.nickname = nickname;
         this.color = color;
         this.characterCards = new ArrayList<>();
@@ -43,6 +61,14 @@ public class Player implements Serializable {
         this.nickname=nickname;
     }
 
+    public List<CharacterCard> getCharacterCards() {
+        return characterCards;
+    }
+
+    public List<BuildingCard> getBuildingCards() {
+        return buildingCards;
+    }
+
     public void addPp(int quantity){
         this.pp+=quantity;
     }
@@ -56,8 +82,6 @@ public class Player implements Serializable {
     }
 
     public void calculateFinalPoints(){
-        boolean iconPresent;
-
         // add pp of builders
         int pointsBuilders = characterCards.stream()
                     .filter(g ->g.getCardType().equals(CardType.BUILDER))
@@ -354,11 +378,13 @@ public class Player implements Serializable {
         String result = "Nickname: " + nickname +
                 "\nPp: " + pp +
                 "\nFood: " + food;
-        if(!characterCards.isEmpty() || !buildingCards.isEmpty()) {
+        if(!characterCards.isEmpty()) {
             result += "\nCharacter cards: ";
             for (CharacterCard c : this.characterCards) {
                 result = result.concat("[" + c.toString() + "] ");
             }
+        }
+        if (!buildingCards.isEmpty()) {
             result += "\nBuilding cards: ";
             for (BuildingCard c : this.buildingCards) {
                 result = result.concat("[" + c.toString() + "] ");
