@@ -27,7 +27,7 @@ public class ClientUpdateMethods {
     public static void updatePlayerQueue(ClientModel model, UI userInterface, Queue<Player> orderedPlayer) {
         model.setOrderedPlayers(orderedPlayer);
         // UI communication
-        userInterface.drawInterface(model);
+        userInterface.drawInterface(model, null);
     }
 
     public static void updateGameId(ClientModel model, UI userInterface, UUID gameId) {
@@ -51,7 +51,7 @@ public class ClientUpdateMethods {
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setOfferingCards(offeringCards);
 
-        userInterface.drawInterface(model);
+        userInterface.drawInterface(model, null);
     }
 
     public static void updateEndTurn(ClientModel model, UI userInterface, Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
@@ -61,7 +61,7 @@ public class ClientUpdateMethods {
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setTribeCards(upperRow, lowerRow);
 
-        userInterface.drawInterface(model);
+        userInterface.drawInterface(model, null);
     }
 
     private static void updatePlayerValue(Player oldP, Player newP) {
@@ -71,21 +71,22 @@ public class ClientUpdateMethods {
 
     public static void updatePlayerSelectOfferingCard(ClientModel model, UI userInterface, Player player, OfferingCard offeringCard) {
         model.setPlayerOfferingCard(offeringCard, player);
-        userInterface.drawInterface(model);
+        userInterface.drawInterface(model, null);
     }
 
     public static void updatePlayerSelectTribeCards(ClientModel model, UI userInterface, Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) {
+        logger.info(tribesCards.toString() + " " + buildingCards.toString());
         model.setPlayerInQueue(player);
         model.removePlayerFromOfferingCard(player);
         model.removeTribeCards(tribesCards);
         model.removeBuildingCards(buildingCards);
         model.setNullOfferingCardAPlayer();
-        userInterface.drawInterface(model);
+        userInterface.drawInterface(model, null);
     }
 
     public static void updateRanking(ClientModel model, UI userInterface, List<RankingEntry> ranking) {
         model.setRanking(ranking);
-        userInterface.drawInterface(model);
+        userInterface.drawInterface(model, null);
     }
 
     public static void notifyEndGame(ClientModel model, UI userInterface) {

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Server.Model.Color;
+import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -9,9 +10,12 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ClientModel {
+    private final Logger logger = Logger.getLogger(ClientModel.class.getName());
+
     private UUID id;
     private int numPlayers;
     private int currentEra = 0;
