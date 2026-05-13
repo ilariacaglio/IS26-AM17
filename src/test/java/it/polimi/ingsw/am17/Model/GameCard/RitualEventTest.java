@@ -35,15 +35,15 @@ class RitualEventTest {
      * Creates shaman card and adds it to player.
      * Then adds the player to te queue.
      */
-    private void addPlayer(Player player, int era, int minPlayers, int stars) {
+    private void addPlayerToList(Player player, int era, int minPlayers, int stars) {
         player.addCharacter(new Shaman(era, minPlayers, stars, null));
         list.add(player);
     }
 
     @Test
     void shouldAllEqualBuildingType8() {
-        addPlayer(playerA, 2, 2, 2);
-        addPlayer(playerB, 2, 2, 2);
+        addPlayerToList(playerA, 2, 2, 2);
+        addPlayerToList(playerB, 2, 2, 2);
 
         playerA.addBuilding(new BuildingType8());
 
@@ -56,8 +56,8 @@ class RitualEventTest {
 
     @Test
     void shouldAllEqualNoBuildingType8() {
-        addPlayer(playerA, 2, 2, 2);
-        addPlayer(playerB, 2, 2, 2);
+        addPlayerToList(playerA, 2, 2, 2);
+        addPlayerToList(playerB, 2, 2, 2);
 
         ritualEvent.computeScore(list);
 
@@ -67,8 +67,8 @@ class RitualEventTest {
 
     @Test
     void shouldAMaxBMinAndBuildings() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 2, 2, 2);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 2, 2, 2);
 
         playerA.addBuilding(new BuildingType8());
         playerB.addBuilding(new BuildingType12());
@@ -81,8 +81,8 @@ class RitualEventTest {
 
     @Test
     void shouldAMaxBMinAndNoBuildings() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 2, 2, 2);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 2, 2, 2);
 
         ritualEvent.computeScore(list);
 
@@ -92,8 +92,8 @@ class RitualEventTest {
 
     @Test
     void shouldNotApplyBuildingType8ToMinPlayer() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 1, 1, 1);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 1, 1, 1);
 
         playerB.addBuilding(new BuildingType8());
 
@@ -105,8 +105,8 @@ class RitualEventTest {
 
     @Test
     void shouldNotApplyBuildingType12ToMaxPlayer() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 1, 1, 1);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 1, 1, 1);
 
         playerA.addBuilding(new BuildingType12());
 
@@ -118,9 +118,9 @@ class RitualEventTest {
 
     @Test
     void shouldABMaxCMinAndBuildings() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 3, 2, 3);
-        addPlayer(playerC, 2, 2, 2);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 3, 2, 3);
+        addPlayerToList(playerC, 2, 2, 2);
 
         playerA.addBuilding(new BuildingType8());
         playerC.addBuilding(new BuildingType12());
@@ -135,9 +135,9 @@ class RitualEventTest {
 
     @Test
     void shouldABMaxCMinNoBuildings() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 3, 2, 3);
-        addPlayer(playerC, 2, 2, 2);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 3, 2, 3);
+        addPlayerToList(playerC, 2, 2, 2);
 
         ritualEvent.computeScore(list);
 
@@ -148,9 +148,9 @@ class RitualEventTest {
 
     @Test
     void shouldAMaxBCMinAndBuildings() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 2, 2, 2);
-        addPlayer(playerC, 2, 2, 2);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 2, 2, 2);
+        addPlayerToList(playerC, 2, 2, 2);
 
         playerA.addBuilding(new BuildingType8());
         playerC.addBuilding(new BuildingType12());
@@ -164,9 +164,9 @@ class RitualEventTest {
 
     @Test
     void shouldAMaxBCMinAndNoBuildings() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 2, 2, 2);
-        addPlayer(playerC, 2, 2, 2);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 2, 2, 2);
+        addPlayerToList(playerC, 2, 2, 2);
 
         ritualEvent.computeScore(list);
 
@@ -177,9 +177,9 @@ class RitualEventTest {
 
     @Test
     void shouldIgnoreIntermediatePlayers() {
-        addPlayer(playerA, 3, 2, 3);
-        addPlayer(playerB, 2, 2, 2);
-        addPlayer(playerC, 1, 1, 1);
+        addPlayerToList(playerA, 3, 2, 3);
+        addPlayerToList(playerB, 2, 2, 2);
+        addPlayerToList(playerC, 1, 1, 1);
 
         ritualEvent.computeScore(list);
 
