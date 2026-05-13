@@ -202,6 +202,8 @@ public class GUI extends Application implements UI {
         });
         //other players card buttons
         HBox playersCardsBox =  new HBox(10);
+        HBox showCardsBox = new HBox(10);
+        final Player[] openedPlayer = {null};
         for(Player p : staticGame.getOrderedPlayers()){
             Button playerCards = new Button(p.getNickname() );
             //set nickname color
@@ -250,7 +252,29 @@ public class GUI extends Application implements UI {
             }
 
             playersCardsBox.getChildren().add(playerCards);
+
+            playerCards.setOnAction(e -> {
+                //same player -> close
+                if (openedPlayer[0] == p) {
+                    showCardsBox.getChildren().clear();
+                    openedPlayer[0] = null;
+                    return;
+                }
+                //other player -> change cards
+                showCardsBox.getChildren().clear();
+                //add cards
+                for(CharacterCard card : p.getCharacterCards()){
+                    CardGUI characterCard = new CardGUI(card.getImagePath());
+                    showCardsBox.getChildren().add(characterCard);
+                }
+
+                // save player selected
+                openedPlayer[0] = p;
+            });
+
         }
+
+        VBox otherPlayersCardsBox = new VBox(10,  playersCardsBox, showCardsBox);
         //player cards
         //TODO: show my cards always, no button
         Label personalCards = new Label("My Cards");
@@ -296,7 +320,7 @@ public class GUI extends Application implements UI {
         playersCardsBox.setAlignment(Pos.CENTER);
 
         root.getChildren().addAll(turnOverlay, upperCardsBox, offeringCardBox, lowerCardsBox, sendButton, playerResourcesBox,
-                personalCardsBox, playersCardsBox);
+                personalCardsBox, otherPlayersCardsBox);
         return root;
     }
 
