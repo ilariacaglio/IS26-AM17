@@ -103,5 +103,10 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
         ServerActionMethods.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
     }
 
+    @Override
+    public void ping() throws RemoteException {
+
+    }
+
 
 }
