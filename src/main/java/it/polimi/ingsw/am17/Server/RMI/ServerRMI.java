@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am17.Server.RMI;
 
 import it.polimi.ingsw.am17.Client.Socket.ClientSocket;
+import it.polimi.ingsw.am17.CommonInterfaces.Message;
+import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -10,8 +12,11 @@ import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.ServerActionMethods;
 import it.polimi.ingsw.am17.Server.ServerInterface;
+import it.polimi.ingsw.am17.Server.Socket.VirtualViewSocket;
+import it.polimi.ingsw.am17.Server.Socket._ServerSocket;
 import it.polimi.ingsw.am17.ServerLauncher;
 
+import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -19,6 +24,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
@@ -49,25 +57,25 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
             logger.info("RMI Client connected" + client.toString());
         }
 
-        // heartbeat for each client
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(pinger((VirtualViewRMI) client, executor), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
 
-                try {
-                    ((VirtualViewRMI) client).ping();
-                    logger.fine("Client pinged");
-                } catch (RemoteException e) {
-                    logger.severe("Client " + client + " unreachable");
-                    clients.remove(client);
-                    controller.closeGame(client); // TODO: #271 move to method
-                }
+    }
+
+    private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService executor) {
+        return () -> {
+            logger.fine("Starting heartbeat thread for RMI client");
+
+            try {
+                ((VirtualViewRMI) client).ping();
+                logger.finer("Client pinged");
+            } catch (RemoteException e) {
+                logger.severe("Client disconnected! " + client);
+                clients.remove(client);
+                controller.closeGame(client); // TODO: #271 move to method
+                executor.shutdown();
             }
-        }).start();
+        };
     }
 
     @Override

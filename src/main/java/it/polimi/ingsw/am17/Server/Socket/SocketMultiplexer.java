@@ -51,7 +51,7 @@ public class SocketMultiplexer {
 
                 // create a heartbeat thread
                 ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-                executor.scheduleAtFixedRate((pinger(socket, client, server)), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+                executor.scheduleAtFixedRate((pinger(socket, client, server)), 1, 1, TimeUnit.SECONDS);
 
             }
         } catch (IOException e) {
@@ -59,13 +59,13 @@ public class SocketMultiplexer {
         }
     }
 
-    public Runnable pinger(Socket socket, VirtualViewSocket client, _ServerSocket server) {
+    private Runnable pinger(Socket socket, VirtualViewSocket client, _ServerSocket server) {
         return () -> {
             try {
                 logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
                 new Message(MessageType.HEARTBEAT).send(socket); // this is not actually handled
             } catch (Exception e) {
-                logger.severe("Error sending heartbeat: " + e.getMessage() + "to socket: " + socket.getRemoteSocketAddress());
+                logger.severe("Socket client disconnected! (Failed heartbeat: " + e.getMessage() + ") Was at: " + socket.getRemoteSocketAddress());
                 controller.closeGame(client);
                 serverSockets.remove(server);
             }
