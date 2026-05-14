@@ -59,6 +59,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
                     case JOIN_GAME -> joinGame(client, message.getGameId(), message.getPlayer());
                     case PICK_OFFERING_CARD -> pickOfferingCard(message.getGameId(), message.getPlayer(), message.getOfferingCard());
                     case PICK_TRIBE_CARDS -> pickTribeCards(message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
+                    case HEARTBEAT -> logger.finer("Received heartbeat");
                     default -> System.err.println("Unknown message type: " + message.getType());
                 }
             }
