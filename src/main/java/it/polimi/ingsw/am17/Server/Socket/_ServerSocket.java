@@ -82,6 +82,11 @@ public class _ServerSocket implements Runnable, VirtualServer {
     }
 
     @Override
+    public void closeGame(VirtualView client, Player player, UUID gameId) throws Exception {
+        ServerActionMethods.closeGame(this.controller, client, player, gameId);
+    }
+
+    @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
         ServerActionMethods.joinGame(this.controller, client, gameId, player);
     }
