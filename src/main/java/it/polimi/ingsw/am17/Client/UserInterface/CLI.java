@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -305,7 +306,7 @@ public class CLI implements UI {
         + myOfferingCard.getNumCardsLower() +" card from lower row");
 
         // list of pickable cards
-        List<Object> pickableCards = new ArrayList<>();
+        List<GameCard> pickableCards = new ArrayList<>();
 
         // add upper character cards
         pickableCards.addAll(game.getUpperTribeRow().stream()
@@ -359,12 +360,12 @@ public class CLI implements UI {
         List<CharacterCard> characterCards = new ArrayList<>();
         List<BuildingCard> buildingCards = new ArrayList<>();
         for(Integer i : cardIndexes) {
-            Object pickedCard = pickableCards.get(i);
-            try {
-                characterCards.add((CharacterCard) pickedCard);
-            }
-            catch (ClassCastException e) {
+            GameCard pickedCard = pickableCards.get(i);
+            if(pickedCard.isBuilding()){
                 buildingCards.add((BuildingCard) pickedCard);
+            }
+            else {
+                characterCards.add((CharacterCard) pickedCard);
             }
         }
 

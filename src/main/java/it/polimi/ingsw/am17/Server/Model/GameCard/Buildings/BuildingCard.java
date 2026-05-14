@@ -2,13 +2,14 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class BuildingCard implements Serializable {
+public class BuildingCard extends GameCard implements Serializable {
     private final Integer foodCost;
     private final Integer bonusPoints;
     private final Integer era;
@@ -21,6 +22,7 @@ public class BuildingCard implements Serializable {
         this.era = era;
         this.foodCost = foodCost;
         this.bonusPoints = bonusPoints;
+        super(true);
     }
 
     public Integer getFoodCost() {
