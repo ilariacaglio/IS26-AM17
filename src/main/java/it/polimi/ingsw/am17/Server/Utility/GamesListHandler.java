@@ -45,4 +45,14 @@ public class GamesListHandler {
                     .findFirst().orElseThrow();
         }
     }
+
+    /**
+     * @param id game id
+     * @return the game in the list with the given id
+     */
+    public static void removeGameFromId(UUID id){
+        synchronized (gamesList){
+            gamesList.remove(getGameFromId(id));
+        }
+    }
 }
