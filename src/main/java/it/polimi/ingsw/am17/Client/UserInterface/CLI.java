@@ -279,7 +279,7 @@ public class CLI implements UI {
                 .filter(player -> !playersInOfferingCard.contains(player))
                 .toList();
 
-        int[] turnFood = getTurnFood();
+        int[] turnFood = game.getTurnFood();
 
         // calculate offset basing on game phase
         int offset = game.isPickOCPhase() ? turnFood.length - playersToPrint.size() : 0;
@@ -300,20 +300,6 @@ public class CLI implements UI {
             // build string and print
             System.out.print("[(" + nickname + ") " + foodBonus + "]" + separator);
         }
-    }
-
-    /**
-     * Selects the right food bonus/malus basing on the players number
-     * @return  array with the food bonus
-     */
-    private int[] getTurnFood(){
-        return switch (game.getNumPlayers()) {
-            case 2 -> new int[]{1, -1};
-            case 3 -> new int[]{2, 0, -1};
-            case 4 -> new int[]{2, 1, 0, -1};
-            case 5 -> new int[]{3, 1, 0, 0, -1};
-            default -> throw new IllegalStateException("Wrong number of players");
-        };
     }
 
     /**
