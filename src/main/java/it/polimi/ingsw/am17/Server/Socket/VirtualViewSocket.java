@@ -96,4 +96,10 @@ public class VirtualViewSocket implements VirtualView {
         message.setRanking(ranking);
         message.send(socket);
     }
+
+    @Override
+    public void notifyEndGame() throws Exception {
+        Message message = new Message(MessageType.END_GAME);
+        message.send(socket);
+    }
 }

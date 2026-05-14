@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
+import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -13,6 +14,8 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Socket.VirtualViewSocket;
+import it.polimi.ingsw.am17.Server.Socket._ServerSocket;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
 
@@ -21,6 +24,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -51,6 +58,9 @@ public class ClientSocket implements VirtualView, ClientInterface {
         // create a VirtualServer to handle sending requests
         server = new VirtualServerSocket(socket);
 
+        // set the logger level
+//        logger.setLevel(Level.FINE);
+
         // TODO: comments
         // handle incoming messages
         new Thread(() -> {
@@ -58,7 +68,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                 String line;
                 while ((line = in.readLine()) != null) {
                     Message message = mapper.readValue(line, Message.class);
-                    logger.info("Received message: " + message.toString());
+                    if(message.getType() != MessageType.HEARTBEAT) logger.info("Received message: " + message.toString());
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
@@ -72,6 +82,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
                         case UPDATE_START_GAME ->
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
                         case UPDATE_RANKING ->  updateRanking(message.getRanking());
+                        case END_GAME -> notifyEndGame();
+                        case HEARTBEAT -> logger.finer("Received heartbeat");
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -80,12 +92,28 @@ public class ClientSocket implements VirtualView, ClientInterface {
             }
         }).start();
 
+        // create a heartbeat thread
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
+
         if (gui) {
             // TODO: gui
         } else {
             userInterface = new CLI(server, this, model);
             userInterface.start(); // note: not threaded
         }
+    }
+
+    private Runnable pinger(Socket socket) {
+        return () -> {
+            try {
+                logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
+                new Message(MessageType.HEARTBEAT).send(socket); // this is not actually handled
+            } catch (Exception e) {
+                logger.severe("Socket server disconnected! (Failed heartbeat: " + e.getMessage() + ") Was at: " + socket.getRemoteSocketAddress());
+                System.exit(1);
+            }
+        };
     }
 
     @Override
@@ -118,6 +146,11 @@ public class ClientSocket implements VirtualView, ClientInterface {
     @Override
     public void updateRanking(List<RankingEntry> ranking) {
         ClientUpdateMethods.updateRanking(model, userInterface, ranking);
+    }
+
+    @Override
+    public void notifyEndGame() {
+        ClientUpdateMethods.notifyEndGame(model, userInterface);
     }
 
     @Override

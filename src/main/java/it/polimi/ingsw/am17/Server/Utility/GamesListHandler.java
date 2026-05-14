@@ -34,7 +34,7 @@ public class GamesListHandler {
     }
 
     /**
-     * @param id
+     * @param id game id
      * @return the game in the list with the given id
      */
     public static Game getGameFromId(UUID id){
@@ -42,7 +42,7 @@ public class GamesListHandler {
             return gamesList
                     .stream()
                     .filter(game -> game.getId().equals(id))
-                    .findFirst().orElse(null);
+                    .findFirst().orElseThrow();
         }
     }
 }

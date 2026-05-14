@@ -25,4 +25,6 @@ public interface VirtualServerRMI extends Remote, VirtualServer {
     void pickOfferingCard(UUID gameId, Player player, OfferingCard card)  throws RemoteException;
     @Override
     void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException;
+
+    void ping() throws RemoteException;
 }

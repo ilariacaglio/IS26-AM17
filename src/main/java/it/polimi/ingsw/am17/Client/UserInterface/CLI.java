@@ -84,6 +84,9 @@ public class CLI implements UI {
                         System.out.println("Command not recognized. Please type 'help' to view the list of available commands.");
                 }
             }
+            // exit
+            System.exit(0);
+
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }

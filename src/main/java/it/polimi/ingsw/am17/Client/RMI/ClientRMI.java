@@ -19,11 +19,17 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, ClientInterface {
     private VirtualServerRMI server;
     private ClientModel model;
     private UI userInterface;
+
+    private final static Logger logger = Logger.getLogger(ClientRMI.class.getName());
 
     public ClientRMI() throws RemoteException {
         super();
@@ -42,7 +48,25 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
             userInterface=new CLI(server,this, model);
         }
         this.server.connect(this);
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(pinger(server, executor), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
         userInterface.start();
+    }
+
+    private Runnable pinger(VirtualServerRMI server, ScheduledExecutorService executor) {
+        return () -> {
+            logger.setLevel(Level.FINER);
+            logger.fine("Starting heartbeat thread.");
+
+            try {
+                server.ping();
+                logger.finer("Server pinged");
+            } catch (RemoteException e) {
+                logger.severe("Server disconnected! " + server);
+                executor.shutdown();
+                System.exit(1); // TODO review status, ok exiting here?
+            }
+        };
     }
 
     @Override
@@ -53,6 +77,11 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     @Override
     public void updatePlayerQueue(Queue<Player> orderedPlayer) throws RemoteException {
         ClientUpdateMethods.updatePlayerQueue(model,userInterface,orderedPlayer);
+    }
+
+    @Override
+    public void ping() {
+
     }
 
     @Override
@@ -69,6 +98,11 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws RemoteException {
         ClientUpdateMethods.updateStartGame(model,userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow,offeringCards);
+    }
+
+    @Override
+    public void notifyEndGame() throws RemoteException {
+        ClientUpdateMethods.notifyEndGame(model, userInterface);
     }
 
     @Override

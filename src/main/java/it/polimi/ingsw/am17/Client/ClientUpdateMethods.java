@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 public class ClientUpdateMethods {
     private final static Logger logger = Logger.getLogger(ClientUpdateMethods.class.getName());
 
-
     public static void updateEra(ClientModel model, UI userInterface, int era) {
         // call model to update era
         model.setCurrentEra(era);
@@ -89,5 +88,11 @@ public class ClientUpdateMethods {
     public static void updateRanking(ClientModel model, UI userInterface, List<RankingEntry> ranking) {
         model.setRanking(ranking);
         userInterface.drawInterface(model, null);
+    }
+
+    public static void notifyEndGame(ClientModel model, UI userInterface) {
+        model.setCurrentEra(-1);
+        logger.info("Game closed.");
+        // notify user interface that the game has ended due to the disconnection of player with "nickname"
     }
 }

@@ -134,6 +134,16 @@ public class Game extends Subject {
     }
 
     /**
+     * Removes a player from the game AND ENDS THE GAME (re-join not implemented).
+     * TODO: player that closed the game
+     */
+    public void forceEndGame() {
+        logger.severe("Forcibly closed game with id: " + id);
+        notifyEndGame();
+        this.currentEra = -1;
+    }
+
+    /**
      * Goes to the next era.
      * If the game is not started, it starts.
      * Notifies the observers.
