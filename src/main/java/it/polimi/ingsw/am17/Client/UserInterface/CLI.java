@@ -61,6 +61,9 @@ public class CLI implements UI {
                     case "create", "c":
                         createGame(scanner);
                         break;
+                    case "close game", "xxx":
+                        closeGame(scanner);
+                        break;
                     case "pick offering card", "po":
                         pickOfferingCard(scanner);
                         break;
@@ -557,6 +560,21 @@ public class CLI implements UI {
                 virtualServer.createGame(client, game.getLocalPlayer(), numPlayers);
             } else {
                 System.out.print("Already in a game \n>");
+            }
+        }catch (Exception e) {
+            System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends server command to close the current game
+     */
+    private void closeGame(){
+        try {
+            if (game.getGameId() == null) {
+                System.out.print("Not in a game \n>");
+            } else {
+                virtualServer.closeGame(client, game.getLocalPlayer(), game.getGameId());
             }
         }catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
