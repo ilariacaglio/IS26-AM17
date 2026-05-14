@@ -73,16 +73,8 @@ public class ClientModel {
         return isPickOCPhase;
     }
 
-    public void setPickOCPhase() {
-        // if every player has an offering card
-        // the phase of picking an offering card has ended
-        if(everyPlayerInOfferingCard()) {
-            isPickOCPhase = false;
-        }
-        else {
-            // on turnEnd set the phase to true
-            isPickOCPhase = true;
-        }
+    public void setPickOCPhase(boolean value) {
+        isPickOCPhase = value;
     }
 
     public void setOrderedPlayers(Queue<Player> orderedPlayers){
@@ -130,7 +122,8 @@ public class ClientModel {
                 .filter(o -> o.equals(offeringCard))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(player));
-        setPickOCPhase();
+        if(everyPlayerInOfferingCard())
+            setPickOCPhase(false);
     }
 
     public List<TribesCard> getUpperTribeRow(){
