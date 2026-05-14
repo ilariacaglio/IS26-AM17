@@ -12,23 +12,20 @@ import java.util.Objects;
 public class BuildingCard extends GameCard implements Serializable {
     private final Integer foodCost;
     private final Integer bonusPoints;
-    private final Integer era;
 
     @JsonCreator
     public BuildingCard(
             @JsonProperty("era") Integer era,
             @JsonProperty("foodCost") Integer foodCost,
             @JsonProperty("bonusPoints") Integer bonusPoints) {
-        this.era = era;
+        super(true, era);
         this.foodCost = foodCost;
         this.bonusPoints = bonusPoints;
-        super(true);
     }
 
     public Integer getFoodCost() {
         return foodCost;
     }
-    public Integer getEra() { return era; }
     public Integer getBonusPoints() { return bonusPoints; }
 
     // effects implemented
@@ -49,12 +46,12 @@ public class BuildingCard extends GameCard implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildingCard that = (BuildingCard) o;
-        return foodCost.equals(that.foodCost) && bonusPoints.equals(that.bonusPoints) && era.equals(that.era);
+        return foodCost.equals(that.foodCost) && bonusPoints.equals(that.bonusPoints) && getEra().equals(that.getEra());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(foodCost, bonusPoints, era);
+        return Objects.hash(foodCost, bonusPoints, getEra());
     }
 
     @Override
