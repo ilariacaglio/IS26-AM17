@@ -400,7 +400,7 @@ public class CLI implements UI {
         List<BuildingCard> buildingCards = new ArrayList<>();
         for(Integer i : cardIndexes) {
             GameCard pickedCard = pickableCards.get(i);
-            if(pickedCard.isBuilding()){
+            if(pickedCard.getIsBuilding()){
                 buildingCards.add((BuildingCard) pickedCard);
             }
             else {
