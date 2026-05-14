@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Server.Utility;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.sql.*;
@@ -9,7 +10,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
-// TODO: connection pool?
 public class DatabaseManager {
 
     // Loading file .env and connection data
@@ -74,12 +74,10 @@ public class DatabaseManager {
     /**
      * Inserts game data into db
      *
-     * @param gameId        the id value of the game to be inserted
-     * @param numPlayers    the number of the players of the game to be inserted
-     * @param players       the players of the game to be inserted
+     * @param game  the game to save
      */
-    public static void insertGameData (UUID gameId, int numPlayers, Queue<Player> players) {
-        logger.info("Inserting game data into game " + gameId);
+    public static void insertGameData (Game game) {
+        logger.info("Inserting game data into game " + game.getId());
         try (   // establish connection to database
                 Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)){
 
@@ -87,17 +85,20 @@ public class DatabaseManager {
             connection.setAutoCommit(false);
 
             try {
+                // get players
+                var players = game.getPlayersList();
+
                 // insert game data
-                insertGame(gameId, numPlayers, connection);
+                insertGame(game.getId(), players.size(), connection);
 
                 // insert player data
                 for (Player player : players) {
-                    insertPlayer(player.getNickname(), gameId, player.getPp(), connection);
+                    insertPlayer(player.getNickname(), game.getId(), player.getPp(), connection);
                 }
 
                 // commit changes
                 connection.commit();
-                logger.info("Successfully inserted game data into game " + gameId);
+                logger.info("Successfully inserted game data into game " + game.getId());
             } catch (SQLException ex) {
                 // rollback changes
                 connection.rollback();
