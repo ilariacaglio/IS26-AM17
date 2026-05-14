@@ -12,6 +12,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
 
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
+import it.polimi.ingsw.am17.Server.Utility.TurnFoodHandler;
 
 import java.util.*;
 
@@ -279,7 +280,7 @@ public class CLI implements UI {
                 .filter(player -> !playersInOfferingCard.contains(player))
                 .toList();
 
-        int[] turnFood = game.getTurnFood();
+        int[] turnFood = TurnFoodHandler.getTurnFoodPoints(game.getNumPlayers());
 
         // calculate offset basing on game phase
         int offset = game.isPickOCPhase() ? turnFood.length - playersToPrint.size() : 0;

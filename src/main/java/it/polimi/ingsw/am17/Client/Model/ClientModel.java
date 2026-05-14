@@ -204,19 +204,4 @@ public class ClientModel {
     public List<RankingEntry> getRanking(){
         return Collections.unmodifiableList(ranking);
     }
-
-    /**
-     * Selects the right food bonus/malus basing on the players number
-     * @return  array with the food bonus
-     */
-    // TODO: valutare refactoring per metodo condiviso tra ClientModel e Game
-    public int[] getTurnFood(){
-        return switch (numPlayers) {
-            case 2 -> new int[]{1, -1};
-            case 3 -> new int[]{2, 0, -1};
-            case 4 -> new int[]{2, 1, 0, -1};
-            case 5 -> new int[]{3, 1, 0, 0, -1};
-            default -> throw new IllegalStateException("Wrong number of players");
-        };
-    }
 }
