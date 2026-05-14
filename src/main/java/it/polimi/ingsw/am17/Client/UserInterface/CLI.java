@@ -570,12 +570,20 @@ public class CLI implements UI {
     /**
      * Sends server command to close the current game
      */
-    private void closeGame(){
+    private void closeGame(Scanner scanner){
         try {
             if (game.getGameId() == null) {
                 System.out.print("Not in a game \n>");
             } else {
                 virtualServer.closeGame(client, game.getLocalPlayer(), game.getGameId());
+
+                // TODO: verify how to clean up local game state and keep nick/color
+                game = new ClientModel();
+                // Set up the user
+                String nickname = askNickname(scanner);
+                Color color = chooseColor(scanner);
+                game.createLocalPlayer(nickname, color);
+
             }
         }catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
