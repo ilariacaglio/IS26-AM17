@@ -61,6 +61,7 @@ public class ClientUpdateMethods {
         }
         model.setBuildingCards(upperBuildingRow, lowerBuildingRow);
         model.setTribeCards(upperRow, lowerRow);
+        model.setPickOCPhase();
 
         userInterface.drawInterface(model, null);
     }

@@ -195,6 +195,8 @@ public class CLI implements UI {
                     System.out.println("Waiting for more players to join...");
                 }
                 else {
+                    printTurnOrder();
+
                     //draw upper row
                     drawRow(true);
 
@@ -265,11 +267,61 @@ public class CLI implements UI {
     }
 
     /**
+     * Prints the turn order card with players
+     */
+    private void printTurnOrder() {
+        // get the list of the players in offering cards
+        List<Player> playersInOfferingCard = game.getOfferingCards().stream()
+                .map(OfferingCard::getPlayer).toList();
+
+        // get the list of the players to print in turn order card
+        List<Player> playersToPrint = game.getOrderedPlayers().stream()
+                .filter(player -> !playersInOfferingCard.contains(player))
+                .toList();
+
+        int[] turnFood = getTurnFood();
+
+        // calculate offset basing on game phase
+        int offset = game.isPickOCPhase() ? turnFood.length - playersToPrint.size() : 0;
+
+        // print
+        System.out.print("Turn order:    ");
+        for (int i = 0; i < game.getNumPlayers(); i++) {
+            // choose if print nickname or not
+            String nickname = " ";
+            if (i >= offset && i-offset < playersToPrint.size())
+                nickname = playersToPrint.get(i-offset).getNickname();
+            // choose if it is the last cell
+            boolean isLast = (i == game.getNumPlayers() - 1);
+            // get foodBonus value and build string
+            String foodBonus = String.format("%+dF", turnFood[i]) + (isLast ? "/-2PP" : "");
+            // get string separator
+            String separator = isLast ? "\n" : "\t";
+            // build string and print
+            System.out.print("[(" + nickname + ") " + foodBonus + "]" + separator);
+        }
+    }
+
+    /**
+     * Selects the right food bonus/malus basing on the players number
+     * @return  array with the food bonus
+     */
+    private int[] getTurnFood(){
+        return switch (game.getNumPlayers()) {
+            case 2 -> new int[]{1, -1};
+            case 3 -> new int[]{2, 0, -1};
+            case 4 -> new int[]{2, 1, 0, -1};
+            case 5 -> new int[]{3, 1, 0, 0, -1};
+            default -> throw new IllegalStateException("Wrong number of players");
+        };
+    }
+
+    /**
      * Prints on the terminal the players list
      */
     private void printPlayers() {
         Collection<Player> players = game.getOrderedPlayers();
-        System.out.print("\nPlayers: ");
+        System.out.print("\nPlayers:       ");
         for(Player p : players) {
             System.out.print("[" + p.getNickname() + " " + p.getFood() + "F " + p.getPp() + "PP" + "] ");
         }
