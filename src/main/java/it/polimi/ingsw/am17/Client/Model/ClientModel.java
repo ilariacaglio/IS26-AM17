@@ -52,6 +52,15 @@ public class ClientModel {
         myPlayer = new Player(nickname, color);
     }
 
+    private void setLocalPlayer() {
+        Player foundPlayer = orderedPlayer.stream()
+                .filter(p->p.getNickname().equals(myPlayer.getNickname()))
+                .findFirst().orElse(null);
+        if (foundPlayer != null) {
+            myPlayer = foundPlayer;
+        }
+    }
+
     public Player getLocalPlayer() {
         return myPlayer;
     }
@@ -71,6 +80,7 @@ public class ClientModel {
     public void setOrderedPlayers(Queue<Player> orderedPlayers){
         this.orderedPlayer.clear();
         this.orderedPlayer.addAll(orderedPlayers);
+        setLocalPlayer();
     }
 
     public Stack<Player> getOrderedPlayers(){
@@ -156,6 +166,7 @@ public class ClientModel {
         orderedPlayer.addAll(players);
         Player lastPlayer = orderedPlayer.poll();
         orderedPlayer.add(lastPlayer);
+        setLocalPlayer();
     }
 
     public void removePlayerFromOfferingCard(Player player){
