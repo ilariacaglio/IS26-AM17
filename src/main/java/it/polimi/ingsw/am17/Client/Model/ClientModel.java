@@ -19,6 +19,7 @@ public class ClientModel {
     private UUID id;
     private int numPlayers;
     private int currentEra = 0;
+    private boolean isPickOCPhase;
 
     private Player myPlayer;
 
@@ -77,6 +78,14 @@ public class ClientModel {
         return currentEra;
     }
 
+    public boolean isPickOCPhase() {
+        return isPickOCPhase;
+    }
+
+    public void setPickOCPhase(boolean value) {
+        isPickOCPhase = value;
+    }
+
     public void setOrderedPlayers(Queue<Player> orderedPlayers){
         this.orderedPlayer.clear();
         this.orderedPlayer.addAll(orderedPlayers);
@@ -123,6 +132,8 @@ public class ClientModel {
                 .filter(o -> o.equals(offeringCard))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(player));
+        if(everyPlayerInOfferingCard())
+            setPickOCPhase(false);
     }
 
     public List<TribesCard> getUpperTribeRow(){

@@ -11,6 +11,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Utility.DatabaseManager;
 
 import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
+import it.polimi.ingsw.am17.Server.Utility.TurnFoodHandler;
 
 import static it.polimi.ingsw.am17.Server.Utility.CardParser.loadOfferingCards;
 
@@ -61,7 +62,7 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>();
         lowerBuildingRow = new ArrayList<>();
 
-        turnFoodPoints = getTurnFoodPoints();
+        turnFoodPoints = TurnFoodHandler.getTurnFoodPoints(numPlayers);
     }
 
     private void checkNumPlayers(int numPlayers) {
@@ -70,18 +71,6 @@ public class Game extends Subject {
         if (numPlayers < 2 || numPlayers > 5) {
             throw new IllegalArgumentException("Wrong number of players");
         }
-    }
-
-    private int[] getTurnFoodPoints() {
-        logger.fine("Getting turn food points for " + numPlayers + " players.");
-
-        return switch (numPlayers) {
-            case 2 -> new int[]{1, -1};
-            case 3 -> new int[]{2, 0, -1};
-            case 4 -> new int[]{2, 1, 0, -1};
-            case 5 -> new int[]{3, 1, 0, 0, -1};
-            default -> throw new IllegalStateException("Wrong number of players");
-        };
     }
 
     public boolean isStarted() {
