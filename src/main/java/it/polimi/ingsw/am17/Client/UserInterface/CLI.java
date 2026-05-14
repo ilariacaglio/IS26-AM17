@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -12,6 +13,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
 
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
+import it.polimi.ingsw.am17.Server.Utility.TurnFoodHandler;
 
 import java.util.*;
 
@@ -198,6 +200,8 @@ public class CLI implements UI {
                     System.out.println("Waiting for more players to join...");
                 }
                 else {
+                    printTurnOrder();
+
                     //draw upper row
                     drawRow(true);
 
@@ -268,11 +272,47 @@ public class CLI implements UI {
     }
 
     /**
+     * Prints the turn order card with players
+     */
+    private void printTurnOrder() {
+        // get the list of the players in offering cards
+        List<Player> playersInOfferingCard = game.getOfferingCards().stream()
+                .map(OfferingCard::getPlayer).toList();
+
+        // get the list of the players to print in turn order card
+        List<Player> playersToPrint = game.getOrderedPlayers().stream()
+                .filter(player -> !playersInOfferingCard.contains(player))
+                .toList();
+
+        int[] turnFood = TurnFoodHandler.getTurnFoodPoints(game.getNumPlayers());
+
+        // calculate offset basing on game phase
+        int offset = game.isPickOCPhase() ? turnFood.length - playersToPrint.size() : 0;
+
+        // print
+        System.out.print("Turn order:    ");
+        for (int i = 0; i < game.getNumPlayers(); i++) {
+            // choose if print nickname or not
+            String nickname = " ";
+            if (i >= offset && i-offset < playersToPrint.size())
+                nickname = playersToPrint.get(i-offset).getNickname();
+            // choose if it is the last cell
+            boolean isLast = (i == game.getNumPlayers() - 1);
+            // get foodBonus value and build string
+            String foodBonus = String.format("%+dF", turnFood[i]) + (isLast ? "/-2PP" : "");
+            // get string separator
+            String separator = isLast ? "\n" : "\t";
+            // build string and print
+            System.out.print("[(" + nickname + ") " + foodBonus + "]" + separator);
+        }
+    }
+
+    /**
      * Prints on the terminal the players list
      */
     private void printPlayers() {
         Collection<Player> players = game.getOrderedPlayers();
-        System.out.print("\nPlayers: ");
+        System.out.print("\nPlayers:       ");
         for(Player p : players) {
             System.out.print("[" + p.getNickname() + " " + p.getFood() + "F " + p.getPp() + "PP" + "] ");
         }
@@ -308,7 +348,7 @@ public class CLI implements UI {
         + myOfferingCard.getNumCardsLower() +" card from lower row");
 
         // list of pickable cards
-        List<Object> pickableCards = new ArrayList<>();
+        List<GameCard> pickableCards = new ArrayList<>();
 
         // add upper character cards
         pickableCards.addAll(game.getUpperTribeRow().stream()
@@ -362,12 +402,12 @@ public class CLI implements UI {
         List<CharacterCard> characterCards = new ArrayList<>();
         List<BuildingCard> buildingCards = new ArrayList<>();
         for(Integer i : cardIndexes) {
-            Object pickedCard = pickableCards.get(i);
-            try {
-                characterCards.add((CharacterCard) pickedCard);
-            }
-            catch (ClassCastException e) {
+            GameCard pickedCard = pickableCards.get(i);
+            if(pickedCard.getIsBuilding()){
                 buildingCards.add((BuildingCard) pickedCard);
+            }
+            else {
+                characterCards.add((CharacterCard) pickedCard);
             }
         }
 
