@@ -354,7 +354,7 @@ public class Game extends Subject {
         }
 
         // insert data into db
-        DatabaseManager.insertGameData(this.id, this.numPlayers, orderedPlayers);
+        DatabaseManager.insertGameData(this);
 
         notifyEra(currentEra);
         notifyPlayerQueue(orderedPlayers);
