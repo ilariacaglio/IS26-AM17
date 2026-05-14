@@ -92,6 +92,7 @@ public class GamesController {
     public void closeGame(VirtualView client) {
         UUID uuid = mapping.get(client);
         Game game = GamesListHandler.getGameFromId(uuid);
+        GamesListHandler.removeGameFromId(uuid);
         removeClientAsObserver(client, uuid); //game.detach(client);
         mapping.remove(client);
         try{
