@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, ClientInterface {
     private VirtualServerRMI server;
     private ClientModel model;
-    private UI userInterface;
 
     private final static Logger logger = Logger.getLogger(ClientRMI.class.getName());
 
@@ -40,17 +39,18 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
         Registry registry = LocateRegistry.getRegistry(ip, 1099);
         this.server = (VirtualServerRMI) registry.lookup(serverName);
-        this.model = new ClientModel();
+        UI userInterface;
         if(graphic){
             // TODO: gui
         }
         else {
-            userInterface=new CLI(server,this, model);
+            userInterface = new CLI(server,this);
         }
         this.server.connect(this);
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(pinger(server, executor), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
-        userInterface.start();
+        this.model = new ClientModel(userInterface);
+        this.model.startInterface();
     }
 
     private Runnable pinger(VirtualServerRMI server, ScheduledExecutorService executor) {
@@ -71,12 +71,13 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
     @Override
     public void updateEra(int era) throws RemoteException {
-        ClientUpdateMethods.updateEra(model,userInterface,era);
+        // call model to update era
+        model.setCurrentEra(era);
     }
 
     @Override
-    public void updatePlayerQueue(Queue<Player> orderedPlayer) throws RemoteException {
-        ClientUpdateMethods.updatePlayerQueue(model,userInterface,orderedPlayer);
+    public void updatePlayerQueue(Queue<Player> orderedPlayers) throws RemoteException {
+        model.updatePlayerQueue(orderedPlayers);
     }
 
     @Override
@@ -86,42 +87,42 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
     @Override
     public void updateGameId(UUID gameId) throws RemoteException {
-        ClientUpdateMethods.updateGameId(model,userInterface,gameId);
+        model.setGameId(gameId);
     }
 
     @Override
-    public void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException {
-        ClientUpdateMethods.updateGamesIdList(model,userInterface,gamesIdList);
+    public void updateGamesIdList(List<UUID> gameIdsList) throws RemoteException {
+        model.setGameIdList(gameIdsList);
     }
 
     @Override
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws RemoteException {
-        ClientUpdateMethods.updateStartGame(model,userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow,offeringCards);
+        model.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
     @Override
     public void notifyEndGame() throws RemoteException {
-        ClientUpdateMethods.notifyEndGame(model, userInterface);
+        model.updateGameEndedByUser();
     }
 
     @Override
     public void updateRanking(List<RankingEntry> ranking) throws RemoteException {
-        ClientUpdateMethods.updateRanking(model,userInterface,ranking);
+        model.updateRanking(ranking);
     }
 
     @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
-        ClientUpdateMethods.updateEndTurn(model, userInterface,players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
+        model.updateEndTurn(players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
     }
 
     @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException {
-        ClientUpdateMethods.updatePlayerSelectOfferingCard(model,userInterface,player,offeringCard);
+        model.updatePlayerSelectOfferingCard(player,offeringCard);
     }
 
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
-        ClientUpdateMethods.updatePlayerSelectTribeCards(model,userInterface,player,tribesCards,buildingCards);
+        model.updatePlayerSelectTribeCards(player,tribesCards,buildingCards);
     }
 }
