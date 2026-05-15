@@ -91,11 +91,11 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
         // Todo: remove null when gui
         UI userInterface = null;
-        if (gui) {
+        if(gui){
             // TODO: gui
-        } else {
-            userInterface = new CLI(server, this);
-            userInterface.start();
+        }
+        else {
+            userInterface = new CLI(server,this);
         }
 
         model = new ClientModel(userInterface);

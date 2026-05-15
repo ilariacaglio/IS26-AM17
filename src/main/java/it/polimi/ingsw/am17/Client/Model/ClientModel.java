@@ -312,6 +312,7 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setBuildingCards(upperBuildingRow, lowerBuildingRow);
         setOfferingCards(offeringCards);
+        setPickOCPhase(true);
 
         userInterface.drawInterface(this,null);
     }
