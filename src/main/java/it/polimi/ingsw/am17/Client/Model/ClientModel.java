@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ClientModel {
-    private final Logger logger = Logger.getLogger(ClientModel.class.getName());
+    private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
 
     private final UI userInterface;
 
@@ -73,10 +73,6 @@ public class ClientModel {
         return id;
     }
 
-    public List<UUID> getGamesIdList(){
-        return Collections.unmodifiableList(gamesIdList);
-    }
-
     public void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
     }
@@ -133,8 +129,6 @@ public class ClientModel {
         this.orderedPlayer.clear();
         this.orderedPlayer.addAll(orderedPlayers);
         setLocalPlayer();
-        // UI communication
-        userInterface.drawInterface(null);
     }
 
     // TODO: why stack?
@@ -228,6 +222,10 @@ public class ClientModel {
         userInterface.printGamesList();
     }
 
+    public List<UUID> getGamesIdList(){
+        return Collections.unmodifiableList(gamesIdList);
+    }
+
     /**
      * Searches for the player into players list and returns player object
      * @param player    the player to look for
@@ -252,8 +250,10 @@ public class ClientModel {
                 .filter(o -> o.equals(offeringCard))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(player));
-        if(everyPlayerInOfferingCard())
+        if(everyPlayerInOfferingCard()) {
             setPickOCPhase(false);
+            setNullOfferingCardAPlayer();
+        }
     }
 
     /**
@@ -310,5 +310,112 @@ public class ClientModel {
 
     public List<RankingEntry> getRanking(){
         return Collections.unmodifiableList(ranking);
+    }
+
+    /**
+     * Updates players in queue and displays it to screen
+     * @param playerQueue   the value to be set
+     */
+    public void updatePlayerQueue(Queue<Player> playerQueue) {
+        setOrderedPlayers(playerQueue);
+        // UI communication
+        userInterface.drawInterface(null);
+    }
+
+    /**
+     * Sets model params to new values when game starts and displays it to screen.
+     * @param players               the players queue value to be set.
+     * @param upperRow              the upper tribe row value to be set.
+     * @param lowerRow              the lower tribe row value to be set.
+     * @param upperBuildingRow      the upper building row value to be set.
+     * @param lowerBuildingRow      the lower building row value to be set.
+     * @param offeringCards         the offering cards value to be set.
+     */
+    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
+
+        setCurrentEra(1);
+        setNumPlayers(players.size());
+        setOrderedPlayers(players);
+        setTribeCards(upperRow, lowerRow);
+        setBuildingCards(upperBuildingRow, lowerBuildingRow);
+        setOfferingCards(offeringCards);
+
+        userInterface.drawInterface(null);
+    }
+
+
+    /**
+     * Sets model params to new values when turn ends and displays it to screen.
+     * @param players               the players queue value to be set.
+     * @param upperRow              the upper tribe row value to be set.
+     * @param lowerRow              the lower tribe row value to be set.
+     * @param upperBuildingRow      the upper building row value to be set.
+     * @param lowerBuildingRow      the lower building row value to be set.
+     */
+    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                                     List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+        for(Player player : players) {
+            // update player PP and food in player queue
+            updatePlayerValue(getPlayer(player), player);
+        }
+        setBuildingCards(upperBuildingRow, lowerBuildingRow);
+        setTribeCards(upperRow, lowerRow);
+        setPickOCPhase(true);
+
+        userInterface.drawInterface(null);
+    }
+
+    /**
+     * Updates PP and food of the old player with values from the new player
+     * @param oldP
+     * @param newP
+     */
+    private static void updatePlayerValue(Player oldP, Player newP) {
+        oldP.addPp(newP.getPp()- oldP.getPp());
+        oldP.addFood(newP.getFood() - oldP.getFood());
+    }
+
+    /**
+     * Updates offering cards list when a player selects one and displays it to screen.
+     * @param player            the player that picks the offering card
+     * @param offeringCard      the offering card picked
+     */
+    public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
+        setPlayerOfferingCard(offeringCard, player);
+        userInterface.drawInterface(null);
+    }
+
+    /**
+     * Updates player cards and rows when player picks cards and displays it to screen.
+     * @param player            the player that picked the cards
+     * @param characterCards    the character cards picked by the player
+     * @param buildingCards     the building cards picked by the player
+     */
+    public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        logger.info(characterCards.toString() + " " + buildingCards.toString());
+        setPlayerInQueue(player);
+        removePlayerFromOfferingCard(player);
+        removeTribeCards(characterCards);
+        removeBuildingCards(buildingCards);
+        userInterface.drawInterface(null);
+    }
+
+    /**
+     * Updates ranking field and displays it to screen.
+     * @param ranking   the value to be set
+     */
+    public void updateRanking(List<RankingEntry> ranking) {
+        setRanking(ranking);
+        userInterface.drawInterface(null);
+    }
+
+    /**
+     * Updates era value when a user disconnects and displays it to screen
+     */
+    public void updateGameEndedByUser() {
+        setCurrentEra(-1);
+        logger.info("Game closed.");
+        // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
     }
 }
