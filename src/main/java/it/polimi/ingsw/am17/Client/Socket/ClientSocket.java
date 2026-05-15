@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am17.Client.Socket;
 
 import it.polimi.ingsw.am17.Client.ClientInterface;
-import it.polimi.ingsw.am17.Client.ClientUpdateMethods;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
@@ -90,11 +89,12 @@ public class ClientSocket implements VirtualView, ClientInterface {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
 
-        UI userInterface;
+        // Todo: remove null when gui
+        UI userInterface = null;
         if (gui) {
             // TODO: gui
         } else {
-            userInterface = new CLI(server, this, model);
+            userInterface = new CLI(server, this);
             userInterface.start();
         }
 

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am17.Client.RMI;
 
 import it.polimi.ingsw.am17.Client.ClientInterface;
-import it.polimi.ingsw.am17.Client.ClientUpdateMethods;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
@@ -39,7 +38,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
         Registry registry = LocateRegistry.getRegistry(ip, 1099);
         this.server = (VirtualServerRMI) registry.lookup(serverName);
-        UI userInterface;
+        // Todo: remove null when gui
+        UI userInterface = null;
         if(graphic){
             // TODO: gui
         }
