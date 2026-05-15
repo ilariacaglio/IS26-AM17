@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
-import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -11,7 +10,6 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class ClientModel {
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
@@ -22,8 +20,6 @@ public class ClientModel {
     private int numPlayers;
     private int currentEra;
     private boolean isPickOCPhase;
-
-    private Player myPlayer;
 
     private List<UUID> gamesIdList;
 
@@ -81,27 +77,6 @@ public class ClientModel {
         return numPlayers;
     }
 
-    public void createLocalPlayer(String nickname, Color color) {
-        myPlayer = new Player(nickname, color);
-    }
-
-    /**
-     * Updates localPlayer value when the object is updated into the queue by the server
-     * Used to update food, pp and cards of the player
-     */
-    private void setLocalPlayer() {
-        Player foundPlayer = orderedPlayer.stream()
-                .filter(p->p.getNickname().equals(myPlayer.getNickname()))
-                .findFirst().orElse(null);
-        if (foundPlayer != null) {
-            myPlayer = foundPlayer;
-        }
-    }
-
-    public Player getLocalPlayer() {
-        return myPlayer;
-    }
-
     /**
      * Sets currentEra field and displays it on the screen
      * @param currentEra    the value to be set
@@ -124,17 +99,14 @@ public class ClientModel {
         isPickOCPhase = value;
     }
 
-    // TODO: print in another method
     public void setOrderedPlayers(Queue<Player> orderedPlayers){
         this.orderedPlayer.clear();
         this.orderedPlayer.addAll(orderedPlayers);
-        setLocalPlayer();
+        userInterface.setLocalPlayer();
     }
 
-    // TODO: why stack?
-    public Stack<Player> getOrderedPlayers(){
-        return Collections.unmodifiableCollection(orderedPlayer)
-                .stream().collect(Collectors.toCollection(Stack::new));
+    public List<Player> getOrderedPlayers(){
+        return Collections.unmodifiableCollection(orderedPlayer).stream().toList();
     }
 
     /**
@@ -148,7 +120,7 @@ public class ClientModel {
         orderedPlayer.addAll(players);
         Player lastPlayer = orderedPlayer.poll();
         orderedPlayer.add(lastPlayer);
-        setLocalPlayer();
+        userInterface.setLocalPlayer();
     }
 
     public void setOfferingCards(List<OfferingCard> offeringCards){
@@ -300,7 +272,7 @@ public class ClientModel {
     public boolean isPlayerTurn(){
         if(currentEra<1)
             return false;
-        return orderedPlayer.peek().equals(myPlayer);
+        return userInterface.getLocalPlayer().equals(orderedPlayer.peek());
     }
 
     public void setRanking (List<RankingEntry> ranking) {
@@ -319,7 +291,7 @@ public class ClientModel {
     public void updatePlayerQueue(Queue<Player> playerQueue) {
         setOrderedPlayers(playerQueue);
         // UI communication
-        userInterface.drawInterface(null);
+        userInterface.drawInterface(this,null);
     }
 
     /**
@@ -341,7 +313,7 @@ public class ClientModel {
         setBuildingCards(upperBuildingRow, lowerBuildingRow);
         setOfferingCards(offeringCards);
 
-        userInterface.drawInterface(null);
+        userInterface.drawInterface(this,null);
     }
 
 
@@ -363,13 +335,13 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setPickOCPhase(true);
 
-        userInterface.drawInterface(null);
+        userInterface.drawInterface(this,null);
     }
 
     /**
      * Updates PP and food of the old player with values from the new player
-     * @param oldP
-     * @param newP
+     * @param oldP  the outdated value of the player
+     * @param newP  the new value of the player
      */
     private static void updatePlayerValue(Player oldP, Player newP) {
         oldP.addPp(newP.getPp()- oldP.getPp());
@@ -383,7 +355,7 @@ public class ClientModel {
      */
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
         setPlayerOfferingCard(offeringCard, player);
-        userInterface.drawInterface(null);
+        userInterface.drawInterface(this,null);
     }
 
     /**
@@ -398,7 +370,7 @@ public class ClientModel {
         removePlayerFromOfferingCard(player);
         removeTribeCards(characterCards);
         removeBuildingCards(buildingCards);
-        userInterface.drawInterface(null);
+        userInterface.drawInterface(this,null);
     }
 
     /**
@@ -407,7 +379,7 @@ public class ClientModel {
      */
     public void updateRanking(List<RankingEntry> ranking) {
         setRanking(ranking);
-        userInterface.drawInterface(null);
+        userInterface.drawInterface(this,null);
     }
 
     /**

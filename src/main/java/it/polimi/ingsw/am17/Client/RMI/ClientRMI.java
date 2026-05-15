@@ -50,6 +50,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(pinger(server, executor), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
         this.model = new ClientModel(userInterface);
+        userInterface.setModel(model);
         this.model.startInterface();
     }
 
