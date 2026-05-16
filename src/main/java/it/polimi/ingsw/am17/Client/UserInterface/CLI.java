@@ -216,6 +216,9 @@ public class CLI implements UI {
                     //draw lower row
                     drawRow(false);
 
+                    // print the cards of the player
+                    drawLocalPlayer();
+
                     // if the game has begun notify the players turn
                     if(readOnlyModel.isPlayerTurn())
                         System.out.println("It's your turn!");
@@ -230,6 +233,19 @@ public class CLI implements UI {
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
+    }
+
+    /**
+     * prints the cards of the local player
+     */
+    private void drawLocalPlayer() {
+        System.out.print("You:");
+        String cards = localPlayer.playerCharacterCardstoString(15) +
+                localPlayer.playerBuildingCardsString(15);
+        if(cards.isEmpty()) {
+            cards = "           no cards yet";
+        }
+        System.out.println(cards);
     }
 
     /**
