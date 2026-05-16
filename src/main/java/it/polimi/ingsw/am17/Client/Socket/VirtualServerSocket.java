@@ -42,6 +42,14 @@ public class VirtualServerSocket implements VirtualServer {
     }
 
     @Override
+    public void closeGame(VirtualView client, Player player, UUID gameId) throws Exception {
+        Message message = new Message(MessageType.CLOSE_GAME);
+        message.setPlayer(player);
+        message.setGameId(gameId);
+        message.send(socket);
+    }
+
+    @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) throws Exception {
         Message message = new Message(MessageType.JOIN_GAME);
         message.setGameId(gameId);

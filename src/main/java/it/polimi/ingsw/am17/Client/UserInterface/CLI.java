@@ -68,6 +68,9 @@ public class CLI implements UI {
                     case "create", "c":
                         createGame();
                         break;
+                    case "close game", "xxx":
+                        closeGame();
+                        break;
                     case "pick offering card", "po":
                         pickOfferingCard();
                         break;
@@ -110,6 +113,7 @@ public class CLI implements UI {
         System.out.println("- change nickname, cn: changes the player's nickname");
         System.out.println("- change color, cc: changes the player's color");
         System.out.println("- create, c: creates a new game");
+        System.out.println("- close game, xxx: closes the current game");
         System.out.println("- join, j: joins an existing game");
         System.out.println("- pick offering card, po: choose the offering card to take");
         System.out.println("- pick cards, p: choose the cards to take");
@@ -547,13 +551,28 @@ public class CLI implements UI {
      */
     private void createGame(){
         try {
-            if (readOnlyModel.getGameId() == null) {
+            if (readOnlyModel.getCurrentEra() < 0) {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
                 virtualServer.createGame(client, localPlayer, numPlayers);
             } else {
                 System.out.print("Already in a game \n>");
+            }
+        }catch (Exception e) {
+            System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends server command to close the current game
+     */
+    private void closeGame(){
+        try {
+            if (readOnlyModel.getGameId() == null) {
+                System.out.print("Not in a game \n>");
+            } else {
+                virtualServer.closeGame(client, getLocalPlayer(), readOnlyModel.getGameId());
             }
         }catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());

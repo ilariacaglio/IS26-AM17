@@ -37,7 +37,7 @@ public class ClientModel {
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
-        currentEra = 0;
+        currentEra = -1;
         gamesIdList = new ArrayList<>();
         orderedPlayer = new LinkedList<>();
         offeringCards = new ArrayList<>();
@@ -384,10 +384,16 @@ public class ClientModel {
     }
 
     /**
-     * Updates era value when a user disconnects and displays it to screen
+     * Updates era value when a user disconnects and displays it to the screen
      */
     public void updateGameEndedByUser() {
-        setCurrentEra(-1);
+        // setGameId(null); // TODO: does not work, breaks RMI communication?!
+        currentEra = -1; // TODO: -2 for aborted game? This works anyways
+        setOrderedPlayers(new LinkedList<>());
+        setOfferingCards(new ArrayList<>());
+        setTribeCards(new ArrayList<>(), new ArrayList<>());
+        setBuildingCards(new ArrayList<>(), new ArrayList<>());
+        setRanking(new ArrayList<>());
         logger.info("Game closed.");
         // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
     }
