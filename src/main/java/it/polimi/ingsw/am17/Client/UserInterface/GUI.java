@@ -25,11 +25,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
 import java.util.List;
-import java.util.UUID;
 
 
 public class GUI extends Application implements UI {
@@ -55,6 +53,7 @@ public class GUI extends Application implements UI {
     public static Scene scene;
     private Label food;
     private Label points;
+    private HBox personalCardsBox;
 
     // This method allows your main logic to "prepare" the data before launching
     public GUI(VirtualServer server, VirtualView view, ClientModel model) {
@@ -283,7 +282,7 @@ public class GUI extends Application implements UI {
             -fx-font-size: 30px;
         """);
         HBox personalLabelBox = new HBox(10);
-        HBox personalCardsBox =  new HBox(10);
+        personalCardsBox =  new HBox(10);
 
         //add area for personal cards
         ScrollPane scrollPane = new ScrollPane(personalCardsBox);
@@ -291,20 +290,14 @@ public class GUI extends Application implements UI {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setFitToHeight(true);
         scrollPane.setPannable(true);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
         personalLabelBox.getChildren().add(personalCards);
 
-        //add personal character cards
-        for(CharacterCard card : staticGame.getLocalPlayer().getCharacterCards()){
-            CardGUI characterCard = new CardGUI(card.getImagePath());
-            personalCardsBox.getChildren().add(characterCard);
-        }
-        //add personal building cards
-        for(BuildingCard card : staticGame.getLocalPlayer().getBuildingCards()){
-            CardGUI buildingCard = new CardGUI(card.getImagePath());
-            personalCardsBox.getChildren().add(buildingCard);
-        }
-        VBox playerCardsBox = new VBox(10,  personalLabelBox, personalCardsBox, scrollPane);
+        //order personal cards
+        orderPersonalCards();
+
+        VBox playerCardsBox = new VBox(10,  personalLabelBox, scrollPane);
 
         //food and PP
         food = new Label("Food: " +staticGame.getLocalPlayer().getFood());
@@ -626,6 +619,27 @@ public class GUI extends Application implements UI {
                     .collect(java.util.stream.Collectors.joining("\n")));
         });
 
+    }
+
+    private void orderPersonalCards(){
+        List<CharacterCard> orderedCards = new ArrayList<>(
+                staticGame.getLocalPlayer().getCharacterCards()
+        );
+
+        orderedCards.sort(Comparator.comparing(CharacterCard::getCardType));
+
+        personalCardsBox.getChildren().clear();
+
+        //add personal character cards
+        for(CharacterCard card : orderedCards){
+            CardGUI characterCard = new CardGUI(card.getImagePath());
+            personalCardsBox.getChildren().add(characterCard);
+        }
+        //add personal building cards
+        for(BuildingCard card : staticGame.getLocalPlayer().getBuildingCards()){
+            CardGUI buildingCard = new CardGUI(card.getImagePath());
+            personalCardsBox.getChildren().add(buildingCard);
+        }
     }
 
     public static boolean isPickTribesCard()
