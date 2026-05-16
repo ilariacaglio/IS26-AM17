@@ -8,14 +8,11 @@ import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
-import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.Socket.VirtualViewSocket;
-import it.polimi.ingsw.am17.Server.Socket._ServerSocket;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
 
@@ -27,7 +24,6 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -150,7 +146,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     @Override
     public void notifyEndGame() {
-        ClientUpdateMethods.notifyEndGame(model, userInterface);
+        ClientUpdateMethods.endGame(model, userInterface);
     }
 
     @Override
