@@ -202,6 +202,7 @@ public class GUI extends Application implements UI {
         //other players card buttons
         HBox playersCardsBox =  new HBox(10);
         HBox showCardsBox = new HBox(10);
+        ScrollPane otherScrollPane = new ScrollPane(showCardsBox);
         final Player[] openedPlayer = {null};
         for(Player p : staticGame.getOrderedPlayers()){
             Button playerCards = new Button(p.getNickname() );
@@ -249,6 +250,12 @@ public class GUI extends Application implements UI {
                     """);
                     break;
             }
+            //add area for other players' cards
+            otherScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            otherScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            otherScrollPane.setFitToHeight(true);
+            otherScrollPane.setPannable(true);
+            otherScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
             playersCardsBox.getChildren().add(playerCards);
 
@@ -261,19 +268,30 @@ public class GUI extends Application implements UI {
                 }
                 //other player -> change cards
                 showCardsBox.getChildren().clear();
-                //add cards
-                for(CharacterCard card : p.getCharacterCards()){
+                // sort character cards
+                List<CharacterCard> orderedOtherCards = new ArrayList<>(
+                        p.getCharacterCards()
+                );
+
+                orderedOtherCards.sort(Comparator.comparing(CharacterCard::getCardType));
+                //add character cards
+                for(CharacterCard card : orderedOtherCards){
                     CardGUI characterCard = new CardGUI(card.getImagePath());
                     showCardsBox.getChildren().add(characterCard);
                 }
-
+                //add building cards
+                for(BuildingCard card : p.getBuildingCards()){
+                    CardGUI buildingCard = new CardGUI(card.getImagePath());
+                    showCardsBox.getChildren().add(buildingCard);
+                }
                 // save player selected
                 openedPlayer[0] = p;
             });
 
         }
 
-        VBox otherPlayersCardsBox = new VBox(10,  playersCardsBox, showCardsBox);
+        VBox otherPlayersCardsBox = new VBox(10,  playersCardsBox, otherScrollPane);
+
         //player personal cards
         Label personalCards = new Label("My Cards");
         personalCards.setStyle("""
