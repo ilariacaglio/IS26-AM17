@@ -78,7 +78,6 @@ public class ServerActionMethods {
             logger.info("Client" + client.getClass().getSimpleName() + " wants to close game with id" + gameId);
 
             controller.closeGame(client);
-            controller.removeClientAsObserver(client, gameId);
         }).start();
     }
 
