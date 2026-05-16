@@ -275,20 +275,36 @@ public class GUI extends Application implements UI {
         }
 
         VBox otherPlayersCardsBox = new VBox(10,  playersCardsBox, showCardsBox);
-        //player cards
-        //TODO: show my cards always, no button
+        //player personal cards
         Label personalCards = new Label("My Cards");
         personalCards.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
         """);
+        HBox personalLabelBox = new HBox(10);
         HBox personalCardsBox =  new HBox(10);
-        personalCardsBox.getChildren().add(personalCards);
+
+        //add area for personal cards
+        ScrollPane scrollPane = new ScrollPane(personalCardsBox);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setPannable(true);
+
+        personalLabelBox.getChildren().add(personalCards);
+
+        //add personal character cards
         for(CharacterCard card : staticGame.getLocalPlayer().getCharacterCards()){
             CardGUI characterCard = new CardGUI(card.getImagePath());
             personalCardsBox.getChildren().add(characterCard);
         }
+        //add personal building cards
+        for(BuildingCard card : staticGame.getLocalPlayer().getBuildingCards()){
+            CardGUI buildingCard = new CardGUI(card.getImagePath());
+            personalCardsBox.getChildren().add(buildingCard);
+        }
+        VBox playerCardsBox = new VBox(10,  personalLabelBox, personalCardsBox, scrollPane);
 
         //food and PP
         food = new Label("Food: " +staticGame.getLocalPlayer().getFood());
@@ -320,7 +336,7 @@ public class GUI extends Application implements UI {
         playersCardsBox.setAlignment(Pos.CENTER);
 
         root.getChildren().addAll(turnOverlay, upperCardsBox, offeringCardBox, lowerCardsBox, sendButton, playerResourcesBox,
-                personalCardsBox, otherPlayersCardsBox);
+                playerCardsBox, otherPlayersCardsBox);
         return root;
     }
 
