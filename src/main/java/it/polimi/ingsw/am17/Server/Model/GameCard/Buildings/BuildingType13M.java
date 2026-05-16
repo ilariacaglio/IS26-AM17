@@ -51,6 +51,6 @@ public class BuildingType13M extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: -1PP/" + characterType.toString() + " in FoodEvent";
+        return super.toString() + " Effect: -1PP/" + characterType.toString() + " in FoodEvent] ";
     }
 }

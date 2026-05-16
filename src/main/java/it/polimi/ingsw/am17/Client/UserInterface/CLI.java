@@ -463,14 +463,14 @@ public class CLI implements UI {
         // print character cards
         for (TribesCard card : tribeRow) {
             if (card.getCardType().isCharacter()) {
-                System.out.print(" " + currentIndex + ") [" + card + "] ");
+                System.out.print(" " + currentIndex + ") " + card);
                 // increase number only when the card is printed
                 currentIndex++;
             }
         }
         // print building cards
         for (BuildingCard card : buildingRow) {
-            System.out.print(" " + currentIndex + ") [" + card + "] ");
+            System.out.print(" " + currentIndex + ") "+ card);
             // increase number only when the card is printed
             currentIndex++;
         }
@@ -487,7 +487,6 @@ public class CLI implements UI {
     private Color chooseColor() {
         Color[] colors = Color.values();
 
-        System.out.println("Choose your color");
         while (true) {
             System.out.println("Available colors:");
             for (int i = 0; i < colors.length; i++) {
@@ -654,12 +653,12 @@ public class CLI implements UI {
 
             if(!tribeRow.isEmpty()) {
                 for (TribesCard c : tribeRow) {
-                    System.out.print("[" + c.toString() + "] ");
+                    System.out.print(c);
                 }
             }
             if(!buildingRow.isEmpty()){
                 for(BuildingCard c : buildingRow) {
-                    System.out.print("[" + c.toString() + "] ");
+                    System.out.print(c);
                 }
             }
             System.out.println();
@@ -674,7 +673,7 @@ public class CLI implements UI {
         if(!offeringCards.isEmpty()){
             System.out.print("Bidding trail: ");
             for(OfferingCard c : offeringCards) {
-                System.out.print("[" + c.toString() + "] ");
+                System.out.print(c);
             }
             System.out.println();
         }

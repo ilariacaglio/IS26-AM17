@@ -33,6 +33,6 @@ public class BuildingType6 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: x2PP from Builders";
+        return super.toString() + " Effect: x2PP from Builders] ";
     }
 }

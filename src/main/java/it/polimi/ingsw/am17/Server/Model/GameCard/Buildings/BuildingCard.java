@@ -56,6 +56,6 @@ public class BuildingCard extends GameCard implements Serializable {
 
     @Override
     public String toString() {
-        return foodCost + "F " + bonusPoints + "BP";
+        return "[" + foodCost + "F " + bonusPoints + "BP";
     }
 }

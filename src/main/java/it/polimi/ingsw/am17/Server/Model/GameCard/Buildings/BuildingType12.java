@@ -20,6 +20,6 @@ public class BuildingType12 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: -0PP in RitualEvent";
+        return super.toString() + " Effect: -0PP in RitualEvent] ";
     }
 }

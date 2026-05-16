@@ -20,6 +20,6 @@ public class BuildingType11 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +1F if getting food from turn order";
+        return super.toString() + " Effect: +1F if getting food from turn order] ";
     }
 }
