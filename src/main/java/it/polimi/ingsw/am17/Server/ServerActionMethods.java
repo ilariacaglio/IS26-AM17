@@ -106,7 +106,7 @@ public class ServerActionMethods {
 
             } catch (Exception e) {
                 logger.warning("Error joining game: " + e.getMessage());
-                try {
+                try { // TODO: why the try catch?
                     // N.B. we need to sign up the client before joining the player
                     // so that it's notified from the addPlayer, if something goes wrong,
                     // we remove it here.
