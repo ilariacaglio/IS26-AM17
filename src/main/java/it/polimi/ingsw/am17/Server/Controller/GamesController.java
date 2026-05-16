@@ -30,26 +30,15 @@ public class GamesController {
     }
 
     /**
-     * @return the games that are not started yet
-     */
-    private List<Game> getGamesNotStarted() {
-        synchronized (gamesList){
-            return Collections.unmodifiableList(
-                    gamesList.stream()
-                            .filter(g->!g.isStarted())
-                            .toList()
-            );
-        }
-    }
-
-    /**
      * @return the ids list of the games that are not started yet
      */
     public List<UUID> getGamesList() {
-        return getGamesNotStarted()
-                .stream()
-                .map(Game::getId)
-                .toList();
+        synchronized (gamesList){
+            return gamesList.stream()
+                    .filter(g -> !g.isStarted())
+                    .map(Game::getId)
+                    .toList(); // returns an unmodifiable list!
+        }
     }
 
     /**
