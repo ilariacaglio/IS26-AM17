@@ -91,18 +91,14 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
         // Todo: remove null when gui
         UI userInterface = null;
-        if(gui){
+        if(gui) {
             // TODO: gui
         } else {
-            userInterface = new CLI(server, this, model);
-            userInterface.start(); // note: not threaded
-        }
-        else {
             userInterface = new CLI(server,this);
         }
 
         model = new ClientModel(userInterface);
-        userInterface.setModel(model);
+        userInterface.setModel(model); // TODO: circular!! Update with granular UI updates
         model.startInterface();  // note: not threaded
     }
 
@@ -151,8 +147,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     @Override
     public void notifyEndGame() {
-       model.updateGameEndedByUser();
-        ClientUpdateMethods.endGame(model, userInterface);
+        model.updateGameEndedByUser();
     }
 
     @Override
