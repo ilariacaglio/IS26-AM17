@@ -145,9 +145,6 @@ public class GamesController {
         // get uuid of the game from the client (mapping)
         UUID uuid = mapping.get(client);
 
-        // remove client from the game's observer list
-        removeClientAsObserver(client, uuid);
-
         // get the game object from uuid to call the end game method
         Game game = getGameFromId(uuid);
 
@@ -159,6 +156,9 @@ public class GamesController {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        // remove client from the game's observer list
+        removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
 
         // remove the client from the mapping and the game from the list
         mapping.remove(client);
