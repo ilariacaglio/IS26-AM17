@@ -331,7 +331,7 @@ public class GUI extends Application implements UI {
             -fx-font-size: 30px;
         """);
         HBox playerResourcesBox =  new HBox(10);
-        playerResourcesBox.getChildren().addAll(points, food);
+        playerResourcesBox.getChildren().addAll(sendButton, points, food);
 
         //add components to root
         // Center the upper cards
@@ -346,7 +346,7 @@ public class GUI extends Application implements UI {
         // Center the player buttons
         playersCardsBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(turnOverlay, upperCardsBox, offeringCardBox, lowerCardsBox, sendButton, playerResourcesBox,
+        root.getChildren().addAll(turnOverlay, upperCardsBox, offeringCardBox, lowerCardsBox, playerResourcesBox,
                 playerCardsBox, otherPlayersCardsBox);
         return root;
     }
