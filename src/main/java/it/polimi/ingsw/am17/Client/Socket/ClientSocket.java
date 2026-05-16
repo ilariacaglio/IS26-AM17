@@ -1,21 +1,17 @@
 package it.polimi.ingsw.am17.Client.Socket;
 
 import it.polimi.ingsw.am17.Client.ClientInterface;
-import it.polimi.ingsw.am17.Client.ClientUpdateMethods;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
-import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.Socket.VirtualViewSocket;
-import it.polimi.ingsw.am17.Server.Socket._ServerSocket;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
 
@@ -27,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -37,14 +32,12 @@ import java.util.logging.Logger;
 public class ClientSocket implements VirtualView, ClientInterface {
     VirtualServerSocket server;
     ClientModel model;
-    UI userInterface;
     Socket socket;
     ObjectMapper mapper;
 
     private final Logger logger = Logger.getLogger(ClientSocket.class.getName());
 
     public ClientSocket() {
-        this.model = new ClientModel();
         mapper = new ObjectMapper();
     }
 
@@ -96,12 +89,18 @@ public class ClientSocket implements VirtualView, ClientInterface {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
 
-        if (gui) {
+        // Todo: remove null when gui
+        UI userInterface = null;
+        if(gui){
             // TODO: gui
-        } else {
-            userInterface = new CLI(server, this, model);
-            userInterface.start(); // note: not threaded
         }
+        else {
+            userInterface = new CLI(server,this);
+        }
+
+        model = new ClientModel(userInterface);
+        userInterface.setModel(model);
+        model.startInterface();  // note: not threaded
     }
 
     private Runnable pinger(Socket socket) {
@@ -118,53 +117,52 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     @Override
     public void updateEra(int era) {
-        ClientUpdateMethods.updateEra(model, userInterface, era);
+        model.setCurrentEra(era);
     }
 
     @Override
-    public void updatePlayerQueue(Queue<Player> orderedPlayer) {
-        ClientUpdateMethods.updatePlayerQueue(model, userInterface, orderedPlayer);
+    public void updatePlayerQueue(Queue<Player> orderedPlayers) {
+       model.updatePlayerQueue(orderedPlayers);
     }
 
     @Override
     public void updateGameId(UUID gameId) {
-        ClientUpdateMethods.updateGameId(model, userInterface, gameId);
+       model.setGameId(gameId);
     }
 
     @Override
-    public void updateGamesIdList(List<UUID> gamesIdList) {
-        ClientUpdateMethods.updateGamesIdList(model, userInterface, gamesIdList);
+    public void updateGamesIdList(List<UUID> gameIdsList) {
+        model.setGameIdList(gameIdsList);
     }
 
     @Override
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) {
-
-        ClientUpdateMethods.updateStartGame(model, userInterface, players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
+        model.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
     @Override
     public void updateRanking(List<RankingEntry> ranking) {
-        ClientUpdateMethods.updateRanking(model, userInterface, ranking);
+        model.updateRanking(ranking);
     }
 
     @Override
     public void notifyEndGame() {
-        ClientUpdateMethods.notifyEndGame(model, userInterface);
+       model.updateGameEndedByUser();
     }
 
     @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
-        ClientUpdateMethods.updateEndTurn(model, userInterface, players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+        model.updateEndTurn(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
-        ClientUpdateMethods.updatePlayerSelectOfferingCard(model, userInterface, player, offeringCard);
+        model.updatePlayerSelectOfferingCard(player, offeringCard);
     }
 
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) {
-        ClientUpdateMethods.updatePlayerSelectTribeCards(model, userInterface, player, tribesCards, buildingCards);
+        model.updatePlayerSelectTribeCards(player, tribesCards, buildingCards);
     }
 }
