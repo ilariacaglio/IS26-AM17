@@ -70,7 +70,7 @@ public class GamesController {
      * @param gameId of the game
      */
     public void signUpAsObserver(VirtualView client, UUID gameId) throws NoSuchElementException {
-        Game game = GamesListHandler.getGameFromId(gameId);
+        Game game = getGameFromId(gameId);
 
         // add client to game mapping
         mapping.put(client, gameId);
@@ -86,7 +86,7 @@ public class GamesController {
      * @param gameId of the game
      */
     public void removeClientAsObserver(VirtualView client, UUID gameId) throws NoSuchElementException {
-        Game game = GamesListHandler.getGameFromId(gameId);
+        Game game = getGameFromId(gameId);
         synchronized (game){
             game.detach(client);
         }
