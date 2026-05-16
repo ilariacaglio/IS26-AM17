@@ -102,7 +102,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
     @Override
     public void notifyEndGame() throws RemoteException {
-        ClientUpdateMethods.notifyEndGame(model, userInterface);
+        ClientUpdateMethods.endGame(model, userInterface);
     }
 
     @Override
