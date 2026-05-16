@@ -110,7 +110,7 @@ public class ClientModel {
     }
 
     /**
-     * Replaces the player with the value passed as parameter.
+     * Replaces the player in the queue managing turn order with the value passed as parameter.
      * @param player    the player to be set
      */
     public void setPlayerInQueue(Player player){
@@ -203,7 +203,7 @@ public class ClientModel {
      * @param player    the player to look for
      * @return          the player object in player collection
      */
-    public Player getPlayer(Player player)
+    public Player getPlayerFromList(Player player)
     {
         return orderedPlayer.stream()
             .filter(p -> p.equals(player))
@@ -212,7 +212,7 @@ public class ClientModel {
 
     /**
      * Sets player to offering card.
-     * When condition met the phase of offering cards selection ends.
+     * If the player is the last to select, ends the offering card selection phase.
      * @param offeringCard  offering card value
      * @param player        player to be set into offering card
      */
@@ -229,7 +229,7 @@ public class ClientModel {
     }
 
     /**
-     * Sets offering cards player to null
+     * Removes player from currently assigned offering card.
      * @param player the player already present into the offering card field
      */
     public void removePlayerFromOfferingCard(Player player){
@@ -330,7 +330,7 @@ public class ClientModel {
                                      List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         for(Player player : players) {
             // update player PP and food in player queue
-            updatePlayerValue(getPlayer(player), player);
+            updatePlayerValue(getPlayerFromList(player), player);
         }
         setBuildingCards(upperBuildingRow, lowerBuildingRow);
         setTribeCards(upperRow, lowerRow);
