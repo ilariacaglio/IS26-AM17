@@ -1,8 +1,8 @@
 package it.polimi.ingsw.am17.Server.Controller;
 
 import it.polimi.ingsw.am17.Server.Model.Game;
-import it.polimi.ingsw.am17.Server.Model.GameCard.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
