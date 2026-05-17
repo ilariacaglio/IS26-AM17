@@ -120,10 +120,11 @@ public abstract class Subject {
 
     void notifyEndGame() {
         for (VirtualView client : clients) {
+            logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
             try {
                 client.notifyEndGame();
             } catch (Exception e) {
-                System.err.println("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Subject method failed to call client update" + e.getMessage());
             }
         }
     }

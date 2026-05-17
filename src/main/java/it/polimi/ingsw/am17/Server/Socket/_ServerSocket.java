@@ -57,6 +57,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
                     case GET_GAMES_LIST -> getGamesList(client);
                     case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
                     case JOIN_GAME -> joinGame(client, message.getGameId(), message.getPlayer());
+                    case CLOSE_GAME -> closeGame(client, message.getPlayer(), message.getGameId());
                     case PICK_OFFERING_CARD -> pickOfferingCard(message.getGameId(), message.getPlayer(), message.getOfferingCard());
                     case PICK_TRIBE_CARDS -> pickTribeCards(message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
                     case HEARTBEAT -> logger.finer("Received heartbeat");
@@ -80,6 +81,11 @@ public class _ServerSocket implements Runnable, VirtualServer {
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
         ServerActionMethods.createGame(this.controller, client, player, numPlayers);
+    }
+
+    @Override
+    public void closeGame(VirtualView client, Player player, UUID gameId) throws Exception {
+        ServerActionMethods.closeGame(this.controller, client, player, gameId);
     }
 
     @Override

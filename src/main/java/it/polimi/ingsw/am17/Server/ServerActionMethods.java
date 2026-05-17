@@ -64,6 +64,23 @@ public class ServerActionMethods {
         }).start();
     }
 
+    /**
+     * Closes a game.
+     * TODO: add check on "creator" player, i.e. only the creator can close the game.
+     * TODO: use player parameter (changes in closeGame)
+     * @param controller controller to forward the request to.
+     * @param client client generating the request.
+     * @param player associated with the client generating the request.
+     * @param gameId of the game to close.
+     */
+    public static void closeGame(GamesController controller, VirtualView client, Player player, UUID gameId) {
+        new Thread(() -> {
+            logger.info("Client" + client.getClass().getSimpleName() + " wants to close game with id" + gameId);
+
+            controller.closeGame(client);
+        }).start();
+    }
+
 
     /**
      * Adds a player to the game with the specified gameId and register the client as an observer.

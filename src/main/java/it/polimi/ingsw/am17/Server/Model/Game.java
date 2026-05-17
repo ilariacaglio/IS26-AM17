@@ -139,8 +139,8 @@ public class Game extends Subject {
      */
     public void forceEndGame() {
         logger.severe("Forcibly closed game with id: " + id);
-        notifyEndGame();
         this.currentEra = -1;
+        notifyEndGame();
     }
 
     /**
