@@ -63,7 +63,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
             } catch (RemoteException e) {
                 logger.severe("Client disconnected! " + client);
                 clients.remove(client);
-                controller.closeGame(client); // TODO: #271 move to method
+                controller.closeGame(client, null); // TODO
                 executor.shutdown();
             }
         };
@@ -76,27 +76,27 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
 
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
-        controller.createGame(this.controller, client, player, numPlayers);
+        controller.createGame(client, player, numPlayers);
     }
 
     @Override
     public void closeGame(VirtualView client, Player player, UUID gameId) throws RemoteException {
-        controller.closeGame(this.controller, client, player, gameId);
+        controller.closeGame(client, player);
     }
 
     @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
-        controller.joinGame(this.controller, client, gameId, player);
+        controller.joinGame(client, gameId, player);
     }
 
     @Override
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
-        controller.pickOfferingCard(this.controller, gameId, player, card);
+        controller.pickOfferingCard(gameId, player, card);
     }
 
     @Override
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        controller.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
+        controller.pickTribeCards(gameId, player, characterCards, buildingCards);
     }
 
     @Override

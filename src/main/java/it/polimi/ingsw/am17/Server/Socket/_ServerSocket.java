@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 public class _ServerSocket implements Runnable, VirtualServer {
     private static final Logger logger = Logger.getLogger(_ServerSocket.class.getName());
 
-
     private final Socket socket;
     private final GamesController controller;
     private final VirtualView client;
@@ -77,26 +76,26 @@ public class _ServerSocket implements Runnable, VirtualServer {
 
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
-        controller.createGame(this.controller, client, player, numPlayers);
+        controller.createGame(client, player, numPlayers);
     }
 
     @Override
     public void closeGame(VirtualView client, Player player, UUID gameId) throws Exception {
-        controller.closeGame(this.controller, client, player, gameId);
+        controller.closeGame(client, player);
     }
 
     @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
-        controller.joinGame(this.controller, client, gameId, player);
+        controller.joinGame(client, gameId, player);
     }
 
     @Override
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
-        controller.pickOfferingCard(this.controller, gameId, player, card);
+        controller.pickOfferingCard(gameId, player, card);
     }
 
     @Override
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        controller.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
+        controller.pickTribeCards(gameId, player, characterCards, buildingCards);
     }
 }
