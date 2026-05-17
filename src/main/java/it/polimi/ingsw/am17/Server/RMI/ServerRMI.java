@@ -90,7 +90,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
 
     @Override
     public void closeGame(VirtualView client, Player player, UUID gameId) throws RemoteException {
-        ServerActionMethods.closeGame(this.controller, client, player, gameId);
+        ServerActionMethods.closeGame(this.controller, client, gameId);
     }
 
     @Override

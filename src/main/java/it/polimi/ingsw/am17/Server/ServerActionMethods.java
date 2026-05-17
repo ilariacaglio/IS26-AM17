@@ -50,7 +50,7 @@ public class ServerActionMethods {
             logger.info("Client" + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
             // create a game and add player to it
-            UUID id = controller.createGame(player, numPlayers);
+            UUID id = controller.createGame(client, player, numPlayers);
 
             // sign up client as an observer
             controller.signUpAsObserver(client, id);
@@ -70,10 +70,9 @@ public class ServerActionMethods {
      * TODO: use player parameter (changes in closeGame)
      * @param controller controller to forward the request to.
      * @param client client generating the request.
-     * @param player associated with the client generating the request.
      * @param gameId of the game to close.
      */
-    public static void closeGame(GamesController controller, VirtualView client, Player player, UUID gameId) {
+    public static void closeGame(GamesController controller, VirtualView client, UUID gameId) {
         new Thread(() -> {
             logger.info("Client" + client.getClass().getSimpleName() + " wants to close game with id" + gameId);
 
@@ -101,7 +100,7 @@ public class ServerActionMethods {
                 client.updateGameId(gameId);
 
                 // Add player to the game
-                controller.joinGame(gameId, player);
+                controller.joinGame(gameId, client, player);
 
             } catch (Exception e) {
                 logger.warning("Error joining game: " + e.getMessage());

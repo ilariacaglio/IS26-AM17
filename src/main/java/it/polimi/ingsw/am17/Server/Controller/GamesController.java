@@ -15,7 +15,8 @@ import java.util.*;
  */
 public class GamesController {
     private static final List<Game> gamesList = new ArrayList<>();
-    private static final Map<VirtualView, UUID> mapping = new HashMap<>();
+    private static final Map<VirtualView, UUID> gameMapping = new HashMap<>();
+    private static final Map<VirtualView, String> playerMapping = new HashMap<>(); // string field is for nickname
 
     public GamesController(){}
 
@@ -73,7 +74,7 @@ public class GamesController {
         Game game = getGameFromId(gameId);
 
         // add client to game mapping
-        mapping.put(client, gameId);
+        gameMapping.put(client, gameId);
 
         synchronized (game) {
             game.attach(client);
@@ -100,7 +101,7 @@ public class GamesController {
      * @param numPlayers number of players for the game.
      * @return created game id.
      */
-    public UUID createGame(Player player, int numPlayers) {
+    public UUID createGame(VirtualView client, Player player, int numPlayers) {
         try {
 
             // game creation
@@ -111,7 +112,7 @@ public class GamesController {
             addGame(game);
 
             // add player to the game
-            joinGame(id, player);
+            joinGame(id, client, player);
 
             return id;
         }
@@ -125,12 +126,14 @@ public class GamesController {
      * @param gameId of the game
      * @param player to be added
      */
-    public void joinGame(UUID gameId, Player player) throws NoSuchElementException {
+    public void joinGame(UUID gameId, VirtualView client, Player player) throws NoSuchElementException {
         try {
             Game game = getGameFromId(gameId);
             synchronized (game){
                 game.addPlayer(player);
             }
+            // add mapping between player and virtualView
+            playerMapping.put(client, player.getNickname());
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -143,7 +146,7 @@ public class GamesController {
     public void closeGame(VirtualView client) {
 
         // get uuid of the game from the client (mapping)
-        UUID uuid = mapping.get(client);
+        UUID uuid = gameMapping.get(client);
 
         // get the game object from uuid to call the end game method
         Game game = getGameFromId(uuid);
@@ -160,8 +163,16 @@ public class GamesController {
         // remove client from the game's observer list
         removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
 
+        // get the clients linked to the game with uuid
+        var clientsList = gameMapping.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(uuid))
+                .map(Map.Entry::getKey)
+                .toList();
         // remove the client from the mapping and the game from the list
-        mapping.remove(client);
+        clientsList.forEach(gameMapping.keySet()::remove);
+        // remove all the players of that game
+        clientsList.forEach(playerMapping.keySet()::remove);
+        // remove game from id list
         removeGameFromId(uuid);
     }
 

@@ -85,7 +85,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
 
     @Override
     public void closeGame(VirtualView client, Player player, UUID gameId) throws Exception {
-        ServerActionMethods.closeGame(this.controller, client, player, gameId);
+        ServerActionMethods.closeGame(this.controller, client, gameId);
     }
 
     @Override
