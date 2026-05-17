@@ -14,10 +14,12 @@ public class ClientLauncher {
         boolean gui = Arrays.asList(args).contains("--gui");
         boolean socket = Arrays.asList(args).contains("--socket");
 
+        String ipAddress = args[0];
+
         if (socket) {
-            new ClientSocket().start("127.0.0.1", gui);
+            new ClientSocket().start(ipAddress, gui);
         } else {
-            new ClientRMI().start("127.0.0.1", gui);
+            new ClientRMI().start(ipAddress, gui);
         }
     }
 }
