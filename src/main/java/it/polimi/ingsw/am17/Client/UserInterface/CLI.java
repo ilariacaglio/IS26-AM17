@@ -220,6 +220,9 @@ public class CLI implements UI {
                     //draw lower row
                     drawRow(false);
 
+                    // print the cards of the player
+                    drawLocalPlayer();
+
                     // if the game has begun notify the players turn
                     if(readOnlyModel.isPlayerTurn())
                         System.out.println("It's your turn!");
@@ -234,6 +237,19 @@ public class CLI implements UI {
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
+    }
+
+    /**
+     * prints the cards of the local player
+     */
+    private void drawLocalPlayer() {
+        System.out.print("You:");
+        String cards = localPlayer.playerCharacterCardstoString(15) +
+                localPlayer.playerBuildingCardsString(15);
+        if(cards.isEmpty()) {
+            cards = "           no cards yet";
+        }
+        System.out.println(cards);
     }
 
     /**
@@ -467,14 +483,14 @@ public class CLI implements UI {
         // print character cards
         for (TribesCard card : tribeRow) {
             if (card.getCardType().isCharacter()) {
-                System.out.print(" " + currentIndex + ") [" + card + "] ");
+                System.out.print(" " + currentIndex + ") " + card);
                 // increase number only when the card is printed
                 currentIndex++;
             }
         }
         // print building cards
         for (BuildingCard card : buildingRow) {
-            System.out.print(" " + currentIndex + ") [" + card + "] ");
+            System.out.print(" " + currentIndex + ") "+ card);
             // increase number only when the card is printed
             currentIndex++;
         }
@@ -491,7 +507,6 @@ public class CLI implements UI {
     private Color chooseColor() {
         Color[] colors = Color.values();
 
-        System.out.println("Choose your color");
         while (true) {
             System.out.println("Available colors:");
             for (int i = 0; i < colors.length; i++) {
@@ -673,12 +688,12 @@ public class CLI implements UI {
 
             if(!tribeRow.isEmpty()) {
                 for (TribesCard c : tribeRow) {
-                    System.out.print("[" + c.toString() + "] ");
+                    System.out.print(c);
                 }
             }
             if(!buildingRow.isEmpty()){
                 for(BuildingCard c : buildingRow) {
-                    System.out.print("[" + c.toString() + "] ");
+                    System.out.print(c);
                 }
             }
             System.out.println();
@@ -693,7 +708,7 @@ public class CLI implements UI {
         if(!offeringCards.isEmpty()){
             System.out.print("Bidding trail: ");
             for(OfferingCard c : offeringCards) {
-                System.out.print("[" + c.toString() + "] ");
+                System.out.print(c);
             }
             System.out.println();
         }

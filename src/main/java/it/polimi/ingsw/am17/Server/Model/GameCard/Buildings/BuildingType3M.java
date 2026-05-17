@@ -60,6 +60,6 @@ public class BuildingType3M extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +PP/each " + characterType.toString();
+        return super.toString() + " Effect: +PP/each " + characterType.toString() + "] ";
     }
 }

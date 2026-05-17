@@ -29,6 +29,10 @@ public class TribesCard extends GameCard implements Serializable {
 
     @Override
     public String toString() {
+        return "[" + getDetails() +"] ";
+    }
+
+    protected String getDetails(){
         return cardType.toString();
     }
 }

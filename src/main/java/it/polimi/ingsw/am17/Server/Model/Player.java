@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Player implements Serializable {
     private String nickname;
@@ -375,21 +376,97 @@ public class Player implements Serializable {
 
     @Override
     public String toString() {
-        String result = "Nickname: " + nickname +
+        String playerString = "Nickname: " + nickname +
                 "\nPp: " + pp +
                 "\nFood: " + food;
-        if(!characterCards.isEmpty()) {
-            result += "\nCharacter cards: ";
-            for (CharacterCard c : this.characterCards) {
-                result = result.concat("[" + c.toString() + "] ");
+        if (!characterCards.isEmpty()) playerString+= "\nCharacter cards: " + playerCharacterCardstoString(17);
+        if (!buildingCards.isEmpty()) playerString+= "Building cards: " + playerBuildingCardsString(17);
+        return playerString;
+    }
+
+    /**
+     * Builds a string containing the character cards of the player
+     * @return  the string with character cards of the player
+     */
+    public String playerCharacterCardstoString(int startSpace) {
+        StringBuilder sb = new StringBuilder();
+        if (!characterCards.isEmpty()) {
+            // map of character types and character cards of the player
+            // key: character type
+            // value: list of cards of the key type
+            Map<CardType, List<CharacterCard>> groupCharacters = characterCards.stream()
+                    .collect(Collectors.groupingBy(TribesCard::getCardType));
+
+            // map with maximum widths of the columns
+            Map<CardType, Integer> columnWidths = columnLength();
+
+            // calculate the number of rows to append
+            int maxRows = groupCharacters.values().stream().mapToInt(List::size).max().orElse(0);
+
+            // initial span
+            if (startSpace == 15) sb.repeat(" ", startSpace - 4);
+            else sb.repeat(" ", startSpace - 17);
+            // append cards
+            for (int i = 0; i < maxRows; i++) {
+                if (i>0) sb.append("\n").repeat(" ", startSpace);
+                for (CardType type : groupCharacters.keySet()) {
+                    List<CharacterCard> columnCards = groupCharacters.get(type);
+                    // if cards are more than the current row index append one of them
+                    // append blank otherwise
+                    String card = (i < columnCards.size()) ? columnCards.get(i).toString() : "";
+                    sb.append(String.format("%-" + columnWidths.get(type) + "s", card));
+                }
+
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Builds a string containing the building cards of the player
+     * @return  the string with building cards of the player
+     */
+    public String playerBuildingCardsString(int startSpace) {
+        if (buildingCards.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        if (startSpace == 17) {
+            // if first row add only one space
+            sb.append(" ");
+        }
+        else {
+            sb.repeat(" ", startSpace);
+        }
+        for (int i = 0; i < buildingCards.size(); i++) {
+            sb.append(buildingCards.get(i).toString());
+            if (i < buildingCards.size() - 1) {
+                sb.append("\n").repeat(" ", startSpace);
             }
         }
-        if (!buildingCards.isEmpty()) {
-            result += "\nBuilding cards: ";
-            for (BuildingCard c : this.buildingCards) {
-                result = result.concat("[" + c.toString() + "] ");
-            }
-        }
-        return result;
+        return sb.toString();
+    }
+
+    /**
+     * @return  a map with the maximum card string length for each character type.
+     */
+    private Map<CardType, Integer> columnLength() {
+        Map<CardType, Integer> columnMaxLength = new HashMap<>();
+        // space between columns
+        int fixedGap = 4;
+        // artist: 8
+        columnMaxLength.put(CardType.ARTIST, 8 + fixedGap);
+        // hunter: 9
+        columnMaxLength.put(CardType.HUNTER, 9 + fixedGap);
+        // shaman: 11
+        columnMaxLength.put(CardType.SHAMAN, 11 + fixedGap);
+        // inventor: 20
+        columnMaxLength.put(CardType.INVENTOR, 20 + fixedGap);
+        // builder: 19
+        columnMaxLength.put(CardType.BUILDER, 19 + fixedGap);
+        // binder: 8
+        columnMaxLength.put(CardType.BINDER, 8  + fixedGap);
+        return columnMaxLength;
     }
 }

@@ -32,6 +32,6 @@ public class BuildingType7 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +1PP+1F/hunter in HunterEvent ";
+        return super.toString() + " Effect: +1PP+1F/hunter in HunterEvent] ";
     }
 }

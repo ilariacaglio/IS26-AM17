@@ -25,6 +25,6 @@ public class BuildingType5 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +1PP/artist in PaintingEvent ";
+        return super.toString() + " Effect: +1PP/artist in PaintingEvent] ";
     }
 }

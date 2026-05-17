@@ -24,6 +24,6 @@ public class BuildingType2 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +25PP";
+        return super.toString() + " Effect: +25PP] ";
     }
 }

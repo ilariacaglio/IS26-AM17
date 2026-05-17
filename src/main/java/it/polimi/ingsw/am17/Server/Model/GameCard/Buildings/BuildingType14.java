@@ -63,6 +63,6 @@ public class BuildingType14 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +5F/set of 6 different characters";
+        return super.toString() + " Effect: +5F/set of 6 different characters] ";
     }
 }

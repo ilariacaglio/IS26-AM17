@@ -18,6 +18,6 @@ public class BuildingType8 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: x2PP in RitualEvent if won.";
+        return super.toString() + " Effect: x2PP in RitualEvent if won] ";
     }
 }

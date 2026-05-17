@@ -39,6 +39,6 @@ public class BuildingType4 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +6PP/each 6 unique characters";
+        return super.toString() + " Effect: +6PP/each 6 unique characters] ";
     }
 }

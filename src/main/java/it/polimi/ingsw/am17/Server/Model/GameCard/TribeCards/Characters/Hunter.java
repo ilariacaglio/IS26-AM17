@@ -39,8 +39,8 @@ public class Hunter extends CharacterCard {
     }
 
     @Override
-    public String toString() {
-        if (withIcon) return super.toString() + "+";
-        else return super.toString();
+    public String getDetails() {
+        if (withIcon) return super.getDetails() + "+";
+        else return super.getDetails();
     }
 }
