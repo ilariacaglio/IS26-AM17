@@ -1,8 +1,5 @@
 package it.polimi.ingsw.am17.Server.RMI;
 
-import it.polimi.ingsw.am17.Client.Socket.ClientSocket;
-import it.polimi.ingsw.am17.CommonInterfaces.Message;
-import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -10,13 +7,8 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
-import it.polimi.ingsw.am17.Server.ServerActionMethods;
 import it.polimi.ingsw.am17.Server.ServerInterface;
-import it.polimi.ingsw.am17.Server.Socket.VirtualViewSocket;
-import it.polimi.ingsw.am17.Server.Socket._ServerSocket;
-import it.polimi.ingsw.am17.ServerLauncher;
 
-import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -26,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
@@ -80,32 +71,32 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
 
     @Override
     public void getGamesList(VirtualView client) throws RemoteException {
-        ServerActionMethods.getGamesList(this.controller, client);
+        controller.getGamesList(this.controller, client);
     }
 
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
-        ServerActionMethods.createGame(this.controller, client, player, numPlayers);
+        controller.createGame(this.controller, client, player, numPlayers);
     }
 
     @Override
     public void closeGame(VirtualView client, Player player, UUID gameId) throws RemoteException {
-        ServerActionMethods.closeGame(this.controller, client, player, gameId);
+        controller.closeGame(this.controller, client, player, gameId);
     }
 
     @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
-        ServerActionMethods.joinGame(this.controller, client, gameId, player);
+        controller.joinGame(this.controller, client, gameId, player);
     }
 
     @Override
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
-        ServerActionMethods.pickOfferingCard(this.controller, gameId, player, card);
+        controller.pickOfferingCard(this.controller, gameId, player, card);
     }
 
     @Override
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        ServerActionMethods.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
+        controller.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
     }
 
     @Override

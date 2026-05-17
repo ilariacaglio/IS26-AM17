@@ -9,7 +9,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.ServerActionMethods;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -18,8 +17,6 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,31 +72,31 @@ public class _ServerSocket implements Runnable, VirtualServer {
 
     @Override
     public void getGamesList(VirtualView client) throws RemoteException {
-        ServerActionMethods.getGamesList(this.controller, client);
+        controller.getGamesList(this.controller, client);
     }
 
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
-        ServerActionMethods.createGame(this.controller, client, player, numPlayers);
+        controller.createGame(this.controller, client, player, numPlayers);
     }
 
     @Override
     public void closeGame(VirtualView client, Player player, UUID gameId) throws Exception {
-        ServerActionMethods.closeGame(this.controller, client, player, gameId);
+        controller.closeGame(this.controller, client, player, gameId);
     }
 
     @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
-        ServerActionMethods.joinGame(this.controller, client, gameId, player);
+        controller.joinGame(this.controller, client, gameId, player);
     }
 
     @Override
     public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
-        ServerActionMethods.pickOfferingCard(this.controller, gameId, player, card);
+        controller.pickOfferingCard(this.controller, gameId, player, card);
     }
 
     @Override
     public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        ServerActionMethods.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
+        controller.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
     }
 }
