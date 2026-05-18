@@ -2,7 +2,6 @@ package it.polimi.ingsw.am17.Server.Controller;
 
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -95,7 +94,7 @@ public class GamesController {
         }
     }
 
-    //** public methods: CLIENT ACTIONs **//
+    //** public methods: CLIENT ACTIONS **//
     // Used by RMI/Socket servers to handle client requests.
     // N.B. all requests are handled in a new thread to avoid blocking the controller.
 
@@ -156,6 +155,8 @@ public class GamesController {
                 synchronized (game) {
                     game.addPlayer(player);
                 }
+                // add player to mapping
+                playerMapping.put(client, player.getNickname());
             } catch (Exception e) {
                 logger.warning("Error joining game: " + e.getMessage());
 
@@ -174,61 +175,67 @@ public class GamesController {
      * TODO: add check on "creator" player, i.e. only the creator can close the game.
      * TODO: use player parameter and add it to the notify (who closed the game?) for unexpected disconnections.
      * @param client client generating the request.
-     * @param player associated with the client generating the request.
      */
-    public void closeGame(VirtualView client, Player player) {
+    public void closeGame(VirtualView client) {
         new Thread(() -> {
 
-        // get uuid of the game from the client (mapping)
-        UUID uuid = gameMapping.get(client);
+            // get uuid of the game from the client (mapping)
+            UUID uuid = gameMapping.get(client);
 
-        // get the game object from uuid to call the end game method
-        Game game = getGameFromId(uuid);
+            // get the game object from uuid to call the end game method
+            Game game = getGameFromId(uuid);
 
-        try {
-            synchronized (game) {
-                game.forceEndGame();
+            try {
+                synchronized (game) {
+                    game.forceEndGame();
+                }
             }
-        }
-        catch (Exception e) {
-            logger.warning("Error calling forceEndGame: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
+            catch (Exception e) {
+                logger.warning("Error calling forceEndGame: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
 
-        // remove client from the game's observer list
-        removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
+            // remove client from the game's observer list
+            removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
 
-        // get the clients linked to the game with uuid
-        var clientsList = gameMapping.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(uuid))
-                .map(Map.Entry::getKey)
-                .toList();
-        // remove the client from the mapping and the game from the list
-        clientsList.forEach(gameMapping.keySet()::remove);
-        // remove all the players of that game
-        clientsList.forEach(playerMapping.keySet()::remove);
-        // remove game from id list
-        removeGameFromId(uuid);
-    }).start();
+            // get the clients linked to the game with uuid
+            var clientsList = gameMapping.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(uuid))
+                    .map(Map.Entry::getKey)
+                    .toList();
 
+            // remove the client from the mapping and the game from the list
+            clientsList.forEach(gameMapping.keySet()::remove);
+
+            // remove all the players of that game
+            clientsList.forEach(playerMapping.keySet()::remove);
+
+            // remove game from id list
+            removeGameFromId(uuid);
+        }).start();
     }
 
     /**
      * Forwards a pickOfferingCard request to the game.
-     * @param gameId of the game
-     * @param player selecting the card
-     * @param offeringCard to be selected
+     * @param client                the client who made the request
+     * @param offeringCardLetter    to be selected
      */
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard offeringCard) {
+    public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
         new Thread(() -> {
-            // N.B.: here a client is not passed, the "pick" methods are conceptually different
-            // TODO: we still should check that the request comes from the right client tho.
-            logger.info(player.getNickname() + " wants to pick offering card " + offeringCard.getOrderLetter() + " in game " + gameId);
+            logger.info("Request received by the controller.");
+            // search for client nickname
+            String nickname = playerMapping.get(client);
+            // search for game id
+            UUID gameId = gameMapping.get(client);
 
             try {
+                // retrieve game
                 Game game = getGameFromId(gameId);
+
+                logger.info(nickname + " wants to pick offering card " + offeringCardLetter + " in game " + gameId);
+
                 synchronized (game) {
-                    game.selectOfferingCard(player, offeringCard);
+                    game.selectOfferingCard (nickname, offeringCardLetter);
                 }
             }
             catch(Exception e) {
@@ -239,6 +246,7 @@ public class GamesController {
     }
 
     /**
+     * TODO: pass virtualview
      * Forwards a pickTribeCards request to the game.
      * @param gameId of the game
      * @param player selecting the cards
@@ -264,16 +272,14 @@ public class GamesController {
 
     /**
      * Sends an update to the client with the list of open games.
-     * @param controller to get the game list.
      * @param client to send the update.
      */
-    public void getGamesList(GamesController controller, VirtualView client) {
+    public void getGamesList(VirtualView client) {
         new Thread(() -> {
             logger.info("Client" + client.getClass().getSimpleName() + " requested the games list.");
             try {
-
                 // send the list of open games to the client
-                client.updateGamesIdList(controller.getGamesList());
+                client.updateGamesIdList(getGamesList());
             } catch (Exception e) {
                 logger.warning("Error sending games list: " + e.getMessage());
                 throw new RuntimeException(e);

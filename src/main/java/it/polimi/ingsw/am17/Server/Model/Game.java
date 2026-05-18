@@ -382,30 +382,33 @@ public class Game extends Subject {
      * check if the values are plausible and set player to offering card
      * notify observer
      *
-     * @param player       player that chose the offering card
-     * @param offeringCard offering card picked
+     * @param nickname              nickname of the player
+     * @param offeringCardLetter    offering card picked
      */
-    public void selectOfferingCard(Player player, OfferingCard offeringCard) {
+    public void selectOfferingCard(String nickname, Character offeringCardLetter) {
+        // get player from nickname
+        Player player = orderedPlayers.stream().filter(p->nickname.equals(p.getNickname()))
+                .findFirst().orElseThrow();
 
         //check if is player turn
         if (!player.equals(orderedPlayers.peek())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
-        //check card is not null
-        if (offeringCard == null) {
-            throw new IllegalStateException("No offering card selected");
-        }
+        // get offering card from letter
+        OfferingCard selectedOc = offeringCards.stream()
+                .filter(c -> offeringCardLetter.equals(c.getOrderLetter()))
+                .findFirst().orElse(null);
 
-        logger.info("Player " + player.getNickname() + " wants offering card " + offeringCard.getOrderLetter());
         //check if offeringCard is valid
-        if (!offeringCards.contains(offeringCard) && !offeringCard.equals(building2OfferingCard)) {
+        if (selectedOc == null && offeringCardLetter.equals('Z')) {
+            selectedOc = building2OfferingCard;
+        }
+        else {
             throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
         }
 
-        //search for offering card index in list
-        int index = offeringCards.indexOf(offeringCard);
-        OfferingCard selectedOc = offeringCards.get(index);
+        logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
 
         // check if offering card is free
         if(selectedOc.getPlayer() != null) {
@@ -413,7 +416,7 @@ public class Game extends Subject {
         }
 
         //set player to offeringCard
-        selectedOc.setPlayer(orderedPlayers.peek());
+        selectedOc.setPlayer(player);
 
         // dequeue and enqueue the player in last position
         movePlayerInQueue();
@@ -425,7 +428,7 @@ public class Game extends Subject {
 
         // notify changes
         notifyPlayerQueue(orderedPlayers);
-        notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
+        notifyPlayerSelectOfferingCard(player, selectedOc);
     }
 
     /**
