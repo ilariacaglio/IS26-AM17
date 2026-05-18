@@ -66,7 +66,7 @@ public class SocketMultiplexer {
                 new Message(MessageType.HEARTBEAT).send(socket); // this is not actually handled
             } catch (Exception e) {
                 logger.severe("Socket client disconnected! (Failed heartbeat: " + e.getMessage() + ") Was at: " + socket.getRemoteSocketAddress());
-                controller.closeGame(client, null); //TODO
+                controller.closeGame(client);
                 serverSockets.remove(server);
             }
         };

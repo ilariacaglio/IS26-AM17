@@ -3,7 +3,6 @@ package it.polimi.ingsw.am17.Server.RMI;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -63,7 +62,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
             } catch (RemoteException e) {
                 logger.severe("Client disconnected! " + client);
                 clients.remove(client);
-                controller.closeGame(client, null); // TODO
+                controller.closeGame(client);
                 executor.shutdown();
             }
         };
@@ -71,7 +70,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
 
     @Override
     public void getGamesList(VirtualView client) throws RemoteException {
-        controller.getGamesList(this.controller, client);
+        controller.getGamesList(client);
     }
 
     @Override
@@ -80,8 +79,8 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     }
 
     @Override
-    public void closeGame(VirtualView client, Player player, UUID gameId) throws RemoteException {
-        controller.closeGame(client, player);
+    public void closeGame(VirtualView client) throws RemoteException {
+        controller.closeGame(client);
     }
 
     @Override
@@ -90,19 +89,17 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     }
 
     @Override
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
-        controller.pickOfferingCard(gameId, player, card);
+    public void pickOfferingCard(VirtualView client, Character offeringCardLetter) throws RemoteException {
+        controller.pickOfferingCard(client, offeringCardLetter);
     }
 
     @Override
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        controller.pickTribeCards(gameId, player, characterCards, buildingCards);
+    public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
+        controller.pickTribeCards(client, characterCards, buildingCards);
     }
 
     @Override
     public void ping() throws RemoteException {
 
     }
-
-
 }

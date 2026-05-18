@@ -386,6 +386,7 @@ public class Game extends Subject {
      * @param offeringCardLetter    offering card picked
      */
     public void selectOfferingCard(String nickname, Character offeringCardLetter) {
+        logger.info("Request forwarded to selectOfferingCard method in model");
         // get player from nickname
         Player player = orderedPlayers.stream().filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow();
@@ -404,7 +405,7 @@ public class Game extends Subject {
         if (selectedOc == null && offeringCardLetter.equals('Z')) {
             selectedOc = building2OfferingCard;
         }
-        else {
+        else if (selectedOc == null) {
             throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
         }
 
@@ -458,11 +459,18 @@ public class Game extends Subject {
 
     /**
      * Emulates a player action (picking cards).
-     * @param player            the player that has picked the cards
+     * @param nickname          the nickname of the player that has picked the cards
      * @param characterCards    the character cards picked by the player
      * @param buildingCards     the building cards picked by the player
      */
-    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
+    public void pickTribeCards(String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
+        logger.info("Request forwarded to pickTribeCards method in model");
+
+        // get player from nickname
+        Player player =  orderedPlayers.stream()
+                .filter(p->nickname.equals(p.getNickname()))
+                .findFirst().orElseThrow();
+
         logger.info("Player " + player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards);
 
         // Get leftmost occupied offering card.
@@ -479,14 +487,13 @@ public class Game extends Subject {
         if (!player.equals(currentOffering.getPlayer())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
-        player = currentOffering.getPlayer();
+
         // check if cards selection is legal based on the offeringCard
         int numUpper = currentOffering.getNumCardsUpper();
         int numLower = currentOffering.getNumCardsLower();
         try {
             validateCardChoice(numUpper, numLower, characterCards, buildingCards);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

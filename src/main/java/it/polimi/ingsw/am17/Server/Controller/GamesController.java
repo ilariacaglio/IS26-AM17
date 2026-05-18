@@ -218,7 +218,7 @@ public class GamesController {
     /**
      * Forwards a pickOfferingCard request to the game.
      * @param client                the client who made the request
-     * @param offeringCardLetter    to be selected
+     * @param offeringCardLetter    letter of the offering card to be selected
      */
     public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
         new Thread(() -> {
@@ -246,21 +246,25 @@ public class GamesController {
     }
 
     /**
-     * TODO: pass virtualview
      * Forwards a pickTribeCards request to the game.
-     * @param gameId of the game
-     * @param player selecting the cards
-     * @param characterCards selected by the player
-     * @param buildingCards selected by the player
+     * @param client            the client who made the request
+     * @param characterCards    selected by the player
+     * @param buildingCards     selected by the player
      */
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         new Thread(() -> {
-            logger.info(player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + gameId);
+            // search for client nickname
+            String nickname = playerMapping.get(client);
+
+            // search for game id
+            UUID gameId = gameMapping.get(client);
+
+            logger.info(nickname + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + gameId);
 
             try {
                 Game game = getGameFromId(gameId);
                 synchronized (game) {
-                    game.pickTribeCards(player, characterCards, buildingCards);
+                    game.pickTribeCards(nickname, characterCards, buildingCards);
                 }
             } catch (Exception e) {
                 logger.warning("Error calling game pickTribeCards: " + e.getMessage());

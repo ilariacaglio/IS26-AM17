@@ -19,7 +19,6 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -35,6 +34,7 @@ public class Message implements Serializable {
     private Player player;
     private Integer numPlayers;
     private OfferingCard offeringCard;
+    private Character offeringCardLetter;
 
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
@@ -219,6 +219,10 @@ public class Message implements Serializable {
     public void setOfferingCard(OfferingCard offeringCard) {
         this.offeringCard = offeringCard;
     }
+
+    public Character getOfferingCardLetter() { return offeringCardLetter;}
+
+    public void setOfferingCardLetter(Character offeringCardLetter) { this.offeringCardLetter = offeringCardLetter; }
 
     public List<CharacterCard> getCharacterCards() {
         return characterCards;
