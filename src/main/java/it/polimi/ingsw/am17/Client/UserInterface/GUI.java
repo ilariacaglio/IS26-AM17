@@ -55,20 +55,19 @@ public class GUI extends Application implements UI {
     private HBox playerCardsBox;
     private HBox playerResourcesBox;
 
-    // This method allows your main logic to "prepare" the data before launching
     public GUI(VirtualServer server, VirtualView view, ClientModel model) {
         staticServer = server;
         staticClient = view;
         staticGame = model;
     }
 
-    // MANDATORY: No-argument constructor (or just let Java provide the default one)
     public GUI() {}
 
     @Override
     public  void setModel(ClientModel model) {
         this.staticGame = model;
     }
+
     /**
      * Updates localPlayer value when the object is updated into the queue by the server
      * Used to update food, pp and cards of the player
@@ -83,7 +82,6 @@ public class GUI extends Application implements UI {
         return localPlayer;
     }
 
-//TODO: find a way to add all the CLI functions (like choose color)
     @Override
     public void start() {
         Application.launch(GUI.class);
@@ -129,35 +127,30 @@ public class GUI extends Application implements UI {
         root = new VBox(10);
         root.setPadding(new Insets(10));
 
-        // 1. Create the overlay VBox exactly like your original code (NO max size restriction)
         VBox turnOverlay = new VBox();
-        turnOverlay.setAlignment(Pos.CENTER); // This will center the label inside the stretched box
+        turnOverlay.setAlignment(Pos.CENTER);
 
-            // 2. Create the label
         Label turnText = new Label("IT'S YOUR TURN!");
 
-// 3. Put ALL the styling (background, border, font) directly on the Label instead of the VBox
         turnText.setStyle("""
-    -fx-background-color: rgba(0, 0, 0, 0.75);
-    -fx-background-radius: 15px;
-    -fx-padding: 15px 40px;
-    -fx-border-color: #c76b22;
-    -fx-border-radius: 15px;
-    -fx-border-width: 2px;
-    -fx-text-fill: #f4dca6;
-    -fx-font-weight: bold;
-    -fx-font-size: 36px;
-    -fx-font-family: 'Verdana';
-""");
+            -fx-background-color: rgba(0, 0, 0, 0.75);
+            -fx-background-radius: 15px;
+            -fx-padding: 15px 40px;
+            -fx-border-color: #c76b22;
+            -fx-border-radius: 15px;
+            -fx-border-width: 2px;
+            -fx-text-fill: #f4dca6;
+            -fx-font-weight: bold;
+            -fx-font-size: 36px;
+            -fx-font-family: 'Verdana';
+            """);
 
-// 4. Add the shadow
         DropShadow textShadow = new DropShadow();
         textShadow.setRadius(5.0);
         textShadow.setOffsetY(3.0);
         textShadow.setColor(javafx.scene.paint.Color.color(0, 0, 0, 0.8));
         turnText.setEffect(textShadow);
 
-// 5. Add the beautifully styled label to the stretching VBox
         turnOverlay.getChildren().add(turnText);
         turnOverlay.setVisible(false);
         if(staticGame.isPlayerTurn()){
@@ -191,13 +184,15 @@ public class GUI extends Application implements UI {
         //tribes cards first
         HBox upperCardsBox =new HBox(10);
         for(TribesCard card : staticGame.getUpperTribeRow()){
-            CardGUI upperCards = new CardGUI(card);
-            upperCardsBox.getChildren().add(upperCards);
+            CardGUI upperCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForTribes(upperCard, card);
+            upperCardsBox.getChildren().add(upperCard);
         }
         //building cards second
         for(BuildingCard card : staticGame.getUpperBuildingRow()){
-            CardGUI upperCards = new CardGUI(card);
-            upperCardsBox.getChildren().add(upperCards);
+            CardGUI upperCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForBuilding(upperCard, card);
+            upperCardsBox.getChildren().add(upperCard);
         }
 
         //put turnCard and offeringCard in the same HBox
@@ -208,7 +203,12 @@ public class GUI extends Application implements UI {
 
         //offeringCards second
         for(OfferingCard card : staticGame.getOfferingCards()){
-            CardGUI offeringCard = new CardGUI(card);
+            CardGUI offeringCard;
+            if(card.getPlayer() == null)
+                offeringCard = new CardGUI(card.getImagePath());
+            else
+                offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
+            setOnMouseClickForOffering(offeringCard, card);
             offeringCardGUI.add(offeringCard);
             offeringCardBox.getChildren().add(offeringCard);
         }
@@ -218,13 +218,15 @@ public class GUI extends Application implements UI {
         //tribe cards first
         HBox lowerCardsBox =  new HBox(10);
         for(TribesCard card : staticGame.getLowerTribeRow()){
-            CardGUI lowerCards = new CardGUI(card);
-            lowerCardsBox.getChildren().add(lowerCards);
+            CardGUI lowerCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForTribes(lowerCard, card);
+            lowerCardsBox.getChildren().add(lowerCard);
         }
         //building cards second
         for(BuildingCard card : staticGame.getLowerBuildingRow()){
-            CardGUI lowerCards = new CardGUI(card);
-            lowerCardsBox.getChildren().add(lowerCards);
+            CardGUI lowerCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForBuilding(lowerCard, card);
+            lowerCardsBox.getChildren().add(lowerCard);
         }
 
         //send button
@@ -234,6 +236,10 @@ public class GUI extends Application implements UI {
             try {
                 if (offeringSelected != null) {
                     staticServer.pickOfferingCard(staticGame.getGameId(), localPlayer, offeringSelected);
+                    offeringSelected = null;
+                    buildingSelected = new ArrayList<>();
+                    tribesSelected =  new ArrayList<>();
+                    offeringCardGUI = new ArrayList<>();
                 } else {
                     // get players offering card
                     OfferingCard myOfferingCard = staticGame.getOfferingCards().stream()
@@ -243,8 +249,13 @@ public class GUI extends Application implements UI {
                     Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
                             tribesSelected, buildingSelected, staticGame.getUpperTribeRow(), staticGame.getLowerTribeRow(),
                             staticGame.getUpperBuildingRow(), staticGame.getLowerBuildingRow());
-                    if(exception == null)
+                    if(exception == null) {
                         staticServer.pickTribeCards(staticGame.getGameId(), localPlayer, tribesSelected, buildingSelected);
+                        offeringSelected = null;
+                        buildingSelected = new ArrayList<>();
+                        tribesSelected =  new ArrayList<>();
+                        offeringCardGUI = new ArrayList<>();
+                    }
                     else {
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Error in selection");
@@ -254,10 +265,7 @@ public class GUI extends Application implements UI {
                     }
 
                 }
-                offeringSelected = null;
-                buildingSelected = new ArrayList<>();
-                tribesSelected =  new ArrayList<>();
-                offeringCardGUI = new ArrayList<>();
+
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -641,6 +649,76 @@ public class GUI extends Application implements UI {
         return layout;
     }
 
+    private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card)
+    {
+        if(card.getCardType().isCharacter()) {
+            cardGUI.setOnMouseClicked(event -> {
+                if (!GUI.isPlayerTurn()) {
+                    showWaitTurnAlert();
+                    return;
+                }
+
+                if (staticGame.isPickOCPhase()) {
+                    return; // Not selectable right now
+                }
+
+                // Toggle the visual state
+                cardGUI.setVisualSelection(!cardGUI.isSelected());
+
+                GUI.tribesSelected((CharacterCard) card);
+            });
+        }
+    }
+
+    private void setOnMouseClickForBuilding(CardGUI cardGUI, BuildingCard card )
+    {
+        cardGUI.setOnMouseClicked(event -> {
+            if (!GUI.isPlayerTurn()) {
+                showWaitTurnAlert(); // The main GUI handles the alert, not the card!
+                return;
+            }
+
+            if (staticGame.isPickOCPhase()) {
+                return; // Not selectable right now
+            }
+
+            // Toggle the visual state
+            cardGUI.setVisualSelection(!cardGUI.isSelected());
+
+            // Handle the game logic
+            GUI.buildingSelected(card);
+        });
+    }
+
+    private void setOnMouseClickForOffering(CardGUI cardGUI, OfferingCard card)
+    {
+        cardGUI.setOnMouseClicked(event -> {
+            if (!GUI.isPlayerTurn()) {
+                showWaitTurnAlert(); // The main GUI handles the alert, not the card!
+                return;
+            }
+
+            if (!staticGame.isPickOCPhase()) {
+                return; // Not selectable right now
+            }
+
+            // Handle the game logic
+            GUI.offeringSelected(card);
+
+            // Toggle the visual state
+            cardGUI.setVisualSelection(!cardGUI.isSelected());
+        });
+    }
+
+    private void showWaitTurnAlert(){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Wait Your Turn");
+        alert.setHeaderText(null);
+        alert.setContentText("It is currently the other player's turn!");
+        alert.showAndWait();
+
+    }
+
     public static void tribesSelected(CharacterCard card)
     {
         if(tribesSelected.contains(card))
@@ -666,12 +744,12 @@ public class GUI extends Application implements UI {
         else
             offeringSelected = card;
 
-        for(CardGUI cardGUI : offeringCardGUI)
-        {
-            cardGUI.selected = false;
-            cardGUI.setSelected();
+        for (CardGUI cardGUI : offeringCardGUI){
+            cardGUI.setVisualSelection(false);
         }
     }
+
+
 
     private void updateGameList(TextArea gameList) {
         Platform.runLater(() -> {
