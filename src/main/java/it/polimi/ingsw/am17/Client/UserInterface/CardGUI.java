@@ -107,8 +107,14 @@ public class CardGUI extends StackPane {
 
         //fit the card in rectangle
         view.setFitWidth(90);
+        view.setFitHeight(130);
         view.setPreserveRatio(true);
         view.setSmooth(true);
+
+        Rectangle clip = new Rectangle(90, 130);
+        clip.setArcWidth(12);
+        clip.setArcHeight(12);
+        view.setClip(clip);
 
         // Add everything to the StackPane
         this.getChildren().add(view);

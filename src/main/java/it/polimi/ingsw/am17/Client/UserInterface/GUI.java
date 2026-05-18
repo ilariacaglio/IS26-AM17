@@ -6,9 +6,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Hunter;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
@@ -20,14 +18,11 @@ import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.util.*;
-import javax.swing.*;
 import java.util.List;
 
 
@@ -37,8 +32,8 @@ public class GUI extends Application implements UI {
 
     private static final double START_WINDOW_WIDTH = 400;
     private static final double START_WINDOW_HEIGHT = 300;
-    private static final double GAME_WINDOW_WIDTH = 1200;
-    private static final double GAME_WINDOW_HEIGHT = 800;
+    private static final double GAME_WINDOW_WIDTH = 1920;
+    private static final double GAME_WINDOW_HEIGHT = 1080;
 
     private static List<CharacterCard> tribesSelected = new ArrayList<>();
     private static List<BuildingCard> buildingSelected = new ArrayList<>();
@@ -50,12 +45,15 @@ public class GUI extends Application implements UI {
     private static VirtualView staticClient;
     private static ClientModel staticGame;
     private static Player localPlayer;
+    private static Player selectedPlayer;
 
     private VBox root;
     public static Scene scene;
+    private Label name;
     private Label food;
     private Label points;
-    private HBox personalCardsBox;
+    private HBox playerCardsBox;
+    private HBox playerResourcesBox;
 
     // This method allows your main logic to "prepare" the data before launching
     public GUI(VirtualServer server, VirtualView view, ClientModel model) {
@@ -127,21 +125,40 @@ public class GUI extends Application implements UI {
 
     public Parent drawGameInterface() {
         Stage stage = (Stage) scene.getWindow();
-        stage.setHeight(GAME_WINDOW_HEIGHT);
-        stage.setWidth(GAME_WINDOW_WIDTH);
+        stage.setMaximized(true);
         root = new VBox(10);
         root.setPadding(new Insets(10));
 
-        VBox turnOverlay = new VBox(10); // 10px spacing
-        turnOverlay.setAlignment(Pos.CENTER);
+        // 1. Create the overlay VBox exactly like your original code (NO max size restriction)
+        VBox turnOverlay = new VBox();
+        turnOverlay.setAlignment(Pos.CENTER); // This will center the label inside the stretched box
+
+            // 2. Create the label
         Label turnText = new Label("IT'S YOUR TURN!");
+
+// 3. Put ALL the styling (background, border, font) directly on the Label instead of the VBox
         turnText.setStyle("""
-            -fx-text-fill: black;
-            -fx-font-weight: bold;
-            -fx-font-size: 30px;
-            -fx-background-color: white;
-        """);
-        turnOverlay.getChildren().addAll(turnText);
+    -fx-background-color: rgba(0, 0, 0, 0.75);
+    -fx-background-radius: 15px;
+    -fx-padding: 15px 40px;
+    -fx-border-color: #c76b22;
+    -fx-border-radius: 15px;
+    -fx-border-width: 2px;
+    -fx-text-fill: #f4dca6;
+    -fx-font-weight: bold;
+    -fx-font-size: 36px;
+    -fx-font-family: 'Verdana';
+""");
+
+// 4. Add the shadow
+        DropShadow textShadow = new DropShadow();
+        textShadow.setRadius(5.0);
+        textShadow.setOffsetY(3.0);
+        textShadow.setColor(javafx.scene.paint.Color.color(0, 0, 0, 0.8));
+        turnText.setEffect(textShadow);
+
+// 5. Add the beautifully styled label to the stretching VBox
+        turnOverlay.getChildren().add(turnText);
         turnOverlay.setVisible(false);
         if(staticGame.isPlayerTurn()){
             turnOverlay.setVisible(true);
@@ -158,6 +175,15 @@ public class GUI extends Application implements UI {
         //TODO: add graphics
         //TODO: add buttons methods with setOnAction()
         //TODO: fix dimension
+
+        Label localPlayerName = new Label("Local Player: " + localPlayer.getNickname());
+        localPlayerName.setStyle("""
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-font-size: 30px;
+        """);
+        HBox localPlayerNameBox =  new HBox(10);
+        localPlayerNameBox.getChildren().addAll(localPlayerName);
 
         //create cards like buttons so player can select them
         //upperCards
@@ -236,18 +262,32 @@ public class GUI extends Application implements UI {
                 throw new RuntimeException(ex);
             }
         });
+        sendButton.setStyle("""
+            -fx-background-color: #5c2c16;\s
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-background-radius: 5px;
+            -fx-cursor: hand;
+            -fx-font-size: 16px;
+            -fx-padding: 10px 20px;
+            """);
+        HBox sendButtonBox = new HBox();
+        sendButtonBox.getChildren().add(sendButton);
+        sendButtonBox.setAlignment(Pos.CENTER);
+
+
         //other players card buttons
         HBox playersCardsBox =  new HBox(10);
         HBox showCardsBox = new HBox(10);
         ScrollPane otherScrollPane = new ScrollPane(showCardsBox);
-        final Player[] openedPlayer = {null};
+        //final Player[] openedPlayer = {null};
         for(Player p : staticGame.getOrderedPlayers()){
-            Button playerCards = new Button(p.getNickname() );
+            Button playerButton = new Button(p.getNickname() );
             //set nickname color
             Color nicknameColor = p.getColor();
             switch (nicknameColor) {
                 case RED:
-                    playerCards.setStyle("""
+                    playerButton.setStyle("""
                               -fx-text-fill: red;
                               -fx-background-color: #aaaaaa;
                               -fx-font-weight: bold;
@@ -255,7 +295,7 @@ public class GUI extends Application implements UI {
                     """);
                     break;
                 case BLUE:
-                    playerCards.setStyle("""
+                    playerButton.setStyle("""
                               -fx-text-fill: blue;
                               -fx-background-color: #aaaaaa;
                               -fx-font-weight: bold;
@@ -263,7 +303,7 @@ public class GUI extends Application implements UI {
                     """);
                     break;
                 case WHITE:
-                    playerCards.setStyle("""
+                    playerButton.setStyle("""
                               -fx-text-fill: white;
                               -fx-background-color: #aaaaaa;
                               -fx-font-weight: bold;
@@ -271,7 +311,7 @@ public class GUI extends Application implements UI {
                     """);
                     break;
                 case BLACK:
-                    playerCards.setStyle("""
+                    playerButton.setStyle("""
                               -fx-text-fill: black;
                               -fx-background-color: #aaaaaa;
                               -fx-font-weight: bold;
@@ -279,7 +319,7 @@ public class GUI extends Application implements UI {
                     """);
                     break;
                 case YELLOW:
-                    playerCards.setStyle("""
+                    playerButton.setStyle("""
                               -fx-text-fill: yellow;
                               -fx-background-color: #aaaaaa;
                               -fx-font-weight: bold;
@@ -288,87 +328,48 @@ public class GUI extends Application implements UI {
                     break;
             }
             //add area for other players' cards
+
             otherScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             otherScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             otherScrollPane.setFitToHeight(true);
             otherScrollPane.setPannable(true);
             otherScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-            playersCardsBox.getChildren().add(playerCards);
-
-            playerCards.setOnAction(e -> {
-                //same player -> close
-                if (openedPlayer[0] == p) {
-                    showCardsBox.getChildren().clear();
-                    openedPlayer[0] = null;
-                    return;
-                }
-                //other player -> change cards
-                showCardsBox.getChildren().clear();
-                // sort character cards
-                List<CharacterCard> orderedOtherCards = new ArrayList<>(
-                        p.getCharacterCards()
-                );
-
-                orderedOtherCards.sort(Comparator.comparing(CharacterCard::getCardType));
-                //add character cards
-                for(CharacterCard card : orderedOtherCards){
-                    CardGUI characterCard = new CardGUI(card.getImagePath());
-                    showCardsBox.getChildren().add(characterCard);
-                }
-                //add building cards
-                for(BuildingCard card : p.getBuildingCards()){
-                    CardGUI buildingCard = new CardGUI(card.getImagePath());
-                    showCardsBox.getChildren().add(buildingCard);
-                }
-                // save player selected
-                openedPlayer[0] = p;
+            playersCardsBox.getChildren().add(playerButton);
+            StackPane.setAlignment(playersCardsBox, Pos.BOTTOM_CENTER);
+            playerButton.setOnAction(e -> {
+                selectedPlayer = p;
+                createPlayerCardLabel();
+                orderPersonalCards();
             });
 
         }
 
-        VBox otherPlayersCardsBox = new VBox(10,  playersCardsBox, otherScrollPane);
+        VBox playersButtonBox = new VBox(10,  playersCardsBox, otherScrollPane);
 
-        //player personal cards
-        Label personalCards = new Label("My Cards");
-        personalCards.setStyle("""
-            -fx-text-fill: white;
-            -fx-font-weight: bold;
-            -fx-font-size: 30px;
-        """);
-        HBox personalLabelBox = new HBox(10);
-        personalCardsBox =  new HBox(10);
+        //player cards
+
+        playerCardsBox =  new HBox(10);
 
         //add area for personal cards
-        ScrollPane scrollPane = new ScrollPane(personalCardsBox);
+        ScrollPane scrollPane = new ScrollPane(playerCardsBox);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setFitToHeight(true);
         scrollPane.setPannable(true);
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        personalLabelBox.getChildren().add(personalCards);
-
         //order personal cards
         orderPersonalCards();
 
-        VBox playerCardsBox = new VBox(10,  personalLabelBox, scrollPane);
 
-        //food and PP
-        food = new Label("Food: " +localPlayer.getFood());
-        food.setStyle("""
-            -fx-text-fill: white;
-            -fx-font-weight: bold;
-            -fx-font-size: 30px;
-        """);
-        points = new Label("Points: "+localPlayer.getPp());
-        points.setStyle("""
-            -fx-text-fill: white;
-            -fx-font-weight: bold;
-            -fx-font-size: 30px;
-        """);
-        HBox playerResourcesBox =  new HBox(10);
-        playerResourcesBox.getChildren().addAll(sendButton, points, food);
+
+        VBox playerCardsBox = new VBox(10, scrollPane);
+
+        //player name, food and pp
+        playerResourcesBox =  new HBox(10);
+        createPlayerCardLabel();
+
 
         //add components to root
         // Center the upper cards
@@ -383,8 +384,12 @@ public class GUI extends Application implements UI {
         // Center the player buttons
         playersCardsBox.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(turnOverlay, upperCardsBox, offeringCardBox, lowerCardsBox, playerResourcesBox,
-                playerCardsBox, otherPlayersCardsBox);
+        // Create a blank region to act as a spring/spacer
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        root.getChildren().addAll(turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox, lowerCardsBox, sendButtonBox,
+                playerResourcesBox, playerCardsBox, spacer, playersButtonBox);
         return root;
     }
 
@@ -484,6 +489,7 @@ public class GUI extends Application implements UI {
 
             //create local player
             localPlayer = new Player(name, color);
+            selectedPlayer = localPlayer;
 
             //go to next interface
             drawConnectionInterface();
@@ -677,25 +683,55 @@ public class GUI extends Application implements UI {
     }
 
     private void orderPersonalCards(){
+        //update selected player
+        selectedPlayer = staticGame.getPlayerFromList(selectedPlayer);
+
         List<CharacterCard> orderedCards = new ArrayList<>(
-                localPlayer.getCharacterCards()
+                selectedPlayer.getCharacterCards()
         );
 
         orderedCards.sort(Comparator.comparing(CharacterCard::getCardType));
 
-        personalCardsBox.getChildren().clear();
+        playerCardsBox.getChildren().clear();
 
         //add personal character cards
         for(CharacterCard card : orderedCards){
             CardGUI characterCard = new CardGUI(card.getImagePath());
-            personalCardsBox.getChildren().add(characterCard);
+            playerCardsBox.getChildren().add(characterCard);
         }
         //add personal building cards
         for(BuildingCard card : localPlayer.getBuildingCards()){
             CardGUI buildingCard = new CardGUI(card.getImagePath());
-            personalCardsBox.getChildren().add(buildingCard);
+            playerCardsBox.getChildren().add(buildingCard);
         }
     }
+
+
+    private void createPlayerCardLabel(){
+        name = new Label("Name: " + selectedPlayer.getNickname());
+        name.setStyle("""
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-font-size: 30px;
+        """);
+        food = new Label("Food: " + selectedPlayer.getFood());
+        food.setStyle("""
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-font-size: 30px;
+        """);
+        points = new Label("Points: "+ selectedPlayer.getPp());
+        points.setStyle("""
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-font-size: 30px;
+        """);
+        if(playerResourcesBox != null) {
+            playerResourcesBox.getChildren().clear();
+            playerResourcesBox.getChildren().addAll(name, points, food);
+        }
+    }
+
 
     public static boolean isPickTribesCard()
     {
