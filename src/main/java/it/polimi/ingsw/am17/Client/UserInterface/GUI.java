@@ -11,6 +11,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Hunter;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -208,7 +209,24 @@ public class GUI extends Application implements UI {
                 if (offeringSelected != null) {
                     staticServer.pickOfferingCard(staticGame.getGameId(), localPlayer, offeringSelected);
                 } else {
-                    staticServer.pickTribeCards(staticGame.getGameId(), staticGame.getLocalPlayer(), tribesSelected, buildingSelected);
+                    // get players offering card
+                    OfferingCard myOfferingCard = staticGame.getOfferingCards().stream()
+                            .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
+                            .findFirst().orElse(null);
+
+                    Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
+                            tribesSelected, buildingSelected, staticGame.getUpperTribeRow(), staticGame.getLowerTribeRow(),
+                            staticGame.getUpperBuildingRow(), staticGame.getLowerBuildingRow());
+                    if(exception == null)
+                        staticServer.pickTribeCards(staticGame.getGameId(), localPlayer, tribesSelected, buildingSelected);
+                    else {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(exception.getMessage());
+                        alert.showAndWait();
+                    }
+
                 }
                 offeringSelected = null;
                 buildingSelected = new ArrayList<>();
