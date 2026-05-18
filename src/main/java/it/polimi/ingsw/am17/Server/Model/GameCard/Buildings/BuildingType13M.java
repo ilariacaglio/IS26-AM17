@@ -58,9 +58,4 @@ public class BuildingType13M extends BuildingCard {
     {
         return "/Images/Buildings/building"+ getEra() +"_13_"+characterType.toString().toLowerCase()+".png";
     }
-    @Override
-    public String getImagePath()
-    {
-        return "/Images/Buildings/building"+ getEra() +"_13_"+characterType.toString().toLowerCase()+".png";
-    }
 }

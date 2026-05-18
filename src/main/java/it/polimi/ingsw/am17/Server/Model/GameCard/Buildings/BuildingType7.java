@@ -41,9 +41,4 @@ public class BuildingType7 extends BuildingCard {
         return "/Images/Buildings/building2_7.png";
     }
 
-    @Override
-    public String getImagePath()
-    {
-        return "/Images/Buildings/building2_7.png";
-    }
 }

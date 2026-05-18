@@ -55,9 +55,4 @@ public class Builder extends CharacterCard {
         return "/Images/Builder/builder_" + pointBonus +"PP_" + foodReduction +"F.png";
     }
 
-    @Override
-    public String getImagePath()
-    {
-        return "/Images/Builder/builder_" + pointBonus +"PP_" + foodReduction +"F.png";
-    }
 }

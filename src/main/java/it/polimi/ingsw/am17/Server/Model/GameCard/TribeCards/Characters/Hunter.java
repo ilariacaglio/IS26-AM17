@@ -50,11 +50,4 @@ public class Hunter extends CharacterCard {
             return "/Images/Hunter/hunter_withIcon.png";
         return "/Images/Hunter/hunter.png";
     }
-    @Override
-    public String getImagePath()
-    {
-        if(withIcon)
-            return "/Images/Hunter/hunter_withIcon.png";
-        return "/Images/Hunter/hunter.png";
-    }
 }
