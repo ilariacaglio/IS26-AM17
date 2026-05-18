@@ -62,4 +62,8 @@ public class BuildingCard extends GameCard implements Serializable {
     public String getImagePath(){
         return "";
     }
+
+    public String getImagePath(){
+        return "";
+    }
 }

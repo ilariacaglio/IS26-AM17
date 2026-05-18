@@ -47,4 +47,9 @@ public class Inventor extends CharacterCard {
     public String getImagePath() {
         return "/Images/Inventor/inventor_"+ icon.toString() +".png";
     }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Inventor/inventor_"+ icon.toString() +".png";
+    }
 }

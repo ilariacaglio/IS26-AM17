@@ -28,4 +28,10 @@ public class BuildingType11 extends BuildingCard {
     {
         return "/Images/Buildings/building1_11.png";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building1_11.png";
+    }
 }

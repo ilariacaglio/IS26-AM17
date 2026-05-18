@@ -95,4 +95,9 @@ public class OfferingCard implements Serializable {
     {
         return "/Images/OfferingCard/offeringCard_"+ orderLetter +".png";
     }
+
+    public String getImagePath()
+    {
+        return "/Images/OfferingCard/offeringCard_"+ orderLetter +".png";
+    }
 }

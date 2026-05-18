@@ -68,4 +68,10 @@ public class BuildingType3M extends BuildingCard {
     {
         return "/Images/Buildings/building3_3_"+characterType.toString().toLowerCase() +".png";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building3_3_"+characterType.toString().toLowerCase() +".png";
+    }
 }

@@ -46,4 +46,9 @@ public class Shaman extends CharacterCard {
     public String getImagePath() {
         return "/Images/Shaman/shaman_"+ stars+".png";
     }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Shaman/shaman_"+ stars+".png";
+    }
 }
