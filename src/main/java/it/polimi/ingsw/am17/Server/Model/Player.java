@@ -470,11 +470,4 @@ public class Player implements Serializable {
         return columnMaxLength;
     }
 
-    public List<CharacterCard> getCharacterCards() {
-        return characterCards;
-    }
-
-    public List<BuildingCard> getBuildingCards() {
-        return buildingCards;
-    }
 }

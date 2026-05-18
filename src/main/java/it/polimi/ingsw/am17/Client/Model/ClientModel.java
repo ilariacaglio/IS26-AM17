@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -13,12 +14,12 @@ import java.util.logging.Logger;
 
 public class ClientModel {
 
-    private String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";    private UUID id;
+    private String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
+    private UUID id;
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
 
     private final UI userInterface;
 
-    private UUID id;
     private int numPlayers;
     private int currentEra;
     private boolean isPickOCPhase;
@@ -36,6 +37,8 @@ public class ClientModel {
     private final List<BuildingCard> lowerBuildingRow;
 
     private final List<RankingEntry> ranking;
+
+    private Player myPlayer;
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
@@ -75,13 +78,6 @@ public class ClientModel {
         this.numPlayers = numPlayers;
     }
 
-    public void createLocalPlayer(String nickname, Color color) {
-        myPlayer = new Player(nickname, color);
-    }
-
-    public Player getLocalPlayer() {
-        return orderedPlayer.stream().filter(p -> p.equals(myPlayer)).findFirst().orElse(myPlayer) ;
-    }
 
     public int getNumPlayers() {
         return numPlayers;
@@ -279,10 +275,6 @@ public class ClientModel {
         return TURN_CARD_IMAGE_PATH + numPlayers + ".png";
     }
 
-    public boolean isPickTribesCard(){
-        return offeringCards.stream().filter(offeringCard -> offeringCard.getPlayer()!=null)
-                .anyMatch(card -> card.getPlayer().equals(orderedPlayer.peek()));
-    }
 
     /**
      * Checks if it is the turn of the local player.

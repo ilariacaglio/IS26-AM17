@@ -15,7 +15,7 @@ public class TribesCard extends GameCard implements Serializable {
     public CardType getCardType() {
         return cardType;
     }
-    public int getEra() {
+    public Integer getEra() {
         return era;
     }
 

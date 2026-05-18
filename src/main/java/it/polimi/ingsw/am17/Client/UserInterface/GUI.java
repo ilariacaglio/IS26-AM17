@@ -48,6 +48,7 @@ public class GUI extends Application implements UI {
     private static VirtualServer staticServer;
     private static VirtualView staticClient;
     private static ClientModel staticGame;
+    private static Player localPlayer;
 
     private VBox root;
     public static Scene scene;
@@ -64,6 +65,24 @@ public class GUI extends Application implements UI {
 
     // MANDATORY: No-argument constructor (or just let Java provide the default one)
     public GUI() {}
+
+    @Override
+    public  void setModel(ClientModel model) {
+        this.staticGame = model;
+    }
+    /**
+     * Updates localPlayer value when the object is updated into the queue by the server
+     * Used to update food, pp and cards of the player
+     */
+    public void setLocalPlayer() {
+        staticGame.getOrderedPlayers().stream()
+                .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
+                .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
+    }
+
+    public Player getLocalPlayer() {
+        return localPlayer;
+    }
 
 //TODO: find a way to add all the CLI functions (like choose color)
     @Override
@@ -85,7 +104,7 @@ public class GUI extends Application implements UI {
     }
 
     @Override
-    public void drawInterface(ClientModel game) {
+    public void drawInterface(ClientModel game, String errorMessagge) {
         staticGame = game;
         Platform.runLater(() -> {
             // Ora sei nel thread giusto!
@@ -187,7 +206,7 @@ public class GUI extends Application implements UI {
         {
             try {
                 if (offeringSelected != null) {
-                    staticServer.pickOfferingCard(staticGame.getGameId(), staticGame.getLocalPlayer(), offeringSelected);
+                    staticServer.pickOfferingCard(staticGame.getGameId(), localPlayer, offeringSelected);
                 } else {
                     staticServer.pickTribeCards(staticGame.getGameId(), staticGame.getLocalPlayer(), tribesSelected, buildingSelected);
                 }
@@ -318,13 +337,13 @@ public class GUI extends Application implements UI {
         VBox playerCardsBox = new VBox(10,  personalLabelBox, scrollPane);
 
         //food and PP
-        food = new Label("Food: " +staticGame.getLocalPlayer().getFood());
+        food = new Label("Food: " +localPlayer.getFood());
         food.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
         """);
-        points = new Label("Points: "+staticGame.getLocalPlayer().getPp());
+        points = new Label("Points: "+localPlayer.getPp());
         points.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
@@ -446,7 +465,7 @@ public class GUI extends Application implements UI {
             }
 
             //create local player
-            staticGame.createLocalPlayer(name, color);
+            localPlayer = new Player(name, color);
 
             //go to next interface
             drawConnectionInterface();
@@ -509,7 +528,7 @@ public class GUI extends Application implements UI {
                     try {
                         waitingOverlay.setVisible(true);
                         options.setDisable(true);
-                        staticServer.createGame(staticClient, staticGame.getLocalPlayer(), count);
+                        staticServer.createGame(staticClient, localPlayer, count);
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
@@ -560,7 +579,7 @@ public class GUI extends Application implements UI {
                 try {
                     // Chiamata RMI per unirsi
                     waitingOverlay.setVisible(true);
-                    staticServer.joinGame(staticClient, UUID.fromString(gameID),staticGame.getLocalPlayer());
+                    staticServer.joinGame(staticClient, UUID.fromString(gameID),localPlayer);
 
                 } catch (Exception ex) {
                     // Se l'ID è sbagliato o il server dà errore, mostra un alert
@@ -641,7 +660,7 @@ public class GUI extends Application implements UI {
 
     private void orderPersonalCards(){
         List<CharacterCard> orderedCards = new ArrayList<>(
-                staticGame.getLocalPlayer().getCharacterCards()
+                localPlayer.getCharacterCards()
         );
 
         orderedCards.sort(Comparator.comparing(CharacterCard::getCardType));
@@ -654,7 +673,7 @@ public class GUI extends Application implements UI {
             personalCardsBox.getChildren().add(characterCard);
         }
         //add personal building cards
-        for(BuildingCard card : staticGame.getLocalPlayer().getBuildingCards()){
+        for(BuildingCard card : localPlayer.getBuildingCards()){
             CardGUI buildingCard = new CardGUI(card.getImagePath());
             personalCardsBox.getChildren().add(buildingCard);
         }
@@ -662,7 +681,7 @@ public class GUI extends Application implements UI {
 
     public static boolean isPickTribesCard()
     {
-        return staticGame.isPickTribesCard();
+        return !staticGame.isPickOCPhase();
     }
 
     @Override

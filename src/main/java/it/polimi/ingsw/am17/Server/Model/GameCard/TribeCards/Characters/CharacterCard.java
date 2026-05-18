@@ -8,7 +8,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class CharacterCard extends TribesCard {
+public class CharacterCard extends TribesCard {
     private Integer minPlayers;
 
     public Integer getMinPlayers() {
@@ -40,6 +40,9 @@ public abstract class CharacterCard extends TribesCard {
     }
 
     @Override
-    public abstract String getImagePath();
+    public String getImagePath(){
+        return "";
+    }
+
 
 }
