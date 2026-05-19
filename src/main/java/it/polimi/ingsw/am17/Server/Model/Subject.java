@@ -118,6 +118,7 @@ public abstract class Subject {
         }
     }
 
+    // TODO: remove clients from list
     void notifyEndGame() {
         for (VirtualView client : clients) {
             logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());

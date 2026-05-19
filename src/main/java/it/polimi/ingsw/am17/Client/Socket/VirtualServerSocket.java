@@ -4,7 +4,6 @@ import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
@@ -42,10 +41,8 @@ public class VirtualServerSocket implements VirtualServer {
     }
 
     @Override
-    public void closeGame(VirtualView client, Player player, UUID gameId) throws Exception {
+    public void closeGame(VirtualView client) throws Exception {
         Message message = new Message(MessageType.CLOSE_GAME);
-        message.setPlayer(player);
-        message.setGameId(gameId);
         message.send(socket);
     }
 
@@ -58,22 +55,17 @@ public class VirtualServerSocket implements VirtualServer {
     }
 
     @Override
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws Exception {
+    public void pickOfferingCard(VirtualView client, Character offeringCardLetter) throws Exception {
         Message message = new Message(MessageType.PICK_OFFERING_CARD);
-        message.setGameId(gameId);
-        message.setPlayer(player);
-        message.setOfferingCard(card);
+        message.setOfferingCardLetter(offeringCardLetter);
         message.send(socket);
     }
 
     @Override
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
+    public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
         Message message = new Message(MessageType.PICK_TRIBE_CARDS);
-        message.setGameId(gameId);
-        message.setPlayer(player);
         message.setCharacterCards(characterCards);
         message.setBuildingCards(buildingCards);
         message.send(socket);
     }
-    
 }

@@ -2,7 +2,6 @@ package it.polimi.ingsw.am17.Client.RMI;
 
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -20,13 +19,13 @@ public interface VirtualServerRMI extends Remote, VirtualServer {
     @Override
     void createGame(VirtualView client, Player player, int numPlayers)  throws RemoteException;
     @Override
-    void closeGame(VirtualView client, Player player, UUID gameId)  throws RemoteException;
+    void closeGame(VirtualView client)  throws RemoteException;
     @Override
     void joinGame(VirtualView client,UUID gameId, Player player)  throws RemoteException;
     @Override
-    void pickOfferingCard(UUID gameId, Player player, OfferingCard card)  throws RemoteException;
+    void pickOfferingCard(VirtualView client, Character offeringCardLetter)  throws RemoteException;
     @Override
-    void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException;
+    void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException;
 
     void ping() throws RemoteException;
 }

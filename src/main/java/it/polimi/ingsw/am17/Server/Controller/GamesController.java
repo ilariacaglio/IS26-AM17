@@ -2,12 +2,12 @@ package it.polimi.ingsw.am17.Server.Controller;
 
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Manages multiple games with an eye to concurrency.
@@ -15,7 +15,9 @@ import java.util.*;
  */
 public class GamesController {
     private static final List<Game> gamesList = new ArrayList<>();
-    private static final Map<VirtualView, UUID> mapping = new HashMap<>();
+    private static final Map<VirtualView, UUID> gameMapping = new HashMap<>();
+    private static final Map<VirtualView, String> playerMapping = new HashMap<>(); // string field is for nickname
+    private final static Logger logger = Logger.getLogger(GamesController.class.getName());
 
     public GamesController(){}
 
@@ -32,7 +34,7 @@ public class GamesController {
     /**
      * @return the ids list of the games that are not started yet
      */
-    public List<UUID> getGamesList() {
+    private List<UUID> getGamesList() {
         synchronized (gamesList){
             return gamesList.stream()
                     .filter(g -> !g.isStarted())
@@ -58,7 +60,7 @@ public class GamesController {
      * remove a game from the games list.
      * @param id game id
      */
-    public void removeGameFromId(UUID id) throws NoSuchElementException {
+    private void removeGameFromId(UUID id) throws NoSuchElementException {
         synchronized (gamesList){
             gamesList.remove(getGameFromId(id));
         }
@@ -69,11 +71,11 @@ public class GamesController {
      * @param client to be registered
      * @param gameId of the game
      */
-    public void signUpAsObserver(VirtualView client, UUID gameId) throws NoSuchElementException {
+    private void signUpAsObserver(VirtualView client, UUID gameId) throws NoSuchElementException {
         Game game = getGameFromId(gameId);
 
         // add client to game mapping
-        mapping.put(client, gameId);
+        gameMapping.put(client, gameId);
 
         synchronized (game) {
             game.attach(client);
@@ -85,23 +87,27 @@ public class GamesController {
      * @param client to be removed
      * @param gameId of the game
      */
-    public void removeClientAsObserver(VirtualView client, UUID gameId) throws NoSuchElementException {
+    private void removeClientAsObserver(VirtualView client, UUID gameId) throws NoSuchElementException {
         Game game = getGameFromId(gameId);
         synchronized (game){
             game.detach(client);
         }
     }
 
-    //** CLIENT ACTIONS **//
+    //** public methods: CLIENT ACTIONS **//
+    // Used by RMI/Socket servers to handle client requests.
+    // N.B. all requests are handled in a new thread to avoid blocking the controller.
 
     /**
-     * Creates a game and adds the creator to it.
-     * @param player creating the game.
+     * Creates a game with the specified number of players and adds the player creating it to the game.
+     * Signs up the client as an observer for the game.
+     * @param client client to send the gameId.
+     * @param player player creating the game.
      * @param numPlayers number of players for the game.
-     * @return created game id.
      */
-    public UUID createGame(Player player, int numPlayers) {
-        try {
+    public void createGame(VirtualView client, Player player, int numPlayers) {
+        new Thread(() -> {
+            logger.info("Client" + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
             // game creation
             UUID id = UUID.randomUUID();
@@ -111,95 +117,177 @@ public class GamesController {
             addGame(game);
 
             // add player to the game
-            joinGame(id, player);
+            joinGame(client, id, player);
 
-            return id;
-        }
-        catch (Exception e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Adds a player to the game with the given id.
-     * @param gameId of the game
-     * @param player to be added
-     */
-    public void joinGame(UUID gameId, Player player) throws NoSuchElementException {
-        try {
-            Game game = getGameFromId(gameId);
-            synchronized (game){
-                game.addPlayer(player);
+            // send gameId to client
+            try {
+                client.updateGameId(id);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        }).start();
     }
 
     /**
-     * Closes a game when a player disconnects [unexpectedly].
+     * Adds a player to the game with the specified gameId and registers the client as an observer.
+     * @param client to send the gameId.
+     * @param gameId of the game to join.
+     * @param player to add to the game.
+     */
+    public void joinGame(VirtualView client, UUID gameId, Player player) throws NoSuchElementException {
+        new Thread(() -> {
+            logger.info("Client" + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
+
+            // Sign up client as an observer (see N.B. hereunder)
+            signUpAsObserver(client, gameId);
+
+            // Notify gameId to the client
+            try {
+                client.updateGameId(gameId);
+            } catch (Exception e) {
+                logger.warning("Error sending game Id update: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+
+            // Add player to the game
+            try {
+                Game game = getGameFromId(gameId);
+                synchronized (game) {
+                    game.addPlayer(player);
+                }
+                // add player to mapping
+                playerMapping.put(client, player.getNickname());
+            } catch (Exception e) {
+                logger.warning("Error joining game: " + e.getMessage());
+
+                // N.B. we need to sign up the client before joining the player
+                // so that it's notified from the addPlayer, if something goes wrong,
+                // we remove it here.
+
+                removeClientAsObserver(client, gameId);
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    /**
+     * Closes a game (also when a player disconnects [unexpectedly]).
+     * TODO: add check on "creator" player, i.e. only the creator can close the game.
+     * TODO: use player parameter and add it to the notify (who closed the game?) for unexpected disconnections.
+     * @param client client generating the request.
      */
     public void closeGame(VirtualView client) {
+        new Thread(() -> {
 
-        // get uuid of the game from the client (mapping)
-        UUID uuid = mapping.get(client);
+            // get uuid of the game from the client (mapping)
+            UUID uuid = gameMapping.get(client);
 
-        // get the game object from uuid to call the end game method
-        Game game = getGameFromId(uuid);
+            // get the game object from uuid to call the end game method
+            Game game = getGameFromId(uuid);
 
-        try {
-            synchronized (game) {
-                game.forceEndGame();
+            try {
+                synchronized (game) {
+                    game.forceEndGame();
+                }
             }
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+            catch (Exception e) {
+                logger.warning("Error calling forceEndGame: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
 
-        // remove client from the game's observer list
-        removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
+            // remove client from the game's observer list
+            removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
 
-        // remove the client from the mapping and the game from the list
-        mapping.remove(client);
-        removeGameFromId(uuid);
+            // get the clients linked to the game with uuid
+            var clientsList = gameMapping.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(uuid))
+                    .map(Map.Entry::getKey)
+                    .toList();
+
+            // remove the client from the mapping and the game from the list
+            clientsList.forEach(gameMapping.keySet()::remove);
+
+            // remove all the players of that game
+            clientsList.forEach(playerMapping.keySet()::remove);
+
+            // remove game from id list
+            removeGameFromId(uuid);
+        }).start();
     }
-
-    //** PLAYER ACTIONS **//
 
     /**
      * Forwards a pickOfferingCard request to the game.
-     * @param gameId of the game
-     * @param player selecting the card
-     * @param card to be selected
+     * @param client                the client who made the request
+     * @param offeringCardLetter    letter of the offering card to be selected
      */
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) {
-        try{
-            Game game = getGameFromId(gameId);
-            synchronized (game) {
-                game.selectOfferingCard(player,card);
+    public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
+        new Thread(() -> {
+            logger.info("Request received by the controller.");
+            // search for client nickname
+            String nickname = playerMapping.get(client);
+            // search for game id
+            UUID gameId = gameMapping.get(client);
+
+            try {
+                // retrieve game
+                Game game = getGameFromId(gameId);
+
+                logger.info(nickname + " wants to pick offering card " + offeringCardLetter + " in game " + gameId);
+
+                synchronized (game) {
+                    game.selectOfferingCard (nickname, offeringCardLetter);
+                }
             }
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
+            catch(Exception e) {
+                logger.warning("Error calling game selectOfferingCard: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     /**
      * Forwards a pickTribeCards request to the game.
-     * @param gameId of the game
-     * @param player selecting the cards
-     * @param characterCards selected by the player
-     * @param buildingCards selected by the player
+     * @param client            the client who made the request
+     * @param characterCards    selected by the player
+     * @param buildingCards     selected by the player
      */
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
-        try {
-            Game game = getGameFromId(gameId);
-            synchronized (game) {
-                game.pickTribeCards(player, characterCards, buildingCards);
+    public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        new Thread(() -> {
+            // search for client nickname
+            String nickname = playerMapping.get(client);
+
+            // search for game id
+            UUID gameId = gameMapping.get(client);
+
+            logger.info(nickname + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + gameId);
+
+            try {
+                Game game = getGameFromId(gameId);
+                synchronized (game) {
+                    game.pickTribeCards(nickname, characterCards, buildingCards);
+                }
+            } catch (Exception e) {
+                logger.warning("Error calling game pickTribeCards: " + e.getMessage());
+                throw new RuntimeException(e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        }).start();
+    }
+
+
+    /**
+     * Sends an update to the client with the list of open games.
+     * @param client to send the update.
+     */
+    public void getGamesList(VirtualView client) {
+        new Thread(() -> {
+            logger.info("Client" + client.getClass().getSimpleName() + " requested the games list.");
+            try {
+                // send the list of open games to the client
+                client.updateGamesIdList(getGamesList());
+            } catch (Exception e) {
+                logger.warning("Error sending games list: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 }
