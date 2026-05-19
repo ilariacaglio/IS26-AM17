@@ -8,10 +8,12 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class BuildingCard extends GameCard implements Serializable {
     private final Integer foodCost;
     private final Integer bonusPoints;
+
 
     @JsonCreator
     public BuildingCard(
@@ -58,4 +60,5 @@ public class BuildingCard extends GameCard implements Serializable {
     public String toString() {
         return "[" + foodCost + "F " + bonusPoints + "BP";
     }
+
 }

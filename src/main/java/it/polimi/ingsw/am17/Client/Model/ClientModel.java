@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.CardParser;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
@@ -303,12 +304,15 @@ public class ClientModel {
      * @param lowerBuildingRow      the lower building row value to be set.
      * @param offeringCards         the offering cards value to be set.
      */
-    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
+    public void updateStartGame(Queue<Player> players, List<UUID> upperRow, List<UUID> lowerRow,
+                                List<UUID> upperBuildingRow, List<UUID> lowerBuildingRow,  List<OfferingCard> offeringCards) {
 
         setCurrentEra(1);
         setNumPlayers(players.size());
         setOrderedPlayers(players);
+
+        // TODO: WE NEED TO BE ABLE TO GET CARD FROM ID
+
         setTribeCards(upperRow, lowerRow);
         setBuildingCards(upperBuildingRow, lowerBuildingRow);
         setOfferingCards(offeringCards);

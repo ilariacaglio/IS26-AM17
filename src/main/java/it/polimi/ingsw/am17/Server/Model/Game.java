@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Server.Model.Decks.BuildingDeck;
 import it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
@@ -232,7 +233,13 @@ public class Game extends Subject {
 
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
 
-        notifyStartGame(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
+        notifyStartGame(orderedPlayers,
+                upperRow.stream().map(TribesCard::getId).toList(),
+                lowerRow.stream().map(TribesCard::getId).toList(),
+                upperBuildingRow.stream().map(BuildingCard::getId).toList(),
+                lowerBuildingRow.stream().map(BuildingCard::getId).toList(),
+                offeringCards
+        );
     }
 
     /**

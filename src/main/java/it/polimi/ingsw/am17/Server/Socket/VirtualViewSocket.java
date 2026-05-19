@@ -80,7 +80,7 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws Exception {
+    public void updateStartGame(Queue<Player> players, List<UUID> upperRow, List<UUID> lowerRow, List<UUID> upperBuildingRow, List<UUID> lowerBuildingRow, List<OfferingCard> offeringCards) throws Exception {
         Message message = new Message(MessageType.UPDATE_START_GAME);
         message.setOrderedPlayer(players);
         message.setUpperRow(upperRow);

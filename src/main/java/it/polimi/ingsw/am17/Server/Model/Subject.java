@@ -96,8 +96,8 @@ public abstract class Subject {
         }
     }
 
-    void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                       List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
+    void notifyStartGame(Queue<Player> players, List<UUID> upperRow, List<UUID> lowerRow,
+                       List<UUID> upperBuildingRow, List<UUID> lowerBuildingRow, List<OfferingCard> offeringCards){
         for (VirtualView client : clients) {
             try {
                 client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);

@@ -27,8 +27,8 @@ public interface VirtualViewRMI extends Remote, VirtualView {
     void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException;
     void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws  RemoteException;
-    void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                         List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws  RemoteException;
+    void updateStartGame(Queue<Player> players, List<UUID> upperRow, List<UUID> lowerRow,
+                         List<UUID> upperBuildingRow, List<UUID> lowerBuildingRow, List<OfferingCard> offeringCards) throws  RemoteException;
 
     void updateRanking(List<RankingEntry> ranking) throws RemoteException;
     void notifyEndGame() throws RemoteException;

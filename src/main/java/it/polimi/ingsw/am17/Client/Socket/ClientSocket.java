@@ -135,8 +135,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) {
+    public void updateStartGame(Queue<Player> players, List<UUID> upperRow, List<UUID> lowerRow,
+                                List<UUID> upperBuildingRow, List<UUID> lowerBuildingRow, List<OfferingCard> offeringCards) {
         model.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
