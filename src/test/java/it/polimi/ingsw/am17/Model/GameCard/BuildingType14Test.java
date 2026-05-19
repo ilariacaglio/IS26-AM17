@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Binder;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType14;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Shaman;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,13 +38,13 @@ class BuildingType14Test extends BuildingCardTest{
             int numInv = r.nextInt(2,5);
             List<CharacterCard> ccNever = createCharacterCardList(numHunter, numArtist, numBuilder, numInv, 0, 0);
 
-            int fpNever = building.GetFoodBonusFromCardAcquisition(ccNever, new Shaman(0,0,0, null));
+            int fpNever = building.GetFoodBonusFromCardAcquisition(ccNever, new Shaman(GameState.NONE,0,0, null));
 
             int numSham = r.nextInt(2,5);
             int numBind = 1;
             List<CharacterCard> cc = createCharacterCardList(numHunter, numArtist, numBuilder, numInv, numSham, numBind);
-            int fpLow = building.GetFoodBonusFromCardAcquisition(cc, new Shaman(0,0,0, null));
-            int fpHigh = building.GetFoodBonusFromCardAcquisition(cc, new Binder(0,0, null));
+            int fpLow = building.GetFoodBonusFromCardAcquisition(cc, new Shaman(GameState.NONE,0,0, null));
+            int fpHigh = building.GetFoodBonusFromCardAcquisition(cc, new Binder(GameState.NONE,0, null));
 
 
 

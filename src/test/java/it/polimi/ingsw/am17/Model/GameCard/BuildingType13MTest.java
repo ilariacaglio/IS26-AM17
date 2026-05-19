@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Model.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType13M;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +17,15 @@ class BuildingType13MTest {
 
     @BeforeEach
     void setUp() {
-        buildingType13M = new BuildingType13M(2, 2,2, CardType.ARTIST);
+        buildingType13M = new BuildingType13M(GameState.ERA2, 2,2, CardType.ARTIST);
     }
 
     @Test
     void ShouldGiveFoodDiscount() {
         List<CharacterCard> playerCharacterCards = new ArrayList<>();
 
-        CharacterCard A = new Artist(2, 2, null);
-        CharacterCard B = new Inventor(3,2, InventorIconType.BREAD, null);
+        CharacterCard A = new Artist(GameState.ERA2, 2, null);
+        CharacterCard B = new Inventor(GameState.ERA3,2, InventorIconType.BREAD, null);
         playerCharacterCards.add(A);
         playerCharacterCards.add(B);
 
@@ -37,8 +38,8 @@ class BuildingType13MTest {
     void ShouldNotGiveFoodDiscountWhenNoMatchingCharacterType() {
         List<CharacterCard> playerCharacterCards = new ArrayList<>();
 
-        CharacterCard A = new Binder(2, 2,null);
-        CharacterCard B = new Inventor(3,2, InventorIconType.BREAD, null);
+        CharacterCard A = new Binder(GameState.ERA2, 2,null);
+        CharacterCard B = new Inventor(GameState.ERA3,2, InventorIconType.BREAD, null);
         playerCharacterCards.add(A);
         playerCharacterCards.add(B);
 

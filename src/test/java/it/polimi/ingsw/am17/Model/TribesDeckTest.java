@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Model;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -38,8 +39,8 @@ class TribesDeckTest {
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
 
-        for(int  i = 0; i<deck.size(); i++) {
-            assertEquals(deck.get(i), tribesDeck.Draw());
+        for (TribesCard tribesCard : deck) {
+            assertEquals(tribesCard, tribesDeck.Draw());
         }
     }
 
@@ -49,11 +50,11 @@ class TribesDeckTest {
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
 
-        TribesCard lastCard = deck.get(deck.size()-1);
+        TribesCard lastCard = deck.getLast();
         TribesCard secondLastCard = deck.get(deck.size()-2);
 
-        assertTrue(!lastCard.getCardType().isCharacter());
-        assertTrue(!secondLastCard.getCardType().isCharacter());
+        assertFalse(lastCard.getCardType().isCharacter());
+        assertFalse(secondLastCard.getCardType().isCharacter());
         assertTrue(((EventCard)lastCard).isFinal());
         assertTrue(((EventCard)secondLastCard).isFinal());
     }
@@ -63,15 +64,14 @@ class TribesDeckTest {
     void shouldHaveRightEraOrder(){
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
-        int previousEra = 1;
+        GameState previousEra = GameState.ERA1;
 
         for(int  i = 1; i<deck.size(); i++) {
-            int currentEra = deck.get(i).getEra();
-            assertTrue(previousEra <= currentEra);
+            GameState currentEra = deck.get(i).getEra();
+            if (previousEra == GameState.ERA1) assertSame(GameState.ERA2, currentEra);
+            else if (previousEra == GameState.ERA2) assertSame(GameState.ERA3, currentEra);
             previousEra = currentEra;
         }
-
-
     }
 
     //the size of the deck is always the same if given numPlayer==2
