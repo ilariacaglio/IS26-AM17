@@ -64,13 +64,27 @@ class TribesDeckTest {
     void shouldHaveRightEraOrder(){
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
-        GameState previousEra = GameState.ERA1;
+        GameState previousEra = GameState.NONE;
 
         for(int  i = 1; i<deck.size(); i++) {
             GameState currentEra = deck.get(i).getEra();
-            if (previousEra == GameState.ERA1) assertSame(GameState.ERA2, currentEra);
-            else if (previousEra == GameState.ERA2) assertSame(GameState.ERA3, currentEra);
-            previousEra = currentEra;
+            if (previousEra == GameState.NONE){
+                if (currentEra == GameState.ERA2){
+                    previousEra = GameState.ERA1;
+                }
+                else {
+                    assertSame(GameState.ERA1, currentEra);
+                }
+            }
+            else if (previousEra == GameState.ERA1){
+                if (currentEra == GameState.ERA3){
+                    previousEra = GameState.ERA2;
+                }
+                else {
+                    assertSame(GameState.ERA2, currentEra);
+                }
+            }
+            else assertSame(GameState.ERA3, currentEra);
         }
     }
 

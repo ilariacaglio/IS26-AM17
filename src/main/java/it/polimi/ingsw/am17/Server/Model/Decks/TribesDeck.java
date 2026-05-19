@@ -67,7 +67,7 @@ public class TribesDeck {
                 .findFirst()
                 .orElse(-1);
         if(index != -1){
-            Collections.shuffle(tribeCards.subList(0, index));
+            Collections.shuffle(tribeCards.subList(0, index+1));
         }
     }
 
@@ -78,11 +78,11 @@ public class TribesDeck {
                 .orElse(-1);
         int endIndex = IntStream.range(0, tribeCards.size())
                 .map(i -> tribeCards.size() - 1 - i)
-                .filter(i -> tribeCards.get(i).getEra() == GameState.ERA3)
+                .filter(i -> tribeCards.get(i).getEra() == GameState.ERA2)
                 .findFirst()
                 .orElse(-1);
         if(startIndex != -1 && endIndex != -1){
-            Collections.shuffle(tribeCards.subList(startIndex, endIndex));
+            Collections.shuffle(tribeCards.subList(startIndex, endIndex+1));
         }
     }
 
