@@ -8,6 +8,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.PaintingEven
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
@@ -36,7 +37,7 @@ public class CardParser {
         }
     }
 
-    public static List<BuildingType13M> buildingCard13MParser(int era){
+    public static List<BuildingType13M> buildingCard13MParser(GameState era){
         try {
             var buildingList =  mapper.readValue(CardParser.class.getResourceAsStream("/buildingType13M.json"), new TypeReference<List<BuildingType13M>>() {});
             return buildingList.stream()
