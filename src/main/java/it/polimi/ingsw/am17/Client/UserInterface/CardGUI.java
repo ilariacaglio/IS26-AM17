@@ -27,7 +27,7 @@ public class CardGUI extends StackPane {
         border.setArcHeight(15);
         border.setFill(Color.WHITE);
         border.setStroke(defaultBorderColor);
-        border.setStrokeWidth(defaultBorderColor.equals(Color.BLACK) ? 1 : 2);
+        border.setStrokeWidth(defaultBorderColor.equals(Color.BLACK) ? 1 : 4);
 
         this.getChildren().add(border);
 
