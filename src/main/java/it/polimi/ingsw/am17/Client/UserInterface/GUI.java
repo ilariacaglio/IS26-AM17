@@ -107,7 +107,13 @@ public class GUI extends Application implements UI {
             // Ora sei nel thread giusto!
             // Se 'scene' è una variabile globale della classe GUI:
             if (GUI.scene != null && GUI.scene.getWindow() != null) {
-                GUI.scene.setRoot(drawGameInterface());
+                int currentEra = staticGame.getCurrentEra();
+                if (currentEra >= 0) {
+                    GUI.scene.setRoot(drawGameInterface());
+                }
+                else{
+                    GUI.scene.setRoot(localRankingInterface());
+                }
             } else {
                 System.err.println("La scena o la finestra non sono ancora pronte!");
             }
@@ -398,6 +404,82 @@ public class GUI extends Application implements UI {
 
         root.getChildren().addAll(turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox, lowerCardsBox, sendButtonBox,
                 playerResourcesBox, playerCardsBox, spacer, playersButtonBox);
+        return root;
+    }
+    private Parent globalRankingInterface(){
+
+        VBox layout = new VBox();
+
+        Label label = new Label("GLOBAL RANKING");
+
+        layout.getChildren().add(label);
+
+        return layout;
+
+    }
+
+    private Parent localRankingInterface(){
+        root = new VBox(20);
+        root.setPadding(new Insets(30));
+        root.setAlignment(Pos.TOP_CENTER);
+        //title
+        Label rankingTitle = new Label("--- FINAL GAME RANKING ---");
+        rankingTitle.setStyle("""
+            -fx-text-fill: white;
+            -fx-font-size: 30px;
+            -fx-font-weight: bold;
+        """);
+        //ranking area
+        TextArea localRankingArea = new TextArea();
+
+        localRankingArea.setEditable(false);
+        localRankingArea.setWrapText(true);
+
+        localRankingArea.setStyle("""
+            -fx-font-size: 18px;
+            -fx-control-inner-background: #f4f4f4;
+            -fx-font-family: 'Consolas';
+        """);
+
+        //fill ranking
+        List<Player> sortedPlayers = staticGame.getOrderedPlayers().stream()
+                .sorted(Comparator.comparingInt(Player::getPp).reversed())
+                .toList();
+
+        StringBuilder rankingText = new StringBuilder();
+
+        int rank = 1;
+
+        for (Player player : sortedPlayers) {
+
+            rankingText.append(rank)
+                    .append("° place: ")
+                    .append(player.getNickname())
+                    .append(" - Points: ")
+                    .append(player.getPp())
+                    .append("\n");
+
+            rank++;
+        }
+
+        localRankingArea.setText(rankingText.toString());
+
+        VBox.setVgrow(localRankingArea, Priority.ALWAYS);
+
+        //button to global ranking interface
+        Button goToGlobalRanking = new Button("GO TO GLOBAL RANKING");
+        goToGlobalRanking.setStyle("""
+        -fx-font-size: 18px;
+        -fx-font-weight: bold;
+        -fx-padding: 10px 20px;
+    """);
+
+        goToGlobalRanking.setOnAction(e -> {
+            scene.setRoot(globalRankingInterface());
+        });
+
+        root.getChildren().addAll(rankingTitle,localRankingArea, goToGlobalRanking);
+
         return root;
     }
 
