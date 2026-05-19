@@ -43,7 +43,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     public void start(String host, boolean gui) throws IOException {
         // create the socket
-        Socket socket = new Socket(host, 5000);
+        Socket socket = new Socket(host, 24312);
 
         // add socket to this class to receive messages
         this.socket = socket;
@@ -100,6 +100,11 @@ public class ClientSocket implements VirtualView, ClientInterface {
         model = new ClientModel(userInterface);
         userInterface.setModel(model); // TODO: circular!! Update with granular UI updates
         model.startInterface();  // note: not threaded
+    }
+
+    private void recordHeartbeat() {
+        lastHeartbeatReceived = System.currentTimeMillis();
+        logger.finer("Received heartbeat");
     }
 
     private Runnable pinger(Socket socket) {

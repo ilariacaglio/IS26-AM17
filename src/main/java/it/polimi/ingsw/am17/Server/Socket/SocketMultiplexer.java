@@ -30,7 +30,7 @@ public class SocketMultiplexer {
 
     public static void start(GamesController controller) {
         SocketMultiplexer server = new SocketMultiplexer(controller);
-        server.start(5000);
+        server.start(24312);
     }
 
     public void start(int port) {
