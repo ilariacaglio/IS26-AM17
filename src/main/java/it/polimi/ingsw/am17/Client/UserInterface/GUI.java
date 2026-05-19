@@ -130,8 +130,8 @@ public class GUI extends Application implements UI {
     public Parent drawGameInterface() {
         Stage stage = (Stage) scene.getWindow();
         stage.setMaximized(true);
-        root = new VBox(10);
-        root.setPadding(new Insets(10));
+        root = new VBox(0);
+        root.setPadding(new Insets(5));
 
         VBox turnOverlay = new VBox();
         turnOverlay.setAlignment(Pos.CENTER);
