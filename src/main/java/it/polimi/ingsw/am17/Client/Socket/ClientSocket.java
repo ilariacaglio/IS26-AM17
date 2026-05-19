@@ -34,6 +34,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
     ClientModel model;
     Socket socket;
     ObjectMapper mapper;
+    long lastHeartbeatReceived = System.currentTimeMillis();
 
     private final Logger logger = Logger.getLogger(ClientSocket.class.getName());
 
@@ -76,7 +77,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
                         case UPDATE_RANKING ->  updateRanking(message.getRanking());
                         case END_GAME -> notifyEndGame();
-                        case HEARTBEAT -> logger.finer("Received heartbeat");
+                        case HEARTBEAT -> recordHeartbeat();
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -86,8 +87,20 @@ public class ClientSocket implements VirtualView, ClientInterface {
         }).start();
 
         // create a heartbeat thread
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
+        ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+        heartbeater.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
+
+        // create a heartbeat receiver
+        ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
+        heartwatcher.scheduleAtFixedRate(() -> {
+            long now = System.currentTimeMillis();
+            long diff = now - lastHeartbeatReceived;
+
+            if (diff > 5000) {
+                logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
+                System.exit(1);
+            }
+        }, 1, 1, TimeUnit.SECONDS);
 
         // Todo: remove null when gui
         UI userInterface = null;
