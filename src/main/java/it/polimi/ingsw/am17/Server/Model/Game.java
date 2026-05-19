@@ -397,27 +397,27 @@ public class Game extends Subject {
         }
 
         // get offering card from letter
-        OfferingCard selectedOc = offeringCards.stream()
+        OfferingCard offeringCard = offeringCards.stream()
                 .filter(c -> offeringCardLetter.equals(c.getOrderLetter()))
                 .findFirst().orElse(null);
 
         //check if offeringCard is valid
-        if (selectedOc == null && offeringCardLetter.equals('Z')) {
-            selectedOc = building2OfferingCard;
+        if (offeringCard == null && offeringCardLetter.equals('Z')) {
+            offeringCard = building2OfferingCard;
         }
-        else if (selectedOc == null) {
+        else if (offeringCard == null) {
             throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
         }
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
 
         // check if offering card is free
-        if(selectedOc.getPlayer() != null) {
+        if(offeringCard.getPlayer() != null) {
             throw new IllegalStateException("Illegal card selection. (Card already selected)");
         }
 
         //set player to offeringCard
-        selectedOc.setPlayer(player);
+        offeringCard.setPlayer(player);
 
         // dequeue and enqueue the player in last position
         movePlayerInQueue();
@@ -429,7 +429,7 @@ public class Game extends Subject {
 
         // notify changes
         notifyPlayerQueue(orderedPlayers);
-        notifyPlayerSelectOfferingCard(player, selectedOc);
+        notifyPlayerSelectOfferingCard(player, offeringCard);
     }
 
     /**
