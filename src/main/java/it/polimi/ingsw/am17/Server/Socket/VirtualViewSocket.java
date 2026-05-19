@@ -3,10 +3,12 @@ package it.polimi.ingsw.am17.Server.Socket;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
+import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
@@ -38,7 +40,7 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updateEra(int era) throws Exception {
+    public void updateEra(GameState era) throws Exception {
         Message message = new Message(MessageType.UPDATE_ERA);
         message.setEra(era);
         message.send(socket);
