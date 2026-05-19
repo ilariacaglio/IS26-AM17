@@ -32,7 +32,7 @@ public class BuildingDeck {
         temp.add(new BuildingType11());
         temp.add(new BuildingType12());
         temp.add(new BuildingType14());
-        //parse from json and add cards 13M
+        //parse from Json and add cards 13M
         temp.addAll(buildingCard13MParser(GameState.ERA1));
         //shuffle collection
         Collections.shuffle(temp);
@@ -54,7 +54,7 @@ public class BuildingDeck {
         temp.add(new BuildingType7());
         temp.add(new BuildingType8());
         temp.add(new BuildingType9());
-        //parse from json and add cards 13M
+        //parse from Json and add cards 13M
         temp.addAll(buildingCard13MParser(GameState.ERA2));
         //shuffle collection
         Collections.shuffle(temp);
@@ -72,7 +72,7 @@ public class BuildingDeck {
         //singleton building cards
         temp.add(new BuildingType1());
         temp.add(new BuildingType2());
-        //parse from json and add cards 3M
+        //parse from Json and add cards 3M
         temp.addAll(buildingCard3MParser());
         //shuffle collection
         Collections.shuffle(temp);
