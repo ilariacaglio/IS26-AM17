@@ -10,7 +10,7 @@ public enum Color {
     public javafx.scene.paint.Color getFxColor() {
         return switch (this) {
             case RED    -> javafx.scene.paint.Color.RED;
-            case BLUE   -> javafx.scene.paint.Color.LIGHTBLUE;
+            case BLUE   -> javafx.scene.paint.Color.BLUE;
             case WHITE  -> javafx.scene.paint.Color.WHITE;
             case BLACK  -> javafx.scene.paint.Color.BLACK;
             case YELLOW -> javafx.scene.paint.Color.GOLD; // Gold  looks better
