@@ -21,4 +21,18 @@ public enum GameState {
     public boolean isGameEnded() {
         return this.equals(GameState.ENDED);
     }
+
+    /**
+     * @return true if the client is connected to a game, false otherwise
+     */
+    public boolean isInLobbyOrStarted() {
+        return isInLobby() || isGameStarted();
+    }
+
+    /**
+     * @return true if the client is in a lobby, false otherwise
+     */
+    public boolean isInLobby() {
+        return this.equals(GameState.LOBBY);
+    }
 }

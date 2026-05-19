@@ -5,6 +5,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
@@ -18,7 +19,7 @@ public class ClientModel {
 
     private UUID id;
     private int numPlayers;
-    private int currentEra;
+    private GameState currentEra;
     private boolean isPickOCPhase;
 
     private List<UUID> gamesIdList;
@@ -37,7 +38,7 @@ public class ClientModel {
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
-        currentEra = -1;
+        currentEra = GameState.NONE;
         gamesIdList = new ArrayList<>();
         orderedPlayer = new LinkedList<>();
         offeringCards = new ArrayList<>();
@@ -81,13 +82,13 @@ public class ClientModel {
      * Sets currentEra field and displays it on the screen
      * @param currentEra    the value to be set
      */
-    public void setCurrentEra(int currentEra){
+    public void setCurrentEra(GameState currentEra){
         this.currentEra = currentEra;
         // UI communication
         userInterface.printEra();
     }
 
-    public int getCurrentEra(){
+    public GameState getCurrentEra(){
         return currentEra;
     }
 
@@ -270,7 +271,7 @@ public class ClientModel {
      * @return true if it is players turn, false otherwise.
      */
     public boolean isPlayerTurn(){
-        if(currentEra<1)
+        if(currentEra.isGameStarted())
             return false;
         return userInterface.getLocalPlayer().equals(orderedPlayer.peek());
     }
@@ -306,7 +307,7 @@ public class ClientModel {
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
 
-        setCurrentEra(1);
+        setCurrentEra(GameState.ERA1);
         setNumPlayers(players.size());
         setOrderedPlayers(players);
         setTribeCards(upperRow, lowerRow);
@@ -388,7 +389,7 @@ public class ClientModel {
      */
     public void updateGameEndedByUser() {
         // setGameId(null); // TODO: does not work, breaks RMI communication?!
-        currentEra = -1; // TODO: -2 for aborted game? This works anyways
+        currentEra = GameState.NONE; // TODO: -2 for aborted game? This works anyways
         setOrderedPlayers(new LinkedList<>());
         setOfferingCards(new ArrayList<>());
         setTribeCards(new ArrayList<>(), new ArrayList<>());
