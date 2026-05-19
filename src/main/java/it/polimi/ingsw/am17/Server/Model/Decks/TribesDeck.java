@@ -26,10 +26,10 @@ public class TribesDeck {
         tribeCards.addAll(huntersParser(numPlayers));
         tribeCards.addAll(inventorParser(numPlayers));
         tribeCards.addAll(shamansParser(numPlayers));
-        tribeCards.addAll(foodEventParser(numPlayers));
-        tribeCards.addAll(huntingEventParser(numPlayers));
-        tribeCards.addAll(paintingEventParser(numPlayers));
-        tribeCards.addAll(ritualEventParser(numPlayers));
+        tribeCards.addAll(foodEventParser());
+        tribeCards.addAll(huntingEventParser());
+        tribeCards.addAll(paintingEventParser());
+        tribeCards.addAll(ritualEventParser());
         //sort list basing on the cards era
         tribeCards.sort(Comparator.comparing(TribesCard::getEra));
         //shuffle era cards sublists

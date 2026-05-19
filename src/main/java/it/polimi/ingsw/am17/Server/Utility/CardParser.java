@@ -108,7 +108,7 @@ public class CardParser {
         }
     }
 
-    public static List<FoodEvent> foodEventParser(int numPlayers){
+    public static List<FoodEvent> foodEventParser(){
         try {
             return mapper.readValue(CardParser.class.getResourceAsStream("/FoodEvent.json"), new TypeReference<ArrayList<FoodEvent>>() {});
         }
@@ -117,7 +117,7 @@ public class CardParser {
         }
     }
 
-    public static List<HuntingEvent> huntingEventParser(int numPlayers){
+    public static List<HuntingEvent> huntingEventParser(){
         try {
             return mapper.readValue(CardParser.class.getResourceAsStream("/HuntingEvent.json"), new TypeReference<ArrayList<HuntingEvent>>() {});
         }
@@ -126,7 +126,7 @@ public class CardParser {
         }
     }
 
-    public static List<PaintingEvent> paintingEventParser(int numPlayers){
+    public static List<PaintingEvent> paintingEventParser(){
         try {
             return mapper.readValue(CardParser.class.getResourceAsStream("/PaintingEvent.json"), new TypeReference<ArrayList<PaintingEvent>>() {});
         }
@@ -135,7 +135,7 @@ public class CardParser {
         }
     }
 
-    public static List<RitualEvent> ritualEventParser(int numPlayers){
+    public static List<RitualEvent> ritualEventParser(){
         try {
             return mapper.readValue(CardParser.class.getResourceAsStream("/RitualEvent.json"), new TypeReference<ArrayList<RitualEvent>>() {});
         }

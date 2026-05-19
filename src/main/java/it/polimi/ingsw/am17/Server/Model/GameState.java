@@ -35,4 +35,9 @@ public enum GameState {
     public boolean isInLobby() {
         return this.equals(GameState.LOBBY);
     }
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase();
+    }
 }
