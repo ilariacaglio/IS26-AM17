@@ -133,12 +133,14 @@ public abstract class Subject {
 
     void notifyError(Exception exception)
     {
-        for(Observer observer: new ArrayList<>(observers))
+        for(VirtualView client: clients)
         {
+            logger.info("Calling updateNotifyError on client " + client.getClass().getSimpleName());
             try {
-                observer.updateNotifyError(exception);
+                client.updateNotifyError(exception);
             } catch (Exception e) {
-                System.err.println("Client not reachable: "+ e);
+                logger.severe("Subject method failed to call client update" + e.getMessage());
+                System.err.println("Client not reachable: "+ e.getMessage());
             }
         }
     }
