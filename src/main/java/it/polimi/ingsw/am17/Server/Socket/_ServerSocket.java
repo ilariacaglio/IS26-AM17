@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class _ServerSocket implements Runnable, VirtualServer {
     private static final Logger logger = Logger.getLogger(_ServerSocket.class.getName());
-
+    long lastHeartbeatReceived = System.currentTimeMillis();
 
     private final Socket socket;
     private final GamesController controller;
@@ -45,6 +46,19 @@ public class _ServerSocket implements Runnable, VirtualServer {
     @Override
     public void run() {
         // todo comments
+
+        // create a heartbeat receiver
+        ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
+        heartwatcher.scheduleAtFixedRate(() -> {
+            long now = System.currentTimeMillis();
+            long diff = now - lastHeartbeatReceived;
+
+            if (diff > 5000) {
+                logger.severe("No heartbeat received in " + diff + "ms, client dead.");
+                System.exit(1);
+            }
+        }, 1, 1, TimeUnit.SECONDS);
+
         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             String line;
             while ((line = in.readLine()) != null) {
@@ -60,7 +74,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
                     case CLOSE_GAME -> closeGame(client, message.getPlayer(), message.getGameId());
                     case PICK_OFFERING_CARD -> pickOfferingCard(message.getGameId(), message.getPlayer(), message.getOfferingCard());
                     case PICK_TRIBE_CARDS -> pickTribeCards(message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
-                    case HEARTBEAT -> logger.finer("Received heartbeat");
+                    case HEARTBEAT -> recordHeartbeat();
                     default -> System.err.println("Unknown message type: " + message.getType());
                 }
             }
@@ -71,6 +85,11 @@ public class _ServerSocket implements Runnable, VirtualServer {
                 socket.close();
             } catch (Exception ignored) {}
         }
+    }
+
+    private void recordHeartbeat() {
+        lastHeartbeatReceived = System.currentTimeMillis();
+        logger.finest("Received heartbeat from server.");
     }
 
     @Override

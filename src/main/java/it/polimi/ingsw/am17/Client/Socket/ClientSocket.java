@@ -115,6 +115,11 @@ public class ClientSocket implements VirtualView, ClientInterface {
         model.startInterface();  // note: not threaded
     }
 
+    private void recordHeartbeat() {
+        lastHeartbeatReceived = System.currentTimeMillis();
+        logger.finest("Received heartbeat from server.");
+    }
+
     private Runnable pinger(Socket socket) {
         return () -> {
             try {
