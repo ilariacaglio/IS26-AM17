@@ -11,7 +11,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,7 +24,6 @@ import javafx.stage.Stage;
 
 import java.util.*;
 import java.util.List;
-
 
 public class GUI implements UI {
 
@@ -42,7 +40,7 @@ public class GUI implements UI {
 
     private VirtualServer staticServer;
     private VirtualView staticClient;
-    private ClientModel staticGame;
+    private ClientModel game;
     private Player localPlayer;
     private Player selectedPlayer;
 
@@ -54,17 +52,25 @@ public class GUI implements UI {
     private HBox playerCardsBox;
     private HBox playerResourcesBox;
 
+    private boolean isGameInterfaceInitialized = false;
+
+    private VBox turnOverlay;
+    private HBox upperCardsBox;
+    private HBox lowerCardsBox;
+    private HBox offeringCardBox;
+
+
     public GUI(VirtualServer server, VirtualView view, ClientModel model) {
         staticServer = server;
         staticClient = view;
-        staticGame = model;
+        game = model;
     }
 
     public GUI() {}
 
     @Override
     public  void setModel(ClientModel model) {
-        this.staticGame = model;
+        this.game = model;
     }
 
     /**
@@ -72,7 +78,7 @@ public class GUI implements UI {
      * Used to update food, pp and cards of the player
      */
     public void setLocalPlayer() {
-        staticGame.getOrderedPlayers().stream()
+        game.getOrderedPlayers().stream()
                 .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
                 .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
     }
@@ -120,14 +126,18 @@ public class GUI implements UI {
 
     @Override
     public void drawInterface(ClientModel game, String errorMessagge) {
-        staticGame = game;
+        this.game = game;
         Platform.runLater(() -> {
             // Ora sei nel thread giusto!
             // Se 'scene' è una variabile globale della classe GUI:
             if (scene != null && scene.getWindow() != null) {
-                int currentEra = staticGame.getCurrentEra();
+                int currentEra = this.game.getCurrentEra();
                 if (currentEra >= 0) {
-                    scene.setRoot(drawGameInterface());
+                    if (!isGameInterfaceInitialized) {
+                        scene.setRoot(drawGameInterface());
+                        isGameInterfaceInitialized = true;
+                    }
+                    updateGameElements();
                 }
                 else{
                     scene.setRoot(localRankingInterface());
@@ -140,7 +150,7 @@ public class GUI implements UI {
 
     public boolean isPlayerTurn()
     {
-        return staticGame.isPlayerTurn();
+        return game.isPlayerTurn();
     }
 
 
@@ -151,7 +161,7 @@ public class GUI implements UI {
         root = new VBox(0);
         root.setPadding(new Insets(5));
 
-        VBox turnOverlay = new VBox();
+        turnOverlay = new VBox();
         turnOverlay.setAlignment(Pos.CENTER);
 
         Label turnText = new Label("IT'S YOUR TURN!");
@@ -177,7 +187,7 @@ public class GUI implements UI {
 
         turnOverlay.getChildren().add(turnText);
         turnOverlay.setVisible(false);
-        if(staticGame.isPlayerTurn()){
+        if(game.isPlayerTurn()){
             turnOverlay.setVisible(true);
         }
 
@@ -206,27 +216,16 @@ public class GUI implements UI {
         //upperCards
 
         //tribes cards first
-        HBox upperCardsBox =new HBox(10);
-        for(TribesCard card : staticGame.getUpperTribeRow()){
-            CardGUI upperCard = new CardGUI(card.getImagePath());
-            setOnMouseClickForTribes(upperCard, card);
-            upperCardsBox.getChildren().add(upperCard);
-        }
-        //building cards second
-        for(BuildingCard card : staticGame.getUpperBuildingRow()){
-            CardGUI upperCard = new CardGUI(card.getImagePath());
-            setOnMouseClickForBuilding(upperCard, card);
-            upperCardsBox.getChildren().add(upperCard);
-        }
+        upperCardsBox =new HBox(10);
 
         //put turnCard and offeringCard in the same HBox
-        HBox offeringCardBox = new HBox(10);
+       offeringCardBox = new HBox(10);
         //turnCard first
-        CardGUI turnCard = new CardGUI(staticGame.getTURN_CARD_IMAGE_PATH());
+        CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
         offeringCardBox.getChildren().add(turnCard);
 
         //offeringCards second
-        for(OfferingCard card : staticGame.getOfferingCards()){
+        for(OfferingCard card : game.getOfferingCards()){
             CardGUI offeringCard;
             if(card.getPlayer() == null)
                 offeringCard = new CardGUI(card.getImagePath());
@@ -240,18 +239,7 @@ public class GUI implements UI {
 
         //lowerCards
         //tribe cards first
-        HBox lowerCardsBox =  new HBox(10);
-        for(TribesCard card : staticGame.getLowerTribeRow()){
-            CardGUI lowerCard = new CardGUI(card.getImagePath());
-            setOnMouseClickForTribes(lowerCard, card);
-            lowerCardsBox.getChildren().add(lowerCard);
-        }
-        //building cards second
-        for(BuildingCard card : staticGame.getLowerBuildingRow()){
-            CardGUI lowerCard = new CardGUI(card.getImagePath());
-            setOnMouseClickForBuilding(lowerCard, card);
-            lowerCardsBox.getChildren().add(lowerCard);
-        }
+        lowerCardsBox =  new HBox(10);
 
         //send button
         Button sendButton = new Button("SEND");
@@ -259,22 +247,22 @@ public class GUI implements UI {
         {
             try {
                 if (offeringSelected != null) {
-                    staticServer.pickOfferingCard(staticGame.getGameId(), localPlayer, offeringSelected);
+                    staticServer.pickOfferingCard(game.getGameId(), localPlayer, offeringSelected);
                     offeringSelected = null;
                     buildingSelected = new ArrayList<>();
                     tribesSelected =  new ArrayList<>();
                     offeringCardGUI = new ArrayList<>();
                 } else {
                     // get players offering card
-                    OfferingCard myOfferingCard = staticGame.getOfferingCards().stream()
+                    OfferingCard myOfferingCard = game.getOfferingCards().stream()
                             .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
                             .findFirst().orElse(null);
 
                     Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
-                            tribesSelected, buildingSelected, staticGame.getUpperTribeRow(), staticGame.getLowerTribeRow(),
-                            staticGame.getUpperBuildingRow(), staticGame.getLowerBuildingRow());
+                            tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
+                            game.getUpperBuildingRow(), game.getLowerBuildingRow());
                     if(exception == null) {
-                        staticServer.pickTribeCards(staticGame.getGameId(), localPlayer, tribesSelected, buildingSelected);
+                        staticServer.pickTribeCards(game.getGameId(), localPlayer, tribesSelected, buildingSelected);
                         offeringSelected = null;
                         buildingSelected = new ArrayList<>();
                         tribesSelected =  new ArrayList<>();
@@ -313,7 +301,7 @@ public class GUI implements UI {
         HBox showCardsBox = new HBox(10);
         ScrollPane otherScrollPane = new ScrollPane(showCardsBox);
         //final Player[] openedPlayer = {null};
-        for(Player p : staticGame.getOrderedPlayers()){
+        for(Player p : game.getOrderedPlayers()){
             Button playerButton = new Button(p.getNickname() );
             //set nickname color
             Color nicknameColor = p.getColor();
@@ -424,6 +412,62 @@ public class GUI implements UI {
                 playerResourcesBox, playerCardsBox, spacer, playersButtonBox);
         return root;
     }
+
+
+    private void updateGameElements() {
+        // Update turn overlay visibility
+        turnOverlay.setVisible(game.isPlayerTurn());
+
+        // Update Upper Cards
+        upperCardsBox.getChildren().clear(); // Remove old cards
+        for(TribesCard card : game.getUpperTribeRow()){
+            CardGUI upperCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForTribes(upperCard, card);
+            upperCardsBox.getChildren().add(upperCard);
+        }
+        for(BuildingCard card : game.getUpperBuildingRow()){
+            CardGUI upperCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForBuilding(upperCard, card);
+            upperCardsBox.getChildren().add(upperCard);
+        }
+
+        // Update Offering Cards
+        offeringCardBox.getChildren().clear();
+        offeringCardGUI.clear(); // Reset the list of selectable offering cards
+        CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
+        offeringCardBox.getChildren().add(turnCard);
+
+        for(OfferingCard card : game.getOfferingCards()){
+            CardGUI offeringCard;
+            if(card.getPlayer() == null) {
+                offeringCard = new CardGUI(card.getImagePath());
+            } else {
+                offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
+            }
+            setOnMouseClickForOffering(offeringCard, card);
+            offeringCardGUI.add(offeringCard);
+            offeringCardBox.getChildren().add(offeringCard);
+        }
+
+        // Update Lower Cards
+        lowerCardsBox.getChildren().clear();
+        for(TribesCard card : game.getLowerTribeRow()){
+            CardGUI lowerCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForTribes(lowerCard, card);
+            lowerCardsBox.getChildren().add(lowerCard);
+        }
+        for(BuildingCard card : game.getLowerBuildingRow()){
+            CardGUI lowerCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForBuilding(lowerCard, card);
+            lowerCardsBox.getChildren().add(lowerCard);
+        }
+
+        // Update Player stats (Points, Food, Name) and personal board
+        createPlayerCardLabel();
+        orderPersonalCards();
+    }
+
+
     private Parent globalRankingInterface(){
         root = new VBox(20);
         root.setPadding(new Insets(30));
@@ -447,14 +491,14 @@ public class GUI implements UI {
             -fx-font-family: 'Consolas';
         """);
         //fill ranking
-        List<RankingEntry> globalRanking = staticGame.getRanking();
+        List<RankingEntry> globalRanking = game.getRanking();
 
         StringBuilder globalRankingText = new StringBuilder();
 
         if (!globalRanking.isEmpty()) {
             globalRankingText.append("--- YOUR POSITION IN GLOBAL RANKING ---\n\n");
             RankingEntry userEntry = globalRanking.stream()
-                    .filter(e -> e.getGameId().equals(staticGame.getGameId())
+                    .filter(e -> e.getGameId().equals(game.getGameId())
                             && e.getNickname().equals(localPlayer.getNickname()))
                     .findFirst()
                     .orElse(null);
@@ -540,7 +584,7 @@ public class GUI implements UI {
         """);
 
         //fill ranking
-        List<Player> sortedPlayers = staticGame.getOrderedPlayers().stream()
+        List<Player> sortedPlayers = game.getOrderedPlayers().stream()
                 .sorted(Comparator.comparingInt(Player::getPp).reversed())
                 .toList();
 
@@ -838,7 +882,7 @@ public class GUI implements UI {
                     return;
                 }
 
-                if (staticGame.isPickOCPhase()) {
+                if (game.isPickOCPhase()) {
                     return; // Not selectable right now
                 }
 
@@ -858,7 +902,7 @@ public class GUI implements UI {
                 return;
             }
 
-            if (staticGame.isPickOCPhase()) {
+            if (game.isPickOCPhase()) {
                 return; // Not selectable right now
             }
 
@@ -878,7 +922,7 @@ public class GUI implements UI {
                 return;
             }
 
-            if (!staticGame.isPickOCPhase()) {
+            if (!game.isPickOCPhase()) {
                 return; // Not selectable right now
             }
 
@@ -933,7 +977,7 @@ public class GUI implements UI {
 
     private void updateGameList(TextArea gameList) {
         Platform.runLater(() -> {
-            gameList.setText(staticGame.getGamesIdList().stream()
+            gameList.setText(game.getGamesIdList().stream()
                     .map(UUID::toString)
                     .collect(java.util.stream.Collectors.joining("\n")));
         });
@@ -942,7 +986,7 @@ public class GUI implements UI {
 
     private void orderPersonalCards(){
         //update selected player
-        selectedPlayer = staticGame.getPlayerFromList(selectedPlayer);
+        selectedPlayer = game.getPlayerFromList(selectedPlayer);
 
         List<CharacterCard> orderedCards = new ArrayList<>(
                 selectedPlayer.getCharacterCards()
@@ -993,7 +1037,7 @@ public class GUI implements UI {
 
     public boolean isPickTribesCard()
     {
-        return !staticGame.isPickOCPhase();
+        return !game.isPickOCPhase();
     }
 
     @Override
