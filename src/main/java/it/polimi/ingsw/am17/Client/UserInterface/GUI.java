@@ -27,29 +27,27 @@ import java.util.*;
 import java.util.List;
 
 
-public class GUI extends Application implements UI {
+public class GUI implements UI {
 
     private String TURN_CARD_IMAGE_PATH = "/Images/background_game.png";
 
-    private static final double START_WINDOW_WIDTH = 400;
-    private static final double START_WINDOW_HEIGHT = 300;
-    private static final double GAME_WINDOW_WIDTH = 1920;
-    private static final double GAME_WINDOW_HEIGHT = 1080;
+    private final double START_WINDOW_WIDTH = 400;
+    private final double START_WINDOW_HEIGHT = 300;
 
-    private static List<CharacterCard> tribesSelected = new ArrayList<>();
-    private static List<BuildingCard> buildingSelected = new ArrayList<>();
-    private static OfferingCard offeringSelected = null;
+    private List<CharacterCard> tribesSelected = new ArrayList<>();
+    private List<BuildingCard> buildingSelected = new ArrayList<>();
+    private OfferingCard offeringSelected = null;
 
-    private static List<CardGUI> offeringCardGUI = new ArrayList<>();
+    private List<CardGUI> offeringCardGUI = new ArrayList<>();
 
-    private static VirtualServer staticServer;
-    private static VirtualView staticClient;
-    private static ClientModel staticGame;
-    private static Player localPlayer;
-    private static Player selectedPlayer;
+    private VirtualServer staticServer;
+    private VirtualView staticClient;
+    private ClientModel staticGame;
+    private Player localPlayer;
+    private Player selectedPlayer;
 
     private VBox root;
-    public static Scene scene;
+    public Scene scene;
     private Label name;
     private Label food;
     private Label points;
@@ -83,11 +81,30 @@ public class GUI extends Application implements UI {
         return localPlayer;
     }
 
-    @Override
+
     public void start() {
-        Application.launch(GUI.class);
+        Runnable startFX = () -> {
+            Stage stage = new Stage();
+            drawStartInterface();
+            scene = new Scene(root, START_WINDOW_WIDTH, START_WINDOW_HEIGHT);
+            stage.setScene(scene);
+            stage.setTitle("MESOS");
+            stage.setOnCloseRequest(e -> {
+                Platform.exit();
+                System.exit(0);
+            });
+            stage.show();
+        };
+
+        try {
+            // This starts the JavaFX thread using THIS instance
+            Platform.startup(startFX);
+        } catch (IllegalStateException e) {
+            // If the JavaFX toolkit is already running
+            Platform.runLater(startFX);
+        }
     }
-    @Override
+
     public void start(Stage stage) {
         drawStartInterface();
         scene = new Scene(root, START_WINDOW_WIDTH, START_WINDOW_HEIGHT);
@@ -107,13 +124,13 @@ public class GUI extends Application implements UI {
         Platform.runLater(() -> {
             // Ora sei nel thread giusto!
             // Se 'scene' è una variabile globale della classe GUI:
-            if (GUI.scene != null && GUI.scene.getWindow() != null) {
+            if (scene != null && scene.getWindow() != null) {
                 int currentEra = staticGame.getCurrentEra();
                 if (currentEra >= 0) {
-                    GUI.scene.setRoot(drawGameInterface());
+                    scene.setRoot(drawGameInterface());
                 }
                 else{
-                    GUI.scene.setRoot(localRankingInterface());
+                    scene.setRoot(localRankingInterface());
                 }
             } else {
                 System.err.println("La scena o la finestra non sono ancora pronte!");
@@ -121,7 +138,7 @@ public class GUI extends Application implements UI {
         });
     }
 
-    public static boolean isPlayerTurn()
+    public boolean isPlayerTurn()
     {
         return staticGame.isPlayerTurn();
     }
@@ -816,7 +833,7 @@ public class GUI extends Application implements UI {
     {
         if(card.getCardType().isCharacter()) {
             cardGUI.setOnMouseClicked(event -> {
-                if (!GUI.isPlayerTurn()) {
+                if (!isPlayerTurn()) {
                     showWaitTurnAlert();
                     return;
                 }
@@ -828,7 +845,7 @@ public class GUI extends Application implements UI {
                 // Toggle the visual state
                 cardGUI.setVisualSelection(!cardGUI.isSelected());
 
-                GUI.tribesSelected((CharacterCard) card);
+                tribesSelected((CharacterCard) card);
             });
         }
     }
@@ -836,7 +853,7 @@ public class GUI extends Application implements UI {
     private void setOnMouseClickForBuilding(CardGUI cardGUI, BuildingCard card )
     {
         cardGUI.setOnMouseClicked(event -> {
-            if (!GUI.isPlayerTurn()) {
+            if (!isPlayerTurn()) {
                 showWaitTurnAlert(); // The main GUI handles the alert, not the card!
                 return;
             }
@@ -849,14 +866,14 @@ public class GUI extends Application implements UI {
             cardGUI.setVisualSelection(!cardGUI.isSelected());
 
             // Handle the game logic
-            GUI.buildingSelected(card);
+            buildingSelected(card);
         });
     }
 
     private void setOnMouseClickForOffering(CardGUI cardGUI, OfferingCard card)
     {
         cardGUI.setOnMouseClicked(event -> {
-            if (!GUI.isPlayerTurn()) {
+            if (!isPlayerTurn()) {
                 showWaitTurnAlert(); // The main GUI handles the alert, not the card!
                 return;
             }
@@ -866,7 +883,7 @@ public class GUI extends Application implements UI {
             }
 
             // Handle the game logic
-            GUI.offeringSelected(card);
+            offeringSelected(card);
 
             // Toggle the visual state
             cardGUI.setVisualSelection(!cardGUI.isSelected());
@@ -882,7 +899,7 @@ public class GUI extends Application implements UI {
 
     }
 
-    public static void tribesSelected(CharacterCard card)
+    public void tribesSelected(CharacterCard card)
     {
         if(tribesSelected.contains(card))
             tribesSelected.remove(card);
@@ -890,7 +907,7 @@ public class GUI extends Application implements UI {
             tribesSelected.add(card);
     }
 
-    public static void buildingSelected(BuildingCard card)
+    public void buildingSelected(BuildingCard card)
     {
         if(buildingSelected.contains(card))
             buildingSelected.remove(card);
@@ -900,7 +917,7 @@ public class GUI extends Application implements UI {
 
 
 
-    public static void offeringSelected(OfferingCard card)
+    public void offeringSelected(OfferingCard card)
     {
         if(offeringSelected == card)
             offeringSelected = null;
@@ -974,7 +991,7 @@ public class GUI extends Application implements UI {
     }
 
 
-    public static boolean isPickTribesCard()
+    public boolean isPickTribesCard()
     {
         return !staticGame.isPickOCPhase();
     }
