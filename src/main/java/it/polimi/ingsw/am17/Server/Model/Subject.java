@@ -4,99 +4,128 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
-import it.polimi.ingsw.am17.CommonInterfaces.Observer;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * Implements a subject in the observer pattern (an observable "game").
+ */
 public abstract class Subject {
-    private final List<Observer> observers = new ArrayList<>();
+    private final List<VirtualView> clients = new ArrayList<>();
+    private final static Logger logger = Logger.getLogger(Subject.class.getName());
 
     /**
-     * Attach an observer to the subject (start observing).
-     * @param observer to be attached
+     * Attach a client to the subject (start observing).
+     * @param client to be attached
      */
-    public void attach(Observer observer) {
-        observers.add(observer);
-    };
+    public void attach(VirtualView client) {
+        clients.add(client);
+        logger.info("Added client: " + client.getClass().getSimpleName());
+    }
 
     /**
-     * Detach an observer to the subject (stop observing).
-     * @param observer to be detached
+     * Detach a client to the subject (stop observing).
+     * @param client to be detached
      */
-    public void detach(Observer observer) {
-        observers.remove(observer);
+    public void detach(VirtualView client) {
+        clients.remove(client);
+        logger.info("Removed client: " + client.getClass().getSimpleName());
+
     }
 
     void notifyEra(int era) {
-        for (Observer observer : new ArrayList<>(observers)) {
+        for (VirtualView client : clients) {
             try {
-                observer.updateEra(era);
+                client.updateEra(era);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                logger.severe("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
 
-    void notifyPlayerStack(Stack<Player> orderedPlayer) {
-        for (Observer observer : new ArrayList<>(observers)) {
+    void notifyPlayerQueue(Queue<Player> orderedPlayer) {
+        for (VirtualView client : clients) {
             try {
-                observer.updatePlayerStack(orderedPlayer);
+                client.updatePlayerQueue(orderedPlayer);
             } catch (Exception e) {
-                System.err.println("Client not reachable");
+                logger.severe("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
-
 
     void notifyPlayerSelectOfferingCard(Player player, OfferingCard offeringCard){
-        for (Observer observer : new ArrayList<>(observers)) {
+        for (VirtualView client : clients) {
             try {
-                observer.updatePlayerSelectOfferingCard(player, offeringCard);
+                client.updatePlayerSelectOfferingCard(player, offeringCard);
             } catch (Exception e) {
-                System.err.println("Client not reachable: "+ e);
+                logger.severe("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
 
     void notifyPlayerSelectTribesCard(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
-        for (Observer observer : new ArrayList<>(observers)) {
+        for (VirtualView client : clients) {
             try {
-                observer.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
+                client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
             } catch (Exception e) {
-                System.err.println("Client not reachable: " + e);
+                logger.severe("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
 
-    void notifyEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
-        Stack<Player> newStack = players.stream()
+        Queue<Player> newQueue = players.stream()
                 .map(p -> {
                     Player copy = new Player(p.getNickname(), p.getColor());
                     copy.addFood(p.getFood());
                     copy.addPp(p.getPp());
-                    // Since you didn't set the cards, they remain null/empty by default
                     return copy;
                 })
-                .collect(Collectors.toCollection(Stack::new));
-        for (Observer observer : new ArrayList<>(observers)) {
+                .collect(Collectors.toCollection(LinkedList::new));
+        for (VirtualView client : clients) {
             try {
-                observer.updateEndTurn(newStack, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+                client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
             } catch (Exception e) {
-                System.err.println("Client not reachable: "+ e.getMessage());
+                logger.severe("Subject method failed to call client update" + e.getMessage());
             }
         }
     }
 
-    void notifyStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+    void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
-        for (Observer observer : new ArrayList<>(observers)) {
+        for (VirtualView client : clients) {
             try {
-                observer.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
+                client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
             } catch (Exception e) {
+                logger.severe("Subject method failed to call client update" + e.getMessage());
+            }
+        }
+    }
+
+    void notifyRanking (List<RankingEntry> ranking) {
+        for (VirtualView client : clients) {
+            try {
+                client.updateRanking(ranking);
+            }
+            catch (Exception e) {
+                logger.severe("Subject method failed to call client update" + e.getMessage());
+            }
+        }
+    }
+
+    // TODO: remove clients from list
+    void notifyEndGame() {
+        for (VirtualView client : clients) {
+            logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
+            try {
+                client.notifyEndGame();
+            } catch (Exception e) {
+                logger.severe("Subject method failed to call client update" + e.getMessage());
                 System.err.println("Client not reachable: "+ e.getMessage());
             }
         }

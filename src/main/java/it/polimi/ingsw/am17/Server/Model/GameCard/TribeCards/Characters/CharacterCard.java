@@ -1,20 +1,28 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class CharacterCard extends TribesCard {
-    private int minPlayer;
+    private Integer minPlayers;
 
-    public int getMinPlayer() {
-        return minPlayer;
+    public Integer getMinPlayers() {
+        return minPlayers;
     }
 
-    public CharacterCard(int era, int minPlayer, CardType cardType) {
-        super(era,  cardType);
-        this.minPlayer = minPlayer;
+    @JsonCreator
+    public CharacterCard(
+            @JsonProperty("era") Integer era,
+            @JsonProperty("minPlayers") Integer minPlayers,
+            @JsonProperty("cardType") CardType cardType,
+            @JsonProperty("id") UUID id) {
+        super(era,  cardType, id);
+        this.minPlayers = minPlayers;
     }
 
     @Override
@@ -23,11 +31,11 @@ public class CharacterCard extends TribesCard {
         if (o == null || getClass() != o.getClass()) return false;
         CharacterCard that = (CharacterCard) o;
         if(!this.getId().equals(that.getId())) return false;
-        return minPlayer == that.minPlayer;
+        return minPlayers.equals(that.minPlayers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(minPlayer);
+        return Objects.hashCode(minPlayers);
     }
 }

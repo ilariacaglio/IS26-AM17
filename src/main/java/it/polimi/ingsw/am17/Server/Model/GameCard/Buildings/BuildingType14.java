@@ -14,7 +14,7 @@ public class BuildingType14 extends BuildingCard {
     private static final int era = 1;
     private static final int foodCost = 6;
     private static final int bonusPoints = 4;
-    private final int numberOfCharacter = (int) Arrays.stream(CardType.values())
+    private final Integer numberOfCharacter = (int) Arrays.stream(CardType.values())
             .filter(type -> !type.name().endsWith("_EVENT"))
             .count();
     public BuildingType14() {
@@ -53,7 +53,7 @@ public class BuildingType14 extends BuildingCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildingType14 that = (BuildingType14) o;
-        return numberOfCharacter == that.numberOfCharacter;
+        return numberOfCharacter.equals(that.numberOfCharacter);
     }
 
     @Override
@@ -63,6 +63,6 @@ public class BuildingType14 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +5F/set of 6 different characters";
+        return super.toString() + " Effect: +5F/set of 6 different characters] ";
     }
 }

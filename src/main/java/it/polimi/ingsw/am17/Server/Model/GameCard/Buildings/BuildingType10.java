@@ -46,6 +46,6 @@ public class BuildingType10 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +3F/inventor (with icon you already have)";
+        return super.toString() + " Effect: +3F/inventor (with icon you already have)] ";
     }
 }

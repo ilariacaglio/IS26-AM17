@@ -4,20 +4,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Shaman extends CharacterCard {
-    private final int stars;
+    private final Integer stars;
 
-    public int getStars() {
+    public Integer getStars() {
         return stars;
     }
 
     @JsonCreator
     public Shaman(
-            @JsonProperty("era") int era,
-            @JsonProperty("stars") int minPlayer,
-            @JsonProperty("minPlayers") int stars){
-        super(era, minPlayer, CardType.SHAMAN);
+            @JsonProperty("era") Integer era,
+            @JsonProperty("minPlayers") Integer minPlayers,
+            @JsonProperty("stars") Integer stars,
+            @JsonProperty("id") UUID id){
+        super(era, minPlayers, CardType.SHAMAN, id);
         this.stars = stars;
     }
 
@@ -27,7 +29,7 @@ public class Shaman extends CharacterCard {
         if (o == null || getClass() != o.getClass()) return false;
         Shaman shaman = (Shaman) o;
         if(!this.getId().equals(shaman.getId())) return false;
-        return stars == shaman.stars;
+        return stars.equals(shaman.stars);
     }
 
     @Override
@@ -35,7 +37,8 @@ public class Shaman extends CharacterCard {
         return Objects.hashCode(stars);
     }
 
-    public String toString() {
-        return super.toString() + " " + stars + "★";
+    @Override
+    public String getDetails() {
+        return super.getDetails() + " " + stars + "★";
     }
 }
