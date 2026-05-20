@@ -94,6 +94,20 @@ public class GamesController {
         }
     }
 
+    /**
+     * Calls updateNotifyError on the specified client
+     * @param client    the client to be notified
+     * @param e         the exception thrown
+     */
+    private void notifyErrorToClient(VirtualView client, Exception e) {
+        try {
+            client.updateNotifyError(e);
+        }
+        catch (Exception networkEx){
+            logger.info("Could not send notification to client: " + networkEx.getMessage());
+        }
+    }
+
     //** public methods: CLIENT ACTIONS **//
     // Used by RMI/Socket servers to handle client requests.
     // N.B. all requests are handled in a new thread to avoid blocking the controller.
@@ -121,15 +135,9 @@ public class GamesController {
                 joinGame(client, id, player);
             }
             catch (Exception e) {
-                client.updateNotifyError(e);
-            }
+                logger.info("Error creating game: " + e.getMessage());
 
-
-            // send gameId to client
-            try {
-                client.updateGameId(id);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                notifyErrorToClient(client,e);
             }
         }).start();
     }
@@ -152,7 +160,12 @@ public class GamesController {
                 client.updateGameId(gameId);
             } catch (Exception e) {
                 logger.warning("Error sending game Id update: " + e.getMessage());
-                throw new RuntimeException(e);
+                try {
+                    client.updateNotifyError(e);
+                }
+                catch (Exception networkEx){
+                    logger.info("Could not send notification to client: " + networkEx.getMessage());
+                }
             }
 
             // Add player to the game
@@ -171,7 +184,8 @@ public class GamesController {
                 // we remove it here.
 
                 removeClientAsObserver(client, gameId);
-                throw new RuntimeException(e);
+
+                notifyErrorToClient(client,e);
             }
         }).start();
     }
@@ -198,7 +212,8 @@ public class GamesController {
             }
             catch (Exception e) {
                 logger.warning("Error calling forceEndGame: " + e.getMessage());
-                throw new RuntimeException(e);
+
+                notifyErrorToClient(client,e);
             }
 
             // remove client from the game's observer list
@@ -246,7 +261,8 @@ public class GamesController {
             }
             catch(Exception e) {
                 logger.warning("Error calling game selectOfferingCard: " + e.getMessage());
-                throw new RuntimeException(e);
+
+                notifyErrorToClient(client,e);
             }
         }).start();
     }
@@ -274,7 +290,8 @@ public class GamesController {
                 }
             } catch (Exception e) {
                 logger.warning("Error calling game pickTribeCards: " + e.getMessage());
-                throw new RuntimeException(e);
+
+                notifyErrorToClient(client,e);
             }
         }).start();
     }
@@ -292,7 +309,7 @@ public class GamesController {
                 client.updateGamesIdList(getGamesList());
             } catch (Exception e) {
                 logger.warning("Error sending games list: " + e.getMessage());
-                throw new RuntimeException(e);
+                notifyErrorToClient(client,e);
             }
         }).start();
     }
