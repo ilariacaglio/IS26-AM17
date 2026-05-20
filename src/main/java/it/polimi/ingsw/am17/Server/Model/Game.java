@@ -69,7 +69,7 @@ public class Game extends Subject {
         logger.fine("Checking number of players: " + numPlayers);
 
         if (numPlayers < 2 || numPlayers > 5) {
-//            logger.warning("Invalid number of players: " + numPlayers);
+            logger.warning("Invalid number of players: " + numPlayers);
             throw new IllegalArgumentException("Wrong number of players");
         }
     }
@@ -111,15 +111,15 @@ public class Game extends Subject {
         logger.info("Adding player " + p.getNickname() + " to game with id " + id);
 
         if (isStarted()) {
-//            logger.warning("in Game, in addPlayer(), problem in if(isStarted()) ");
+            logger.warning("in Game, in addPlayer(), problem in if(isStarted())");
             throw new IllegalStateException("The game has already started.");
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
-//            logger.warning("The nickname " + p.getNickname() + " is not available.");
+           logger.warning("The nickname " + p.getNickname() + " is not available.");
             throw new IllegalStateException("The game has already a player with the same nickname.");
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
-//            logger.warning("The color " + p.getColor() + " is not available");
+            logger.warning("The color " + p.getColor() + " is not available");
             String message = "The game has already a player with the same color. Unused colors: ";
             //Get All colors
             EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
