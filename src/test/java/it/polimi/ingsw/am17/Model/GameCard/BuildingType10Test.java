@@ -24,8 +24,8 @@ class BuildingType10Test {
     void TestFoodBonusInventor3() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(2, 2, InventorIconType.CANOE);
-        CharacterCard B = new Inventor(3, 2,InventorIconType.CANOE);
+        CharacterCard A = new Inventor(2, 2, InventorIconType.CANOE,null);
+        CharacterCard B = new Inventor(3, 2,InventorIconType.CANOE, null);
         cards.add(A);
 
         int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
@@ -37,8 +37,8 @@ class BuildingType10Test {
     void TestFoodBonusInventor0() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(2, 2,InventorIconType.IDOL);
-        CharacterCard B = new Inventor(3, 2,InventorIconType.BREAD);
+        CharacterCard A = new Inventor(2, 2,InventorIconType.IDOL, null);
+        CharacterCard B = new Inventor(3, 2,InventorIconType.BREAD, null);
         cards.add(A);
 
         int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
@@ -51,8 +51,8 @@ class BuildingType10Test {
     void TestFoodBonus0() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(2, 2,InventorIconType.CANOE);
-        CharacterCard B = new Artist(3, 2);
+        CharacterCard A = new Inventor(2, 2,InventorIconType.CANOE, null);
+        CharacterCard B = new Artist(3, 2, null);
         cards.add(A);
 
         int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
@@ -64,7 +64,7 @@ class BuildingType10Test {
     void TestFoodBonusListaVuotaInventor() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(3, 2,InventorIconType.BREAD);
+        CharacterCard A = new Inventor(3, 2,InventorIconType.BREAD, null);
 
         int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, A);
         //first if is true, but list is void (Inventor)
@@ -75,7 +75,7 @@ class BuildingType10Test {
     void TestFoodBonusListaVuotaNoInventor() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard B = new Shaman(2, 2, 2);
+        CharacterCard B = new Shaman(2, 2, 2, null);
 
         int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first if is false and list is void (no Inventor)

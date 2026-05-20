@@ -24,6 +24,6 @@ public class BuildingType9 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: +3★ in RitualEvent if won.";
+        return super.toString() + " Effect: +3★ in RitualEvent if won] ";
     }
 }

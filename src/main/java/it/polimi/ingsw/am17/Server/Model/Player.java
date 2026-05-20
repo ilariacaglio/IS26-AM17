@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.logging.Logger;
 
 public class Player implements Serializable {
@@ -19,15 +20,33 @@ public class Player implements Serializable {
     private List<CharacterCard> characterCards;
     private List<BuildingCard> buildingCards;
 
+    private static final Logger logger = Logger.getLogger(Game.class.getName());
+
+
+    /**
+     * Used for (de)serialization.
+     */
     @JsonCreator
-    public Player(@JsonProperty("nickname") String nickname, @JsonProperty("color") Color color) {
+    public Player(@JsonProperty("nickname") String nickname,
+                  @JsonProperty("color") Color color,
+                  @JsonProperty("characterCards") List<CharacterCard> characterCards,
+                  @JsonProperty("buildingCards") List<BuildingCard> buildingCards) {
+        this.nickname = nickname;
+        this.color = color;
+        this.characterCards = characterCards != null ? characterCards : new ArrayList<>();
+        this.buildingCards = buildingCards != null ? buildingCards : new ArrayList<>();
+    }
+
+
+    /**
+     * Used for actual creation of player.
+     */
+    public Player(String nickname, Color color) {
         this.nickname = nickname;
         this.color = color;
         this.characterCards = new ArrayList<>();
         this.buildingCards = new ArrayList<>();
     }
-
-    private static final Logger logger = Logger.getLogger(Game.class.getName());
 
     public Color getColor() {
         return color;
@@ -46,6 +65,14 @@ public class Player implements Serializable {
         this.nickname=nickname;
     }
 
+    public List<CharacterCard> getCharacterCards() {
+        return characterCards;
+    }
+
+    public List<BuildingCard> getBuildingCards() {
+        return buildingCards;
+    }
+
     public void addPp(int quantity){
         this.pp+=quantity;
     }
@@ -59,8 +86,6 @@ public class Player implements Serializable {
     }
 
     public void calculateFinalPoints(){
-        boolean iconPresent;
-
         // add pp of builders
         int pointsBuilders = characterCards.stream()
                     .filter(g ->g.getCardType().equals(CardType.BUILDER))
@@ -141,6 +166,9 @@ public class Player implements Serializable {
             }
         }
 
+        if(!canBuyBuidings(buildingCards))
+            throw new IllegalStateException("Not enough food to buy building cards");
+
         for (BuildingCard card : buildingCards){
             int cost = calculateBuildingCost(card);
             try {
@@ -150,6 +178,16 @@ public class Player implements Serializable {
             }
             addBuilding(card);
         }
+    }
+
+    public boolean canBuyBuidings(List<BuildingCard> buildingsToBuy)
+    {
+        int totalCost = 0;
+        for (BuildingCard card : buildingsToBuy){
+            int cost = calculateBuildingCost(card);
+            totalCost+= cost;
+        }
+        return totalCost <= food;
     }
 
     public int calculateBuildingCost(BuildingCard card) {
@@ -232,38 +270,27 @@ public class Player implements Serializable {
 
    public void solveHuntingEvent(int pointEarned)
    {
+       int totalFood=0;
+       int totalPP=0;
        //count number of hunter
        long numHunter = this.characterCards.stream()
                .filter(c -> c.getCardType().equals(CardType.HUNTER))
                .count();
        //if player has hunter cards, they get food and PP
        if(numHunter!=0){
-           int gainFood = Math.toIntExact(numHunter);
-           int gainPp = Math.toIntExact(pointEarned * numHunter);
-
-           this.addFood(gainFood);
-           this.addPp(gainPp);
-           logger.info("Player " + getNickname() + " had gained " + gainFood + " food and "
-                   + gainPp + " points from HuntingEvent.");
-
-       }
-
-       int additionalFood=0;
-       int additionalPp=0;
-
-       List<CharacterCard> characterList = this.characterCards.stream()
-               .map(c-> (CharacterCard)c)
-               .toList();
+           totalFood+= Math.toIntExact(numHunter);
+           totalPP = Math.toIntExact(pointEarned * numHunter);
        //find additional food and PP given by buildingCard
        for(BuildingCard c: this.buildingCards){
-           additionalFood += c.AddFoodPerHunterInHuntingEvent(characterList);
-           additionalPp += c.AddPointPerHunterInHuntingEvent(characterList);
+           totalFood += c.AddFoodPerHunterInHuntingEvent(this.characterCards);
+           totalPP += c.AddPointPerHunterInHuntingEvent(this.characterCards);
        }
-       //add additionalFood and additionalPp
-       this.addFood(additionalFood);
-       this.addPp(additionalPp);
-       logger.info("Player " + getNickname() + " had gained " + additionalFood + " food and "
-                + additionalPp + " points from HuntingEvent.");
+       //add food and points
+       this.addFood(totalFood);
+       this.addPp(totalPP);
+       logger.info("Player " + getNickname() + " had gained " + totalFood + " food and "
+                   + totalPP + " points from HuntingEvent.");
+       }
    }
 
    public void solvePaintingEvent(int numMax, int pointsMax, int pointsLow){
@@ -288,7 +315,7 @@ public class Player implements Serializable {
 
        //find additional food given by buildingCard
        for(BuildingCard c: buildingCards){
-           additionalFood =+ c.AddFoodPerHunterInPaintingEvent(this.characterCards);
+           additionalFood += c.AddFoodPerArtistInPaintingEvent(this.characterCards);
        }
        //add additionalFood
        addFood(additionalFood);
@@ -363,17 +390,97 @@ public class Player implements Serializable {
 
     @Override
     public String toString() {
-        String player = "Nickname: " + nickname +
+        String playerString = "Nickname: " + nickname +
                 "\nPp: " + pp +
                 "\nFood: " + food;
-        if(!characterCards.isEmpty() || !buildingCards.isEmpty())
-               player+= "\nCards: ";
-        for(CharacterCard c: this.characterCards){
-            player = player.concat(c.toString() +" ");
+        if (!characterCards.isEmpty()) playerString+= "\nCharacter cards: " + playerCharacterCardstoString(17);
+        if (!buildingCards.isEmpty()) playerString+= "Building cards: " + playerBuildingCardsString(17);
+        return playerString;
+    }
+
+    /**
+     * Builds a string containing the character cards of the player
+     * @return  the string with character cards of the player
+     */
+    public String playerCharacterCardstoString(int startSpace) {
+        StringBuilder sb = new StringBuilder();
+        if (!characterCards.isEmpty()) {
+            // map of character types and character cards of the player
+            // key: character type
+            // value: list of cards of the key type
+            Map<CardType, List<CharacterCard>> groupCharacters = characterCards.stream()
+                    .collect(Collectors.groupingBy(TribesCard::getCardType));
+
+            // map with maximum widths of the columns
+            Map<CardType, Integer> columnWidths = columnLength();
+
+            // calculate the number of rows to append
+            int maxRows = groupCharacters.values().stream().mapToInt(List::size).max().orElse(0);
+
+            // initial span
+            if (startSpace == 15) sb.repeat(" ", startSpace - 4);
+            else sb.repeat(" ", startSpace - 17);
+            // append cards
+            for (int i = 0; i < maxRows; i++) {
+                if (i>0) sb.append("\n").repeat(" ", startSpace);
+                for (CardType type : groupCharacters.keySet()) {
+                    List<CharacterCard> columnCards = groupCharacters.get(type);
+                    // if cards are more than the current row index append one of them
+                    // append blank otherwise
+                    String card = (i < columnCards.size()) ? columnCards.get(i).toString() : "";
+                    sb.append(String.format("%-" + columnWidths.get(type) + "s", card));
+                }
+
+            }
+            sb.append("\n");
         }
-        for(BuildingCard c: this.buildingCards){
-            player = player.concat(c.toString() +" ");
+        return sb.toString();
+    }
+
+    /**
+     * Builds a string containing the building cards of the player
+     * @return  the string with building cards of the player
+     */
+    public String playerBuildingCardsString(int startSpace) {
+        if (buildingCards.isEmpty()) {
+            return "";
         }
-        return player;
+        StringBuilder sb = new StringBuilder();
+        if (startSpace == 17) {
+            // if first row add only one space
+            sb.append(" ");
+        }
+        else {
+            sb.repeat(" ", startSpace);
+        }
+        for (int i = 0; i < buildingCards.size(); i++) {
+            sb.append(buildingCards.get(i).toString());
+            if (i < buildingCards.size() - 1) {
+                sb.append("\n").repeat(" ", startSpace);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * @return  a map with the maximum card string length for each character type.
+     */
+    private Map<CardType, Integer> columnLength() {
+        Map<CardType, Integer> columnMaxLength = new HashMap<>();
+        // space between columns
+        int fixedGap = 4;
+        // artist: 8
+        columnMaxLength.put(CardType.ARTIST, 8 + fixedGap);
+        // hunter: 9
+        columnMaxLength.put(CardType.HUNTER, 9 + fixedGap);
+        // shaman: 11
+        columnMaxLength.put(CardType.SHAMAN, 11 + fixedGap);
+        // inventor: 20
+        columnMaxLength.put(CardType.INVENTOR, 20 + fixedGap);
+        // builder: 19
+        columnMaxLength.put(CardType.BUILDER, 19 + fixedGap);
+        // binder: 8
+        columnMaxLength.put(CardType.BINDER, 8  + fixedGap);
+        return columnMaxLength;
     }
 }

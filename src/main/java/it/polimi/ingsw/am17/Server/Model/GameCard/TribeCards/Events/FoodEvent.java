@@ -6,29 +6,31 @@ import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.UUID;
+import java.util.Queue;
 
 public class FoodEvent extends EventCard{
     private static final Logger logger = Logger.getLogger(FoodEvent.class.getName());
-    private final int pointLost;
+    private final Integer pointLost;
 
-    public int getPointLost() {
+    public Integer getPointLost() {
         return pointLost;
     }
 
     @JsonCreator
     public FoodEvent(
-           @JsonProperty("pointLost") int pointLost,
-           @JsonProperty("Final") boolean Final,
-           @JsonProperty("era") int era){
-        super(Final, era, CardType.FOOD_EVENT);
+           @JsonProperty("pointLost") Integer pointLost,
+           @JsonProperty("Final") Boolean Final,
+           @JsonProperty("era") Integer era,
+           @JsonProperty("id") UUID id){
+        super(Final, era, CardType.FOOD_EVENT, id);
         this.pointLost = pointLost;
     }
 
     @Override
-    public void computeScore(List<Player> list){
+    public void computeScore(Queue<Player> list){
         for (Player player : list) {
             player.solveFoodEvent(pointLost);
             logger.info("Solved Food Event. ");
@@ -43,7 +45,7 @@ public class FoodEvent extends EventCard{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FoodEvent foodEvent = (FoodEvent) o;
-        return pointLost == foodEvent.pointLost;
+        return pointLost.equals(foodEvent.pointLost);
     }
 
     @Override

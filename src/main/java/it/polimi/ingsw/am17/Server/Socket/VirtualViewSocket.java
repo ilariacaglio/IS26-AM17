@@ -8,11 +8,10 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.net.Socket;
-import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Forwards requests from the controller to a single client.
@@ -46,8 +45,8 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updatePlayerStack(Stack<Player> orderedPlayer) throws Exception {
-        Message message = new Message(MessageType.UPDATE_PLAYER_STACK);
+    public void updatePlayerQueue(Queue<Player> orderedPlayer) throws Exception {
+        Message message = new Message(MessageType.UPDATE_PLAYERS_DATA);
         message.setOrderedPlayer(orderedPlayer);
         message.send(socket);
     }
@@ -70,7 +69,7 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updateEndTurn(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws Exception {
+    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws Exception {
         Message message = new Message(MessageType.UPDATE_END_TURN);
         message.setOrderedPlayer(players);
         message.setUpperRow(upperRow);
@@ -81,7 +80,7 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updateStartGame(Stack<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws Exception {
+    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws Exception {
         Message message = new Message(MessageType.UPDATE_START_GAME);
         message.setOrderedPlayer(players);
         message.setUpperRow(upperRow);
@@ -91,4 +90,16 @@ public class VirtualViewSocket implements VirtualView {
         message.send(socket);
     }
 
+    @Override
+    public void updateRanking(List<RankingEntry> ranking) throws Exception {
+        Message message = new Message(MessageType.UPDATE_RANKING);
+        message.setRanking(ranking);
+        message.send(socket);
+    }
+
+    @Override
+    public void notifyEndGame() throws Exception {
+        Message message = new Message(MessageType.END_GAME);
+        message.send(socket);
+    }
 }

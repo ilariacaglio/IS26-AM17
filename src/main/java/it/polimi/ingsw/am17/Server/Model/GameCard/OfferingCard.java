@@ -9,19 +9,19 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class OfferingCard implements Serializable {
-    private final int minPlayers;
-    private final char orderLetter;
-    private final int foodBonus;
-    private final int numCardsUpper;
-    private final int numCardsLower;
+    private final Integer minPlayers;
+    private final Character orderLetter;
+    private final Integer foodBonus;
+    private final Integer numCardsUpper;
+    private final Integer numCardsLower;
     private Player player;
 
     @JsonCreator
-    public OfferingCard(@JsonProperty("minPlayers") int minPlayers,
-    @JsonProperty("orderLetter") char orderLetter,
-    @JsonProperty("foodBonus") int foodBonus,
-    @JsonProperty("numCardsUpper") int numCardsUpper,
-    @JsonProperty("numCardsLower") int numCardsLower) {
+    public OfferingCard(@JsonProperty("minPlayers") Integer minPlayers,
+    @JsonProperty("orderLetter") Character orderLetter,
+    @JsonProperty("foodBonus") Integer foodBonus,
+    @JsonProperty("numCardsUpper") Integer numCardsUpper,
+    @JsonProperty("numCardsLower") Integer numCardsLower) {
         this.minPlayers = minPlayers;
         this.orderLetter = orderLetter;
         this.foodBonus = foodBonus;
@@ -42,23 +42,23 @@ public class OfferingCard implements Serializable {
         }
     }
 
-    public char getOrderLetter() {
+    public Character getOrderLetter() {
         return orderLetter;
     }
 
-    public int getFoodBonus() {
+    public Integer getFoodBonus() {
         return foodBonus;
     }
 
-    public int getNumCardsLower() {
+    public Integer getNumCardsLower() {
         return numCardsLower;
     }
 
-    public int getMinPlayers() {
+    public Integer getMinPlayers() {
         return minPlayers;
     }
 
-    public int getNumCardsUpper() {
+    public Integer getNumCardsUpper() {
         return numCardsUpper;
     }
 
@@ -72,22 +72,22 @@ public class OfferingCard implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OfferingCard that = (OfferingCard) o;
-        return minPlayers == that.minPlayers && orderLetter == that.orderLetter && foodBonus == that.foodBonus && numCardsUpper == that.numCardsUpper && numCardsLower == that.numCardsLower;
+        return minPlayers.equals(that.minPlayers) && orderLetter.equals(that.orderLetter) && foodBonus.equals(that.foodBonus) && numCardsUpper.equals(that.numCardsUpper)  && numCardsLower.equals(that.numCardsLower);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(minPlayers, orderLetter, foodBonus, numCardsUpper, numCardsLower, player);
+        return Objects.hash(minPlayers, orderLetter, foodBonus, numCardsUpper, numCardsLower);
     }
 
     @Override
     public String toString() {
-        String nickname = (player != null) ? player.getNickname() : "";
+        StringBuilder sb = new StringBuilder().append("[").append(orderLetter).append(" ");
+        if (numCardsUpper > 0) sb.append(numCardsUpper).append("↑ ");
+        if (numCardsLower > 0) sb.append(numCardsLower).append("↓ ");
+        if (foodBonus > 0) sb.append(foodBonus).append("F ");
+        sb.append("(").append(player != null ? player.getNickname() : " ").append(")").append("] ");
 
-        return  numCardsUpper + "↑ "
-                + numCardsLower + "↓ "
-                + foodBonus + "F "
-                + "(" + nickname + ")"
-                ;
+        return sb.toString();
     }
 }

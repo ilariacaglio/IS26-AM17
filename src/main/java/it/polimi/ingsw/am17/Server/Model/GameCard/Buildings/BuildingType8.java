@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
 /**
- * Get double the points from RitualEvent if "won". Get the points even if tied.
+ * Get double the points from RitualEvent if "won".
  * Event effect
  * SINGLETON
  */
@@ -18,6 +18,6 @@ public class BuildingType8 extends BuildingCard {
 
     @Override
     public String toString() {
-        return super.toString() + " Effect: x2PP in RitualEvent if won.";
+        return super.toString() + " Effect: x2PP in RitualEvent if won] ";
     }
 }
