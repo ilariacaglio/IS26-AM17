@@ -274,7 +274,7 @@ public class GameTest {
                             finalCurrentPlayer.getNickname(),
                             offeringCardList.getFirst().getOrderLetter()));
             // test card null error
-            assertThrows(IllegalStateException.class,
+            assertThrows(IllegalArgumentException.class,
                     () -> game.selectOfferingCard(finalCurrentPlayer.getNickname(), null));
         }
 

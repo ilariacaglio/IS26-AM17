@@ -387,6 +387,9 @@ public class Game extends Subject {
      */
     public void selectOfferingCard(String nickname, Character offeringCardLetter) {
         logger.info("Request forwarded to selectOfferingCard method in model");
+        // check if letter is null
+        if(offeringCardLetter == null)  throw new IllegalArgumentException("offeringCardLetter can't be null");
+
         // get player from nickname
         Player player = orderedPlayers.stream().filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow();
@@ -406,7 +409,7 @@ public class Game extends Subject {
             selectedOc = building2OfferingCard;
         }
         else if (selectedOc == null) {
-            throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
+            throw new IllegalStateException("Illegal card selection. (Card not found)");
         }
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
