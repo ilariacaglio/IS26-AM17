@@ -70,7 +70,7 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = BuildingType11.class, name = "building11"),
             @JsonSubTypes.Type(value = BuildingType12.class, name = "building12"),
             @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
-            @JsonSubTypes.Type(value = BuildingType13M.class, name = "building14")
+            @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
     })
     private List<BuildingCard> buildingCards;
 
@@ -136,7 +136,7 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = BuildingType11.class, name = "building11"),
             @JsonSubTypes.Type(value = BuildingType12.class, name = "building12"),
             @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
-            @JsonSubTypes.Type(value = BuildingType13M.class, name = "building14")
+            @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
     })
     private List<BuildingCard> upperBuildingRow;
 
@@ -159,7 +159,7 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = BuildingType11.class, name = "building11"),
             @JsonSubTypes.Type(value = BuildingType12.class, name = "building12"),
             @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
-            @JsonSubTypes.Type(value = BuildingType13M.class, name = "building14")
+            @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
     })
     private List<BuildingCard> lowerBuildingRow;
 
