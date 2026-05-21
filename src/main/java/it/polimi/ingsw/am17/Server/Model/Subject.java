@@ -130,18 +130,4 @@ public abstract class Subject {
             }
         }
     }
-
-    void notifyError(Exception exception)
-    {
-        for(VirtualView client: clients)
-        {
-            logger.info("Calling updateNotifyError on client " + client.getClass().getSimpleName());
-            try {
-                client.updateNotifyError(exception);
-            } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
-                System.err.println("Client not reachable: "+ e.getMessage());
-            }
-        }
-    }
 }
