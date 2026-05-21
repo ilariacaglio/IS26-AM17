@@ -14,6 +14,7 @@ module it.polimi.ingsw.am17 {
     // Add this line to allow RMI to access your client interfaces
     exports it.polimi.ingsw.am17.Client.RMI to java.rmi;
 
+    exports it.polimi.ingsw.am17.Server.Controller;
     // If your Server-side RMI interfaces are in a different package, export that too
     exports it.polimi.ingsw.am17.Server.RMI to java.rmi;
     opens it.polimi.ingsw.am17.Server.Model to tools.jackson.databind;

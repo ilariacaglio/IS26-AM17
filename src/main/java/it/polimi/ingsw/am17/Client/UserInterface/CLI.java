@@ -453,7 +453,7 @@ public class CLI implements UI {
 
         // call server method
         try{
-            virtualServer.pickTribeCards(readOnlyModel.getGameId(),localPlayer,characterCards,buildingCards);
+            virtualServer.pickTribeCards(this.client, characterCards,buildingCards);
         }
         catch (Exception e) {
             System.err.println("CLI error while calling pickTribeCards on the virtualServer: " + e.getMessage());
@@ -587,7 +587,7 @@ public class CLI implements UI {
             if (readOnlyModel.getGameId() == null) {
                 System.out.print("Not in a game \n>");
             } else {
-                virtualServer.closeGame(client, getLocalPlayer(), readOnlyModel.getGameId());
+                virtualServer.closeGame(client);
             }
         }catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -611,7 +611,7 @@ public class CLI implements UI {
                 drawInterface(readOnlyModel, "card already taken");
                 return;
             }
-            virtualServer.pickOfferingCard(readOnlyModel.getGameId(), localPlayer, readOnlyModel.getOfferingCards().get(numCard));
+            virtualServer.pickOfferingCard(this.client, readOnlyModel.getOfferingCards().get(numCard).getOrderLetter());
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
