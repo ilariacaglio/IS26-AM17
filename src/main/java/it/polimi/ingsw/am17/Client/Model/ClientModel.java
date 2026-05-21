@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
-import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
