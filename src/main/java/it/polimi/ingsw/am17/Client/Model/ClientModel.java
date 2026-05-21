@@ -271,7 +271,7 @@ public class ClientModel {
      * @return true if it is players turn, false otherwise.
      */
     public boolean isPlayerTurn(){
-        if(currentEra.isGameStarted())
+        if(!currentEra.isGameStarted())
             return false;
         return userInterface.getLocalPlayer().equals(orderedPlayer.peek());
     }
