@@ -328,22 +328,7 @@ public class GameView {
         }
 
         // Update Offering Cards
-        offeringCardBox.getChildren().clear();
-        offeringCardGUI.clear(); // Reset the list of selectable offering cards
-        CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
-        offeringCardBox.getChildren().add(turnCard);
-
-        for(OfferingCard card : game.getOfferingCards()){
-            CardGUI offeringCard;
-            if(card.getPlayer() == null) {
-                offeringCard = new CardGUI(card.getImagePath());
-            } else {
-                offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
-            }
-            setOnMouseClickForOffering(offeringCard, card);
-            offeringCardGUI.add(offeringCard);
-            offeringCardBox.getChildren().add(offeringCard);
-        }
+        updateOfferingCards();
 
         // Update Lower Cards
         lowerCardsBox.getChildren().clear();
@@ -361,6 +346,25 @@ public class GameView {
         // Update Player stats (Points, Food, Name) and personal board
         createPlayerCardLabel();
         orderPersonalCards();
+    }
+
+    private void updateOfferingCards(){
+        offeringCardBox.getChildren().clear();
+        offeringCardGUI.clear(); // Reset the list of selectable offering cards
+        CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
+        offeringCardBox.getChildren().add(turnCard);
+
+        for(OfferingCard card : game.getOfferingCards()){
+            CardGUI offeringCard;
+            if(card.getPlayer() == null) {
+                offeringCard = new CardGUI(card.getImagePath());
+            } else {
+                offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
+            }
+            setOnMouseClickForOffering(offeringCard, card);
+            offeringCardGUI.add(offeringCard);
+            offeringCardBox.getChildren().add(offeringCard);
+        }
     }
 
     private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card) {
