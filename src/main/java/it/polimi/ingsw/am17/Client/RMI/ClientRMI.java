@@ -39,7 +39,6 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
 
         Registry registry = LocateRegistry.getRegistry(ip, 1099);
         this.server = (VirtualServerRMI) registry.lookup(serverName);
-        // Todo: remove null when gui
         UI userInterface = null;
         if(graphic){
             userInterface = new GUI(server, this);
