@@ -9,7 +9,6 @@ import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -63,8 +62,10 @@ public class ClientModel {
      */
     public void setGameId(UUID id) {
         this.id = id;
+        setCurrentEra(GameState.LOBBY);
         // UI communication
         userInterface.printGameId(id);
+        userInterface.drawInterface(this,null);
     }
 
     public UUID getGameId() {
@@ -401,6 +402,8 @@ public class ClientModel {
     }
 
     public void updateNotifyError(Exception e) {
+        String message = e.getMessage();
+        if (message.contains("Unused colors")) setCurrentEra(GameState.NONE);
         userInterface.drawInterface(this,e.getMessage());
     }
 }

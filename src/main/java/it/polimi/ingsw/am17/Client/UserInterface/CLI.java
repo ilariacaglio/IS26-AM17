@@ -623,7 +623,7 @@ public class CLI implements UI {
      */
     private void joinGame(){
         try {
-            if (readOnlyModel.getGameId() == null) {
+            if (readOnlyModel.getCurrentEra().equals(GameState.NONE)) {
                 System.out.print("Insert the gameID or index in gameList > ");
                 String input = scanner.nextLine().trim();
                 UUID gameId = null;
@@ -727,6 +727,7 @@ public class CLI implements UI {
     public Player getLocalPlayer() {
         return localPlayer;
     }
+
     public void printError(Exception e){
         System.out.print(e.getMessage() + "\n>");
     }

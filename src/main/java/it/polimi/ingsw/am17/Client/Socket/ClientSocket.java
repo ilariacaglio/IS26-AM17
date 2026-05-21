@@ -166,6 +166,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) {
         model.updatePlayerSelectTribeCards(player, tribesCards, buildingCards);
     }
+
     @Override
     public void updateNotifyError(Exception e)
     {

@@ -155,25 +155,16 @@ public class GamesController {
             // Sign up client as an observer (see N.B. hereunder)
             signUpAsObserver(client, gameId);
 
-            // Notify gameId to the client
             try {
+                // Notify gameId to the client
                 client.updateGameId(gameId);
-            } catch (Exception e) {
-                logger.warning("Error sending game Id update: " + e.getMessage());
-                try {
-                    client.updateNotifyError(e);
-                }
-                catch (Exception networkEx){
-                    logger.info("Could not send notification to client: " + networkEx.getMessage());
-                }
-            }
 
-            // Add player to the game
-            try {
+                // Add player to the game
                 Game game = getGameFromId(gameId);
                 synchronized (game) {
                     game.addPlayer(player);
                 }
+
                 // add player to mapping
                 playerMapping.put(client, player.getNickname());
             } catch (Exception e) {
@@ -185,7 +176,12 @@ public class GamesController {
 
                 removeClientAsObserver(client, gameId);
 
-                notifyErrorToClient(client,e);
+                try {
+                    client.updateNotifyError(e);
+                }
+                catch (Exception networkEx){
+                    logger.info("Could not send notification to client: " + networkEx.getMessage());
+                }
             }
         }).start();
     }
