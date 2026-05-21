@@ -62,8 +62,10 @@ public class ClientModel {
      */
     public void setGameId(UUID id) {
         this.id = id;
+        setGameState(GameState.LOBBY);
         // UI communication
         userInterface.printGameId(id);
+        userInterface.drawInterface(this,null);
     }
 
     public UUID getGameId() {
@@ -382,6 +384,7 @@ public class ClientModel {
     public void updateRanking(List<RankingEntry> ranking) {
         setRanking(ranking);
         userInterface.drawInterface(this,null);
+        gameState = GameState.NONE;
     }
 
     /**
