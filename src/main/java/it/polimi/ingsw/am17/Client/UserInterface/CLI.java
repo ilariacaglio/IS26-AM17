@@ -201,12 +201,12 @@ public class CLI implements UI {
                 System.out.flush(); //ensure error message is before the interface
             }
 
-            GameState currentEra = game.getGameState();
+            GameState gameState = game.getGameState();
 
-            if (currentEra.isInLobbyOrStarted()) {
+            if (gameState.isInLobbyOrStarted()) {
                 // print players list
                 printPlayers();
-                if(currentEra.isInLobby()){
+                if(gameState.isInLobby()){
                     System.out.println("Waiting for more players to join...");
                 }
                 else {
@@ -231,7 +231,7 @@ public class CLI implements UI {
                         System.out.print("> ");
                 }
             }
-            else if (currentEra.isGameEnded()) {
+            else if (gameState.isGameEnded()) {
                 drawLocalRanking();
                 drawGlobalRanking();
             }
