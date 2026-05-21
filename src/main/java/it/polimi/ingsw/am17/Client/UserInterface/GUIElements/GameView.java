@@ -281,7 +281,7 @@ public class GameView {
 
 
 
-        VBox playerCardsBox = new VBox(10, scrollPane);
+        VBox playerCardsContainer = new VBox(10, scrollPane);
 
         //player name, food and pp
         playerResourcesBox =  new HBox(10);
@@ -306,7 +306,7 @@ public class GameView {
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
         root.getChildren().addAll(turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox, lowerCardsBox, sendButtonBox,
-                playerResourcesBox, playerCardsBox, spacer, playersButtonBox);
+                playerResourcesBox, playerCardsContainer, spacer, playersButtonBox);
     }
 
 
@@ -485,7 +485,7 @@ public class GameView {
             playerCardsBox.getChildren().add(characterCard);
         }
         //add personal building cards
-        for(BuildingCard card : localPlayer.getBuildingCards()){
+        for(BuildingCard card : selectedPlayer.getBuildingCards()){
             CardGUI buildingCard = new CardGUI(card.getImagePath());
             playerCardsBox.getChildren().add(buildingCard);
         }
