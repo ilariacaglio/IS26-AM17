@@ -37,7 +37,6 @@ public class ClientModel {
 
     private final List<RankingEntry> ranking;
 
-    private Player myPlayer;
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
