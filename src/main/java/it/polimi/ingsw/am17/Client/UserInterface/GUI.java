@@ -38,10 +38,9 @@ public class GUI implements UI {
 
     private boolean isGameInterfaceInitialized = false;
 
-    public GUI(VirtualServer server, VirtualView view, ClientModel model) {
+    public GUI(VirtualServer server, VirtualView view) {
         this.server = server;
         client = view;
-        game = model;
     }
     JoinView joinView;
 
