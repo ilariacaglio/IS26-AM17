@@ -37,7 +37,7 @@ public abstract class Subject {
 
     }
 
-    void notifyEra(int era) {
+    void notifyEra(GameState era) {
         for (VirtualView client : clients) {
             try {
                 client.updateEra(era);
