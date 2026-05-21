@@ -118,7 +118,7 @@ public class GameView {
         upperCardsBox =new HBox(10);
 
         //put turnCard and offeringCard in the same HBox
-        offeringCardBox = new HBox(10);
+        offeringCardBox = new HBox(20);
         //turnCard first
         CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
         offeringCardBox.getChildren().add(turnCard);
