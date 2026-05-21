@@ -8,6 +8,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -396,5 +397,9 @@ public class ClientModel {
         setRanking(new ArrayList<>());
         logger.info("Game closed.");
         // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
+    }
+
+    public void updateNotifyError(Exception e) {
+        userInterface.drawInterface(this,e.getMessage());
     }
 }
