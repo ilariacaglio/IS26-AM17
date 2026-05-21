@@ -199,11 +199,15 @@ public class CLI implements UI {
             if(errorMessage != null && !errorMessage.isBlank()) {
                 System.out.println(ANSI_RED+errorMessage+ANSI_RESET);
                 System.out.flush(); //ensure error message is before the interface
+                System.out.print("> ");
             }
 
             GameState currentEra = game.getCurrentEra();
 
             if (currentEra.isInLobbyOrStarted()) {
+                if (errorMessage != null && !errorMessage.isBlank()) {
+                    System.out.print("\b\b");
+                }
                 // print players list
                 printPlayers();
                 if(currentEra.isInLobby()){
@@ -234,6 +238,7 @@ public class CLI implements UI {
             else if (currentEra.isGameEnded()) {
                 drawLocalRanking();
                 drawGlobalRanking();
+                System.out.print("> ");
             }
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -729,6 +734,6 @@ public class CLI implements UI {
     }
 
     public void printError(Exception e){
-        System.out.print(e.getMessage() + "\n>");
+        System.out.print(e.getMessage() + "> ");
     }
 }
