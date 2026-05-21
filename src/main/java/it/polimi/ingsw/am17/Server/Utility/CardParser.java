@@ -50,7 +50,10 @@ public class CardParser {
 
     public static List<Artist> artistsParser(int numPlayers){
         try {
-            List<Artist> list = mapper.readValue(CardParser.class.getResourceAsStream("/Artist.json"), new TypeReference<ArrayList<Artist>>() {});
+            List<Artist> list = mapper.readValue(
+                    CardParser.class.getResourceAsStream("/Artist.json"),
+                    new TypeReference<ArrayList<Artist>>() {}
+            );
             return list.stream().filter(c->numPlayers >= c.getMinPlayers()).toList();
         }
         catch(Exception ex) {

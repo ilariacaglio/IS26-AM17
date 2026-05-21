@@ -399,6 +399,11 @@ public class Game extends Subject {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
+        // check if player is not in an Offering Card already
+        if (offeringCards.stream().anyMatch(card -> card.getPlayer() != null && card.getPlayer().equals(player))) {
+            throw new IllegalStateException("Illegal card selection. (Offering Card already selected)");
+        }
+
         // get offering card from letter
         OfferingCard offeringCard = offeringCards.stream()
                 .filter(c -> offeringCardLetter.equals(c.getOrderLetter()))
