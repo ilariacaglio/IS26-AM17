@@ -201,7 +201,7 @@ public class CLI implements UI {
                 System.out.flush(); //ensure error message is before the interface
             }
 
-            GameState currentEra = game.getCurrentEra();
+            GameState currentEra = game.getGameState();
 
             if (currentEra.isInLobbyOrStarted()) {
                 // print players list
@@ -567,7 +567,7 @@ public class CLI implements UI {
      */
     private void createGame(){
         try {
-            if (readOnlyModel.getCurrentEra() == GameState.NONE) {
+            if (readOnlyModel.getGameState() == GameState.NONE) {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
@@ -664,7 +664,7 @@ public class CLI implements UI {
      * TODO: fix this method
      */
     public void printEra(){
-        System.out.println("\nEra "+readOnlyModel.getCurrentEra()+ " has begun!\n");
+        System.out.println("\nEra "+readOnlyModel.getGameState()+ " has begun!\n");
     }
 
     /**

@@ -117,7 +117,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     @Override
     public void updateEra(GameState era) {
-        model.setCurrentEra(era);
+        model.setGameState(era);
     }
 
     @Override

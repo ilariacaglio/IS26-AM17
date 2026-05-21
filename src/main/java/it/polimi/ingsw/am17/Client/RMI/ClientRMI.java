@@ -74,7 +74,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     @Override
     public void updateEra(GameState era) throws RemoteException {
         // call model to update era
-        model.setCurrentEra(era);
+        model.setGameState(era);
     }
 
     @Override
