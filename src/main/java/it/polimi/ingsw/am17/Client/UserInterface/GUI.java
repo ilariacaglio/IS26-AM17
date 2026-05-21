@@ -192,10 +192,10 @@ public class GUI implements UI {
             server.createGame(client, localPlayer, numPlayer);
     }
     public void pickOfferingCard(OfferingCard card) throws Exception{
-        server.pickOfferingCard(game.getGameId(), localPlayer, card);
+        server.pickOfferingCard(client, card.getOrderLetter());
     }
     public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
-        server.pickTribeCards(game.getGameId(), localPlayer, characterCards, buildingCards);
+        server.pickTribeCards(client, characterCards, buildingCards);
     }
 
     @Override
