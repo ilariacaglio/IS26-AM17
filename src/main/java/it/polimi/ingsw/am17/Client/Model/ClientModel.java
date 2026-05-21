@@ -404,7 +404,7 @@ public class ClientModel {
 
     public void updateNotifyError(Exception e) {
         String message = e.getMessage();
-        if (message.contains("Unused colors") || message.contains("same nickname")) setCurrentEra(GameState.NONE);
+        if (message.contains("Unused colors") || message.contains("same nickname")) setGameState(GameState.NONE);
         userInterface.drawInterface(this,e.getMessage());
     }
 }
