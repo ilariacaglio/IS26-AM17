@@ -315,6 +315,20 @@ public class GameView {
         turnOverlay.setVisible(game.isPlayerTurn());
 
         // Update Upper Cards
+        updateUpperCards();
+
+        // Update Offering Cards
+        updateOfferingCards();
+
+        // Update Lower Cards
+        updateLowerCards();
+
+        // Update Player stats (Points, Food, Name) and personal board
+        createPlayerCardLabel();
+        orderPersonalCards();
+    }
+
+    private void updateUpperCards() {
         upperCardsBox.getChildren().clear(); // Remove old cards
         for(TribesCard card : game.getUpperTribeRow()){
             CardGUI upperCard = new CardGUI(card.getImagePath());
@@ -326,11 +340,9 @@ public class GameView {
             setOnMouseClickForBuilding(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
+    }
 
-        // Update Offering Cards
-        updateOfferingCards();
-
-        // Update Lower Cards
+    private void updateLowerCards(){
         lowerCardsBox.getChildren().clear();
         for(TribesCard card : game.getLowerTribeRow()){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
@@ -342,10 +354,6 @@ public class GameView {
             setOnMouseClickForBuilding(lowerCard, card);
             lowerCardsBox.getChildren().add(lowerCard);
         }
-
-        // Update Player stats (Points, Food, Name) and personal board
-        createPlayerCardLabel();
-        orderPersonalCards();
     }
 
     private void updateOfferingCards(){
