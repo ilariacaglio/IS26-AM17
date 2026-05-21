@@ -11,6 +11,8 @@ public class CardGUI extends StackPane {
 
     private Rectangle border;
     private boolean isSelected = false;
+    private final int CARD_WIDTH = 90;
+    private final int CARD_HEIGHT = 130;
 
     public CardGUI(String imagePath) {
         createGraphics(imagePath, Color.BLACK);
@@ -36,10 +38,14 @@ public class CardGUI extends StackPane {
             Image img = new Image(getClass().getResourceAsStream(imagePath));
             ImageView view = new ImageView(img);
 
-            view.setFitWidth(90);
-            view.setFitHeight(130);
-            view.setPreserveRatio(false);
+            view.setFitWidth(CARD_WIDTH);
+            view.setFitHeight(CARD_HEIGHT);
+            view.setPreserveRatio(true);
             view.setSmooth(true);
+
+            this.setPrefSize(CARD_WIDTH, CARD_HEIGHT);
+            this.setMinSize(CARD_WIDTH, CARD_HEIGHT);
+            this.setMaxSize(CARD_WIDTH, CARD_HEIGHT);
 
             Rectangle clip = new Rectangle(90, 130);
             clip.setArcWidth(12);
