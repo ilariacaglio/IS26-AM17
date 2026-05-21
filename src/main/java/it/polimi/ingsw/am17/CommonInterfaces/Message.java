@@ -76,7 +76,7 @@ public class Message implements Serializable {
     private List<BuildingCard> buildingCards;
 
     private List<UUID> gamesIdList;
-    private GameState era;
+    private GameState gameState;
     private Queue<Player> orderedPlayer;
     private List<OfferingCard> offeringCards;
 
@@ -249,12 +249,12 @@ public class Message implements Serializable {
         this.gamesIdList = gamesIdList;
     }
 
-    public GameState getEra() {
-        return era;
+    public GameState getGameState() {
+        return gameState;
     }
 
-    public void setEra(GameState era) {
-        this.era = era;
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
     }
 
     public Queue<Player> getOrderedPlayer() {

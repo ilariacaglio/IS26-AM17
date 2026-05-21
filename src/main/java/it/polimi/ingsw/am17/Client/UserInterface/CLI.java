@@ -202,15 +202,16 @@ public class CLI implements UI {
                 System.out.print("> ");
             }
 
-            GameState currentEra = game.getCurrentEra();
+            GameState gameState = game.getGameState();
 
-            if (currentEra.isInLobbyOrStarted()) {
+            if (gameState.isInLobbyOrStarted()) {
                 if (errorMessage != null && !errorMessage.isBlank()) {
                     System.out.print("\b\b");
                 }
+
                 // print players list
                 printPlayers();
-                if(currentEra.isInLobby()){
+                if(gameState.isInLobby()){
                     System.out.println("Waiting for more players to join...");
                 }
                 else {
@@ -235,7 +236,7 @@ public class CLI implements UI {
                         System.out.print("> ");
                 }
             }
-            else if (currentEra.isGameEnded()) {
+            else if (gameState.isGameEnded()) {
                 drawLocalRanking();
                 drawGlobalRanking();
                 System.out.print("> ");
@@ -572,7 +573,7 @@ public class CLI implements UI {
      */
     private void createGame(){
         try {
-            if (readOnlyModel.getCurrentEra() == GameState.NONE) {
+            if (readOnlyModel.getGameState() == GameState.NONE) {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
@@ -628,7 +629,7 @@ public class CLI implements UI {
      */
     private void joinGame(){
         try {
-            if (readOnlyModel.getCurrentEra().equals(GameState.NONE)) {
+            if (readOnlyModel.getGameState().equals(GameState.NONE)) {
                 System.out.print("Insert the gameID or index in gameList > ");
                 String input = scanner.nextLine().trim();
                 UUID gameId = null;
@@ -669,7 +670,7 @@ public class CLI implements UI {
      * TODO: fix this method
      */
     public void printEra(){
-        System.out.println("\nEra "+readOnlyModel.getCurrentEra()+ " has begun!\n");
+        System.out.println("\nEra "+readOnlyModel.getGameState()+ " has begun!\n");
     }
 
     /**
