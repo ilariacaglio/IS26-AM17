@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.HuntingEvent
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.PaintingEvent;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
@@ -75,7 +76,7 @@ public class Message implements Serializable {
     private List<BuildingCard> buildingCards;
 
     private List<UUID> gamesIdList;
-    private Integer era;
+    private GameState era;
     private Queue<Player> orderedPlayer;
     private List<OfferingCard> offeringCards;
 
@@ -248,11 +249,11 @@ public class Message implements Serializable {
         this.gamesIdList = gamesIdList;
     }
 
-    public Integer getEra() {
+    public GameState getEra() {
         return era;
     }
 
-    public void setEra(Integer era) {
+    public void setEra(GameState era) {
         this.era = era;
     }
 

@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
@@ -21,7 +22,7 @@ public interface VirtualViewRMI extends Remote, VirtualView {
     void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException;
 
     // methods called by the game
-    void updateEra(int era) throws RemoteException;
+    void updateEra(GameState era) throws RemoteException;
     void updatePlayerQueue(Queue<Player> orderedPlayer) throws RemoteException;
     void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException;
     void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException;
