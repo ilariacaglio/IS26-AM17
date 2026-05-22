@@ -13,15 +13,12 @@ public class ServerLauncher {
     private static final Logger logger = Logger.getLogger(ServerLauncher.class.getName());
 
     static void main(String[] args) {
-        logger.info("Starting servers...");
-
         // create the main controller
         GamesController controller = new GamesController();
 
         // Start an RMI server in its own thread
         new Thread(() -> {
             try {
-                logger.info("Starting RMI server...");
                 new ServerRMI(controller, 1099, "MesosRMIServer");
             } catch (Exception e) {
                 logger.severe("RMI server failed to start: " + e.getMessage());
@@ -31,7 +28,6 @@ public class ServerLauncher {
         // Start a Socket server in its own thread
         new Thread(() -> {
             try {
-                logger.info("Starting Socket server...");
                 new ServerSocketMultiplexer(controller, 5000);
             } catch (Exception e) {
                 logger.severe("Socket server failed to start: " + e.getMessage());

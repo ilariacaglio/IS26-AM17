@@ -46,7 +46,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
         // Set up the RMI server
         Registry registry = LocateRegistry.createRegistry(port);
         registry.rebind(serverName, this);
-        logger.info("RMI Server started on port" + port + " with name " + serverName);
+        logger.info("RMI Server started on port " + port + " with name " + serverName);
     }
 
     /**
