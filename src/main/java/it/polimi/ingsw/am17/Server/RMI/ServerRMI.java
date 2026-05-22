@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Server.RMI;
 
+import it.polimi.ingsw.am17.CommonInterfaces.Message;
+import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -58,28 +61,33 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
             logger.info("RMI Client connected" + client.toString());
         }
 
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(pinger((VirtualViewRMI) client, executor), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+        ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+        heartbeater.scheduleAtFixedRate(pinger((VirtualViewRMI) client, heartbeater), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
     }
 
     /**
      * Pings a client and removes it from the list of connected clients when it fails.
      * @param client client to be pinged.
-     * @param executor to stop
+     * @param heartbeater to stop
      * @return Runnable to pass the executor.
      */
-    private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService executor) {
+    private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService heartbeater) {
         return () -> {
             logger.fine("Starting heartbeat thread for RMI client");
+            int failedHeartbeats = 0;
 
             try {
                 client.ping();
                 logger.finer("Client pinged");
+                failedHeartbeats = 0;
             } catch (RemoteException e) {
-                logger.severe("Client disconnected! " + client);
-                clients.remove(client);
-                controller.closeGame(client);
-                executor.shutdown();
+                failedHeartbeats++;
+                if (failedHeartbeats > 3) {
+                    logger.severe("Too many failed heartbeats, client considered dead.");
+                    clients.remove(client);
+                    controller.closeGame(client);
+                    heartbeater.shutdown();
+                }
             }
         };
     }

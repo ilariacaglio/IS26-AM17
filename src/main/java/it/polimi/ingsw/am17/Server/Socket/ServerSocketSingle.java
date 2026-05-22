@@ -55,6 +55,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
             try {
                 logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
                 new Message(MessageType.HEARTBEAT).send(socket);
+                failedHeartbeats = 0;
             } catch (Exception e) {
                 logger.severe("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + "with error: " + e.getMessage());
                 failedHeartbeats++;
