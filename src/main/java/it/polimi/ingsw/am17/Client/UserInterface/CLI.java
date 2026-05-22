@@ -605,15 +605,23 @@ public class CLI implements UI {
             var letters = readOnlyModel.getOfferingCards()
                     .stream().map(OfferingCard::getOrderLetter).toList();
             if(!letters.contains(cardLetter)) {
-                drawInterface("Offering card not found");
+                drawInterface("Offering card not found!");
                 return;
             }
             //check if card is free
             OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
-                    .filter(c -> c.getOrderLetter() == cardLetter)
+                    .filter(c -> cardLetter.equals(c.getOrderLetter()))
                     .findFirst().orElseThrow();
             if(selectedOfferingCard.getPlayer() != null) {
-                drawInterface("Card already picked");
+                drawInterface("Card not available!");
+                return;
+            }
+            // check if player already has an offering card
+            List<Player> playersInOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .map(card -> card.getPlayer())
+                    .toList();
+            if (playersInOfferingCard.contains(localPlayer)) {
+                drawInterface("You already picked an offering card!");
                 return;
             }
             virtualServer.pickOfferingCard(this.client, cardLetter);
