@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Inventor;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +14,7 @@ import java.util.Objects;
  * SINGLETON
  */
 public class BuildingType10 extends BuildingCard {
-    private static final int era = 1;
+    private static final GameState era = GameState.ERA1;
     private static final int foodCost = 3;
     private static final int bonusPoints = 4;
     public BuildingType10() {

@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -198,12 +199,12 @@ public class CLI implements UI {
                 System.out.flush(); //ensure error message is before the interface
             }
 
-            int currentEra = readOnlyModel.getCurrentEra();
+            GameState gameState = readOnlyModel.getGameState();
 
-            if (currentEra >= 0) {
+            if (gameState.isInLobbyOrStarted()) {
                 // print players list
                 printPlayers();
-                if(currentEra == 0){
+                if(gameState.isInLobby()){
                     System.out.println("Waiting for more players to join...");
                 }
                 else {
@@ -228,9 +229,10 @@ public class CLI implements UI {
                         System.out.print("> ");
                 }
             }
-            else {
+            else if (gameState.isGameEnded()) {
                 drawLocalRanking();
                 drawGlobalRanking();
+                System.out.print("> ");
             }
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -564,7 +566,7 @@ public class CLI implements UI {
      */
     private void createGame(){
         try {
-            if (readOnlyModel.getCurrentEra() < 0) {
+            if (readOnlyModel.getGameState() == GameState.NONE) {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
@@ -620,7 +622,7 @@ public class CLI implements UI {
      */
     private void joinGame(){
         try {
-            if (readOnlyModel.getGameId() == null) {
+            if (readOnlyModel.getGameState().equals(GameState.NONE)) {
                 System.out.print("Insert the gameID or index in gameList > ");
                 String input = scanner.nextLine().trim();
                 UUID gameId = null;
@@ -658,11 +660,10 @@ public class CLI implements UI {
 
     /**
      * Prints message on the terminal to notify the user that the new era has begun.
+     * TODO: fix this method
      */
     public void printEra(){
-        if(readOnlyModel.getCurrentEra() > 1) {
-            System.out.println("\nEra "+readOnlyModel.getCurrentEra()+ " has begun!\n");
-        }
+        System.out.println("\nEra "+readOnlyModel.getGameState()+ " has begun!\n");
     }
 
     /**

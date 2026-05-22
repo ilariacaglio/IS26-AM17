@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Model.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType3M;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -61,13 +62,13 @@ class BuildingType3MTest extends BuildingCardTest {
         List<CharacterCard> cc = new ArrayList<>();
 
         for (int i = 0; i < hunter; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.HUNTER, null));
+            cc.add(new CharacterCard(GameState.ERA1, 1, CardType.HUNTER, null));
         }
         for (int i = 0; i < art; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.ARTIST, null));
+            cc.add(new CharacterCard(GameState.ERA1, 1, CardType.ARTIST, null));
         }
         for (int i = 0; i < build; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.BUILDER, null));
+            cc.add(new CharacterCard(GameState.ERA1, 1, CardType.BUILDER, null));
         }
 
         return cc;
