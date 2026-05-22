@@ -360,7 +360,9 @@ public class CLI implements UI {
         }
 
         // calculate the number of cards the user can pick
-        int totalCards = myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower();
+        int upperCards = myOfferingCard.getNumCardsUpper();
+        int lowerCards = myOfferingCard.getNumCardsLower();
+        int totalCards = upperCards + lowerCards;
 
         // if card with letter A, no card can be chosen
         if(totalCards == 0) {
@@ -368,31 +370,47 @@ public class CLI implements UI {
             return;
         }
 
-        System.out.println("You can pick " + myOfferingCard.getNumCardsUpper() + " card from upper row and "
-        + myOfferingCard.getNumCardsLower() +" card from lower row");
+        // print specific selection message
+        StringBuilder pickMessage = new StringBuilder("You can pick ");
+        if (upperCards > 0) {
+            pickMessage.append(upperCards).append(upperCards == 1 ? " card" : " cards").append(" from the upper row");
+        }
+        if (upperCards > 0 && lowerCards > 0) {
+            pickMessage.append(" and ");
+        }
+        if (lowerCards > 0) {
+            pickMessage.append(lowerCards).append(lowerCards == 1 ? " card" : " cards").append(" from the lower row");
+        }
+        System.out.println(pickMessage);
 
         // list of pickable cards
         List<GameCard> pickableCards = new ArrayList<>();
 
-        // add upper character cards
-        pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
-                .filter(c->c.getCardType().isCharacter()).toList());
+        int startingIndex = 1;
+        if (upperCards > 0) {
+            // add upper character cards
+            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
 
-        // add upper building cards
-        pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
+            // add upper building cards
+            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
 
-        // add lower character cards
-        pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
-                .filter(c->c.getCardType().isCharacter()).toList());
+            // print the upper row
+            startingIndex = printPickableRow(true, startingIndex);
+        }
 
-        // add upper building cards
-        if(!readOnlyModel.getLowerBuildingRow().isEmpty())
-            pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+        if (lowerCards > 0) {
+            // add lower character cards
+            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
 
-        // print the upper row
-        int upperPrintIndex = printPickableRow(true,1);
-        // print the lower row
-        printPickableRow(false, upperPrintIndex);
+            // add lower building cards
+            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
+                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+
+            // print the lower row
+            printPickableRow(false, startingIndex);
+        }
 
         // selected cards indexes
         Set<Integer> cardIndexes = new HashSet<>();
