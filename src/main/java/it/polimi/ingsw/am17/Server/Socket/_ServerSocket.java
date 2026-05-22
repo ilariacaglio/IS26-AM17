@@ -53,7 +53,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
             long diff = now - lastHeartbeatReceived;
 
             if (diff > 5000) {
-                logger.severe("No heartbeat received in " + diff + "ms, client dead.");
+                logger.severe("No heartbeat received in " + diff + "zooms, client dead.");
 
                 try {
                     socket.close();
@@ -61,6 +61,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
                     logger.warning("Error closing connection: " + e.getMessage());
                 }
 
+                heartwatcher.shutdown();
 //                onClientDisconnected(); // TODO: unify closing logic from other disconnection handling code
             }
 
