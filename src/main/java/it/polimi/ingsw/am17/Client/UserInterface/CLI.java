@@ -599,19 +599,24 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(){
         try {
-            System.out.print("Insert card number (position from 0) > ");
-            int numCard = Integer.parseInt(scanner.nextLine());
-            //check if number is plausible
-            if(numCard<0 || numCard>=readOnlyModel.getOfferingCards().size()){
-                drawInterface("number out of bound");
+            System.out.print("Insert card letter > ");
+            Character cardLetter = scanner.next().charAt(0);
+            //check if letter is present in offering card list
+            var letters = readOnlyModel.getOfferingCards()
+                    .stream().map(OfferingCard::getOrderLetter).toList();
+            if(!letters.contains(cardLetter)) {
+                drawInterface("Offering card not found");
                 return;
             }
             //check if card is free
-            if(readOnlyModel.getOfferingCards().get(numCard).getPlayer() != null) {
-                drawInterface("card already taken");
+            OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .filter(c -> c.getOrderLetter() == cardLetter)
+                    .findFirst().orElseThrow();
+            if(selectedOfferingCard.getPlayer() != null) {
+                drawInterface("Card already picked");
                 return;
             }
-            virtualServer.pickOfferingCard(this.client, readOnlyModel.getOfferingCards().get(numCard).getOrderLetter());
+            virtualServer.pickOfferingCard(this.client, cardLetter);
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
