@@ -116,7 +116,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
     }
 
     /**
-     * Record time of last heartbeat received.
+     * Record time of the last heartbeat received.
      */
     private void recordHeartbeat() {
         lastHeartbeatReceived = System.currentTimeMillis();
@@ -138,7 +138,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
         heartbeater.shutdown();
         heartwatcher.shutdown();
 
-        controller.closeGame(client);
+        closeGame(client);
     }
 
     /**
