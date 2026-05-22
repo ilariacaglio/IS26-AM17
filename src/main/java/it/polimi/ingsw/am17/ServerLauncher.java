@@ -6,6 +6,9 @@ import it.polimi.ingsw.am17.Server.Socket.ServerSocketMultiplexer;
 
 import java.util.logging.Logger;
 
+/**
+ * Launches both the RMI and Socket servers with the same controller.
+ */
 public class ServerLauncher {
     private static final Logger logger = Logger.getLogger(ServerLauncher.class.getName());
 
