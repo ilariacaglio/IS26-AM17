@@ -66,7 +66,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
-                        case UPDATE_ERA -> updateEra(message.getEra());
+                        case UPDATE_GAME_STATE -> updateGameState(message.getGameState());
                         case UPDATE_PLAYERS_DATA -> updatePlayerQueue(message.getOrderedPlayer());
                         case UPDATE_PLAYER_SELECT_OFFERING_CARD ->
                                 updatePlayerSelectOfferingCard(message.getPlayer(), message.getOfferingCard());
@@ -133,8 +133,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updateEra(GameState era) {
-        model.setCurrentEra(era);
+    public void updateGameState(GameState gameState) {
+        model.setGameState(gameState);
     }
 
     @Override
