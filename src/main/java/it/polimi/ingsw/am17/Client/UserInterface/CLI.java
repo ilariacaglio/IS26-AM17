@@ -54,7 +54,7 @@ public class CLI implements UI {
             localPlayer = new Player(nickname, color);
 
             while (running) {
-                System.out.print("> ");
+                showPrompt();
                 String input = scanner.nextLine().trim().toLowerCase();
                 switch (input) {
                     case "get games", "gg":
@@ -149,21 +149,19 @@ public class CLI implements UI {
      * @param gameId the id to be printed
      */
     public void printGameId(UUID gameId) {
-        System.out.print("\b\b");
-        System.out.println("You are connected to game: ".concat(gameId.toString()));
-        System.out.print("> ");
+        System.out.println("\nYou are connected to game: ".concat(gameId.toString()));
+        showPrompt();
     }
 
     /**
      * Prints the games id list.
      */
     public void printGamesList(){
-        System.out.print("\b\b");
-        System.out.println("Open games:");
+        System.out.println("\r\033[2KOpen games:");
         for(int i=0; i< readOnlyModel.getGamesIdList().size(); i++){
             System.out.println(i + "\t" + readOnlyModel.getGamesIdList().get(i));
         }
-        System.out.print("> ");
+        showPrompt();
     }
 
     /**
@@ -184,8 +182,6 @@ public class CLI implements UI {
     public void drawInterface(String errorMessage)
     {
         try{
-            // cancel arrow
-            System.out.print("\b\b");
             //clear console
             System.out.print("\033[H\033[2J\033[3J");
             System.out.flush();
@@ -196,17 +192,11 @@ public class CLI implements UI {
 
             if(errorMessage != null && !errorMessage.isBlank()) {
                 System.out.println(ANSI_RED+errorMessage+ANSI_RESET);
-                System.out.flush(); //ensure error message is before the interface
-                System.out.print("> ");
             }
 
             GameState gameState = readOnlyModel.getGameState();
 
             if (gameState.isInLobbyOrStarted()) {
-                if (errorMessage != null && !errorMessage.isBlank()) {
-                    System.out.print("\b\b");
-                }
-
                 // print players list
                 printPlayers();
                 if(gameState.isInLobby()){
@@ -230,15 +220,13 @@ public class CLI implements UI {
                     // if the game has begun notify the players turn
                     if(readOnlyModel.isPlayerTurn())
                         System.out.println("It's your turn!");
-                    if(errorMessage == null || errorMessage.isBlank())
-                        System.out.print("> ");
                 }
             }
             else if (gameState.isGameEnded()) {
                 drawLocalRanking();
                 drawGlobalRanking();
-                System.out.print("> ");
             }
+            showPrompt();
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
@@ -577,7 +565,7 @@ public class CLI implements UI {
                 System.out.println("Trying to create game...");
                 virtualServer.createGame(client, localPlayer, numPlayers);
             } else {
-                System.out.print("Already in a game \n>");
+                System.out.print("Already in a game!");
             }
         }catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -590,7 +578,7 @@ public class CLI implements UI {
     private void closeGame(){
         try {
             if (readOnlyModel.getGameId() == null) {
-                System.out.print("Not in a game \n>");
+                System.out.print("Not in a game");
             } else {
                 virtualServer.closeGame(client);
             }
@@ -733,6 +721,15 @@ public class CLI implements UI {
     }
 
     public void printError(Exception e){
-        System.out.print(e.getMessage() + "> ");
+        System.out.print(e.getMessage());
+        showPrompt();
+    }
+
+    /**
+     * prints character to signal that the cli is available for a new command
+     */
+    private void showPrompt() {
+        System.out.print("\r> ");
+        System.out.flush();
     }
 }
