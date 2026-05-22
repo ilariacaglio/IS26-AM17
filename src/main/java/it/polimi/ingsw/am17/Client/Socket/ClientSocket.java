@@ -99,7 +99,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
         }
 
         model = new ClientModel(userInterface);
-        userInterface.setModel(model); // TODO: circular!! Update with granular UI updates
+        userInterface.setModel(model);
         model.startInterface();  // note: not threaded
     }
 
