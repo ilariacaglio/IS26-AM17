@@ -619,6 +619,13 @@ public class CLI implements UI {
         try {
             System.out.print("Insert card letter > ");
             Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
+
+            // check if it is the players turn
+            if (!readOnlyModel.isPlayerTurn()) {
+                drawInterface("It is not your turn!");
+                return;
+            }
+
             //check if letter is present in offering card list
             var letters = readOnlyModel.getOfferingCards()
                     .stream().map(OfferingCard::getOrderLetter).toList();
@@ -626,6 +633,7 @@ public class CLI implements UI {
                 drawInterface("Offering card not found!");
                 return;
             }
+
             //check if card is free
             OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
                     .filter(c -> cardLetter.equals(c.getOrderLetter()))
@@ -634,6 +642,7 @@ public class CLI implements UI {
                 drawInterface("Card not available!");
                 return;
             }
+
             // check if player already has an offering card
             List<Player> playersInOfferingCard = readOnlyModel.getOfferingCards().stream()
                     .map(OfferingCard::getPlayer)
@@ -642,6 +651,8 @@ public class CLI implements UI {
                 drawInterface("You already picked an offering card!");
                 return;
             }
+
+            // send request
             virtualServer.pickOfferingCard(this.client, cardLetter);
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
