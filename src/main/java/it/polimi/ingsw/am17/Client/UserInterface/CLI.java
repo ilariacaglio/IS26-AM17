@@ -600,7 +600,7 @@ public class CLI implements UI {
     private void pickOfferingCard(){
         try {
             System.out.print("Insert card letter > ");
-            Character cardLetter = scanner.next().charAt(0);
+            Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
             //check if letter is present in offering card list
             var letters = readOnlyModel.getOfferingCards()
                     .stream().map(OfferingCard::getOrderLetter).toList();
