@@ -292,7 +292,7 @@ public class ClientModel {
     public void updatePlayerQueue(Queue<Player> playerQueue) {
         setOrderedPlayers(playerQueue);
         // UI communication
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
     /**
@@ -315,7 +315,7 @@ public class ClientModel {
         setOfferingCards(offeringCards);
         setPickOCPhase(true);
 
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
 
@@ -337,7 +337,7 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setPickOCPhase(true);
 
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
     /**
@@ -357,7 +357,7 @@ public class ClientModel {
      */
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
         setPlayerOfferingCard(offeringCard, player);
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
     /**
@@ -372,7 +372,7 @@ public class ClientModel {
         removePlayerFromOfferingCard(player);
         removeTribeCards(characterCards);
         removeBuildingCards(buildingCards);
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
     /**
@@ -381,7 +381,7 @@ public class ClientModel {
      */
     public void updateRanking(List<RankingEntry> ranking) {
         setRanking(ranking);
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
     /**
