@@ -74,7 +74,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService heartbeater) {
         return () -> {
             logger.fine("Starting heartbeat thread for RMI client");
-            int failedHeartbeats = 0;
+            int failedHeartbeats = 0; // TODO: check this not called each run
 
             try {
                 client.ping();
@@ -82,6 +82,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
                 failedHeartbeats = 0;
             } catch (RemoteException e) {
                 failedHeartbeats++;
+                logger.info("Failed heartbeat (Count: " + failedHeartbeats + "): " + e.getMessage());
                 if (failedHeartbeats > 3) {
                     logger.severe("Too many failed heartbeats, client considered dead.");
                     clients.remove(client);
