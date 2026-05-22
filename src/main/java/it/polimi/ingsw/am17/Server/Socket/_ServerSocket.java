@@ -24,59 +24,81 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Forwards requests from a single client to the controller.
+ * Handles one socket incoming connection by forwarding requests to the controller.
  */
 public class _ServerSocket implements Runnable, VirtualServer {
     private static final Logger logger = Logger.getLogger(_ServerSocket.class.getName());
+
     long lastHeartbeatReceived = System.currentTimeMillis();
+    int failedHeartbeats = 0;
 
     private final Socket socket;
     private final GamesController controller;
     private final VirtualView client;
     private final ObjectMapper mapper;
 
+    /**
+     * Constructor. Launches threads to detect disconnections.
+     * @param socket socket of the new client.
+     * @param controller the controller.
+     * @param client virtual view to forward inside the requests.
+     */
     public _ServerSocket(Socket socket, GamesController controller, VirtualView client) {
         this.socket = socket;
         this.controller = controller;
         this.client = client;
         this.mapper = new ObjectMapper();
-    }
 
-    @Override
-    public void run() {
-        // todo comments
+        // create a heartbeat thread to ping the new client
+        ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+        heartbeater.scheduleAtFixedRate(() -> {
+            try {
+                logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
+                new Message(MessageType.HEARTBEAT).send(socket);
+            } catch (Exception e) {
+                logger.severe("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + "with error: " + e.getMessage());
+                failedHeartbeats++;
+                if (failedHeartbeats > 3) {
+                    logger.severe("Too many failed heartbeats, client considered dead.");
+                    onClientDisconnection();
+                    heartbeater.shutdown();
+                }
+            }
+        }, 1, 1, TimeUnit.SECONDS);
 
-        // create a heartbeat receiver
+        // create a heartbeat receiver to detect dead clients
         ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
         heartwatcher.scheduleAtFixedRate(() -> {
             long now = System.currentTimeMillis();
             long diff = now - lastHeartbeatReceived;
 
             if (diff > 5000) {
-                logger.severe("No heartbeat received in " + diff + "zooms, client dead.");
-
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    logger.warning("Error closing connection: " + e.getMessage());
-                }
-
+                logger.severe("No heartbeat received in " + diff + "ms, client considered dead.");
+                onClientDisconnection();
                 heartwatcher.shutdown();
-//                onClientDisconnected(); // TODO: unify closing logic from other disconnection handling code
             }
-
-
-
         }, 1, 1, TimeUnit.SECONDS);
+    }
 
+    /**
+     * Execute runnable code that will handle each client request.
+     */
+    @Override
+    public void run() {
+
+        // Read socket input stream
         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             String line;
             while ((line = in.readLine()) != null) {
+
+                // deserialize the message
                 Message message = mapper.readValue(line, Message.class);
-                logger.setLevel(Level.FINE);
-                logger.fine("Parsing message:" + line);
-                if(message.getType() != MessageType.HEARTBEAT) logger.info("Received message:" + mapper.writeValueAsString(this));
+
+                // logging
+                if (message.getType() != MessageType.HEARTBEAT) logger.info("Received message:" + mapper.writeValueAsString(this));
                 else logger.fine("Received heartbeat");
+
+                // handle request
                 switch (message.getType()) {
                     case GET_GAMES_LIST -> getGamesList(client);
                     case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
@@ -91,42 +113,72 @@ public class _ServerSocket implements Runnable, VirtualServer {
         } catch (Exception e) {
             System.err.println("Error handling message: " + e.getMessage());
         } finally {
-            try {
-                socket.close();
-            } catch (Exception ignored) {}
+            onClientDisconnection();
         }
     }
 
+    /**
+     * Record time of last heartbeat received.
+     */
     private void recordHeartbeat() {
         lastHeartbeatReceived = System.currentTimeMillis();
         logger.finest("Received heartbeat from server.");
     }
 
+    /**
+     * Handle client disconnection. (Closes the socket.)
+     */
+    private void onClientDisconnection() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            logger.severe("Error closing socket: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Forwarded to the controller.
+     */
     @Override
     public void getGamesList(VirtualView client) {
         controller.getGamesList(client);
     }
 
+    /**
+     * Forwarded to the controller.
+     */
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) {
         controller.createGame(client, player, numPlayers);
     }
 
+    /**
+     * Forwarded to the controller.
+     */
     @Override
     public void closeGame(VirtualView client) {
         controller.closeGame(client);
     }
 
+    /**
+     * Forwarded to the controller.
+     */
     @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) {
         controller.joinGame(client, gameId, player);
     }
 
+    /**
+     * Forwarded to the controller.
+     */
     @Override
     public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
         controller.pickOfferingCard(client, offeringCardLetter);
     }
 
+    /**
+     * Forwarded to the controller.
+     */
     @Override
     public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
         controller.pickTribeCards(client, characterCards, buildingCards);
