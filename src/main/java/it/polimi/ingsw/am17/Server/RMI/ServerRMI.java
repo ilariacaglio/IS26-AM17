@@ -34,12 +34,13 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
      * @param port port to bind the server to
      * @throws RemoteException if the RMI registry cannot be created.
      */
-    public ServerRMI(GamesController controller, int port) throws RemoteException {
+    public ServerRMI(GamesController controller, int port, String serverName) throws RemoteException {
+        super(); // needed for UnicastRemoteObject
+
         this.controller = controller;
         clients = new ArrayList<>();
 
         // Set up the RMI server
-        final String serverName = "MesosRMIServer";
         Registry registry = LocateRegistry.createRegistry(port);
         registry.rebind(serverName, this);
         logger.info("RMI Server started on port" + port + " with name " + serverName);

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.am17.Client.Socket;
 
-import it.polimi.ingsw.am17.Client.ClientInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
