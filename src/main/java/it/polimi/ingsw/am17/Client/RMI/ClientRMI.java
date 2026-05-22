@@ -75,6 +75,9 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
         }, 1, 1, java.util.concurrent.TimeUnit.SECONDS);
     }
 
+    /**
+     * Manages a server disconnection by stopping the heartbeat thread and exiting the program.
+     */
     private void onServerDisconnection() {
         logger.severe("Server disconnected, shutting down.");
         heartbeater.shutdown();
@@ -82,58 +85,100 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
         System.exit(1);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateGameState(GameState gameState) throws RemoteException {
         // call model to update era
         model.setGameState(gameState);
     }
 
+    /**
+     * Allows a server to ping the client.
+     * @throws RemoteException remotely called!
+     */
+    @Override
+    public void ping() throws RemoteException {}
+
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updatePlayerQueue(Queue<Player> orderedPlayers) throws RemoteException {
         model.updatePlayerQueue(orderedPlayers);
     }
 
-    @Override
-    public void ping() {
-
-    }
-
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateGameId(UUID gameId) throws RemoteException {
         model.setGameId(gameId);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateGamesIdList(List<UUID> gameIdsList) throws RemoteException {
         model.setGameIdList(gameIdsList);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws RemoteException {
         model.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void notifyEndGame() throws RemoteException {
         model.updateGameEndedByUser();
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateRanking(List<RankingEntry> ranking) throws RemoteException {
         model.updateRanking(ranking);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
         model.updateEndTurn(players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException {
         model.updatePlayerSelectOfferingCard(player,offeringCard);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
         model.updatePlayerSelectTribeCards(player,tribesCards,buildingCards);
