@@ -618,7 +618,7 @@ public class CLI implements UI {
             }
             // check if player already has an offering card
             List<Player> playersInOfferingCard = readOnlyModel.getOfferingCards().stream()
-                    .map(card -> card.getPlayer())
+                    .map(OfferingCard::getPlayer)
                     .toList();
             if (playersInOfferingCard.contains(localPlayer)) {
                 drawInterface("You already picked an offering card!");
