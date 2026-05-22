@@ -61,7 +61,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
                     logger.warning("Error closing connection: " + e.getMessage());
                 }
 
-//                onClientDisconnected();
+//                onClientDisconnected(); // TODO: unify closing logic from other disconnection handling code
             }
 
 
