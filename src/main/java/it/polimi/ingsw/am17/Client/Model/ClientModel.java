@@ -65,7 +65,7 @@ public class ClientModel {
         setGameState(GameState.LOBBY);
         // UI communication
         userInterface.printGameId(id);
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
     public UUID getGameId() {
