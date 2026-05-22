@@ -11,6 +11,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -53,8 +54,18 @@ public class _ServerSocket implements Runnable, VirtualServer {
 
             if (diff > 5000) {
                 logger.severe("No heartbeat received in " + diff + "ms, client dead.");
-                System.exit(1);
+
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    logger.warning("Error closing connection: " + e.getMessage());
+                }
+
+//                onClientDisconnected();
             }
+
+
+
         }, 1, 1, TimeUnit.SECONDS);
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
