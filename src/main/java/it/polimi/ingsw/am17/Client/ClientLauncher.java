@@ -22,7 +22,7 @@ public class ClientLauncher {
         boolean socket = Arrays.asList(args).contains("--socket");
 
         if (socket) {
-            new ClientSocket("127.0.0.1", gui);
+            new ClientSocket("127.0.0.1", 5000, gui);
         } else {
             new ClientRMI("127.0.0.1",1099, "MesosRMIServer", gui);
         }
