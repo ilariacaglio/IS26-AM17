@@ -10,7 +10,6 @@ public interface UI {
     void printGameId(UUID gameId);
     void printEra();
     void printGamesList();
-    void printError(Exception e);
     void setLocalPlayer();
     Player getLocalPlayer();
     void setModel(ClientModel model);

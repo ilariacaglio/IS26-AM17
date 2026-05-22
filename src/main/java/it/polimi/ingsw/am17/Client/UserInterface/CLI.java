@@ -741,11 +741,6 @@ public class CLI implements UI {
         return localPlayer;
     }
 
-    public void printError(Exception e){
-        System.out.print(e.getMessage());
-        showPrompt();
-    }
-
     /**
      * prints character to signal that the cli is available for a new command
      */
