@@ -1,11 +1,8 @@
 package it.polimi.ingsw.am17;
 
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
-import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.RMI.ServerRMI;
-import it.polimi.ingsw.am17.Server.Socket.SocketMultiplexer;
-import it.polimi.ingsw.am17.Server.Socket._ServerSocket;
-import javafx.application.Application;
+import it.polimi.ingsw.am17.Server.Socket.ServerSocketMultiplexer;
 
 import java.util.logging.Logger;
 
@@ -32,7 +29,7 @@ public class ServerLauncher {
         new Thread(() -> {
             try {
                 logger.info("Starting Socket server...");
-                new SocketMultiplexer(controller);
+                new ServerSocketMultiplexer(controller, 5000);
             } catch (Exception e) {
                 logger.severe("Socket server failed to start: " + e.getMessage());
             }
