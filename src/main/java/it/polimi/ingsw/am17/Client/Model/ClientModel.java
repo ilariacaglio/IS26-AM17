@@ -402,9 +402,8 @@ public class ClientModel {
         // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
     }
 
-    public void updateNotifyError(Exception e) {
-        String message = e.getMessage();
+    public void updateNotifyError(String message) {
         if (message.contains("Unused colors") || message.contains("same nickname")) setGameState(GameState.NONE);
-        userInterface.drawInterface(e.getMessage());
+        userInterface.drawInterface(message);
     }
 }

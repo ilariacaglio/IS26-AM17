@@ -78,7 +78,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                         case UPDATE_RANKING ->  updateRanking(message.getRanking());
                         case END_GAME -> notifyEndGame();
                         case HEARTBEAT -> logger.finer("Received heartbeat");
-                        case UPDATE_ERROR -> updateNotifyError(message.getException());
+                        case UPDATE_ERROR -> updateNotifyError(message.getExceptionMessage());
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -168,8 +168,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updateNotifyError(Exception e)
+    public void updateNotifyError(String errorMessage)
     {
-        model.updateNotifyError(e);
+        model.updateNotifyError(errorMessage);
     }
 }

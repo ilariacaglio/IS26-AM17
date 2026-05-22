@@ -35,5 +35,5 @@ public interface VirtualView {
 
     void notifyEndGame() throws Exception;
 
-    void updateNotifyError(Exception e) throws Exception;
+    void updateNotifyError(String errorMessage) throws Exception;
 }

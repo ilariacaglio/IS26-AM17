@@ -17,6 +17,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
+import java.sql.Struct;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -163,7 +164,8 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
     })
     private List<BuildingCard> lowerBuildingRow;
-    private Exception exception;
+
+    private String exceptionMessage;
 
     private List<RankingEntry> ranking;
 
@@ -305,8 +307,9 @@ public class Message implements Serializable {
         this.lowerBuildingRow = lowerBuildingRow;
     }
 
-    public Exception getException() {return exception; }
-    public void setException(Exception e) {exception = e;}
+    public String getExceptionMessage() {return exceptionMessage; }
+    public void setExceptionMessage(String message) {
+        exceptionMessage = message;}
 
     public List<RankingEntry> getRanking() {return ranking;}
 

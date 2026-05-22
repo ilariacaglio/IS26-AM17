@@ -33,5 +33,5 @@ public interface VirtualViewRMI extends Remote, VirtualView {
 
     void updateRanking(List<RankingEntry> ranking) throws RemoteException;
     void notifyEndGame() throws RemoteException;
-    void updateNotifyError(Exception e) throws RemoteException;
+    void updateNotifyError(String errorMessage) throws RemoteException;
 }

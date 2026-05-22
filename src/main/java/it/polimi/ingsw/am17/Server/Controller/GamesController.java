@@ -96,12 +96,13 @@ public class GamesController {
 
     /**
      * Calls updateNotifyError on the specified client
-     * @param client    the client to be notified
-     * @param e         the exception thrown
+     *
+     * @param client       the client to be notified
+     * @param errorMessage the message of the exception thrown
      */
-    private void notifyErrorToClient(VirtualView client, Exception e) {
+    private void notifyErrorToClient(VirtualView client, String errorMessage) {
         try {
-            client.updateNotifyError(e);
+            client.updateNotifyError(errorMessage);
         }
         catch (Exception networkEx){
             logger.info("Could not send notification to client: " + networkEx.getMessage());
@@ -135,9 +136,9 @@ public class GamesController {
                 joinGame(client, id, player);
             }
             catch (Exception e) {
-                logger.info("Error creating game: " + e.getMessage());
-
-                notifyErrorToClient(client,e);
+                String message = e.getMessage();
+                logger.info("Error creating game: " + message);
+                notifyErrorToClient(client, message);
             }
         }).start();
     }
@@ -174,7 +175,8 @@ public class GamesController {
                 // add player to mapping
                 playerMapping.put(client, player.getNickname());
             } catch (Exception e) {
-                logger.warning("Error joining game: " + e.getMessage());
+                String message = e.getMessage();
+                logger.warning("Error joining game: " + message);
 
                 // N.B. we need to sign up the client before joining the player
                 // so that it's notified from the addPlayer, if something goes wrong,
@@ -190,7 +192,7 @@ public class GamesController {
 
                 // notify error to client
                 try {
-                    client.updateNotifyError(e);
+                    client.updateNotifyError(message);
                 }
                 catch (Exception networkEx){
                     logger.info("Could not send notification to client: " + networkEx.getMessage());
@@ -220,9 +222,9 @@ public class GamesController {
                 }
             }
             catch (Exception e) {
-                logger.warning("Error calling forceEndGame: " + e.getMessage());
-
-                notifyErrorToClient(client,e);
+                String message = e.getMessage();
+                logger.warning("Error calling forceEndGame: " + message);
+                notifyErrorToClient(client, message);
             }
 
             // remove client from the game's observer list
@@ -269,9 +271,9 @@ public class GamesController {
                 }
             }
             catch(Exception e) {
-                logger.warning("Error calling game selectOfferingCard: " + e.getMessage());
-
-                notifyErrorToClient(client,e);
+                String message = e.getMessage();
+                logger.warning("Error calling game selectOfferingCard: " + message);
+                notifyErrorToClient(client, message);
             }
         }).start();
     }
@@ -298,9 +300,10 @@ public class GamesController {
                     game.pickTribeCards(nickname, characterCards, buildingCards);
                 }
             } catch (Exception e) {
-                logger.warning("Error calling game pickTribeCards: " + e.getMessage());
+                String message = e.getMessage();
+                logger.warning("Error calling game pickTribeCards: " + message);
 
-                notifyErrorToClient(client,e);
+                notifyErrorToClient(client, message);
             }
         }).start();
     }
@@ -317,8 +320,9 @@ public class GamesController {
                 // send the list of open games to the client
                 client.updateGamesIdList(getGamesList());
             } catch (Exception e) {
-                logger.warning("Error sending games list: " + e.getMessage());
-                notifyErrorToClient(client,e);
+                String message = e.getMessage();
+                logger.warning("Error sending games list: " + message);
+                notifyErrorToClient(client, message);
             }
         }).start();
     }
