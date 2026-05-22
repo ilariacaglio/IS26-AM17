@@ -152,15 +152,21 @@ public class GamesController {
         new Thread(() -> {
             logger.info("Client" + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
 
-            // Sign up client as an observer (see N.B. hereunder)
-            signUpAsObserver(client, gameId);
+            // sign if client is added as an observer
+            boolean observerAdded = false;
 
             try {
+                // retrieve game (also check if it exists)
+                Game game = getGameFromId(gameId);
+
+                // Sign up client as an observer (see N.B. hereunder)
+                signUpAsObserver(client, gameId);
+                observerAdded = true;
+
                 // Notify gameId to the client
                 client.updateGameId(gameId);
 
                 // Add player to the game
-                Game game = getGameFromId(gameId);
                 synchronized (game) {
                     game.addPlayer(player);
                 }
@@ -173,9 +179,16 @@ public class GamesController {
                 // N.B. we need to sign up the client before joining the player
                 // so that it's notified from the addPlayer, if something goes wrong,
                 // we remove it here.
+                if (observerAdded){
+                    try{
+                        removeClientAsObserver(client, gameId);
+                    }
+                    catch (Exception ex){
+                        logger.warning("Error removing client as observer: " + ex.getMessage());
+                    }
+                }
 
-                removeClientAsObserver(client, gameId);
-
+                // notify error to client
                 try {
                     client.updateNotifyError(e);
                 }
