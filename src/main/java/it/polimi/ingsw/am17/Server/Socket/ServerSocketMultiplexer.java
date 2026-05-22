@@ -13,6 +13,11 @@ import java.util.logging.Logger;
 public class ServerSocketMultiplexer {
     private final static Logger logger = Logger.getLogger(ServerSocketMultiplexer.class.getName());
 
+    /**
+     * Creates a new ServerSocketMultiplexer and starts it.
+     * @param controller passed to each ServerSocketSingle.
+     * @param port port to bind the ServerSocket to.
+     */
     public ServerSocketMultiplexer(GamesController controller, int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("Socket multiplexer started on port " + port);
