@@ -181,11 +181,9 @@ public class CLI implements UI {
      * Draws the game configuration.
      * @param errorMessage message you want to print
      */
-    public void drawInterface(ClientModel game, String errorMessage)
+    public void drawInterface(String errorMessage)
     {
         try{
-            // update game data
-            setModel(game);
             // cancel arrow
             System.out.print("\b\b");
             //clear console
@@ -202,7 +200,7 @@ public class CLI implements UI {
                 System.out.print("> ");
             }
 
-            GameState gameState = game.getGameState();
+            GameState gameState = readOnlyModel.getGameState();
 
             if (gameState.isInLobbyOrStarted()) {
                 if (errorMessage != null && !errorMessage.isBlank()) {
@@ -447,13 +445,13 @@ public class CLI implements UI {
                 characterCards, buildingCards, readOnlyModel.getUpperTribeRow(), readOnlyModel.getLowerTribeRow(), readOnlyModel.getUpperBuildingRow(), readOnlyModel.getLowerBuildingRow());
         if(mE != null)
         {
-            drawInterface(readOnlyModel, mE.getMessage());
+            drawInterface(mE.getMessage());
             return;
         }
 
         //check if player can buy the buildings
         if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
-            drawInterface(readOnlyModel, "Not enough food to buy building cards");
+            drawInterface("Not enough food to buy building cards");
             return;
         }
 
@@ -610,12 +608,12 @@ public class CLI implements UI {
             int numCard = Integer.parseInt(scanner.nextLine());
             //check if number is plausible
             if(numCard<0 || numCard>=readOnlyModel.getOfferingCards().size()){
-                drawInterface(readOnlyModel, "number out of bound");
+                drawInterface("number out of bound");
                 return;
             }
             //check if card is free
             if(readOnlyModel.getOfferingCards().get(numCard).getPlayer() != null) {
-                drawInterface(readOnlyModel, "card already taken");
+                drawInterface("card already taken");
                 return;
             }
             virtualServer.pickOfferingCard(this.client, readOnlyModel.getOfferingCards().get(numCard).getOrderLetter());

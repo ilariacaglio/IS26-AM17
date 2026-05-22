@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public interface UI {
     void start();
-    void drawInterface(ClientModel game, String errorMessage);
+    void drawInterface(String errorMessage);
     void printGameId(UUID gameId);
     void printEra();
     void printGamesList();
