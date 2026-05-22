@@ -20,15 +20,16 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Handles one socket incoming connection by forwarding requests to the controller.
  */
-public class _ServerSocket implements Runnable, VirtualServer {
-    private static final Logger logger = Logger.getLogger(_ServerSocket.class.getName());
+public class ServerSocketSingle implements Runnable, VirtualServer {
+    private static final Logger logger = Logger.getLogger(ServerSocketSingle.class.getName());
 
+    ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+    ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
     long lastHeartbeatReceived = System.currentTimeMillis();
     int failedHeartbeats = 0;
 
@@ -43,14 +44,13 @@ public class _ServerSocket implements Runnable, VirtualServer {
      * @param controller the controller.
      * @param client virtual view to forward inside the requests.
      */
-    public _ServerSocket(Socket socket, GamesController controller, VirtualView client) {
+    public ServerSocketSingle(Socket socket, GamesController controller, VirtualView client) {
         this.socket = socket;
         this.controller = controller;
         this.client = client;
         this.mapper = new ObjectMapper();
 
         // create a heartbeat thread to ping the new client
-        ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
         heartbeater.scheduleAtFixedRate(() -> {
             try {
                 logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
@@ -61,13 +61,11 @@ public class _ServerSocket implements Runnable, VirtualServer {
                 if (failedHeartbeats > 3) {
                     logger.severe("Too many failed heartbeats, client considered dead.");
                     onClientDisconnection();
-                    heartbeater.shutdown();
                 }
             }
         }, 1, 1, TimeUnit.SECONDS);
 
         // create a heartbeat receiver to detect dead clients
-        ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
         heartwatcher.scheduleAtFixedRate(() -> {
             long now = System.currentTimeMillis();
             long diff = now - lastHeartbeatReceived;
@@ -75,7 +73,6 @@ public class _ServerSocket implements Runnable, VirtualServer {
             if (diff > 5000) {
                 logger.severe("No heartbeat received in " + diff + "ms, client considered dead.");
                 onClientDisconnection();
-                heartwatcher.shutdown();
             }
         }, 1, 1, TimeUnit.SECONDS);
     }
@@ -95,7 +92,7 @@ public class _ServerSocket implements Runnable, VirtualServer {
                 Message message = mapper.readValue(line, Message.class);
 
                 // logging
-                if (message.getType() != MessageType.HEARTBEAT) logger.info("Received message:" + mapper.writeValueAsString(this));
+                if (message.getType() != MessageType.HEARTBEAT) logger.info("Received message:" + mapper.writeValueAsString(message));
                 else logger.fine("Received heartbeat");
 
                 // handle request
@@ -128,12 +125,19 @@ public class _ServerSocket implements Runnable, VirtualServer {
     /**
      * Handle client disconnection. (Closes the socket.)
      */
-    private void onClientDisconnection() {
+    private synchronized void onClientDisconnection() {
+        if (socket.isClosed()) return;
+
         try {
             socket.close();
         } catch (IOException e) {
             logger.severe("Error closing socket: " + e.getMessage());
         }
+
+        heartbeater.shutdown();
+        heartwatcher.shutdown();
+
+        controller.closeGame(client);
     }
 
     /**

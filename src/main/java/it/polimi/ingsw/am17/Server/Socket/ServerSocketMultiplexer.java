@@ -29,7 +29,7 @@ public class ServerSocketMultiplexer {
                 VirtualViewSocket client = new VirtualViewSocket(socket);
 
                 // create _ServerSocket associated with the client to receive requests
-                _ServerSocket server = new _ServerSocket(socket, controller, client);
+                ServerSocketSingle server = new ServerSocketSingle(socket, controller, client);
                 new Thread(server).start();
             }
         } catch (IOException e) {
