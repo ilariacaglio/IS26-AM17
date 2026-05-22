@@ -19,27 +19,37 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
+/**
+ * Sets up and starts an RMI server to handle requests from multiple clients.
+ */
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
+    private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
+
     final GamesController controller;
     final List<VirtualViewRMI> clients;
 
-    private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
-
-
-    public ServerRMI(GamesController controller) throws RemoteException {
-        super();
+    /**
+     * Create and start an RMI server.
+     * @param controller main controller
+     * @param port port to bind the server to
+     * @throws RemoteException if the RMI registry cannot be created.
+     */
+    public ServerRMI(GamesController controller, int port) throws RemoteException {
         this.controller = controller;
         clients = new ArrayList<>();
-    }
 
-    public static void start(GamesController controller) throws RemoteException {
+        // Set up the RMI server
         final String serverName = "MesosRMIServer";
-        VirtualServerRMI server = new ServerRMI(controller);
-        Registry registry = LocateRegistry.createRegistry(1099);
-        registry.rebind(serverName, server);
-        System.out.println("Server ready");
+        Registry registry = LocateRegistry.createRegistry(port);
+        registry.rebind(serverName, this);
+        logger.info("RMI Server started on port" + port + " with name " + serverName);
     }
 
+    /**
+     * Adds a new client to the list of connected clients and starts pinging it.
+     * @param client client to be added.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void connect(VirtualView client) throws RemoteException {
         synchronized (this.clients) {
@@ -49,9 +59,14 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(pinger((VirtualViewRMI) client, executor), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
-
     }
 
+    /**
+     * Pings a client and removes it from the list of connected clients when it fails.
+     * @param client client to be pinged.
+     * @param executor to stop
+     * @return Runnable to pass the executor.
+     */
     private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService executor) {
         return () -> {
             logger.fine("Starting heartbeat thread for RMI client");
@@ -68,38 +83,65 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
         };
     }
 
+    /**
+     * Forwarded to the controller.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void getGamesList(VirtualView client) throws RemoteException {
         controller.getGamesList(client);
     }
 
+
+    /**
+     * Forwarded to the controller.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
         controller.createGame(client, player, numPlayers);
     }
 
+    /**
+     * Forwarded to the controller.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void closeGame(VirtualView client) throws RemoteException {
         controller.closeGame(client);
     }
 
+    /**
+     * Forwarded to the controller.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
         controller.joinGame(client, gameId, player);
     }
 
+    /**
+     * Forwarded to the controller.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void pickOfferingCard(VirtualView client, Character offeringCardLetter) throws RemoteException {
         controller.pickOfferingCard(client, offeringCardLetter);
     }
 
+    /**
+     * Forwarded to the controller.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
         controller.pickTribeCards(client, characterCards, buildingCards);
     }
 
+    /**
+     * Allows a client to ping the server.
+     * @throws RemoteException remotely called!
+     */
     @Override
-    public void ping() throws RemoteException {
-
-    }
+    public void ping() throws RemoteException {}
 }

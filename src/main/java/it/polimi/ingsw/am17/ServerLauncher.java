@@ -22,7 +22,7 @@ public class ServerLauncher {
         new Thread(() -> {
             try {
                 logger.info("Starting RMI server...");
-                new ServerRMI(controller);
+                new ServerRMI(controller, 1099);
             } catch (Exception e) {
                 logger.severe("RMI server failed to start: " + e.getMessage());
             }
