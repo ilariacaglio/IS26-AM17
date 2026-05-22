@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * Sets up the socket connection with the server.
  * Receives requests from the server to update the ClientModel.
  */
-public class ClientSocket implements VirtualView, ClientInterface {
+public class ClientSocket implements VirtualView {
     VirtualServerSocket server;
     ClientModel model;
     Socket socket;
