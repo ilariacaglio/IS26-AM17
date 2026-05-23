@@ -1,5 +1,8 @@
 package it.polimi.ingsw.am17.Server.Controller;
 
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.Server.Model.Color;
+import it.polimi.ingsw.am17.Server.Model.ColorException;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -95,14 +98,30 @@ public class GamesController {
     }
 
     /**
-     * Calls updateNotifyError on the specified client
+     * Calls updateColorError on the specified client
      *
      * @param client       the client to be notified
      * @param errorMessage the message of the exception thrown
      */
     private void notifyErrorToClient(VirtualView client, String errorMessage) {
         try {
-            client.updateNotifyError(errorMessage);
+            client.updateColorError(errorMessage);
+        }
+        catch (Exception networkEx){
+            logger.info("Could not send notification to client: " + networkEx.getMessage());
+        }
+    }
+
+    /**
+     * Calls  on the specified client
+     *
+     * @param client                the client to be notified
+     * @param errorMessage          the message of the exception thrown
+     * @param availableColors       the list of available colors
+     */
+    private void notifyColorErrorToClient(VirtualView client, String errorMessage, List<Color> availableColors) {
+        try {
+            client.updateColorError(errorMessage, availableColors);
         }
         catch (Exception networkEx){
             logger.info("Could not send notification to client: " + networkEx.getMessage());
@@ -191,11 +210,11 @@ public class GamesController {
                 }
 
                 // notify error to client
-                try {
-                    client.updateNotifyError(message);
+                if(message.equals(ErrorType.DUPLICATE_COLOR.toString())){
+                    notifyColorErrorToClient(client, message, ((ColorException)e).getAvailableColors());
                 }
-                catch (Exception networkEx){
-                    logger.info("Could not send notification to client: " + networkEx.getMessage());
+                else {
+                    notifyErrorToClient(client, message);
                 }
             }
         }).start();

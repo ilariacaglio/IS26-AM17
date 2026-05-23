@@ -107,7 +107,7 @@ public class Game extends Subject {
      *
      * @param p player to add to the game
      */
-    public void addPlayer(Player p) {
+    public void addPlayer(Player p) throws ColorException {
         logger.info("Adding player " + p.getNickname() + " to game with id " + id);
 
         if (isStarted()) {
@@ -117,14 +117,11 @@ public class Game extends Subject {
             throw new IllegalStateException(ErrorType.DUPLICATE_NICKNAME.toString());
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
-            // todo: improve
-            String message = "The game has already a player with the same color. Unused colors: ";
             //Get All colors
-            EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
+            List<Color> unusedColors = new ArrayList<>(EnumSet.allOf(Color.class).stream().toList());
             //Remove the colors that are currently in use
             orderedPlayers.forEach(player -> unusedColors.remove(player.getColor()));
-            message = message.concat(unusedColors.toString());
-            throw new IllegalStateException(ErrorType.DUPLICATE_COLOR.toString());
+            throw new ColorException(ErrorType.DUPLICATE_COLOR.toString(),unusedColors);
         }
 
         orderedPlayers.add(p);
