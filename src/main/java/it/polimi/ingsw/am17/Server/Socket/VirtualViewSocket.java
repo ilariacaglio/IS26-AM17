@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Socket;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
+import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -92,9 +93,17 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updateNotifyError(String errorMessage) throws Exception {
+    public void updateError(String errorMessage) throws Exception {
         Message message = new Message(MessageType.UPDATE_ERROR);
         message.setExceptionMessage(errorMessage);
+        message.send(socket);
+    }
+
+    @Override
+    public void updateColorError(String errorMessage, List<Color> availableColors) throws Exception {
+        Message message = new Message(MessageType.UPDATE_COLOR_ERROR);
+        message.setExceptionMessage(errorMessage);
+        message.setAvailableColors(availableColors);
         message.send(socket);
     }
 

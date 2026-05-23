@@ -18,6 +18,7 @@ public enum MessageType {
     UPDATE_END_TURN,
     UPDATE_START_GAME,
     UPDATE_ERROR,
+    UPDATE_COLOR_ERROR,
     END_GAME,
     HEARTBEAT,
     CLOSE_GAME,

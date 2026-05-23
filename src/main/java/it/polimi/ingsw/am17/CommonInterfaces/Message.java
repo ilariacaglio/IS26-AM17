@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.CommonInterfaces;
 
 import com.fasterxml.jackson.annotation.*;
+import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
@@ -167,6 +168,8 @@ public class Message implements Serializable {
 
     private String exceptionMessage;
 
+    private List<Color> availableColors;
+
     private List<RankingEntry> ranking;
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -308,8 +311,12 @@ public class Message implements Serializable {
     }
 
     public String getExceptionMessage() {return exceptionMessage; }
-    public void setExceptionMessage(String message) {
-        exceptionMessage = message;}
+
+    public void setExceptionMessage(String message) {exceptionMessage = message;}
+
+    public List<Color> getAvailableColors() {return availableColors;}
+
+    public void setAvailableColors(List<Color> availableColors) {this.availableColors = availableColors;}
 
     public List<RankingEntry> getRanking() {return ranking;}
 
