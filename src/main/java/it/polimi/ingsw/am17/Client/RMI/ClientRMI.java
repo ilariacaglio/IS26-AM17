@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Client.RMI;
 
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
@@ -49,7 +50,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
         // TODO: remove null when gui
         UI userInterface = null;
         if(graphic){
-            // TODO: gui
+            userInterface = new GUI(server, this);
         }
         else {
             userInterface = new CLI(server,this);

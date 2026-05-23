@@ -360,7 +360,9 @@ public class CLI implements UI {
         }
 
         // calculate the number of cards the user can pick
-        int totalCards = myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower();
+        int upperCards = myOfferingCard.getNumCardsUpper();
+        int lowerCards = myOfferingCard.getNumCardsLower();
+        int totalCards = upperCards + lowerCards;
 
         // if card with letter A, no card can be chosen
         if(totalCards == 0) {
@@ -368,31 +370,47 @@ public class CLI implements UI {
             return;
         }
 
-        System.out.println("You can pick " + myOfferingCard.getNumCardsUpper() + " card from upper row and "
-        + myOfferingCard.getNumCardsLower() +" card from lower row");
+        // print specific selection message
+        StringBuilder pickMessage = new StringBuilder("You can pick ");
+        if (upperCards > 0) {
+            pickMessage.append(upperCards).append(upperCards == 1 ? " card" : " cards").append(" from the upper row");
+        }
+        if (upperCards > 0 && lowerCards > 0) {
+            pickMessage.append(" and ");
+        }
+        if (lowerCards > 0) {
+            pickMessage.append(lowerCards).append(lowerCards == 1 ? " card" : " cards").append(" from the lower row");
+        }
+        System.out.println(pickMessage);
 
         // list of pickable cards
         List<GameCard> pickableCards = new ArrayList<>();
 
-        // add upper character cards
-        pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
-                .filter(c->c.getCardType().isCharacter()).toList());
+        int startingIndex = 1;
+        if (upperCards > 0) {
+            // add upper character cards
+            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
 
-        // add upper building cards
-        pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
+            // add upper building cards
+            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
 
-        // add lower character cards
-        pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
-                .filter(c->c.getCardType().isCharacter()).toList());
+            // print the upper row
+            startingIndex = printPickableRow(true, startingIndex);
+        }
 
-        // add upper building cards
-        if(!readOnlyModel.getLowerBuildingRow().isEmpty())
-            pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+        if (lowerCards > 0) {
+            // add lower character cards
+            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
 
-        // print the upper row
-        int upperPrintIndex = printPickableRow(true,1);
-        // print the lower row
-        printPickableRow(false, upperPrintIndex);
+            // add lower building cards
+            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
+                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+
+            // print the lower row
+            printPickableRow(false, startingIndex);
+        }
 
         // selected cards indexes
         Set<Integer> cardIndexes = new HashSet<>();
@@ -599,19 +617,43 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(){
         try {
-            System.out.print("Insert card number (position from 0) > ");
-            int numCard = Integer.parseInt(scanner.nextLine());
-            //check if number is plausible
-            if(numCard<0 || numCard>=readOnlyModel.getOfferingCards().size()){
-                drawInterface("number out of bound");
+            System.out.print("Insert card letter > ");
+            Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
+
+            // check if it is the players turn
+            if (!readOnlyModel.isPlayerTurn()) {
+                drawInterface("It is not your turn!");
                 return;
             }
+
+            //check if letter is present in offering card list
+            var letters = readOnlyModel.getOfferingCards()
+                    .stream().map(OfferingCard::getOrderLetter).toList();
+            if(!letters.contains(cardLetter)) {
+                drawInterface("Offering card not found!");
+                return;
+            }
+
             //check if card is free
-            if(readOnlyModel.getOfferingCards().get(numCard).getPlayer() != null) {
-                drawInterface("card already taken");
+            OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .filter(c -> cardLetter.equals(c.getOrderLetter()))
+                    .findFirst().orElseThrow();
+            if(selectedOfferingCard.getPlayer() != null) {
+                drawInterface("Card not available!");
                 return;
             }
-            virtualServer.pickOfferingCard(this.client, readOnlyModel.getOfferingCards().get(numCard).getOrderLetter());
+
+            // check if player already has an offering card
+            List<Player> playersInOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .map(OfferingCard::getPlayer)
+                    .toList();
+            if (playersInOfferingCard.contains(localPlayer)) {
+                drawInterface("You already picked an offering card!");
+                return;
+            }
+
+            // send request
+            virtualServer.pickOfferingCard(this.client, cardLetter);
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }

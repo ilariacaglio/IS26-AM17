@@ -66,4 +66,11 @@ public class BuildingType14 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: +5F/set of 6 different characters] ";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building1_14.png";
+    }
+
 }
