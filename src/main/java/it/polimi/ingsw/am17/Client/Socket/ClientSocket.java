@@ -89,9 +89,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
         // create a heartbeat thread
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
-
-        // Todo: remove null when gui
-        UI userInterface = null;
+        UI userInterface;
         if(gui) {
             userInterface = new GUI(server, this);
         } else {
