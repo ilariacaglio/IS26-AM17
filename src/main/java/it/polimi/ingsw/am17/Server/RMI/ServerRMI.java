@@ -64,7 +64,9 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
             logger.info("RMI Client connected " + client.getClass().getSimpleName());
         }
 
+        // TODO: fix RejectedExecutionException on "unclean restart"
         heartbeater.scheduleAtFixedRate(pinger((VirtualViewRMI) client, heartbeater), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+
         heartwatcher.scheduleAtFixedRate(() -> {
             long now = System.currentTimeMillis();
             long diff = now - lastHeartbeatReceived;
