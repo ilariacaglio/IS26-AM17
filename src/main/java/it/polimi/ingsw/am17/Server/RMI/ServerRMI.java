@@ -74,6 +74,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
                 clients.remove(client);
                 controller.closeGame(client);
                 heartbeater.shutdown();
+                heartwatcher.shutdown();
             }
         }, 5, 5, TimeUnit.SECONDS);
     }
@@ -102,6 +103,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
                     clients.remove(client);
                     controller.closeGame(client);
                     heartbeater.shutdown();
+                    heartwatcher.shutdown();
                 }
             }
         };
