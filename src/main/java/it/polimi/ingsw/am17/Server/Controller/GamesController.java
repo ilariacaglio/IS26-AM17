@@ -107,7 +107,7 @@ public class GamesController {
      */
     public void createGame(VirtualView client, Player player, int numPlayers) {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
+            logger.info("Client " + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
             // game creation
             UUID id = UUID.randomUUID();

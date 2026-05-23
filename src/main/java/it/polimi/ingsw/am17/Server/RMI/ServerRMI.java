@@ -21,6 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -29,7 +30,6 @@ import java.util.logging.Logger;
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
     private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
 
-    ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
     Map<VirtualViewRMI, Integer> failedHeartbeats;
 
     final GamesController controller;
@@ -43,6 +43,8 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
      */
     public ServerRMI(GamesController controller, int port, String serverName) throws RemoteException {
         super(); // needed for UnicastRemoteObject
+
+        logger.setLevel(Level.FINER);
 
         this.controller = controller;
         clients = new ArrayList<>();
@@ -62,9 +64,10 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     public void connect(VirtualView client) throws RemoteException {
         synchronized (this.clients) {
             this.clients.add((VirtualViewRMI) client);
-            logger.info("RMI Client connected" + client.toString());
+            logger.info("RMI Client connected" + client.getClass().getSimpleName());
         }
 
+        ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
         heartbeater.scheduleAtFixedRate(pinger((VirtualViewRMI) client, heartbeater), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
     }
 
