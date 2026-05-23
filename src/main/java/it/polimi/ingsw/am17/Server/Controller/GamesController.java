@@ -136,7 +136,7 @@ public class GamesController {
      */
     public void joinGame(VirtualView client, UUID gameId, Player player) throws NoSuchElementException {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
+            logger.info("Client " + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
 
             // Sign up client as an observer (see N.B. hereunder)
             signUpAsObserver(client, gameId);
@@ -280,7 +280,7 @@ public class GamesController {
      */
     public void getGamesList(VirtualView client) {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " requested the games list.");
+            logger.info("Client " + client.getClass().getSimpleName() + " requested the games list.");
             try {
                 // send the list of open games to the client
                 client.updateGamesIdList(getGamesList());

@@ -44,8 +44,6 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     public ServerRMI(GamesController controller, int port, String serverName) throws RemoteException {
         super(); // needed for UnicastRemoteObject
 
-        logger.setLevel(Level.FINER);
-
         this.controller = controller;
         clients = new ArrayList<>();
 
@@ -64,7 +62,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     public void connect(VirtualView client) throws RemoteException {
         synchronized (this.clients) {
             this.clients.add((VirtualViewRMI) client);
-            logger.info("RMI Client connected" + client.getClass().getSimpleName());
+            logger.info("RMI Client connected " + client.getClass().getSimpleName());
         }
 
         ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
@@ -80,8 +78,8 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService heartbeater) {
         return () -> {
             try {
+                logger.finer("Pinging client " + client.getClass().getSimpleName());
                 client.ping();
-                logger.finer("Client pinged");
                 failedHeartbeats.put(client, 0);
             } catch (RemoteException e) {
                 failedHeartbeats.put(client, failedHeartbeats.get(client) + 1);
