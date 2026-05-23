@@ -479,7 +479,7 @@ public class CLI implements UI {
 
         //check if player can buy the buildings
         if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
-            drawInterface("Not enough food to buy building cards");
+            drawInterface(ErrorType.INSUFFICIENT_FOOD.toString());
             return;
         }
 
@@ -636,24 +636,7 @@ public class CLI implements UI {
 
             // check if it is the players turn
             if (!readOnlyModel.isPlayerTurn()) {
-                drawInterface("It is not your turn!");
-                return;
-            }
-
-            //check if letter is present in offering card list
-            var letters = readOnlyModel.getOfferingCards()
-                    .stream().map(OfferingCard::getOrderLetter).toList();
-            if(!letters.contains(cardLetter)) {
-                drawInterface("Offering card not found!");
-                return;
-            }
-
-            //check if card is free
-            OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
-                    .filter(c -> cardLetter.equals(c.getOrderLetter()))
-                    .findFirst().orElseThrow();
-            if(selectedOfferingCard.getPlayer() != null) {
-                drawInterface("Card not available!");
+                drawInterface(ErrorType.OUT_OF_TURN.toString());
                 return;
             }
 
@@ -662,7 +645,24 @@ public class CLI implements UI {
                     .map(OfferingCard::getPlayer)
                     .toList();
             if (playersInOfferingCard.contains(localPlayer)) {
-                drawInterface("You already picked an offering card!");
+                drawInterface(ErrorType.OFFERING_CARD_ALREADY_SELECTED.toString());
+                return;
+            }
+
+            //check if letter is present in offering card list
+            var letters = readOnlyModel.getOfferingCards()
+                    .stream().map(OfferingCard::getOrderLetter).toList();
+            if(!letters.contains(cardLetter)) {
+                drawInterface(ErrorType.INVALID_OFFERING_CARD_LETTER.toString());
+                return;
+            }
+
+            //check if card is free
+            OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .filter(c -> cardLetter.equals(c.getOrderLetter()))
+                    .findFirst().orElseThrow();
+            if(selectedOfferingCard.getPlayer() != null) {
+                drawInterface(ErrorType.UNAVAILABLE_OFFERING_CARD.toString());
                 return;
             }
 
