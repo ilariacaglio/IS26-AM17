@@ -182,7 +182,7 @@ public class GamesController {
             // get uuid of the game from the client (mapping)
             UUID uuid = gameMapping.get(client);
 
-            if (uuid == null) {
+            if (uuid == null) { // TODO: check if best practice
                 logger.warning("Client " + client.getClass().getSimpleName() + " tried to close a game that doesn't exist.");
                 return;
             }
