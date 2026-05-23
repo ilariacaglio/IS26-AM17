@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Server.Utility;
 
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -39,7 +40,7 @@ public class MoveValidator {
                 numToSelectFromLower--;
                 lowerRowCharacterCards.remove(card);
             } else {
-                return new IllegalStateException("Illegal character selection. (Card not in any row)");
+                return new IllegalStateException(ErrorType.INVALID_CHARACTER_CARD.toString());
             }
         }
         for (BuildingCard card : buildingCards) {
@@ -48,14 +49,14 @@ public class MoveValidator {
             } else if (lowerBuildingRow.contains(card)) {
                 numToSelectFromLower--;
             } else {
-                return new IllegalStateException("Illegal building selection. (Card not in any row)");
+                return new IllegalStateException(ErrorType.INVALID_BUILDING_CARD.toString());
             }
         }
 
         // if the player still has cards to select (counters != 0),
         // AND it is possible to select more cards (i.e. row not empty), the choice is not valid.
         if ((numToSelectFromUpper != 0 && !upperRowCharacterCards.isEmpty()) || (numToSelectFromLower != 0 && !lowerRowCharacterCards.isEmpty())) {
-            return new IllegalStateException("Illegal card selection. (Wrong number of cards)");
+            return new IllegalStateException(ErrorType.INVALID_CARDS_NUMBER.toString());
         }
         return null;
 
