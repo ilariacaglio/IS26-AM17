@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import javafx.application.Platform;
@@ -72,10 +73,10 @@ public class GUI implements UI {
     }
 
     @Override
-    public void drawInterface(ClientModel game, String errorMessagge) {
+    public void drawInterface(String errorMessagge) {
         Platform.runLater(() -> {
-            int currentEra = this.game.getCurrentEra();
-            if (currentEra >= 0) {
+            GameState gameState = game.getGameState();
+            if (gameState.isGameEnded()) {
                 if (!isGameInterfaceInitialized) {
                     showGameInterface();
                     isGameInterfaceInitialized = true;
