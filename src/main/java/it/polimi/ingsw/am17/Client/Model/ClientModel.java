@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -402,8 +404,17 @@ public class ClientModel {
         // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
     }
 
-    public void updateNotifyError(String message) {
-        if (message.contains("Unused colors") || message.contains("same nickname")) setGameState(GameState.NONE);
+    public void updateNotifyError(String message, List<Color> availableColors) {
+        ErrorType error = ErrorType.valueOf(message);
+        switch (error) {
+            case DUPLICATE_COLOR:
+                userInterface.setAvailableColors(availableColors);
+                setGameState(GameState.NONE);
+                break;
+            case DUPLICATE_NICKNAME:
+                setGameState(GameState.NONE);
+                break;
+        }
         userInterface.drawInterface(message);
     }
 }

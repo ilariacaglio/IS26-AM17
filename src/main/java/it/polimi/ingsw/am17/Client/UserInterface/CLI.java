@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
@@ -40,6 +41,8 @@ public class CLI implements UI {
     public void setModel(ClientModel model) {
         this.readOnlyModel = model;
     }
+
+    public void setAvailableColors(List<Color> availableColors) {this.availableColors=availableColors;}
 
     /**
      * Starts the cli and collects user commands
@@ -239,11 +242,8 @@ public class CLI implements UI {
      */
     private void printError(String errorMessage) {
         if(errorMessage != null && !errorMessage.isBlank()) {
-            System.out.println(ANSI_RED+errorMessage+ANSI_RESET);
-            if(errorMessage.contains("Unused colors")){
-                // build unused colors list
-                availableColors = parseAvailableColors(errorMessage);
-            }
+            ErrorType error = ErrorType.valueOf(errorMessage);
+            System.out.println(ANSI_RED + error.getMessage() + ANSI_RESET);
         }
     }
 
@@ -251,7 +251,7 @@ public class CLI implements UI {
      * Resets available color list to all colors
      */
     private void resetColors(){
-        availableColors = Arrays.stream(Color.values()).toList();
+        setAvailableColors(Arrays.stream(Color.values()).toList());
     }
 
     /**
@@ -789,33 +789,5 @@ public class CLI implements UI {
     private void showPrompt() {
         System.out.print("\r> ");
         System.out.flush();
-    }
-
-    /**
-     * @param message   exception message from the server
-     * @return          a list of colors created from the message given
-     */
-    private List<Color> parseAvailableColors(String message) {
-        int startIndex = message.indexOf('[');
-        int endIndex = message.indexOf(']');
-
-        // when error return empty list
-        if (startIndex == -1 || endIndex == -1 || startIndex >= endIndex) {
-            return new ArrayList<>();
-        }
-
-        // get values between brackets
-        String colorsSubstring = message.substring(startIndex + 1, endIndex).trim();
-
-        // if empty list return empty list
-        if (colorsSubstring.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // build color list
-        return Arrays.stream(colorsSubstring.split(","))
-                .map(String::trim)
-                .map(Color::valueOf)
-                .toList();
     }
 }
