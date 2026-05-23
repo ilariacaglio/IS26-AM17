@@ -135,7 +135,7 @@ public class ClientSocket implements VirtualView {
     private void onServerDisconnection() {
         heartbeater.shutdown();
         heartwatcher.shutdown();
-        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
+//        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
         System.exit(1);
     }
 
