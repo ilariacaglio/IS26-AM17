@@ -58,6 +58,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
                 server.ping();
                 failedHeartbeats = 0;
             } catch (RemoteException e) {
+                logger.warning("Failed sending heartbeat to server: " + serverName + " with error: " + e.getMessage());
                 failedHeartbeats++;
                 if (failedHeartbeats > 3) {
                     logger.severe("Too many failed heartbeats, server considered dead.");

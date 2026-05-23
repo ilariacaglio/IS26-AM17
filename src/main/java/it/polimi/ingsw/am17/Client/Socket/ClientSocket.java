@@ -99,7 +99,7 @@ public class ClientSocket implements VirtualView {
                 new Message(MessageType.HEARTBEAT).send(socket);
                 failedHeartbeats = 0;
             } catch (Exception e) {
-                logger.severe("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + "with error: " + e.getMessage());
+                logger.warning("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + " with error: " + e.getMessage());
                 failedHeartbeats++;
                 if (failedHeartbeats > 3) {
                     logger.severe("Too many failed heartbeats, server considered dead.");
@@ -133,6 +133,7 @@ public class ClientSocket implements VirtualView {
     }
 
     private void onServerDisconnection() {
+        logger.severe("Server disconnected, shutting down.");
         heartbeater.shutdown();
         heartwatcher.shutdown();
 //        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
