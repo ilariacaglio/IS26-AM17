@@ -76,7 +76,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
                 logger.severe("No heartbeat received in " + diff + "ms, client considered dead.");
                 onClientDisconnection();
             }
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 10, 5, TimeUnit.SECONDS);
     }
 
     /**

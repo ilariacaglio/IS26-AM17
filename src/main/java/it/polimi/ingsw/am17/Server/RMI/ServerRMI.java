@@ -76,7 +76,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
                 heartbeater.shutdown();
                 heartwatcher.shutdown();
             }
-        }, 5, 5, TimeUnit.SECONDS);
+        }, 10, 5, TimeUnit.SECONDS);
     }
 
     /**

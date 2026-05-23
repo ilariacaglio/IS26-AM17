@@ -117,7 +117,7 @@ public class ClientSocket implements VirtualView {
                 logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
                 onServerDisconnection();
             }
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 10, 5, TimeUnit.SECONDS);
 
 
         UI userInterface;

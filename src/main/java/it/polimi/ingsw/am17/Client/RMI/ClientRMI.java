@@ -87,7 +87,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
                 logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
                 onServerDisconnection();
             }
-        }, 5, 5, TimeUnit.SECONDS);
+        }, 10, 5, TimeUnit.SECONDS);
     }
 
     /**
