@@ -118,6 +118,8 @@ public class ClientSocket implements VirtualView {
                 onServerDisconnection();
             }
         }, 1, 1, TimeUnit.SECONDS);
+
+
         UI userInterface;
         if(gui) {
             userInterface = new GUI(server, this);

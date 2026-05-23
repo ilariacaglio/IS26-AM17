@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -27,6 +28,8 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
     private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
 
     ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+    ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
+    long lastHeartbeatReceived = System.currentTimeMillis();
 
     final GamesController controller;
     final List<VirtualViewRMI> clients;
@@ -61,8 +64,18 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
             logger.info("RMI Client connected " + client.getClass().getSimpleName());
         }
 
-        ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
         heartbeater.scheduleAtFixedRate(pinger((VirtualViewRMI) client, heartbeater), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+        heartwatcher.scheduleAtFixedRate(() -> {
+            long now = System.currentTimeMillis();
+            long diff = now - lastHeartbeatReceived;
+
+            if (diff > 5000) {
+                logger.severe("No heartbeat received in " + diff + "ms, client considered dead.");
+                clients.remove(client);
+                controller.closeGame(client);
+                heartbeater.shutdown();
+            }
+        }, 5, 5, TimeUnit.SECONDS);
     }
 
     /**
@@ -154,5 +167,8 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
      * @throws RemoteException remotely called!
      */
     @Override
-    public void ping() throws RemoteException {}
+    public void ping() throws RemoteException {
+        logger.finer("Received ping");
+        lastHeartbeatReceived = System.currentTimeMillis();
+    }
 }

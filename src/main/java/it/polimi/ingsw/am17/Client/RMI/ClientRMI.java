@@ -23,6 +23,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,9 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
 
     ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
     int failedHeartbeats = 0;
+    ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
+    long lastHeartbeatReceived = System.currentTimeMillis();
+
 
     private final ClientModel model;
 
@@ -73,6 +77,17 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
                 }
             }
         }, 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+
+        // create a heartbeat watcher
+        heartwatcher.scheduleAtFixedRate(() -> {
+            long now = System.currentTimeMillis();
+            long diff = now - lastHeartbeatReceived;
+
+            if (diff > 5000) {
+                logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
+                onServerDisconnection();
+            }
+        }, 5, 5, TimeUnit.SECONDS);
     }
 
     /**
@@ -102,6 +117,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
     @Override
     public void ping() throws RemoteException {
         logger.finer("Received ping");
+        lastHeartbeatReceived = System.currentTimeMillis();
     }
 
     /**
