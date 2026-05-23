@@ -9,10 +9,15 @@ public enum ErrorType {
     INVALID_GAME_STATE("Invalid game state"),
 
     // offering card selection
-    MISSING_OFFERING_CARD_LETTER ("offeringCardLetter can't be null!"),
-    INVALID_OFFERING_CARD_LETTER("Illegal card selection. (Card not found)"),
-    UNAVAILABLE_OFFERING_CARD("Illegal card selection. (Card already selected by another player)"),
-    OFFERING_CARD_ALREADY_SELECTED("Illegal card selection. (Offering Card already selected)"),
+    MISSING_OFFERING_CARD_LETTER ("OfferingCardLetter can't be null!"),
+    INVALID_OFFERING_CARD_LETTER("Illegal card selection (Card not found)!"),
+    UNAVAILABLE_OFFERING_CARD("Illegal card selection (Card already selected by another player)!"),
+    OFFERING_CARD_ALREADY_SELECTED("Illegal card selection (Offering Card already selected)!"),
+
+    // card selection
+    INVALID_CHARACTER_CARD("Illegal character selection (Card not in any row)!"),
+    INVALID_BUILDING_CARD("Illegal building selection (Card not in any row)!"),
+    INVALID_CARDS_NUMBER("Illegal card selection (Wrong number of cards)!"),
 
     // game moves
     OUT_OF_TURN ("It is not the player's turn!"),
