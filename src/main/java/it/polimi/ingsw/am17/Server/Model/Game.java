@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Server.Model;
 
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.Decks.BuildingDeck;
 import it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -69,7 +70,7 @@ public class Game extends Subject {
         logger.fine("Checking number of players: " + numPlayers);
 
         if (numPlayers < 2 || numPlayers > 5) {
-            throw new IllegalArgumentException("Wrong number of players");
+            throw new IllegalArgumentException(ErrorType.INVALID_NUMBER_OF_PLAYERS.toString());
         }
     }
 
@@ -110,19 +111,20 @@ public class Game extends Subject {
         logger.info("Adding player " + p.getNickname() + " to game with id " + id);
 
         if (isStarted()) {
-            throw new IllegalStateException("The game has already started.");
+            throw new IllegalStateException(ErrorType.GAME_ALREADY_STARTED.toString());
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
-            throw new IllegalStateException("The game has already a player with the same nickname.");
+            throw new IllegalStateException(ErrorType.DUPLICATE_NICKNAME.toString());
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
+            // todo: improve
             String message = "The game has already a player with the same color. Unused colors: ";
             //Get All colors
             EnumSet<Color> unusedColors = EnumSet.allOf(Color.class);
             //Remove the colors that are currently in use
             orderedPlayers.forEach(player -> unusedColors.remove(player.getColor()));
             message = message.concat(unusedColors.toString());
-            throw new IllegalStateException(message);
+            throw new IllegalStateException(ErrorType.DUPLICATE_COLOR.toString());
         }
 
         orderedPlayers.add(p);
@@ -203,7 +205,7 @@ public class Game extends Subject {
         logger.info("Starting game (switching to era 1).");
 
         if (isStarted()) {
-            throw new IllegalStateException("The game has already started.");
+            throw new IllegalStateException(ErrorType.GAME_ALREADY_STARTED.toString());
         }
 
         // Set era and shuffle players
@@ -388,7 +390,7 @@ public class Game extends Subject {
     public void selectOfferingCard(String nickname, Character offeringCardLetter) {
         logger.info("Request forwarded to selectOfferingCard method in model");
         // check if letter is null
-        if(offeringCardLetter == null)  throw new IllegalArgumentException("offeringCardLetter can't be null");
+        if(offeringCardLetter == null)  throw new IllegalArgumentException(ErrorType.MISSING_OFFERING_CARD_LETTER.toString());
 
         // get player from nickname
         Player player = orderedPlayers.stream().filter(p->nickname.equals(p.getNickname()))
@@ -396,12 +398,12 @@ public class Game extends Subject {
 
         //check if is player turn
         if (!player.equals(orderedPlayers.peek())) {
-            throw new IllegalStateException("It is not the player's turn.");
+            throw new IllegalStateException(ErrorType.OUT_OF_TURN.toString());
         }
 
         // check if player is not in an Offering Card already
         if (offeringCards.stream().anyMatch(card -> card.getPlayer() != null && card.getPlayer().equals(player))) {
-            throw new IllegalStateException("Illegal card selection. (Offering Card already selected)");
+            throw new IllegalStateException(ErrorType.OFFERING_CARD_ALREADY_SELECTED.toString());
         }
 
         // get offering card from letter
@@ -414,14 +416,14 @@ public class Game extends Subject {
             offeringCard = building2OfferingCard;
         }
         else if (offeringCard == null) {
-            throw new IllegalStateException("Illegal card selection. (Card not found)");
+            throw new IllegalStateException(ErrorType.INVALID_OFFERING_CARD_LETTER.toString());
         }
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
 
         // check if offering card is free
         if(offeringCard.getPlayer() != null) {
-            throw new IllegalStateException("Illegal card selection. (Card already selected)");
+            throw new IllegalStateException(ErrorType.OFFERING_CARD_ALREADY_SELECTED.toString());
         }
 
         //set player to offeringCard
@@ -493,7 +495,7 @@ public class Game extends Subject {
 
         // Check if the player is current next player
         if (!player.equals(currentOffering.getPlayer())) {
-            throw new IllegalStateException("It is not the player's turn.");
+            throw new IllegalStateException(ErrorType.OUT_OF_TURN.toString());
         }
 
         // check if cards selection is legal based on the offeringCard
@@ -510,9 +512,9 @@ public class Game extends Subject {
             player.addCards(characterCards, buildingCards);
         } catch (IllegalStateException e) {
             if (e.getMessage().equals("Not enough food to buy building cards")) {
-                throw new IllegalStateException("Not enough food to buy building cards");
+                throw new IllegalStateException(ErrorType.INSUFFICIENT_FOOD.toString());
             } else {
-                throw new IllegalStateException("unknown error");
+                throw new IllegalStateException(ErrorType.UNKNOWN.toString());
             }
         }
         upperBuildingRow.removeAll(buildingCards); // if not present, no worries
