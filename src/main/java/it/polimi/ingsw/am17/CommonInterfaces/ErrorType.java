@@ -20,7 +20,7 @@ public enum ErrorType {
     INVALID_CARDS_NUMBER("Illegal card selection (Wrong number of cards)!"),
 
     // game moves
-    OUT_OF_TURN ("It is not the player's turn!"),
+    OUT_OF_TURN ("It is not your turn!"),
     INSUFFICIENT_FOOD("Not enough food to buy building cards"),
 
     // default
