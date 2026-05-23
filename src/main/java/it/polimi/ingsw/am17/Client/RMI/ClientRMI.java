@@ -51,22 +51,10 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
         server.connect(this);
         logger.info("RMI Client connected to server " + serverName);
 
-        // TODO: remove null when gui
-        UI userInterface = null;
-        if(graphic){
-            userInterface = new GUI(server, this);
-        }
-        else {
-            userInterface = new CLI(server,this);
-        }
-        this.model = new ClientModel(userInterface);
-        userInterface.setModel(model);
-        this.model.startInterface();
-
         // launch a thread to ping the server every second
         heartbeater.scheduleAtFixedRate(() -> {
             try {
-                logger.info("Pinging server");
+                logger.finer("Pinging server");
                 server.ping();
                 failedHeartbeats = 0;
             } catch (RemoteException e) {
@@ -88,6 +76,18 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
                 onServerDisconnection();
             }
         }, 10, 5, TimeUnit.SECONDS);
+
+        // TODO: remove null when gui
+        UI userInterface = null;
+        if(graphic){
+            userInterface = new GUI(server, this);
+        }
+        else {
+            userInterface = new CLI(server,this);
+        }
+        this.model = new ClientModel(userInterface);
+        userInterface.setModel(model);
+        this.model.startInterface(); // N.B. not threaded?
     }
 
     /**
@@ -97,7 +97,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
         logger.severe("Server disconnected, shutting down.");
         heartbeater.shutdown();
         heartwatcher.shutdown();
-        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
+//        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
         System.exit(1);
     }
 
