@@ -42,7 +42,7 @@ public abstract class Subject {
             try {
                 client.updateGameState(era);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify game state: " + e.getMessage());
             }
         }
     }
@@ -52,7 +52,7 @@ public abstract class Subject {
             try {
                 client.updatePlayerQueue(orderedPlayer);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify player queue" + e.getMessage());
             }
         }
     }
@@ -62,7 +62,7 @@ public abstract class Subject {
             try {
                 client.updatePlayerSelectOfferingCard(player, offeringCard);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify offering card selection: " + e.getMessage());
             }
         }
     }
@@ -72,7 +72,7 @@ public abstract class Subject {
             try {
                 client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify tribes card selection: " + e.getMessage());
             }
         }
     }
@@ -91,7 +91,7 @@ public abstract class Subject {
             try {
                 client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify end turn: " + e.getMessage());
             }
         }
     }
@@ -102,7 +102,7 @@ public abstract class Subject {
             try {
                 client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify game start: " + e.getMessage());
             }
         }
     }
@@ -113,7 +113,7 @@ public abstract class Subject {
                 client.updateRanking(ranking);
             }
             catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify ranking: " + e.getMessage());
             }
         }
     }
@@ -125,7 +125,7 @@ public abstract class Subject {
             try {
                 client.notifyEndGame();
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify end game: " + e.getMessage());
             }
         }
     }

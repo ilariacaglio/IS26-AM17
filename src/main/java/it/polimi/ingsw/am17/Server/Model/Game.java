@@ -138,7 +138,7 @@ public class Game extends Subject {
      * TODO: player that closed the game
      */
     public void forceEndGame() {
-        logger.severe("Forcibly closed game with id: " + id);
+        logger.severe("Forcibly closing game with id: " + id);
         this.gameState = GameState.ENDED;
         notifyEndGame();
     }
