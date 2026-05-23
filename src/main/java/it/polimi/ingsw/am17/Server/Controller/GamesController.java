@@ -105,7 +105,7 @@ public class GamesController {
      */
     private void notifyErrorToClient(VirtualView client, String errorMessage) {
         try {
-            client.updateColorError(errorMessage);
+            client.updateError(errorMessage);
         }
         catch (Exception networkEx){
             logger.info("Could not send notification to client: " + networkEx.getMessage());
