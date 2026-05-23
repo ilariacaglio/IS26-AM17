@@ -1,7 +1,5 @@
 package it.polimi.ingsw.am17.Server.RMI;
 
-import it.polimi.ingsw.am17.CommonInterfaces.Message;
-import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -16,12 +14,10 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 /**
@@ -30,7 +26,7 @@ import java.util.logging.Logger;
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
     private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
 
-    Map<VirtualViewRMI, Integer> failedHeartbeats;
+    ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
 
     final GamesController controller;
     final List<VirtualViewRMI> clients;
@@ -76,15 +72,19 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
      * @return Runnable to pass the executor.
      */
     private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService heartbeater) {
+        AtomicInteger failedHeartbeats = new AtomicInteger();
+
         return () -> {
+            logger.fine("Starting heartbeat thread for RMI client");
+
             try {
                 logger.finer("Pinging client " + client.getClass().getSimpleName());
                 client.ping();
-                failedHeartbeats.put(client, 0);
+                failedHeartbeats.set(0);
             } catch (RemoteException e) {
-                failedHeartbeats.put(client, failedHeartbeats.get(client) + 1);
+                failedHeartbeats.getAndIncrement();
                 logger.info("Failed heartbeat (Count: " + failedHeartbeats + "): " + e.getMessage());
-                if (failedHeartbeats.get(client) > 3) {
+                if (failedHeartbeats.get() > 3) {
                     logger.severe("Too many failed heartbeats, client considered dead.");
                     clients.remove(client);
                     controller.closeGame(client);

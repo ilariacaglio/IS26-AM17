@@ -99,7 +99,9 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void ping() throws RemoteException {}
+    public void ping() throws RemoteException {
+        logger.finer("Received ping");
+    }
 
     /**
      * Forwarded to the model.
