@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.GUIElements.*;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -76,15 +77,16 @@ public class GUI implements UI {
     public void drawInterface(String errorMessagge) {
         Platform.runLater(() -> {
             GameState gameState = game.getGameState();
-            if (gameState.isGameEnded()) {
-                if (!isGameInterfaceInitialized) {
-                    showGameInterface();
-                    isGameInterfaceInitialized = true;
+            if(gameState.isGameStarted()) {
+                if (!gameState.isGameEnded()) {
+                    if (!isGameInterfaceInitialized) {
+                        showGameInterface();
+                        isGameInterfaceInitialized = true;
+                    }
+                    updateGameElements();
+                } else {
+                    showLocalInterface();
                 }
-                updateGameElements();
-            }
-            else{
-                showLocalInterface();
             }
         });
     }

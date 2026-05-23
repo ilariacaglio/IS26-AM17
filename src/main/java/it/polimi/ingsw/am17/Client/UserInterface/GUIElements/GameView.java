@@ -463,7 +463,8 @@ public class GameView {
             offeringSelected = card;
 
         for (CardGUI cardGUI : offeringCardGUI){
-            cardGUI.setVisualSelection(false);
+            if(cardGUI.isSelected())
+                cardGUI.setVisualSelection(false);
         }
     }
 
