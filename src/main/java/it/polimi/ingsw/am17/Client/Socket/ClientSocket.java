@@ -1,6 +1,5 @@
 package it.polimi.ingsw.am17.Client.Socket;
 
-import it.polimi.ingsw.am17.Client.ClientInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
@@ -30,39 +29,45 @@ import java.util.logging.Logger;
  * Sets up the socket connection with the server.
  * Receives requests from the server to update the ClientModel.
  */
-public class ClientSocket implements VirtualView, ClientInterface {
+public class ClientSocket implements VirtualView {
+    private final Logger logger = Logger.getLogger(ClientSocket.class.getName());
+
+    ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+    ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
+    int failedHeartbeats;
+    long lastHeartbeatReceived = System.currentTimeMillis();
+
     VirtualServerSocket server;
     ClientModel model;
     Socket socket;
     ObjectMapper mapper;
 
-    private final Logger logger = Logger.getLogger(ClientSocket.class.getName());
-
-    public ClientSocket() {
+    public ClientSocket(String host, int port, boolean gui) throws IOException  {
         mapper = new ObjectMapper();
-    }
 
-    public void start(String host, boolean gui) throws IOException {
-        // create the socket
-        Socket socket = new Socket(host, 5000);
-
-        // add socket to this class to receive messages
-        this.socket = socket;
+        // create the socket and add it to this class to receive messages
+        this.socket = new Socket(host, port);
+        logger.info("Connected to server: " + socket.getRemoteSocketAddress());
 
         // create a VirtualServer to handle sending requests
         server = new VirtualServerSocket(socket);
 
-        // set the logger level
-//        logger.setLevel(Level.FINE);
-
-        // TODO: comments
-        // handle incoming messages
+        // handle incoming messages in a new thread
         new Thread(() -> {
+
+            // read socket input stream
             try (BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()))) {
                 String line;
                 while ((line = in.readLine()) != null) {
+
+                    // deserialize the message
                     Message message = mapper.readValue(line, Message.class);
-                    if(message.getType() != MessageType.HEARTBEAT) logger.info("Received message: " + message.toString());
+
+                    // logging
+                    if (message.getType() != MessageType.HEARTBEAT) logger.info("Received message:" + mapper.writeValueAsString(message));
+                    else logger.fine("Received heartbeat");
+
+                    // handle request
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
@@ -77,7 +82,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
                         case UPDATE_RANKING ->  updateRanking(message.getRanking());
                         case END_GAME -> notifyEndGame();
-                        case HEARTBEAT -> logger.finer("Received heartbeat");
+                        case HEARTBEAT -> recordHeartbeat();
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -86,9 +91,32 @@ public class ClientSocket implements VirtualView, ClientInterface {
             }
         }).start();
 
-        // create a heartbeat thread
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
+        // create a heartbeat thread to ping the new client
+        heartbeater.scheduleAtFixedRate(() -> {
+            try {
+                logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
+                new Message(MessageType.HEARTBEAT).send(socket);
+                failedHeartbeats = 0;
+            } catch (Exception e) {
+                logger.severe("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + "with error: " + e.getMessage());
+                failedHeartbeats++;
+                if (failedHeartbeats > 3) {
+                    logger.severe("Too many failed heartbeats, server considered dead.");
+                    onServerDisconnection();
+                }
+            }
+        }, 1, 1, TimeUnit.SECONDS);
+
+        // create a heartbeat receiver
+        heartwatcher.scheduleAtFixedRate(() -> {
+            long now = System.currentTimeMillis();
+            long diff = now - lastHeartbeatReceived;
+
+            if (diff > 5000) {
+                logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
+                onServerDisconnection();
+            }
+        }, 1, 1, TimeUnit.SECONDS);
 
         // Todo: remove null when gui
         UI userInterface = null;
@@ -103,16 +131,16 @@ public class ClientSocket implements VirtualView, ClientInterface {
         model.startInterface();  // note: not threaded
     }
 
-    private Runnable pinger(Socket socket) {
-        return () -> {
-            try {
-                logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
-                new Message(MessageType.HEARTBEAT).send(socket); // this is not actually handled
-            } catch (Exception e) {
-                logger.severe("Socket server disconnected! (Failed heartbeat: " + e.getMessage() + ") Was at: " + socket.getRemoteSocketAddress());
-                System.exit(1);
-            }
-        };
+    private void onServerDisconnection() {
+        heartbeater.shutdown();
+        heartwatcher.shutdown();
+        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
+        System.exit(1);
+    }
+
+    private void recordHeartbeat() {
+        lastHeartbeatReceived = System.currentTimeMillis();
+        logger.finest("Received heartbeat from server.");
     }
 
     @Override
