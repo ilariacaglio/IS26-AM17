@@ -46,4 +46,9 @@ public class FoodEvent extends EventCard{
     public int hashCode() {
         return Objects.hashCode(pointLost);
     }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Events/food_event_" + pointLost + "PP.png";
+    }
 }

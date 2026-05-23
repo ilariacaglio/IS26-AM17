@@ -103,4 +103,9 @@ public class RitualEvent extends EventCard {
     public int hashCode() {
         return Objects.hash(pointMax, pointMin);
     }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Events/ritual_event_"+pointMax+"PP_"+pointMin+"PP.png";
+    }
 }

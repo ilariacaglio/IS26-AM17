@@ -29,4 +29,11 @@ public class BuildingType5 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: +1PP/artist in PaintingEvent] ";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building2_5.png";
+    }
+
 }

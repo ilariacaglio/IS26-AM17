@@ -22,4 +22,11 @@ public class BuildingType8 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: x2PP in RitualEvent if won] ";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building2_8.png";
+    }
+
 }

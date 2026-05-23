@@ -39,4 +39,11 @@ public class CharacterCard extends TribesCard {
     public int hashCode() {
         return Objects.hashCode(minPlayers);
     }
+
+    @Override
+    public String getImagePath(){
+        return "";
+    }
+
+
 }
