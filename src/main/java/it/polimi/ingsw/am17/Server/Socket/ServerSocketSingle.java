@@ -57,7 +57,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
                 new Message(MessageType.HEARTBEAT).send(socket);
                 failedHeartbeats = 0;
             } catch (Exception e) {
-                logger.severe("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + "with error: " + e.getMessage());
+                logger.severe("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + " with error: " + e.getMessage());
                 failedHeartbeats++;
                 if (failedHeartbeats > 3) {
                     logger.severe("Too many failed heartbeats, client considered dead.");
@@ -127,7 +127,8 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
      * Handle client disconnection. (Closes the socket.)
      */
     private synchronized void onClientDisconnection() {
-        if (socket.isClosed()) return;
+        heartbeater.shutdown();
+        heartwatcher.shutdown();
 
         try {
             socket.close();
@@ -135,10 +136,11 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
             logger.severe("Error closing socket: " + e.getMessage());
         }
 
-        heartbeater.shutdown();
-        heartwatcher.shutdown();
-
-        closeGame(client);
+        try {
+            closeGame(client);
+        } catch (Exception e) {
+            logger.warning("Could not close game for client socket: " + e.getMessage());
+        }
     }
 
     /**
