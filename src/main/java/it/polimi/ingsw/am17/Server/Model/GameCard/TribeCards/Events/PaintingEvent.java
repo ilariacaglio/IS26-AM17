@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.Objects;
@@ -32,7 +33,7 @@ public class PaintingEvent extends EventCard {
             @JsonProperty("pointsMax") Integer pointsMax,
             @JsonProperty("numMax") Integer numMax,
             @JsonProperty("Final") Boolean Final,
-            @JsonProperty("era") Integer era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("id") UUID id) {
         super(Final, era, CardType.PAINTING_EVENT, id);
         this.pointsLow = pointsLow;

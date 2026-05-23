@@ -37,10 +37,10 @@ public abstract class Subject {
 
     }
 
-    void notifyEra(int era) {
+    void notifyGameState(GameState era) {
         for (VirtualView client : clients) {
             try {
-                client.updateEra(era);
+                client.updateGameState(era);
             } catch (Exception e) {
                 logger.severe("Subject method failed to call client update" + e.getMessage());
             }

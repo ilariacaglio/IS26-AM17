@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -20,7 +21,7 @@ public class TribesCard extends GameCard implements Serializable {
     }
 
     @JsonCreator
-    public TribesCard(@JsonProperty("era") Integer era, @JsonProperty("cardType") CardType cardType, @JsonProperty("id") UUID id){
+    public TribesCard(@JsonProperty("era") GameState era, @JsonProperty("cardType") CardType cardType, @JsonProperty("id") UUID id){
         super(false, era);
         this.cardType=cardType;
         this.era=era;

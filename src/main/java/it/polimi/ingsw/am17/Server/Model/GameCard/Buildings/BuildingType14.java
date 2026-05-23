@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.*;
 
@@ -11,7 +12,7 @@ import java.util.*;
  * SINGLETON
  */
 public class BuildingType14 extends BuildingCard {
-    private static final int era = 1;
+    private static final GameState era = GameState.ERA1;
     private static final int foodCost = 6;
     private static final int bonusPoints = 4;
     private final Integer numberOfCharacter = (int) Arrays.stream(CardType.values())

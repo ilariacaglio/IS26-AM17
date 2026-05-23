@@ -8,6 +8,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Binder;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -68,7 +69,7 @@ public class GameTest {
         assertEquals(3, game.getPlayersList().size());
         // check the game has started
         //check current era updated to 1
-        assertEquals(1, game.getCurrentEra());
+        assertEquals(GameState.ERA1, game.getGameState());
         //check size of upper and lower tribe rows
         assertEquals(4, game.getLowerRow().size());
         assertEquals(7, game.getUpperRow().size());
@@ -184,11 +185,11 @@ public class GameTest {
             game.endRound();
             //get upper building row value
             List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
-            assertEquals(1, game.getCurrentEra());
+            assertEquals(GameState.ERA1, game.getGameState());
             //play one more round
             game.endRound();
             // check era changed to 2
-            assertEquals(2, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             // check the building rows
             assertEquals(oldUpperBuildingRow.size(), game.getLowerBuildingRow().size());
             assertTrue(oldUpperBuildingRow.containsAll(game.getLowerBuildingRow()));
@@ -204,10 +205,10 @@ public class GameTest {
             }
             //get upper building row value
             List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
-            assertEquals(2, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             game.endRound();
             // check era changed to 3
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA3, game.getGameState());
             // check the building rows
             assertEquals(oldUpperBuildingRow.size(), game.getLowerBuildingRow().size());
             assertTrue(oldUpperBuildingRow.containsAll(game.getLowerBuildingRow()));
@@ -220,21 +221,21 @@ public class GameTest {
             //play turns
             game.endRound();
             game.endRound();
-            assertEquals(1, game.getCurrentEra());
+            assertEquals(GameState.ERA1, game.getGameState());
             game.endRound();
-            assertEquals(2, game.getCurrentEra());
-            game.endRound();
-            game.endRound();
-            assertEquals(2, game.getCurrentEra());
-            game.endRound();
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             game.endRound();
             game.endRound();
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
+            game.endRound();
+            assertEquals(GameState.ERA3, game.getGameState());
+            game.endRound();
+            game.endRound();
+            assertEquals(GameState.ERA3, game.getGameState());
             game.endRound();
             game.endRound();
             //check if the game has ended
-            assertEquals(-1, game.getCurrentEra());
+            assertEquals(GameState.ENDED, game.getGameState());
         }
 
         @Test
@@ -273,7 +274,7 @@ public class GameTest {
                             finalCurrentPlayer.getNickname(),
                             offeringCardList.getFirst().getOrderLetter()));
             // test card null error
-            assertThrows(IllegalStateException.class,
+            assertThrows(IllegalArgumentException.class,
                     () -> game.selectOfferingCard(finalCurrentPlayer.getNickname(), null));
         }
 
@@ -382,7 +383,7 @@ public class GameTest {
             setFirstPlayerToOffering(0);
             List<CharacterCard> characterList = new ArrayList<>();
             // add a random card to list
-            characterList.add(new Binder(2,4, null));
+            characterList.add(new Binder(GameState.ERA2,4, null));
             assertThrows(RuntimeException.class, () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(), characterList, Collections.emptyList()));
         }
 

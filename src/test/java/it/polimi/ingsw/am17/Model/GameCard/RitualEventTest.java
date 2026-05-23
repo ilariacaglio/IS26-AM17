@@ -5,6 +5,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType12;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType8;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Shaman;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class RitualEventTest {
 
     @BeforeEach
     void setUp() {
-        ritualEvent = new RitualEvent(false, 2, 10, 5, null);
+        ritualEvent = new RitualEvent(false, GameState.ERA2, 10, 5, null);
 
         list = new LinkedList<>();
         playerA = new Player("playerA", Color.BLACK);
@@ -35,15 +36,15 @@ class RitualEventTest {
      * Creates shaman card and adds it to player.
      * Then adds the player to te queue.
      */
-    private void addPlayerWithShamanToList(Player player, int era, int minPlayers, int stars) {
+    private void addPlayerWithShamanToList(Player player, GameState era, int minPlayers, int stars) {
         player.addCharacter(new Shaman(era, minPlayers, stars, null));
         list.add(player);
     }
 
     @Test
     void shouldAllEqualBuildingType8() {
-        addPlayerWithShamanToList(playerA, 2, 2, 2);
-        addPlayerWithShamanToList(playerB, 2, 2, 2);
+        addPlayerWithShamanToList(playerA, GameState.ERA2, 2, 2);
+        addPlayerWithShamanToList(playerB, GameState.ERA2, 2, 2);
 
         playerA.addBuilding(new BuildingType8());
 
@@ -56,8 +57,8 @@ class RitualEventTest {
 
     @Test
     void shouldAllEqualNoBuildingType8() {
-        addPlayerWithShamanToList(playerA, 2, 2, 2);
-        addPlayerWithShamanToList(playerB, 2, 2, 2);
+        addPlayerWithShamanToList(playerA, GameState.ERA2, 2, 2);
+        addPlayerWithShamanToList(playerB, GameState.ERA2, 2, 2);
 
         ritualEvent.computeScore(list);
 
@@ -67,8 +68,8 @@ class RitualEventTest {
 
     @Test
     void shouldAMaxBMinAndBuildings() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 2, 2, 2);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA2, 2, 2);
 
         playerA.addBuilding(new BuildingType8());
         playerB.addBuilding(new BuildingType12());
@@ -81,8 +82,8 @@ class RitualEventTest {
 
     @Test
     void shouldAMaxBMinAndNoBuildings() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 2, 2, 2);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA2, 2, 2);
 
         ritualEvent.computeScore(list);
 
@@ -92,8 +93,8 @@ class RitualEventTest {
 
     @Test
     void shouldNotApplyBuildingType8ToMinPlayer() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 1, 1, 1);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA1, 1, 1);
 
         playerB.addBuilding(new BuildingType8());
 
@@ -105,8 +106,8 @@ class RitualEventTest {
 
     @Test
     void shouldNotApplyBuildingType12ToMaxPlayer() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 1, 1, 1);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA1, 1, 1);
 
         playerA.addBuilding(new BuildingType12());
 
@@ -118,9 +119,9 @@ class RitualEventTest {
 
     @Test
     void shouldABMaxCMinAndBuildings() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 3, 2, 3);
-        addPlayerWithShamanToList(playerC, 2, 2, 2);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerC, GameState.ERA2, 2, 2);
 
         playerA.addBuilding(new BuildingType8());
         playerC.addBuilding(new BuildingType12());
@@ -135,9 +136,9 @@ class RitualEventTest {
 
     @Test
     void shouldABMaxCMinNoBuildings() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 3, 2, 3);
-        addPlayerWithShamanToList(playerC, 2, 2, 2);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerC, GameState.ERA2, 2, 2);
 
         ritualEvent.computeScore(list);
 
@@ -148,9 +149,9 @@ class RitualEventTest {
 
     @Test
     void shouldAMaxBCMinAndBuildings() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 2, 2, 2);
-        addPlayerWithShamanToList(playerC, 2, 2, 2);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA2, 2, 2);
+        addPlayerWithShamanToList(playerC, GameState.ERA2, 2, 2);
 
         playerA.addBuilding(new BuildingType8());
         playerC.addBuilding(new BuildingType12());
@@ -164,9 +165,9 @@ class RitualEventTest {
 
     @Test
     void shouldAMaxBCMinAndNoBuildings() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 2, 2, 2);
-        addPlayerWithShamanToList(playerC, 2, 2, 2);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA2, 2, 2);
+        addPlayerWithShamanToList(playerC, GameState.ERA2, 2, 2);
 
         ritualEvent.computeScore(list);
 
@@ -177,9 +178,9 @@ class RitualEventTest {
 
     @Test
     void shouldIgnoreIntermediatePlayers() {
-        addPlayerWithShamanToList(playerA, 3, 2, 3);
-        addPlayerWithShamanToList(playerB, 2, 2, 2);
-        addPlayerWithShamanToList(playerC, 1, 1, 1);
+        addPlayerWithShamanToList(playerA, GameState.ERA3, 2, 3);
+        addPlayerWithShamanToList(playerB, GameState.ERA2, 2, 2);
+        addPlayerWithShamanToList(playerC, GameState.ERA1, 1, 1);
 
         ritualEvent.computeScore(list);
 

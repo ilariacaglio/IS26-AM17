@@ -1,54 +1,54 @@
 [
   {
-    "era":1,
+    "era":"era1",
     "minPlayers": 3
   },
   {
-    "era":1,
+    "era":"era1",
     "minPlayers": 4
   },
   {
-    "era":1,
+    "era":"era1",
     "minPlayers": 2
   },
   {
-    "era":1,
+    "era":"era1",
     "minPlayers": 2
   },
   {
-    "era":1,
+    "era":"era1",
     "minPlayers": 2
   },
   {
-    "era":2,
+    "era":"era2",
     "minPlayers": 3
   },
   {
-    "era":2,
+    "era":"era2",
     "minPlayers": 2
   },
   {
-    "era":2,
+    "era":"era2",
     "minPlayers": 2
   },
   {
-    "era":2,
+    "era":"era2",
     "minPlayers": 2
   },
   {
-    "era":3,
+    "era":"era3",
     "minPlayers": 5
   },
   {
-    "era":3,
+    "era":"era3",
     "minPlayers": 2
   },
   {
-    "era":3,
+    "era":"era3",
     "minPlayers": 2
   },
   {
-    "era":3,
+    "era":"era3",
     "minPlayers": 2
   }
 ]

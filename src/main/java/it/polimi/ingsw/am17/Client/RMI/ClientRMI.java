@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.RMI.VirtualViewRMI;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
@@ -71,9 +72,9 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     }
 
     @Override
-    public void updateEra(int era) throws RemoteException {
+    public void updateGameState(GameState gameState) throws RemoteException {
         // call model to update era
-        model.setCurrentEra(era);
+        model.setGameState(gameState);
     }
 
     @Override

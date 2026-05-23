@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public class Game extends Subject {
     private final UUID id;
     private final int numPlayers;
-    private int currentEra;
+    private GameState gameState;
 
     private final Queue<Player> orderedPlayers;
 
@@ -50,7 +50,7 @@ public class Game extends Subject {
         checkNumPlayers(numPlayers);
 
         this.numPlayers = numPlayers;
-        currentEra = 0;
+        gameState = GameState.LOBBY;
         orderedPlayers = new LinkedList<>();
         offeringCards = loadOfferingCards(numPlayers);
 
@@ -75,11 +75,11 @@ public class Game extends Subject {
 
     public boolean isStarted() {
         logger.fine("Checking if game is started.");
-        return currentEra > 0;
+        return gameState.isGameStarted();
     }
 
     public boolean isEnded() {
-        return currentEra < 0;
+        return gameState.isGameEnded();
     }
 
     /**
@@ -139,7 +139,7 @@ public class Game extends Subject {
      */
     public void forceEndGame() {
         logger.severe("Forcibly closed game with id: " + id);
-        this.currentEra = -1;
+        this.gameState = GameState.ENDED;
         notifyEndGame();
     }
 
@@ -151,20 +151,20 @@ public class Game extends Subject {
     private void nextEra() {
         logger.info("Going to next era.");
 
-        switch (currentEra) {
-            case 0:
+        switch (gameState) {
+            case GameState.LOBBY:
                 era1();
                 break;
-            case 1:
+            case GameState.ERA1:
                 era2();
-                notifyEra(currentEra);
+                notifyGameState(gameState);
                 break;
-            case 2:
+            case GameState.ERA2:
                 era3();
-                notifyEra(currentEra);
+                notifyGameState(gameState);
                 break;
             default:
-                throw new IllegalStateException("Invalid era");
+                throw new IllegalStateException("Invalid game state");
         }
     }
 
@@ -207,7 +207,7 @@ public class Game extends Subject {
         }
 
         // Set era and shuffle players
-        this.currentEra = 1;
+        this.gameState = GameState.ERA1;
         shuffleQueue();
 
         giveFoodToPlayers();
@@ -241,7 +241,7 @@ public class Game extends Subject {
     private void era2() {
         logger.info("Switching to era 2.");
 
-        currentEra = 2;
+        gameState = GameState.ERA2;
         moveDownBuildingCards();
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra2());
     }
@@ -252,7 +252,7 @@ public class Game extends Subject {
     private void era3() {
         logger.info("Switching to era 3.");
 
-        currentEra = 3;
+        gameState = GameState.ERA3;
         lowerBuildingRow.clear();
         moveDownBuildingCards();
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
@@ -307,7 +307,7 @@ public class Game extends Subject {
         for (int i = 0; i < numPlayers + 4; i++) {
             try {
                 TribesCard c = tribesDeck.Draw();
-                if (c.getEra() != currentEra) nextEra();
+                if (c.getEra() != gameState) nextEra();
                 upperRow.add(c);
             }
             // If the deck is empty, end the game. N.B. This is how we decided to handle game ending.
@@ -332,7 +332,7 @@ public class Game extends Subject {
         logger.info("Ending game.");
 
         //put era to -1 to signal game has ended
-        this.currentEra = -1;
+        this.gameState = GameState.ENDED;
         // Solve events
         // Get all events from both rows. N.B. we solve the food events from BOTH rows at the end.
         List<EventCard> events = Stream.concat(lowerRow.stream(), upperRow.stream())
@@ -355,7 +355,7 @@ public class Game extends Subject {
         // insert data into db
         DatabaseManager.insertGameData(this);
 
-        notifyEra(currentEra);
+        notifyGameState(gameState);
         notifyPlayerQueue(orderedPlayers);
         notifyRanking(DatabaseManager.getRanking(this.numPlayers));
     }
@@ -387,6 +387,9 @@ public class Game extends Subject {
      */
     public void selectOfferingCard(String nickname, Character offeringCardLetter) {
         logger.info("Request forwarded to selectOfferingCard method in model");
+        // check if letter is null
+        if(offeringCardLetter == null)  throw new IllegalArgumentException("offeringCardLetter can't be null");
+
         // get player from nickname
         Player player = orderedPlayers.stream().filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow();
@@ -584,8 +587,8 @@ public class Game extends Subject {
     }
 
     /// only for testing
-    public int getCurrentEra() {
-        return currentEra;
+    public GameState getGameState() {
+        return gameState;
     }
 
     /// only for testing
