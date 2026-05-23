@@ -16,6 +16,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,6 +28,9 @@ import java.util.logging.Logger;
  */
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
     private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
+
+    ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+    Map<VirtualViewRMI, Integer> failedHeartbeats;
 
     final GamesController controller;
     final List<VirtualViewRMI> clients;
@@ -61,7 +65,6 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
             logger.info("RMI Client connected" + client.toString());
         }
 
-        ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
         heartbeater.scheduleAtFixedRate(pinger((VirtualViewRMI) client, heartbeater), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
     }
 
@@ -73,17 +76,14 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, 
      */
     private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService heartbeater) {
         return () -> {
-            logger.fine("Starting heartbeat thread for RMI client");
-            int failedHeartbeats = 0; // TODO: check this not called each run
-
             try {
                 client.ping();
                 logger.finer("Client pinged");
-                failedHeartbeats = 0;
+                failedHeartbeats.put(client, 0);
             } catch (RemoteException e) {
-                failedHeartbeats++;
+                failedHeartbeats.put(client, failedHeartbeats.get(client) + 1);
                 logger.info("Failed heartbeat (Count: " + failedHeartbeats + "): " + e.getMessage());
-                if (failedHeartbeats > 3) {
+                if (failedHeartbeats.get(client) > 3) {
                     logger.severe("Too many failed heartbeats, client considered dead.");
                     clients.remove(client);
                     controller.closeGame(client);
