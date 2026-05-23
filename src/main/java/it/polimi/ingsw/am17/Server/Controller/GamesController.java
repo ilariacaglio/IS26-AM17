@@ -182,7 +182,12 @@ public class GamesController {
             // get uuid of the game from the client (mapping)
             UUID uuid = gameMapping.get(client);
 
-            // get the game object from uuid to call the end game method
+            if (uuid == null) {
+                logger.warning("Client " + client.getClass().getSimpleName() + " tried to close a game that doesn't exist.");
+                return;
+            }
+
+            // get the game object from uuid and call the end game method
             Game game = getGameFromId(uuid);
 
             try {
