@@ -6,10 +6,8 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
-import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.ServerActionMethods;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -18,8 +16,6 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +24,6 @@ import java.util.logging.Logger;
  */
 public class _ServerSocket implements Runnable, VirtualServer {
     private static final Logger logger = Logger.getLogger(_ServerSocket.class.getName());
-
 
     private final Socket socket;
     private final GamesController controller;
@@ -57,9 +52,9 @@ public class _ServerSocket implements Runnable, VirtualServer {
                     case GET_GAMES_LIST -> getGamesList(client);
                     case CREATE_GAME -> createGame(client, message.getPlayer(), message.getNumPlayers());
                     case JOIN_GAME -> joinGame(client, message.getGameId(), message.getPlayer());
-                    case CLOSE_GAME -> closeGame(client, message.getPlayer(), message.getGameId());
-                    case PICK_OFFERING_CARD -> pickOfferingCard(message.getGameId(), message.getPlayer(), message.getOfferingCard());
-                    case PICK_TRIBE_CARDS -> pickTribeCards(message.getGameId(), message.getPlayer(), message.getCharacterCards(), message.getBuildingCards());
+                    case CLOSE_GAME -> closeGame(client);
+                    case PICK_OFFERING_CARD -> pickOfferingCard(client, message.getOfferingCardLetter());
+                    case PICK_TRIBE_CARDS -> pickTribeCards(client, message.getCharacterCards(), message.getBuildingCards());
                     case HEARTBEAT -> logger.finer("Received heartbeat");
                     default -> System.err.println("Unknown message type: " + message.getType());
                 }
@@ -74,32 +69,32 @@ public class _ServerSocket implements Runnable, VirtualServer {
     }
 
     @Override
-    public void getGamesList(VirtualView client) throws RemoteException {
-        ServerActionMethods.getGamesList(this.controller, client);
+    public void getGamesList(VirtualView client) {
+        controller.getGamesList(client);
     }
 
     @Override
-    public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
-        ServerActionMethods.createGame(this.controller, client, player, numPlayers);
+    public void createGame(VirtualView client, Player player, int numPlayers) {
+        controller.createGame(client, player, numPlayers);
     }
 
     @Override
-    public void closeGame(VirtualView client, Player player, UUID gameId) throws Exception {
-        ServerActionMethods.closeGame(this.controller, client, player, gameId);
+    public void closeGame(VirtualView client) {
+        controller.closeGame(client);
     }
 
     @Override
-    public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
-        ServerActionMethods.joinGame(this.controller, client, gameId, player);
+    public void joinGame(VirtualView client, UUID gameId, Player player) {
+        controller.joinGame(client, gameId, player);
     }
 
     @Override
-    public void pickOfferingCard(UUID gameId, Player player, OfferingCard card) throws RemoteException {
-        ServerActionMethods.pickOfferingCard(this.controller, gameId, player, card);
+    public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
+        controller.pickOfferingCard(client, offeringCardLetter);
     }
 
     @Override
-    public void pickTribeCards(UUID gameId, Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        ServerActionMethods.pickTribeCards(this.controller, gameId, player, characterCards, buildingCards);
+    public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
+        controller.pickTribeCards(client, characterCards, buildingCards);
     }
 }

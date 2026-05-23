@@ -9,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.HuntingEvent
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.PaintingEvent;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
@@ -19,7 +20,6 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -35,6 +35,7 @@ public class Message implements Serializable {
     private Player player;
     private Integer numPlayers;
     private OfferingCard offeringCard;
+    private Character offeringCardLetter;
 
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
@@ -47,11 +48,7 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = Shaman.class, name = "shaman"),
             @JsonSubTypes.Type(value = Artist.class, name = "artist"),
             @JsonSubTypes.Type(value = Hunter.class, name = "hunter"),
-            @JsonSubTypes.Type(value = Builder.class, name = "builder"),
-            @JsonSubTypes.Type(value = RitualEvent.class, name = "ritualEvent"),
-            @JsonSubTypes.Type(value = HuntingEvent.class, name = "huntingEvent"),
-            @JsonSubTypes.Type(value = PaintingEvent.class, name = "paintingEvent"),
-            @JsonSubTypes.Type(value = FoodEvent.class, name = "foodEvent"),
+            @JsonSubTypes.Type(value = Builder.class, name = "builder")
     })
     private List<CharacterCard> characterCards;
 
@@ -74,11 +71,12 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = BuildingType11.class, name = "building11"),
             @JsonSubTypes.Type(value = BuildingType12.class, name = "building12"),
             @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
+            @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
     })
     private List<BuildingCard> buildingCards;
 
     private List<UUID> gamesIdList;
-    private Integer era;
+    private GameState gameState;
     private Queue<Player> orderedPlayer;
     private List<OfferingCard> offeringCards;
 
@@ -116,7 +114,7 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = RitualEvent.class, name = "ritualEvent"),
             @JsonSubTypes.Type(value = HuntingEvent.class, name = "huntingEvent"),
             @JsonSubTypes.Type(value = PaintingEvent.class, name = "paintingEvent"),
-            @JsonSubTypes.Type(value = FoodEvent.class, name = "foodEvent"),
+            @JsonSubTypes.Type(value = FoodEvent.class, name = "foodEvent")
     })
     private List<TribesCard> lowerRow;
 
@@ -139,6 +137,7 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = BuildingType11.class, name = "building11"),
             @JsonSubTypes.Type(value = BuildingType12.class, name = "building12"),
             @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
+            @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
     })
     private List<BuildingCard> upperBuildingRow;
 
@@ -161,6 +160,7 @@ public class Message implements Serializable {
             @JsonSubTypes.Type(value = BuildingType11.class, name = "building11"),
             @JsonSubTypes.Type(value = BuildingType12.class, name = "building12"),
             @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
+            @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
     })
     private List<BuildingCard> lowerBuildingRow;
 
@@ -220,6 +220,10 @@ public class Message implements Serializable {
         this.offeringCard = offeringCard;
     }
 
+    public Character getOfferingCardLetter() { return offeringCardLetter;}
+
+    public void setOfferingCardLetter(Character offeringCardLetter) { this.offeringCardLetter = offeringCardLetter; }
+
     public List<CharacterCard> getCharacterCards() {
         return characterCards;
     }
@@ -244,12 +248,12 @@ public class Message implements Serializable {
         this.gamesIdList = gamesIdList;
     }
 
-    public Integer getEra() {
-        return era;
+    public GameState getGameState() {
+        return gameState;
     }
 
-    public void setEra(Integer era) {
-        this.era = era;
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
     }
 
     public Queue<Player> getOrderedPlayer() {

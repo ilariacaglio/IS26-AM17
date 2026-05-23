@@ -5,6 +5,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Inventor;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.InventorIconType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,22 +28,22 @@ class BuildingCardTest {
         List<CharacterCard> cc = new ArrayList<>();
 
         for (int i = 0; i < hunter; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.HUNTER, null));
+            cc.add(new CharacterCard(GameState.ERA1, 1, CardType.HUNTER, null));
         }
         for (int i = 0; i < art; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.ARTIST, null));
+            cc.add(new CharacterCard(GameState.ERA1, 1, CardType.ARTIST, null));
         }
         for (int i = 0; i < build; i++) {
-            cc.add(new Builder(1, 1, r.nextInt(5), r.nextInt(5), null));
+            cc.add(new Builder(GameState.ERA1, 1, r.nextInt(5), r.nextInt(5), null));
         }
         for (int i = 0; i < inv; i++) {
-            cc.add(new Inventor(1, 1, InventorIconType.values()[r.nextInt(10)], null));
+            cc.add(new Inventor(GameState.ERA1, 1, InventorIconType.values()[r.nextInt(10)], null));
         }
         for (int i = 0; i < sham; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.SHAMAN, null));
+            cc.add(new CharacterCard(GameState.ERA1, 1, CardType.SHAMAN, null));
         }
         for (int i = 0; i < bind; i++) {
-            cc.add(new CharacterCard(1, 1, CardType.BINDER, null));
+            cc.add(new CharacterCard(GameState.ERA1, 1, CardType.BINDER, null));
         }
 
         return cc;

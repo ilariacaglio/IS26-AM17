@@ -7,6 +7,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -180,11 +181,9 @@ public class CLI implements UI {
      * Draws the game configuration.
      * @param errorMessage message you want to print
      */
-    public void drawInterface(ClientModel game, String errorMessage)
+    public void drawInterface(String errorMessage)
     {
         try{
-            // update game data
-            setModel(game);
             // cancel arrow
             System.out.print("\b\b");
             //clear console
@@ -200,12 +199,12 @@ public class CLI implements UI {
                 System.out.flush(); //ensure error message is before the interface
             }
 
-            int currentEra = game.getCurrentEra();
+            GameState gameState = readOnlyModel.getGameState();
 
-            if (currentEra >= 0) {
+            if (gameState.isInLobbyOrStarted()) {
                 // print players list
                 printPlayers();
-                if(currentEra == 0){
+                if(gameState.isInLobby()){
                     System.out.println("Waiting for more players to join...");
                 }
                 else {
@@ -230,9 +229,10 @@ public class CLI implements UI {
                         System.out.print("> ");
                 }
             }
-            else {
+            else if (gameState.isGameEnded()) {
                 drawLocalRanking();
                 drawGlobalRanking();
+                System.out.print("> ");
             }
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -360,7 +360,9 @@ public class CLI implements UI {
         }
 
         // calculate the number of cards the user can pick
-        int totalCards = myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower();
+        int upperCards = myOfferingCard.getNumCardsUpper();
+        int lowerCards = myOfferingCard.getNumCardsLower();
+        int totalCards = upperCards + lowerCards;
 
         // if card with letter A, no card can be chosen
         if(totalCards == 0) {
@@ -368,31 +370,47 @@ public class CLI implements UI {
             return;
         }
 
-        System.out.println("You can pick " + myOfferingCard.getNumCardsUpper() + " card from upper row and "
-        + myOfferingCard.getNumCardsLower() +" card from lower row");
+        // print specific selection message
+        StringBuilder pickMessage = new StringBuilder("You can pick ");
+        if (upperCards > 0) {
+            pickMessage.append(upperCards).append(upperCards == 1 ? " card" : " cards").append(" from the upper row");
+        }
+        if (upperCards > 0 && lowerCards > 0) {
+            pickMessage.append(" and ");
+        }
+        if (lowerCards > 0) {
+            pickMessage.append(lowerCards).append(lowerCards == 1 ? " card" : " cards").append(" from the lower row");
+        }
+        System.out.println(pickMessage);
 
         // list of pickable cards
         List<GameCard> pickableCards = new ArrayList<>();
 
-        // add upper character cards
-        pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
-                .filter(c->c.getCardType().isCharacter()).toList());
+        int startingIndex = 1;
+        if (upperCards > 0) {
+            // add upper character cards
+            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
 
-        // add upper building cards
-        pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
+            // add upper building cards
+            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
 
-        // add lower character cards
-        pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
-                .filter(c->c.getCardType().isCharacter()).toList());
+            // print the upper row
+            startingIndex = printPickableRow(true, startingIndex);
+        }
 
-        // add upper building cards
-        if(!readOnlyModel.getLowerBuildingRow().isEmpty())
-            pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+        if (lowerCards > 0) {
+            // add lower character cards
+            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
 
-        // print the upper row
-        int upperPrintIndex = printPickableRow(true,1);
-        // print the lower row
-        printPickableRow(false, upperPrintIndex);
+            // add lower building cards
+            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
+                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+
+            // print the lower row
+            printPickableRow(false, startingIndex);
+        }
 
         // selected cards indexes
         Set<Integer> cardIndexes = new HashSet<>();
@@ -440,20 +458,20 @@ public class CLI implements UI {
                 characterCards, buildingCards, readOnlyModel.getUpperTribeRow(), readOnlyModel.getLowerTribeRow(), readOnlyModel.getUpperBuildingRow(), readOnlyModel.getLowerBuildingRow());
         if(mE != null)
         {
-            drawInterface(readOnlyModel, mE.getMessage());
+            drawInterface(mE.getMessage());
             return;
         }
 
         //check if player can buy the buildings
         if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
-            drawInterface(readOnlyModel, "Not enough food to buy building cards");
+            drawInterface("Not enough food to buy building cards");
             return;
         }
 
 
         // call server method
         try{
-            virtualServer.pickTribeCards(readOnlyModel.getGameId(),localPlayer,characterCards,buildingCards);
+            virtualServer.pickTribeCards(this.client, characterCards,buildingCards);
         }
         catch (Exception e) {
             System.err.println("CLI error while calling pickTribeCards on the virtualServer: " + e.getMessage());
@@ -566,7 +584,7 @@ public class CLI implements UI {
      */
     private void createGame(){
         try {
-            if (readOnlyModel.getCurrentEra() < 0) {
+            if (readOnlyModel.getGameState() == GameState.NONE) {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
@@ -587,7 +605,7 @@ public class CLI implements UI {
             if (readOnlyModel.getGameId() == null) {
                 System.out.print("Not in a game \n>");
             } else {
-                virtualServer.closeGame(client, getLocalPlayer(), readOnlyModel.getGameId());
+                virtualServer.closeGame(client);
             }
         }catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -599,19 +617,43 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(){
         try {
-            System.out.print("Insert card number (position from 0) > ");
-            int numCard = Integer.parseInt(scanner.nextLine());
-            //check if number is plausible
-            if(numCard<0 || numCard>=readOnlyModel.getOfferingCards().size()){
-                drawInterface(readOnlyModel, "number out of bound");
+            System.out.print("Insert card letter > ");
+            Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
+
+            // check if it is the players turn
+            if (!readOnlyModel.isPlayerTurn()) {
+                drawInterface("It is not your turn!");
                 return;
             }
+
+            //check if letter is present in offering card list
+            var letters = readOnlyModel.getOfferingCards()
+                    .stream().map(OfferingCard::getOrderLetter).toList();
+            if(!letters.contains(cardLetter)) {
+                drawInterface("Offering card not found!");
+                return;
+            }
+
             //check if card is free
-            if(readOnlyModel.getOfferingCards().get(numCard).getPlayer() != null) {
-                drawInterface(readOnlyModel, "card already taken");
+            OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .filter(c -> cardLetter.equals(c.getOrderLetter()))
+                    .findFirst().orElseThrow();
+            if(selectedOfferingCard.getPlayer() != null) {
+                drawInterface("Card not available!");
                 return;
             }
-            virtualServer.pickOfferingCard(readOnlyModel.getGameId(), localPlayer, readOnlyModel.getOfferingCards().get(numCard));
+
+            // check if player already has an offering card
+            List<Player> playersInOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .map(OfferingCard::getPlayer)
+                    .toList();
+            if (playersInOfferingCard.contains(localPlayer)) {
+                drawInterface("You already picked an offering card!");
+                return;
+            }
+
+            // send request
+            virtualServer.pickOfferingCard(this.client, cardLetter);
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
@@ -622,7 +664,7 @@ public class CLI implements UI {
      */
     private void joinGame(){
         try {
-            if (readOnlyModel.getGameId() == null) {
+            if (readOnlyModel.getGameState().equals(GameState.NONE)) {
                 System.out.print("Insert the gameID or index in gameList > ");
                 String input = scanner.nextLine().trim();
                 UUID gameId = null;
@@ -660,11 +702,10 @@ public class CLI implements UI {
 
     /**
      * Prints message on the terminal to notify the user that the new era has begun.
+     * TODO: fix this method
      */
     public void printEra(){
-        if(readOnlyModel.getCurrentEra() > 1) {
-            System.out.println("\nEra "+readOnlyModel.getCurrentEra()+ " has begun!\n");
-        }
+        System.out.println("\nEra "+readOnlyModel.getGameState()+ " has begun!\n");
     }
 
     /**

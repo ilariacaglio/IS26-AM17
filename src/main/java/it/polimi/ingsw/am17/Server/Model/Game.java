@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public class Game extends Subject {
     private final UUID id;
     private final int numPlayers;
-    private int currentEra;
+    private GameState gameState;
 
     private final Queue<Player> orderedPlayers;
 
@@ -50,7 +50,7 @@ public class Game extends Subject {
         checkNumPlayers(numPlayers);
 
         this.numPlayers = numPlayers;
-        currentEra = 0;
+        gameState = GameState.LOBBY;
         orderedPlayers = new LinkedList<>();
         offeringCards = loadOfferingCards(numPlayers);
 
@@ -75,11 +75,11 @@ public class Game extends Subject {
 
     public boolean isStarted() {
         logger.fine("Checking if game is started.");
-        return currentEra > 0;
+        return gameState.isGameStarted();
     }
 
     public boolean isEnded() {
-        return currentEra < 0;
+        return gameState.isGameEnded();
     }
 
     /**
@@ -139,7 +139,7 @@ public class Game extends Subject {
      */
     public void forceEndGame() {
         logger.severe("Forcibly closed game with id: " + id);
-        this.currentEra = -1;
+        this.gameState = GameState.ENDED;
         notifyEndGame();
     }
 
@@ -151,20 +151,20 @@ public class Game extends Subject {
     private void nextEra() {
         logger.info("Going to next era.");
 
-        switch (currentEra) {
-            case 0:
+        switch (gameState) {
+            case GameState.LOBBY:
                 era1();
                 break;
-            case 1:
+            case GameState.ERA1:
                 era2();
-                notifyEra(currentEra);
+                notifyGameState(gameState);
                 break;
-            case 2:
+            case GameState.ERA2:
                 era3();
-                notifyEra(currentEra);
+                notifyGameState(gameState);
                 break;
             default:
-                throw new IllegalStateException("Invalid era");
+                throw new IllegalStateException("Invalid game state");
         }
     }
 
@@ -207,7 +207,7 @@ public class Game extends Subject {
         }
 
         // Set era and shuffle players
-        this.currentEra = 1;
+        this.gameState = GameState.ERA1;
         shuffleQueue();
 
         giveFoodToPlayers();
@@ -241,7 +241,7 @@ public class Game extends Subject {
     private void era2() {
         logger.info("Switching to era 2.");
 
-        currentEra = 2;
+        gameState = GameState.ERA2;
         moveDownBuildingCards();
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra2());
     }
@@ -252,7 +252,7 @@ public class Game extends Subject {
     private void era3() {
         logger.info("Switching to era 3.");
 
-        currentEra = 3;
+        gameState = GameState.ERA3;
         lowerBuildingRow.clear();
         moveDownBuildingCards();
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
@@ -307,7 +307,7 @@ public class Game extends Subject {
         for (int i = 0; i < numPlayers + 4; i++) {
             try {
                 TribesCard c = tribesDeck.Draw();
-                if (c.getEra() != currentEra) nextEra();
+                if (c.getEra() != gameState) nextEra();
                 upperRow.add(c);
             }
             // If the deck is empty, end the game. N.B. This is how we decided to handle game ending.
@@ -332,7 +332,7 @@ public class Game extends Subject {
         logger.info("Ending game.");
 
         //put era to -1 to signal game has ended
-        this.currentEra = -1;
+        this.gameState = GameState.ENDED;
         // Solve events
         // Get all events from both rows. N.B. we solve the food events from BOTH rows at the end.
         List<EventCard> events = Stream.concat(lowerRow.stream(), upperRow.stream())
@@ -355,7 +355,7 @@ public class Game extends Subject {
         // insert data into db
         DatabaseManager.insertGameData(this);
 
-        notifyEra(currentEra);
+        notifyGameState(gameState);
         notifyPlayerQueue(orderedPlayers);
         notifyRanking(DatabaseManager.getRanking(this.numPlayers));
     }
@@ -382,38 +382,50 @@ public class Game extends Subject {
      * check if the values are plausible and set player to offering card
      * notify observer
      *
-     * @param player       player that chose the offering card
-     * @param offeringCard offering card picked
+     * @param nickname              nickname of the player
+     * @param offeringCardLetter    offering card picked
      */
-    public void selectOfferingCard(Player player, OfferingCard offeringCard) {
+    public void selectOfferingCard(String nickname, Character offeringCardLetter) {
+        logger.info("Request forwarded to selectOfferingCard method in model");
+        // check if letter is null
+        if(offeringCardLetter == null)  throw new IllegalArgumentException("offeringCardLetter can't be null");
+
+        // get player from nickname
+        Player player = orderedPlayers.stream().filter(p->nickname.equals(p.getNickname()))
+                .findFirst().orElseThrow();
 
         //check if is player turn
         if (!player.equals(orderedPlayers.peek())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
 
-        //check card is not null
-        if (offeringCard == null) {
-            throw new IllegalStateException("No offering card selected");
+        // check if player is not in an Offering Card already
+        if (offeringCards.stream().anyMatch(card -> card.getPlayer() != null && card.getPlayer().equals(player))) {
+            throw new IllegalStateException("Illegal card selection. (Offering Card already selected)");
         }
 
-        logger.info("Player " + player.getNickname() + " wants offering card " + offeringCard.getOrderLetter());
+        // get offering card from letter
+        OfferingCard offeringCard = offeringCards.stream()
+                .filter(c -> offeringCardLetter.equals(c.getOrderLetter()))
+                .findFirst().orElse(null);
+
         //check if offeringCard is valid
-        if (!offeringCards.contains(offeringCard) && !offeringCard.equals(building2OfferingCard)) {
-            throw new IllegalStateException("Illegal card selection. (Card not in any offering)");
+        if (offeringCard == null && offeringCardLetter.equals('Z')) {
+            offeringCard = building2OfferingCard;
+        }
+        else if (offeringCard == null) {
+            throw new IllegalStateException("Illegal card selection. (Card not found)");
         }
 
-        //search for offering card index in list
-        int index = offeringCards.indexOf(offeringCard);
-        OfferingCard selectedOc = offeringCards.get(index);
+        logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
 
         // check if offering card is free
-        if(selectedOc.getPlayer() != null) {
+        if(offeringCard.getPlayer() != null) {
             throw new IllegalStateException("Illegal card selection. (Card already selected)");
         }
 
         //set player to offeringCard
-        selectedOc.setPlayer(orderedPlayers.peek());
+        offeringCard.setPlayer(player);
 
         // dequeue and enqueue the player in last position
         movePlayerInQueue();
@@ -425,7 +437,7 @@ public class Game extends Subject {
 
         // notify changes
         notifyPlayerQueue(orderedPlayers);
-        notifyPlayerSelectOfferingCard(player, offeringCards.get(index));
+        notifyPlayerSelectOfferingCard(player, offeringCard);
     }
 
     /**
@@ -455,11 +467,18 @@ public class Game extends Subject {
 
     /**
      * Emulates a player action (picking cards).
-     * @param player            the player that has picked the cards
+     * @param nickname          the nickname of the player that has picked the cards
      * @param characterCards    the character cards picked by the player
      * @param buildingCards     the building cards picked by the player
      */
-    public void pickTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
+    public void pickTribeCards(String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
+        logger.info("Request forwarded to pickTribeCards method in model");
+
+        // get player from nickname
+        Player player =  orderedPlayers.stream()
+                .filter(p->nickname.equals(p.getNickname()))
+                .findFirst().orElseThrow();
+
         logger.info("Player " + player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards);
 
         // Get leftmost occupied offering card.
@@ -476,14 +495,13 @@ public class Game extends Subject {
         if (!player.equals(currentOffering.getPlayer())) {
             throw new IllegalStateException("It is not the player's turn.");
         }
-        player = currentOffering.getPlayer();
+
         // check if cards selection is legal based on the offeringCard
         int numUpper = currentOffering.getNumCardsUpper();
         int numLower = currentOffering.getNumCardsLower();
         try {
             validateCardChoice(numUpper, numLower, characterCards, buildingCards);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -569,8 +587,8 @@ public class Game extends Subject {
     }
 
     /// only for testing
-    public int getCurrentEra() {
-        return currentEra;
+    public GameState getGameState() {
+        return gameState;
     }
 
     /// only for testing
