@@ -4,11 +4,11 @@ import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 
 import java.util.List;
 
-public class ColorException extends Exception {
+public class ColorException extends InvalidOperationException {
     private final List<Color> availableColors;
 
-    public ColorException(String message, List<Color> availableColors) {
-        super(message);
+    public ColorException(ErrorType type, List<Color> availableColors) {
+        super(type);
         this.availableColors = availableColors;
     }
 
