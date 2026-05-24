@@ -49,4 +49,11 @@ public class BuildingType10 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: +3F/inventor (with icon you already have)] ";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building1_10.png";
+    }
+
 }

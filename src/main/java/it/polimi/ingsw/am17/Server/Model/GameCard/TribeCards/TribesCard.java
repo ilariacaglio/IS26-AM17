@@ -36,4 +36,7 @@ public class TribesCard extends GameCard implements Serializable {
     protected String getDetails(){
         return cardType.toString();
     }
+    public String getImagePath(){
+        return "";
+    }
 }

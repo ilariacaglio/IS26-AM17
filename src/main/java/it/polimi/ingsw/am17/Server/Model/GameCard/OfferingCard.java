@@ -90,4 +90,10 @@ public class OfferingCard implements Serializable {
 
         return sb.toString();
     }
+
+    public String getImagePath()
+    {
+        return "/Images/OfferingCard/offeringCard_"+ orderLetter +".png";
+    }
+
 }

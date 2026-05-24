@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Client.Socket;
 import it.polimi.ingsw.am17.Client.ClientInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
+import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
@@ -91,11 +92,9 @@ public class ClientSocket implements VirtualView, ClientInterface {
         // create a heartbeat thread
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
-
-        // Todo: remove null when gui
-        UI userInterface = null;
+        UI userInterface;
         if(gui) {
-            // TODO: gui
+            userInterface = new GUI(server, this);
         } else {
             userInterface = new CLI(server,this);
         }

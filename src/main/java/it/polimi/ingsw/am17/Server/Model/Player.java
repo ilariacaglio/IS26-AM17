@@ -542,4 +542,5 @@ public class Player implements Serializable {
         columnMaxLength.put(CardType.BINDER, 8  + fixedGap);
         return columnMaxLength;
     }
+
 }
