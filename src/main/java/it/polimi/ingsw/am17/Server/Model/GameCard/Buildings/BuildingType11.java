@@ -24,4 +24,11 @@ public class BuildingType11 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: +1F if getting food from turn order] ";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building1_11.png";
+    }
+
 }

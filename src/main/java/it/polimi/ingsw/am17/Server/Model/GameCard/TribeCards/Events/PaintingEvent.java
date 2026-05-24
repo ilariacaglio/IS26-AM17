@@ -60,4 +60,9 @@ public class PaintingEvent extends EventCard {
     public int hashCode() {
         return Objects.hash(pointsLow, pointsMax, numMax);
     }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Events/painting_event_"+ pointsLow +"PP_"+pointsMax+"PP_"+numMax+".png";
+    }
 }

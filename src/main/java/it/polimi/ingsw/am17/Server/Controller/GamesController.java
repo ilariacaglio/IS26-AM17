@@ -107,7 +107,7 @@ public class GamesController {
      */
     public void createGame(VirtualView client, Player player, int numPlayers) {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
+            logger.info("Client " + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
             // game creation
             UUID id = UUID.randomUUID();
@@ -136,7 +136,7 @@ public class GamesController {
      */
     public void joinGame(VirtualView client, UUID gameId, Player player) throws NoSuchElementException {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
+            logger.info("Client " + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
 
             // Sign up client as an observer (see N.B. hereunder)
             signUpAsObserver(client, gameId);
@@ -182,7 +182,12 @@ public class GamesController {
             // get uuid of the game from the client (mapping)
             UUID uuid = gameMapping.get(client);
 
-            // get the game object from uuid to call the end game method
+            if (uuid == null) { // TODO: check if best practice
+                logger.warning("Client " + client.getClass().getSimpleName() + " tried to close a game that doesn't exist.");
+                return;
+            }
+
+            // get the game object from uuid and call the end game method
             Game game = getGameFromId(uuid);
 
             try {
@@ -280,7 +285,7 @@ public class GamesController {
      */
     public void getGamesList(VirtualView client) {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " requested the games list.");
+            logger.info("Client " + client.getClass().getSimpleName() + " requested the games list.");
             try {
                 // send the list of open games to the client
                 client.updateGamesIdList(getGamesList());

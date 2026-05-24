@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Client.RMI;
 
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
@@ -22,6 +23,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +36,9 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
 
     ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
     int failedHeartbeats = 0;
+    ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
+    long lastHeartbeatReceived = System.currentTimeMillis();
+
 
     private final ClientModel model;
 
@@ -46,26 +51,14 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
         server.connect(this);
         logger.info("RMI Client connected to server " + serverName);
 
-        // TODO: remove null when gui
-        UI userInterface = null;
-        if(graphic){
-            // TODO: gui
-        }
-        else {
-            userInterface = new CLI(server,this);
-        }
-        this.model = new ClientModel(userInterface);
-        userInterface.setModel(model);
-        this.model.startInterface();
-
         // launch a thread to ping the server every second
         heartbeater.scheduleAtFixedRate(() -> {
-            logger.fine("Starting heartbeat thread.");
             try {
+                logger.finer("Pinging server");
                 server.ping();
-                logger.finer("Server pinged");
                 failedHeartbeats = 0;
             } catch (RemoteException e) {
+                logger.warning("Failed sending heartbeat to server: " + serverName + " with error: " + e.getMessage());
                 failedHeartbeats++;
                 if (failedHeartbeats > 3) {
                     logger.severe("Too many failed heartbeats, server considered dead.");
@@ -73,6 +66,29 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
                 }
             }
         }, 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+
+        // create a heartbeat watcher
+        heartwatcher.scheduleAtFixedRate(() -> {
+            long now = System.currentTimeMillis();
+            long diff = now - lastHeartbeatReceived;
+
+            if (diff > 5000) {
+                logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
+                onServerDisconnection();
+            }
+        }, 10, 5, TimeUnit.SECONDS);
+
+        // TODO: remove null when gui
+        UI userInterface = null;
+        if(graphic){
+            userInterface = new GUI(server, this);
+        }
+        else {
+            userInterface = new CLI(server,this);
+        }
+        this.model = new ClientModel(userInterface);
+        userInterface.setModel(model);
+        this.model.startInterface(); // N.B. not threaded?
     }
 
     /**
@@ -81,7 +97,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
     private void onServerDisconnection() {
         logger.severe("Server disconnected, shutting down.");
         heartbeater.shutdown();
-        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
+        heartwatcher.shutdown();
+//        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
         System.exit(1);
     }
 
@@ -100,7 +117,10 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void ping() throws RemoteException {}
+    public void ping() throws RemoteException {
+        logger.finer("Received ping");
+        lastHeartbeatReceived = System.currentTimeMillis();
+    }
 
     /**
      * Forwarded to the model.

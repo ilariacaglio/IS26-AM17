@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Client.Socket;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
+import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
@@ -98,7 +99,7 @@ public class ClientSocket implements VirtualView {
                 new Message(MessageType.HEARTBEAT).send(socket);
                 failedHeartbeats = 0;
             } catch (Exception e) {
-                logger.severe("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + "with error: " + e.getMessage());
+                logger.warning("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + " with error: " + e.getMessage());
                 failedHeartbeats++;
                 if (failedHeartbeats > 3) {
                     logger.severe("Too many failed heartbeats, server considered dead.");
@@ -116,12 +117,12 @@ public class ClientSocket implements VirtualView {
                 logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
                 onServerDisconnection();
             }
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 10, 5, TimeUnit.SECONDS);
 
-        // Todo: remove null when gui
-        UI userInterface = null;
+
+        UI userInterface;
         if(gui) {
-            // TODO: gui
+            userInterface = new GUI(server, this);
         } else {
             userInterface = new CLI(server,this);
         }
@@ -132,9 +133,10 @@ public class ClientSocket implements VirtualView {
     }
 
     private void onServerDisconnection() {
+        logger.severe("Server disconnected, shutting down.");
         heartbeater.shutdown();
         heartwatcher.shutdown();
-        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
+//        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
         System.exit(1);
     }
 

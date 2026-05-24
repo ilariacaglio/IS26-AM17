@@ -36,4 +36,11 @@ public class BuildingType6 extends BuildingCard {
     public String toString() {
         return super.toString() + " Effect: x2PP from Builders] ";
     }
+
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building2_6.png";
+    }
+
 }
