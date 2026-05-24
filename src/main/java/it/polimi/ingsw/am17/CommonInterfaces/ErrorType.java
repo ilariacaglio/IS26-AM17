@@ -19,7 +19,6 @@ public enum ErrorType {
     INVALID_CHARACTER_CARD("Illegal character selection (Card not in any row)!"),
     INVALID_BUILDING_CARD("Illegal building selection (Card not in any row)!"),
     INVALID_CARDS_NUMBER("Illegal card selection (Wrong number of cards)!"),
-    INVALID_CARD_SELECTION("You can't pick an event card!"),
 
     // decks
     EMPTY_DECK("No more cards left in the deck!"),

@@ -200,19 +200,15 @@ public class Player implements Serializable {
         }
     }
 
-    // todo: why tribescard in parameter??
-    public void addCharacter(TribesCard card) {
-        if (card.getCardType().isEvent()) {
-            throw new InvalidOperationException(ErrorType.INVALID_CARD_SELECTION);
-        }
+    public void addCharacter(CharacterCard card) {
         //if player has buildingType14 (and all conditions from building are met add food)
         int foodFromBuildingType14 = 0;
         for(BuildingCard buildingCard : buildingCards)
         {
-            foodFromBuildingType14+= buildingCard.GetFoodBonusFromCardAcquisition(characterCards, (CharacterCard)card);
+            foodFromBuildingType14+= buildingCard.GetFoodBonusFromCardAcquisition(characterCards, card);
         }
         addFood(foodFromBuildingType14);
-        characterCards.add((CharacterCard) card);
+        characterCards.add(card);
     }
 
     public void addBuilding(BuildingCard card) {
