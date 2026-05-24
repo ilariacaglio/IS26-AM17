@@ -19,7 +19,7 @@ public class TribesDeck {
     private int currIndex;
 
     public TribesDeck(int numPlayers) {
-        tribeCards =  new ArrayList<TribesCard>();
+        tribeCards =  new ArrayList<>();
         currIndex = -1;
         //add cards to list
         tribeCards.addAll(artistsParser(numPlayers));

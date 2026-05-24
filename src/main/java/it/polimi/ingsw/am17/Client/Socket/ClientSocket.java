@@ -8,7 +8,6 @@ import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
-import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -64,7 +63,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                 String line;
                 while ((line = in.readLine()) != null) {
                     Message message = mapper.readValue(line, Message.class);
-                    if(message.getType() != MessageType.HEARTBEAT) logger.info("Received message: " + message.toString());
+                    if(message.getType() != MessageType.HEARTBEAT) logger.info("Received message: " + message);
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
