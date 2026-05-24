@@ -8,6 +8,7 @@ public enum ErrorType {
     DUPLICATE_COLOR("The game has already a player with the same color!"),
     INVALID_GAME_STATE("Invalid game state"),
     INVALID_PLAYER ("Player not found"),
+    INVALID_GAME("Game not found!"),
 
     // offering card selection
     MISSING_OFFERING_CARD_LETTER ("OfferingCardLetter can't be null!"),

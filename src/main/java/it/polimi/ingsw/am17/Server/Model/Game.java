@@ -109,7 +109,7 @@ public class Game extends Subject {
      *
      * @param p player to add to the game
      */
-    public void addPlayer(Player p) throws ColorException {
+    public void addPlayer(Player p) {
         logger.info("Adding player " + p.getNickname() + " to game with id " + id);
 
         if (isStarted()) {
@@ -165,7 +165,7 @@ public class Game extends Subject {
                 notifyGameState(gameState);
                 break;
             default:
-                throw new IllegalStateException("Invalid game state");
+                throw  new InvalidOperationException(ErrorType.INVALID_GAME_STATE);
         }
     }
 
@@ -504,7 +504,7 @@ public class Game extends Subject {
             throw e;
         }
         catch (Exception e) {
-            throw new InvalidOperationException(ErrorType.UNKNOWN);
+            throw new InvalidOperationException(e.getMessage());
         }
 
         // selection legal: obtain cards
