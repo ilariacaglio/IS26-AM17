@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.ClientInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -79,8 +80,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                         case UPDATE_RANKING ->  updateRanking(message.getRanking());
                         case END_GAME -> notifyEndGame();
                         case HEARTBEAT -> logger.finer("Received heartbeat");
-                        case UPDATE_ERROR -> updateError(message.getExceptionMessage());
-                        case UPDATE_COLOR_ERROR -> updateColorError(message.getExceptionMessage(), message.getAvailableColors());
+                        case UPDATE_ERROR -> updateError(message.getException());
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -170,13 +170,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updateError(String errorMessage)
-    {
+    public void updateError(InvalidOperationException exception) {
         model.updateNotifyError(errorMessage, null);
-    }
-
-    @Override
-    public void updateColorError(String errorMessage, List<Color> availableColors) throws Exception {
-        model.updateNotifyError(errorMessage, availableColors);
     }
 }

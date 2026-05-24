@@ -18,7 +18,6 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
-import java.sql.Struct;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -166,9 +165,7 @@ public class Message implements Serializable {
     })
     private List<BuildingCard> lowerBuildingRow;
 
-    private String exceptionMessage;
-
-    private List<Color> availableColors;
+    private InvalidOperationException exception;
 
     private List<RankingEntry> ranking;
 
@@ -310,13 +307,10 @@ public class Message implements Serializable {
         this.lowerBuildingRow = lowerBuildingRow;
     }
 
-    public String getExceptionMessage() {return exceptionMessage; }
+    public InvalidOperationException getException() {return exception; }
 
-    public void setExceptionMessage(String message) {exceptionMessage = message;}
-
-    public List<Color> getAvailableColors() {return availableColors;}
-
-    public void setAvailableColors(List<Color> availableColors) {this.availableColors = availableColors;}
+    public void setException(InvalidOperationException message) {
+        exception = message;}
 
     public List<RankingEntry> getRanking() {return ranking;}
 

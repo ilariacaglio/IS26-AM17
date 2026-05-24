@@ -1,6 +1,5 @@
 package it.polimi.ingsw.am17.CommonInterfaces;
 
-import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -33,9 +32,8 @@ public interface VirtualView {
 
     // ending methods
     void updateRanking(List<RankingEntry> ranking) throws Exception;
-
     void notifyEndGame() throws Exception;
 
-    void updateError(String errorMessage) throws Exception;
-    void updateColorError(String errorMessage, List<Color> availableColors) throws Exception;
+    // notify errors
+    void updateError(InvalidOperationException exception) throws Exception;
 }

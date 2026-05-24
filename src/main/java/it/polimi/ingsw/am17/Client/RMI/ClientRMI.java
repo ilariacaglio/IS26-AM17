@@ -4,7 +4,7 @@ import it.polimi.ingsw.am17.Client.ClientInterface;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
-import it.polimi.ingsw.am17.Server.Model.Color;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -130,12 +130,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Cl
     }
 
     @Override
-    public void updateError(String errorMessage) throws RemoteException {
+    public void updateError(InvalidOperationException exception) throws RemoteException {
         model.updateNotifyError(errorMessage, null);
     }
 
-    @Override
-    public void updateColorError(String errorMessage, List<Color> availableColors) throws RemoteException {
-        model.updateNotifyError(errorMessage, availableColors);
-    }
 }
