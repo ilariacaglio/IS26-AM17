@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
@@ -242,8 +243,7 @@ public class CLI implements UI {
      */
     private void printError(String errorMessage) {
         if(errorMessage != null && !errorMessage.isBlank()) {
-            ErrorType error = ErrorType.valueOf(errorMessage);
-            System.out.println(ANSI_RED + error.getMessage() + ANSI_RESET);
+            System.out.println(ANSI_RED + errorMessage + ANSI_RESET);
         }
     }
 
@@ -469,17 +469,16 @@ public class CLI implements UI {
         }
 
         //check if move is valid
-        Exception mE = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
+        InvalidOperationException mE = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
                 characterCards, buildingCards, readOnlyModel.getUpperTribeRow(), readOnlyModel.getLowerTribeRow(), readOnlyModel.getUpperBuildingRow(), readOnlyModel.getLowerBuildingRow());
-        if(mE != null)
-        {
-            drawInterface(mE.getMessage());
+        if(mE != null) {
+            printError(mE.getErrorType().getMessage());
             return;
         }
 
         //check if player can buy the buildings
         if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
-            drawInterface(ErrorType.INSUFFICIENT_FOOD_BUILDINGS.toString());
+            printError(ErrorType.INSUFFICIENT_FOOD_BUILDINGS.getMessage());
             return;
         }
 
@@ -636,7 +635,7 @@ public class CLI implements UI {
 
             // check if it is the players turn
             if (!readOnlyModel.isPlayerTurn()) {
-                drawInterface(ErrorType.OUT_OF_TURN.toString());
+                printError(ErrorType.OUT_OF_TURN.getMessage());
                 return;
             }
 
@@ -645,7 +644,7 @@ public class CLI implements UI {
                     .map(OfferingCard::getPlayer)
                     .toList();
             if (playersInOfferingCard.contains(localPlayer)) {
-                drawInterface(ErrorType.OFFERING_CARD_ALREADY_SELECTED.toString());
+                printError(ErrorType.OFFERING_CARD_ALREADY_SELECTED.getMessage());
                 return;
             }
 
@@ -653,7 +652,7 @@ public class CLI implements UI {
             var letters = readOnlyModel.getOfferingCards()
                     .stream().map(OfferingCard::getOrderLetter).toList();
             if(!letters.contains(cardLetter)) {
-                drawInterface(ErrorType.INVALID_OFFERING_CARD_LETTER.toString());
+                printError(ErrorType.INVALID_OFFERING_CARD_LETTER.getMessage());
                 return;
             }
 
@@ -662,7 +661,7 @@ public class CLI implements UI {
                     .filter(c -> cardLetter.equals(c.getOrderLetter()))
                     .findFirst().orElseThrow();
             if(selectedOfferingCard.getPlayer() != null) {
-                drawInterface(ErrorType.UNAVAILABLE_OFFERING_CARD.toString());
+                printError(ErrorType.UNAVAILABLE_OFFERING_CARD.getMessage());
                 return;
             }
 
