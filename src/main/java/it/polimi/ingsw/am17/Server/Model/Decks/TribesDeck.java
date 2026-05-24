@@ -4,7 +4,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
-import it.polimi.ingsw.am17.Server.Model.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 
 import static it.polimi.ingsw.am17.Server.Utility.CardParser.*;
 

@@ -2,7 +2,7 @@ package it.polimi.ingsw.am17.Server.Controller;
 
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.Color;
-import it.polimi.ingsw.am17.Server.Model.ColorException;
+import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;

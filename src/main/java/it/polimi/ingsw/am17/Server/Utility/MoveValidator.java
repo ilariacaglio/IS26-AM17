@@ -4,7 +4,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
-import it.polimi.ingsw.am17.Server.Model.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 
 import java.util.ArrayList;
 import java.util.List;

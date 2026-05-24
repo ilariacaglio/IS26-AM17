@@ -1,6 +1,4 @@
-package it.polimi.ingsw.am17.Server.Model;
-
-import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+package it.polimi.ingsw.am17.CommonInterfaces;
 
 public class InvalidOperationException extends RuntimeException {
     private final ErrorType errorType;
