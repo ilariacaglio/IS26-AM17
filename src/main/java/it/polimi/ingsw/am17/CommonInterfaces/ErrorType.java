@@ -7,6 +7,7 @@ public enum ErrorType {
     DUPLICATE_NICKNAME("The game has already a player with the same nickname!"),
     DUPLICATE_COLOR("The game has already a player with the same color!"),
     INVALID_GAME_STATE("Invalid game state"),
+    INVALID_PLAYER ("Player not found"),
 
     // offering card selection
     MISSING_OFFERING_CARD_LETTER ("OfferingCardLetter can't be null!"),
@@ -18,6 +19,10 @@ public enum ErrorType {
     INVALID_CHARACTER_CARD("Illegal character selection (Card not in any row)!"),
     INVALID_BUILDING_CARD("Illegal building selection (Card not in any row)!"),
     INVALID_CARDS_NUMBER("Illegal card selection (Wrong number of cards)!"),
+    INVALID_CARD_SELECTION("You can't pick an event card!"),
+
+    // decks
+    EMPTY_DECK("No more cards left in the deck!"),
 
     // game moves
     OUT_OF_TURN ("It is not your turn!"),

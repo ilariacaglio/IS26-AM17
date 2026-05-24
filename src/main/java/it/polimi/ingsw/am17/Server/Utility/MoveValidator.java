@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.InvalidOperationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class MoveValidator {
                 numToSelectFromLower--;
                 lowerRowCharacterCards.remove(card);
             } else {
-                return new IllegalStateException(ErrorType.INVALID_CHARACTER_CARD.toString());
+                return new InvalidOperationException(ErrorType.INVALID_CHARACTER_CARD);
             }
         }
         for (BuildingCard card : buildingCards) {
@@ -49,14 +50,14 @@ public class MoveValidator {
             } else if (lowerBuildingRow.contains(card)) {
                 numToSelectFromLower--;
             } else {
-                return new IllegalStateException(ErrorType.INVALID_BUILDING_CARD.toString());
+                return new InvalidOperationException(ErrorType.INVALID_BUILDING_CARD);
             }
         }
 
         // if the player still has cards to select (counters != 0),
         // AND it is possible to select more cards (i.e. row not empty), the choice is not valid.
         if ((numToSelectFromUpper != 0 && !upperRowCharacterCards.isEmpty()) || (numToSelectFromLower != 0 && !lowerRowCharacterCards.isEmpty())) {
-            return new IllegalStateException(ErrorType.INVALID_CARDS_NUMBER.toString());
+            return new InvalidOperationException(ErrorType.INVALID_CARDS_NUMBER);
         }
         return null;
 
