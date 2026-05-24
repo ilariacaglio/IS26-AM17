@@ -171,6 +171,6 @@ public class ClientSocket implements VirtualView, ClientInterface {
 
     @Override
     public void updateError(InvalidOperationException exception) {
-        model.updateNotifyError(errorMessage, null);
+        model.updateNotifyError(exception);
     }
 }
