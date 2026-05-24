@@ -509,7 +509,7 @@ public class Game extends Subject {
         try {
             player.addCards(characterCards, buildingCards);
         } catch (InvalidOperationException e) {
-            if (e.getErrorType()==ErrorType.INSUFFICIENT_FOOD) {
+            if (e.getErrorType()==ErrorType.INSUFFICIENT_FOOD_BUILDINGS) {
                 throw e;
             } else {
                 throw new InvalidOperationException(ErrorType.UNKNOWN);

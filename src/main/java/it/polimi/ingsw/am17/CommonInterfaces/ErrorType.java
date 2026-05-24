@@ -26,7 +26,8 @@ public enum ErrorType {
 
     // game moves
     OUT_OF_TURN ("It is not your turn!"),
-    INSUFFICIENT_FOOD("Not enough food to buy building cards"),
+    INSUFFICIENT_FOOD_BUILDINGS("Not enough food to buy building cards"),
+    INSUFFICIENT_FOOD("Not enough food, invalid operation!"),
 
     // default
     UNKNOWN("There was an error handling your request");

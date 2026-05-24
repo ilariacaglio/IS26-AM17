@@ -479,7 +479,7 @@ public class CLI implements UI {
 
         //check if player can buy the buildings
         if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
-            drawInterface(ErrorType.INSUFFICIENT_FOOD.toString());
+            drawInterface(ErrorType.INSUFFICIENT_FOOD_BUILDINGS.toString());
             return;
         }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
@@ -153,7 +154,7 @@ public class Player implements Serializable {
     public void addFood(int quantity) {
         int newAmount = food + quantity;
         if (newAmount < 0) {
-            throw new IllegalStateException("Not enough food: requested change " + quantity + " having " + food);
+            throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD);
         }
         this.food = newAmount;
     }
@@ -199,11 +200,10 @@ public class Player implements Serializable {
         }
     }
 
+    // todo: why tribescard in parameter??
     public void addCharacter(TribesCard card) {
         if (card.getCardType().isEvent()) {
-            throw new IllegalArgumentException(
-                    "Cannot add an event card to the player's character list."
-            );
+            throw new InvalidOperationException(ErrorType.INVALID_CARD_SELECTION);
         }
         //if player has buildingType14 (and all conditions from building are met add food)
         int foodFromBuildingType14 = 0;
@@ -240,14 +240,14 @@ public class Player implements Serializable {
         }
 
         if(!canBuyBuidings(buildingCards))
-            throw new IllegalStateException("Not enough food to buy building cards");
+            throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD_BUILDINGS);
 
         for (BuildingCard card : buildingCards){
             int cost = calculateBuildingCost(card);
             try {
                 addFood(-cost);
             } catch (IllegalStateException e) {
-                throw new IllegalStateException("Not enough food to buy building cards");
+                throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD_BUILDINGS);
             }
             addBuilding(card);
         }
