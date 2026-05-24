@@ -18,7 +18,7 @@ public class MoveValidator {
      * @param characterCards       Selected character cards.
      * @param buildingCards        Selected building cards.
      */
-    public static Exception validateCardChoice(int numToSelectFromUpper, int numToSelectFromLower, List<CharacterCard> characterCards,
+    public static InvalidOperationException validateCardChoice(int numToSelectFromUpper, int numToSelectFromLower, List<CharacterCard> characterCards,
                                     List<BuildingCard> buildingCards, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                     List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
 
