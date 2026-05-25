@@ -1,29 +1,36 @@
 package it.polimi.ingsw.am17;
 
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
-import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.RMI.ServerRMI;
-import it.polimi.ingsw.am17.Server.Socket.SocketMultiplexer;
-import javafx.application.Application;
+import it.polimi.ingsw.am17.Server.Socket.ServerSocketMultiplexer;
 
+import java.util.logging.Logger;
+
+/**
+ * Launches both the RMI and Socket servers with the same controller.
+ */
 public class ServerLauncher {
-    public static void main(String[] args) {
+    private static final Logger logger = Logger.getLogger(ServerLauncher.class.getName());
+
+    static void main(String[] args) {
+        // create the main controller
         GamesController controller = new GamesController();
-        // Start RMI server in its own thread
+
+        // Start an RMI server in its own thread
         new Thread(() -> {
             try {
-                ServerRMI.start(controller);
+                new ServerRMI(controller, 1099, "MesosRMIServer");
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.severe("RMI server failed to start: " + e.getMessage());
             }
         }).start();
 
-        // Start Socket server in its own thread
+        // Start a Socket server in its own thread
         new Thread(() -> {
             try {
-                SocketMultiplexer.start(controller);
+                new ServerSocketMultiplexer(controller, 5000);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.severe("Socket server failed to start: " + e.getMessage());
             }
         }).start();
 
