@@ -117,10 +117,10 @@ public abstract class Subject {
             logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
             try {
                 client.notifyEndGame(disconnectedPlayer, ranking, orderedPlayers);
+                clients.remove(client);
             } catch (Exception e) {
                 logger.severe("Failed to notify end game: " + e.getMessage());
             }
-            clients.remove(client);
         }
     }
 }
