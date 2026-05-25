@@ -77,8 +77,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
             }
         }, 10, 5, TimeUnit.SECONDS);
 
-        // TODO: remove null when gui
-        UI userInterface = null;
+        UI userInterface;
         if(graphic){
             userInterface = new GUI(server, this);
         }
@@ -163,24 +162,6 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void notifyEndGame() throws RemoteException {
-        model.updateGameEndedByUser();
-    }
-
-    /**
-     * Forwarded to the model.
-     * @throws RemoteException remotely called!
-     */
-    @Override
-    public void updateRanking(List<RankingEntry> ranking) throws RemoteException {
-        model.updateRanking(ranking);
-    }
-
-    /**
-     * Forwarded to the model.
-     * @throws RemoteException remotely called!
-     */
-    @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
         model.updateEndTurn(players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
     }
@@ -201,6 +182,12 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
         model.updatePlayerSelectTribeCards(player,tribesCards,buildingCards);
+    }
+
+    // ToDO
+    @Override
+    public void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
+        model.updateEndGame(disconnectedPlayer, ranking,orderedPlayers);
     }
 
     /**

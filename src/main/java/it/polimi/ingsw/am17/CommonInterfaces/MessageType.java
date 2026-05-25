@@ -20,6 +20,5 @@ public enum MessageType {
     UPDATE_ERROR,
     END_GAME,
     HEARTBEAT,
-    CLOSE_GAME,
-    UPDATE_RANKING
+    CLOSE_GAME
 }

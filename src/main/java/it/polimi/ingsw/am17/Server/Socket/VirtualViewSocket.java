@@ -100,15 +100,11 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updateRanking(List<RankingEntry> ranking) throws Exception {
-        Message message = new Message(MessageType.UPDATE_RANKING);
-        message.setRanking(ranking);
-        message.send(socket);
-    }
-
-    @Override
-    public void notifyEndGame() throws Exception {
+    public void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws Exception {
         Message message = new Message(MessageType.END_GAME);
+        message.setDisconnectedPlayerNickname(disconnectedPlayer);
+        message.setRanking(ranking);
+        message.setOrderedPlayer(orderedPlayers);
         message.send(socket);
     }
 }
