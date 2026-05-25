@@ -38,6 +38,10 @@ public abstract class Subject {
 
     }
 
+    /**
+     * Notifies the start of a new era
+     * @param era   the era that has started
+     */
     void notifyGameState(GameState era) {
         for (VirtualView client : clients) {
             try {
@@ -108,23 +112,12 @@ public abstract class Subject {
         }
     }
 
-    void notifyRanking (List<RankingEntry> ranking) {
-        for (VirtualView client : clients) {
-            try {
-                client.updateRanking(ranking);
-            }
-            catch (Exception e) {
-                logger.severe("Failed to notify ranking: " + e.getMessage());
-            }
-        }
-    }
-
-    // TODO: remove clients from list
-    void notifyEndGame() {
+    void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         for (VirtualView client : clients) {
             logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
             try {
-                client.notifyEndGame();
+                client.notifyEndGame(disconnectedPlayer, ranking, orderedPlayers);
+                clients.remove(client);
             } catch (Exception e) {
                 logger.severe("Failed to notify end game: " + e.getMessage());
             }

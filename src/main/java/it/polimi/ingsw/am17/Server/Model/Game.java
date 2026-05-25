@@ -136,12 +136,12 @@ public class Game extends Subject {
 
     /**
      * Removes a player from the game AND ENDS THE GAME (re-join not implemented).
-     * TODO: player that closed the game
+     * @param nickname  the nickname of the player that closes the game
      */
-    public void forceEndGame() {
+    public void forceEndGame(String nickname) {
         logger.severe("Forcibly closing game with id: " + id);
         this.gameState = GameState.ENDED;
-        notifyEndGame();
+        notifyEndGame(nickname, null, null); // no ranking and ... when game closed early
     }
 
     /**
@@ -358,9 +358,7 @@ public class Game extends Subject {
         // insert data into db
         DatabaseManager.insertGameData(this);
 
-        notifyGameState(gameState);
-        notifyPlayerQueue(orderedPlayers);
-        notifyRanking(DatabaseManager.getRanking(this.numPlayers));
+        notifyEndGame(null, DatabaseManager.getRanking(this.numPlayers), orderedPlayers);
     }
 
     /**

@@ -82,8 +82,7 @@ public class ClientSocket implements VirtualView {
                                 updateEndTurn(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow());
                         case UPDATE_START_GAME ->
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
-                        case UPDATE_RANKING ->  updateRanking(message.getRanking());
-                        case END_GAME -> notifyEndGame();
+                        case END_GAME -> notifyEndGame(message.getDisconnectedPlayerNickname(), message.getRanking(), message.getOrderedPlayer());
                         case HEARTBEAT -> recordHeartbeat();
                         case UPDATE_ERROR -> updateError(message.getException());
                         default -> System.err.println("Unknown message type: " + message.getType());
@@ -174,13 +173,8 @@ public class ClientSocket implements VirtualView {
     }
 
     @Override
-    public void updateRanking(List<RankingEntry> ranking) {
-        model.updateRanking(ranking);
-    }
-
-    @Override
-    public void notifyEndGame() {
-        model.updateGameEndedByUser();
+    public void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws Exception {
+        model.updateEndGame(disconnectedPlayer, ranking,orderedPlayers);
     }
 
     @Override

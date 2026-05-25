@@ -222,12 +222,15 @@ public class GamesController {
                 // get the game object from uuid to call the end game method
                 Game game = getGameFromId(uuid);
 
+                // get the nickname of the player
+                String nickname = playerMapping.get(client);
+
                 synchronized (game) {
-                    game.forceEndGame();
+                    game.forceEndGame(nickname);
                 }
 
                 // remove client from the game's observer list
-                removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
+                removeClientAsObserver(client, uuid);
 
                 // get the clients linked to the game with uuid
                 var clientsList = gameMapping.entrySet().stream()
@@ -250,7 +253,7 @@ public class GamesController {
             }
             catch (Exception e) {
                 String message = e.getMessage();
-                logger.warning("Error calling forceEndGame: " +  message);
+                logger.warning("Error calling forceEndGame: " + message);
                 notifyErrorToClient(client, new InvalidOperationException(message));
             }
         }).start();

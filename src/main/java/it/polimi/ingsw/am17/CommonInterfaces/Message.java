@@ -168,6 +168,8 @@ public class Message implements Serializable {
 
     private List<RankingEntry> ranking;
 
+    private String disconnectedPlayerNickname;
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     @JsonCreator
@@ -314,6 +316,14 @@ public class Message implements Serializable {
     public List<RankingEntry> getRanking() {return ranking;}
 
     public void setRanking(List<RankingEntry> ranking) {this.ranking = ranking;}
+
+    public String getDisconnectedPlayerNickname() {
+        return disconnectedPlayerNickname;
+    }
+
+    public void setDisconnectedPlayerNickname(String disconnectedPlayerNickname) {
+        this.disconnectedPlayerNickname = disconnectedPlayerNickname;
+    }
 
     @Override
     public String toString() {
