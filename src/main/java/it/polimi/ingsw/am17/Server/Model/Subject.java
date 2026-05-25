@@ -112,7 +112,6 @@ public abstract class Subject {
         }
     }
 
-    // TODO: remove clients from list
     void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         for (VirtualView client : clients) {
             logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
@@ -121,6 +120,7 @@ public abstract class Subject {
             } catch (Exception e) {
                 logger.severe("Failed to notify end game: " + e.getMessage());
             }
+            clients.remove(client);
         }
     }
 }
