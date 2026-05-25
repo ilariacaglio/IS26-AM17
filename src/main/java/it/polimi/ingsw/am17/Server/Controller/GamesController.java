@@ -230,7 +230,7 @@ public class GamesController {
                 }
 
                 // remove client from the game's observer list
-                removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
+                removeClientAsObserver(client, uuid);
 
                 // get the clients linked to the game with uuid
                 var clientsList = gameMapping.entrySet().stream()
@@ -253,7 +253,7 @@ public class GamesController {
             }
             catch (Exception e) {
                 String message = e.getMessage();
-                logger.warning("Error calling forceEndGame: " +  message);
+                logger.warning("Error calling forceEndGame: " + message);
                 notifyErrorToClient(client, new InvalidOperationException(message));
             }
         }).start();
