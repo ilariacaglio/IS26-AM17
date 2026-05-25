@@ -222,8 +222,11 @@ public class GamesController {
                 // get the game object from uuid to call the end game method
                 Game game = getGameFromId(uuid);
 
+                // get the nickname of the player
+                String nickname = playerMapping.get(client);
+
                 synchronized (game) {
-                    game.forceEndGame();
+                    game.forceEndGame(nickname);
                 }
 
                 // remove client from the game's observer list
