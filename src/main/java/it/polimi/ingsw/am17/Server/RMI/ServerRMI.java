@@ -6,7 +6,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
-import it.polimi.ingsw.am17.Server.ServerInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -19,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
-public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
+public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
     final GamesController controller;
     final List<VirtualViewRMI> clients;
 
