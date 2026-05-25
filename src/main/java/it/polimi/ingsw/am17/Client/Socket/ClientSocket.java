@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Client.Socket;
 import it.polimi.ingsw.am17.Client.ClientInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
+import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
@@ -11,6 +12,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
@@ -65,7 +67,7 @@ public class ClientSocket implements VirtualView, ClientInterface {
                     switch (message.getType()) {
                         case UPDATE_GAME_ID -> updateGameId(message.getGameId());
                         case UPDATE_GAMES_ID_LIST -> updateGamesIdList(message.getGamesIdList());
-                        case UPDATE_ERA -> updateEra(message.getEra());
+                        case UPDATE_GAME_STATE -> updateGameState(message.getGameState());
                         case UPDATE_PLAYERS_DATA -> updatePlayerQueue(message.getOrderedPlayer());
                         case UPDATE_PLAYER_SELECT_OFFERING_CARD ->
                                 updatePlayerSelectOfferingCard(message.getPlayer(), message.getOfferingCard());
@@ -88,17 +90,15 @@ public class ClientSocket implements VirtualView, ClientInterface {
         // create a heartbeat thread
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate((pinger(socket)), 1, 1, TimeUnit.SECONDS);
-
-        // Todo: remove null when gui
-        UI userInterface = null;
+        UI userInterface;
         if(gui) {
-            // TODO: gui
+            userInterface = new GUI(server, this);
         } else {
             userInterface = new CLI(server,this);
         }
 
         model = new ClientModel(userInterface);
-        userInterface.setModel(model); // TODO: circular!! Update with granular UI updates
+        userInterface.setModel(model);
         model.startInterface();  // note: not threaded
     }
 
@@ -115,8 +115,8 @@ public class ClientSocket implements VirtualView, ClientInterface {
     }
 
     @Override
-    public void updateEra(int era) {
-        model.setCurrentEra(era);
+    public void updateGameState(GameState gameState) {
+        model.setGameState(gameState);
     }
 
     @Override

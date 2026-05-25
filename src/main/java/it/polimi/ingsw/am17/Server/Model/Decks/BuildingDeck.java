@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Server.Model.Decks;
 
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.*;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,8 +32,8 @@ public class BuildingDeck {
         temp.add(new BuildingType11());
         temp.add(new BuildingType12());
         temp.add(new BuildingType14());
-        //parse from json and add cards 13M
-        temp.addAll(buildingCard13MParser(1));
+        //parse from Json and add cards 13M
+        temp.addAll(buildingCard13MParser(GameState.ERA1));
         //shuffle collection
         Collections.shuffle(temp);
         //add the right number of cards based on numPlayer
@@ -53,8 +54,8 @@ public class BuildingDeck {
         temp.add(new BuildingType7());
         temp.add(new BuildingType8());
         temp.add(new BuildingType9());
-        //parse from json and add cards 13M
-        temp.addAll(buildingCard13MParser(2));
+        //parse from Json and add cards 13M
+        temp.addAll(buildingCard13MParser(GameState.ERA2));
         //shuffle collection
         Collections.shuffle(temp);
         //add the right number of cards based on numPlayer
@@ -71,7 +72,7 @@ public class BuildingDeck {
         //singleton building cards
         temp.add(new BuildingType1());
         temp.add(new BuildingType2());
-        //parse from json and add cards 3M
+        //parse from Json and add cards 3M
         temp.addAll(buildingCard3MParser());
         //shuffle collection
         Collections.shuffle(temp);

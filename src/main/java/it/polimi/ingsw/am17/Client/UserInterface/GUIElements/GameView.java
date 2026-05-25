@@ -118,7 +118,7 @@ public class GameView {
         upperCardsBox =new HBox(10);
 
         //put turnCard and offeringCard in the same HBox
-        offeringCardBox = new HBox(10);
+        offeringCardBox = new HBox(20);
         //turnCard first
         CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
         offeringCardBox.getChildren().add(turnCard);
@@ -281,7 +281,7 @@ public class GameView {
 
 
 
-        VBox playerCardsBox = new VBox(10, scrollPane);
+        VBox playerCardsContainer = new VBox(10, scrollPane);
 
         //player name, food and pp
         playerResourcesBox =  new HBox(10);
@@ -306,7 +306,7 @@ public class GameView {
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
         root.getChildren().addAll(turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox, lowerCardsBox, sendButtonBox,
-                playerResourcesBox, playerCardsBox, spacer, playersButtonBox);
+                playerResourcesBox, playerCardsContainer, spacer, playersButtonBox);
     }
 
 
@@ -315,6 +315,20 @@ public class GameView {
         turnOverlay.setVisible(game.isPlayerTurn());
 
         // Update Upper Cards
+        updateUpperCards();
+
+        // Update Offering Cards
+        updateOfferingCards();
+
+        // Update Lower Cards
+        updateLowerCards();
+
+        // Update Player stats (Points, Food, Name) and personal board
+        createPlayerCardLabel();
+        orderPersonalCards();
+    }
+
+    private void updateUpperCards() {
         upperCardsBox.getChildren().clear(); // Remove old cards
         for(TribesCard card : game.getUpperTribeRow()){
             CardGUI upperCard = new CardGUI(card.getImagePath());
@@ -326,8 +340,23 @@ public class GameView {
             setOnMouseClickForBuilding(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
+    }
 
-        // Update Offering Cards
+    private void updateLowerCards(){
+        lowerCardsBox.getChildren().clear();
+        for(TribesCard card : game.getLowerTribeRow()){
+            CardGUI lowerCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForTribes(lowerCard, card);
+            lowerCardsBox.getChildren().add(lowerCard);
+        }
+        for(BuildingCard card : game.getLowerBuildingRow()){
+            CardGUI lowerCard = new CardGUI(card.getImagePath());
+            setOnMouseClickForBuilding(lowerCard, card);
+            lowerCardsBox.getChildren().add(lowerCard);
+        }
+    }
+
+    private void updateOfferingCards(){
         offeringCardBox.getChildren().clear();
         offeringCardGUI.clear(); // Reset the list of selectable offering cards
         CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
@@ -344,23 +373,6 @@ public class GameView {
             offeringCardGUI.add(offeringCard);
             offeringCardBox.getChildren().add(offeringCard);
         }
-
-        // Update Lower Cards
-        lowerCardsBox.getChildren().clear();
-        for(TribesCard card : game.getLowerTribeRow()){
-            CardGUI lowerCard = new CardGUI(card.getImagePath());
-            setOnMouseClickForTribes(lowerCard, card);
-            lowerCardsBox.getChildren().add(lowerCard);
-        }
-        for(BuildingCard card : game.getLowerBuildingRow()){
-            CardGUI lowerCard = new CardGUI(card.getImagePath());
-            setOnMouseClickForBuilding(lowerCard, card);
-            lowerCardsBox.getChildren().add(lowerCard);
-        }
-
-        // Update Player stats (Points, Food, Name) and personal board
-        createPlayerCardLabel();
-        orderPersonalCards();
     }
 
     private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card) {
@@ -451,7 +463,8 @@ public class GameView {
             offeringSelected = card;
 
         for (CardGUI cardGUI : offeringCardGUI){
-            cardGUI.setVisualSelection(false);
+            if(cardGUI.isSelected())
+                cardGUI.setVisualSelection(false);
         }
     }
 
@@ -473,7 +486,7 @@ public class GameView {
             playerCardsBox.getChildren().add(characterCard);
         }
         //add personal building cards
-        for(BuildingCard card : localPlayer.getBuildingCards()){
+        for(BuildingCard card : selectedPlayer.getBuildingCards()){
             CardGUI buildingCard = new CardGUI(card.getImagePath());
             playerCardsBox.getChildren().add(buildingCard);
         }
