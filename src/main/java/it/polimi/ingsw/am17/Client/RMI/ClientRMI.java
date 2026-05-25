@@ -184,7 +184,6 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
         model.updatePlayerSelectTribeCards(player,tribesCards,buildingCards);
     }
 
-    // ToDO
     @Override
     public void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
         model.updateEndGame(disconnectedPlayer, ranking,orderedPlayers);
