@@ -164,7 +164,11 @@ public class Message implements Serializable {
     })
     private List<BuildingCard> lowerBuildingRow;
 
+    private InvalidOperationException exception;
+
     private List<RankingEntry> ranking;
+
+    private String disconnectedPlayerNickname;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -304,9 +308,22 @@ public class Message implements Serializable {
         this.lowerBuildingRow = lowerBuildingRow;
     }
 
+    public InvalidOperationException getException() {return exception; }
+
+    public void setException(InvalidOperationException message) {
+        exception = message;}
+
     public List<RankingEntry> getRanking() {return ranking;}
 
     public void setRanking(List<RankingEntry> ranking) {this.ranking = ranking;}
+
+    public String getDisconnectedPlayerNickname() {
+        return disconnectedPlayerNickname;
+    }
+
+    public void setDisconnectedPlayerNickname(String disconnectedPlayerNickname) {
+        this.disconnectedPlayerNickname = disconnectedPlayerNickname;
+    }
 
     @Override
     public String toString() {

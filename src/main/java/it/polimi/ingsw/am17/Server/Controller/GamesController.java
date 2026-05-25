@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Server.Controller;
 
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -47,12 +49,12 @@ public class GamesController {
      * @param id game id
      * @return the game in the list with the given id
      */
-    private Game getGameFromId(UUID id) throws NoSuchElementException {
+    private Game getGameFromId(UUID id){
         synchronized (gamesList){
             return gamesList
                     .stream()
                     .filter(game -> game.getId().equals(id))
-                    .findFirst().orElseThrow();
+                    .findFirst().orElseThrow(()->new InvalidOperationException(ErrorType.INVALID_GAME));
         }
     }
 
@@ -71,7 +73,7 @@ public class GamesController {
      * @param client to be registered
      * @param gameId of the game
      */
-    private void signUpAsObserver(VirtualView client, UUID gameId) throws NoSuchElementException {
+    private void signUpAsObserver(VirtualView client, UUID gameId) {
         Game game = getGameFromId(gameId);
 
         // add client to game mapping
@@ -87,10 +89,25 @@ public class GamesController {
      * @param client to be removed
      * @param gameId of the game
      */
-    private void removeClientAsObserver(VirtualView client, UUID gameId) throws NoSuchElementException {
+    private void removeClientAsObserver(VirtualView client, UUID gameId) {
         Game game = getGameFromId(gameId);
         synchronized (game){
             game.detach(client);
+        }
+    }
+
+    /**
+     * Calls updateColorError on the specified client
+     *
+     * @param client       the client to be notified
+     * @param exception    the exception thrown
+     */
+    private void notifyErrorToClient(VirtualView client, InvalidOperationException exception) {
+        try {
+            client.updateError(exception);
+        }
+        catch (Exception networkEx){
+            logger.info("Could not send notification to client: " + networkEx.getMessage());
         }
     }
 
@@ -109,21 +126,25 @@ public class GamesController {
         new Thread(() -> {
             logger.info("Client " + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
-            // game creation
-            UUID id = UUID.randomUUID();
-            Game game = new Game(id, numPlayers);
-
-            // add game to the list
-            addGame(game);
-
-            // add player to the game
-            joinGame(client, id, player);
-
-            // send gameId to client
             try {
-                client.updateGameId(id);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                // game creation
+                UUID id = UUID.randomUUID();
+                Game game = new Game(id, numPlayers);
+
+                // add game to the list
+                addGame(game);
+
+                // add player to the game
+                joinGame(client, id, player);
+            }
+            catch (InvalidOperationException e) {
+                logger.info("Error creating game: " + e.getErrorType().getMessage());
+                notifyErrorToClient(client, e);
+            }
+            catch (Exception e) {
+                String message = e.getMessage();
+                logger.info("Error creating game: " + message);
+                notifyErrorToClient(client, new InvalidOperationException(message));
             }
         }).start();
     }
@@ -134,40 +155,56 @@ public class GamesController {
      * @param gameId of the game to join.
      * @param player to add to the game.
      */
-    public void joinGame(VirtualView client, UUID gameId, Player player) throws NoSuchElementException {
+    public void joinGame(VirtualView client, UUID gameId, Player player) {
         new Thread(() -> {
             logger.info("Client " + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
 
-            // Sign up client as an observer (see N.B. hereunder)
-            signUpAsObserver(client, gameId);
+            // sign if client is added as an observer
+            boolean observerAdded = false;
 
-            // Notify gameId to the client
             try {
-                client.updateGameId(gameId);
-            } catch (Exception e) {
-                logger.warning("Error sending game Id update: " + e.getMessage());
-                throw new RuntimeException(e);
-            }
-
-            // Add player to the game
-            try {
+                // retrieve game (also check if it exists)
                 Game game = getGameFromId(gameId);
+
+                // Sign up client as an observer (see N.B. hereunder)
+                signUpAsObserver(client, gameId);
+                observerAdded = true;
+
+                // Notify gameId to the client
+                client.updateGameId(gameId);
+
+                // Add player to the game
                 synchronized (game) {
                     game.addPlayer(player);
                 }
+
                 // add player to mapping
                 playerMapping.put(client, player.getNickname());
+            } catch (InvalidOperationException e) {
+                logger.info("Error joining game: " + e.getErrorType().getMessage());
+                rollbackAndNotify(client, gameId, observerAdded, e);
+
             } catch (Exception e) {
-                logger.warning("Error joining game: " + e.getMessage());
-
-                // N.B. we need to sign up the client before joining the player
-                // so that it's notified from the addPlayer, if something goes wrong,
-                // we remove it here.
-
-                removeClientAsObserver(client, gameId);
-                throw new RuntimeException(e);
+                String message = e.getMessage();
+                logger.warning("Error joining game: " + message);
+                rollbackAndNotify(client, gameId, observerAdded, new InvalidOperationException(message));
             }
         }).start();
+    }
+
+    private void rollbackAndNotify(VirtualView client, UUID gameId, boolean observerAdded, InvalidOperationException errorToNotify) {
+        // N.B. we need to sign up the client before joining the player
+        // so that it's notified from the addPlayer, if something goes wrong,
+        // we remove it here.
+        if (observerAdded) {
+            try {
+                removeClientAsObserver(client, gameId);
+            } catch (Exception ex) {
+                logger.warning("Error removing client as observer: " + ex.getMessage());
+            }
+        }
+
+        notifyErrorToClient(client, errorToNotify);
     }
 
     /**
@@ -178,45 +215,47 @@ public class GamesController {
      */
     public void closeGame(VirtualView client) {
         new Thread(() -> {
-
-            // get uuid of the game from the client (mapping)
-            UUID uuid = gameMapping.get(client);
-
-            if (uuid == null) { // TODO: check if best practice
-                logger.warning("Client " + client.getClass().getSimpleName() + " tried to close a game that doesn't exist.");
-                return;
-            }
-
-            // get the game object from uuid and call the end game method
-            Game game = getGameFromId(uuid);
-
             try {
+                // get uuid of the game from the client (mapping)
+                UUID uuid = gameMapping.get(client);
+
+                // get the game object from uuid to call the end game method
+                Game game = getGameFromId(uuid);
+
+                // get the nickname of the player
+                String nickname = playerMapping.get(client);
+
                 synchronized (game) {
-                    game.forceEndGame();
+                    game.forceEndGame(nickname);
                 }
+
+                // remove client from the game's observer list
+                removeClientAsObserver(client, uuid);
+
+                // get the clients linked to the game with uuid
+                var clientsList = gameMapping.entrySet().stream()
+                        .filter(entry -> entry.getValue().equals(uuid))
+                        .map(Map.Entry::getKey)
+                        .toList();
+
+                // remove the client from the mapping and the game from the list
+                clientsList.forEach(gameMapping.keySet()::remove);
+
+                // remove all the players of that game
+                clientsList.forEach(playerMapping.keySet()::remove);
+
+                // remove game from id list
+                removeGameFromId(uuid);
+            }
+            catch (InvalidOperationException e) {
+                logger.warning("Error calling forceEndGame: " +  e.getErrorType().getMessage());
+                notifyErrorToClient(client, e);
             }
             catch (Exception e) {
-                logger.warning("Error calling forceEndGame: " + e.getMessage());
-                throw new RuntimeException(e);
+                String message = e.getMessage();
+                logger.warning("Error calling forceEndGame: " + message);
+                notifyErrorToClient(client, new InvalidOperationException(message));
             }
-
-            // remove client from the game's observer list
-            removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
-
-            // get the clients linked to the game with uuid
-            var clientsList = gameMapping.entrySet().stream()
-                    .filter(entry -> entry.getValue().equals(uuid))
-                    .map(Map.Entry::getKey)
-                    .toList();
-
-            // remove the client from the mapping and the game from the list
-            clientsList.forEach(gameMapping.keySet()::remove);
-
-            // remove all the players of that game
-            clientsList.forEach(playerMapping.keySet()::remove);
-
-            // remove game from id list
-            removeGameFromId(uuid);
         }).start();
     }
 
@@ -228,24 +267,29 @@ public class GamesController {
     public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
         new Thread(() -> {
             logger.info("Request received by the controller.");
-            // search for client nickname
-            String nickname = playerMapping.get(client);
-            // search for game id
-            UUID gameId = gameMapping.get(client);
-
             try {
+                // search for client nickname
+                String nickname = playerMapping.get(client);
+                // search for game id
+                UUID gameId = gameMapping.get(client);
+
                 // retrieve game
                 Game game = getGameFromId(gameId);
 
                 logger.info(nickname + " wants to pick offering card " + offeringCardLetter + " in game " + gameId);
 
                 synchronized (game) {
-                    game.selectOfferingCard (nickname, offeringCardLetter);
+                    game.selectOfferingCard(nickname, offeringCardLetter);
                 }
             }
-            catch(Exception e) {
+            catch(InvalidOperationException e) {
                 logger.warning("Error calling game selectOfferingCard: " + e.getMessage());
-                throw new RuntimeException(e);
+                notifyErrorToClient(client, e);
+            }
+            catch(Exception e) {
+                String message = e.getMessage();
+                logger.warning("Error calling game selectOfferingCard: " +  message);
+                notifyErrorToClient(client, new InvalidOperationException(message));
             }
         }).start();
     }
@@ -258,22 +302,26 @@ public class GamesController {
      */
     public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         new Thread(() -> {
-            // search for client nickname
-            String nickname = playerMapping.get(client);
-
-            // search for game id
-            UUID gameId = gameMapping.get(client);
-
-            logger.info(nickname + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + gameId);
-
             try {
+                // search for client nickname
+                String nickname = playerMapping.get(client);
+
+                // search for game id
+                UUID gameId = gameMapping.get(client);
+
+                logger.info(nickname + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + gameId);
                 Game game = getGameFromId(gameId);
                 synchronized (game) {
                     game.pickTribeCards(nickname, characterCards, buildingCards);
                 }
-            } catch (Exception e) {
+            } catch (InvalidOperationException e) {
                 logger.warning("Error calling game pickTribeCards: " + e.getMessage());
-                throw new RuntimeException(e);
+                notifyErrorToClient(client, e);
+            }
+            catch (Exception e) {
+                String message = e.getMessage();
+                logger.warning("Error calling game pickTribeCards: " + message);
+                notifyErrorToClient(client, new InvalidOperationException(message));
             }
         }).start();
     }
@@ -290,8 +338,9 @@ public class GamesController {
                 // send the list of open games to the client
                 client.updateGamesIdList(getGamesList());
             } catch (Exception e) {
-                logger.warning("Error sending games list: " + e.getMessage());
-                throw new RuntimeException(e);
+                String message = e.getMessage();
+                logger.warning("Error sending games list: " + message);
+                notifyErrorToClient(client, new InvalidOperationException(message));
             }
         }).start();
     }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck;
@@ -23,7 +24,7 @@ class TribesDeckTest {
             tribesDeck.Draw();
         }
 
-        assertThrows(IllegalStateException.class, () -> tribesDeck.Draw());
+        assertThrows(InvalidOperationException.class, () -> tribesDeck.Draw());
     }
 
     //doesn't create empty list

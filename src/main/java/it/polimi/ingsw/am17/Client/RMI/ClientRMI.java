@@ -4,8 +4,7 @@ import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
-import it.polimi.ingsw.am17.CommonInterfaces.Message;
-import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -24,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -78,8 +76,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
             }
         }, 10, 5, TimeUnit.SECONDS);
 
-        // TODO: remove null when gui
-        UI userInterface = null;
+        UI userInterface;
         if(graphic){
             userInterface = new GUI(server, this);
         }
@@ -164,24 +161,6 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void notifyEndGame() throws RemoteException {
-        model.updateGameEndedByUser();
-    }
-
-    /**
-     * Forwarded to the model.
-     * @throws RemoteException remotely called!
-     */
-    @Override
-    public void updateRanking(List<RankingEntry> ranking) throws RemoteException {
-        model.updateRanking(ranking);
-    }
-
-    /**
-     * Forwarded to the model.
-     * @throws RemoteException remotely called!
-     */
-    @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
         model.updateEndTurn(players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
     }
@@ -203,4 +182,19 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
         model.updatePlayerSelectTribeCards(player,tribesCards,buildingCards);
     }
+
+    @Override
+    public void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
+        model.updateEndGame(disconnectedPlayer, ranking,orderedPlayers);
+    }
+
+    /**
+     * Forwarded to the model
+     * @throws RemoteException  remotely called!
+     */
+    @Override
+    public void updateError(InvalidOperationException exception) throws RemoteException {
+        model.updateNotifyError(exception);
+    }
+
 }

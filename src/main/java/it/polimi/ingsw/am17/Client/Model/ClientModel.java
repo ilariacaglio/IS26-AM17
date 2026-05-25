@@ -1,6 +1,9 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -387,27 +390,60 @@ public class ClientModel {
     }
 
     /**
-     * Updates ranking field and displays it to screen.
-     * @param ranking   the value to be set
+     * Resets all game rows, offering cards, ranking and player queue
      */
-    public void updateRanking(List<RankingEntry> ranking) {
-        setRanking(ranking);
-        userInterface.drawInterface(null);
-        gameState = GameState.NONE;
-    }
-
-    /**
-     * Updates era value when a user disconnects and displays it to the screen
-     */
-    public void updateGameEndedByUser() {
-        // setGameId(null); // TODO: does not work, breaks RMI communication?!
-        gameState = GameState.NONE; // TODO: -2 for aborted game? This works anyways
+    public void resetGameAttributes() {
         setOrderedPlayers(new LinkedList<>());
         setOfferingCards(new ArrayList<>());
         setTribeCards(new ArrayList<>(), new ArrayList<>());
         setBuildingCards(new ArrayList<>(), new ArrayList<>());
         setRanking(new ArrayList<>());
+    }
+
+    /**
+     * Updates model when an error occurred handling the users request
+     * @param exception the exception thrown
+     */
+    public void updateNotifyError(InvalidOperationException exception) {
+        ErrorType type = exception.getErrorType();
+        switch (type) {
+            case DUPLICATE_COLOR:
+                userInterface.setAvailableColors(((ColorException)exception).getAvailableColors());
+                setGameState(GameState.NONE);
+                break;
+            case DUPLICATE_NICKNAME:
+                setGameState(GameState.NONE);
+                break;
+        }
+        String messageToDisplay = (type == ErrorType.UNKNOWN)
+                ? exception.getMessage()
+                : type.getMessage();
+        userInterface.drawInterface(messageToDisplay);
+    }
+
+    /**
+     * Updates model when game ends
+     * @param disconnectedPlayer    if not null specifies the disconnected player
+     * @param ranking               if not null, the global ranking
+     * @param orderedPlayers        if not null, the local ranking
+     */
+    public void updateEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
+        String message = null;
+        // reset game state
+        gameState = GameState.NONE;
+        if (disconnectedPlayer == null){
+            // game ended by the server
+            // set global ranking
+            setRanking(ranking);
+            // set local ranking
+            setOrderedPlayers(orderedPlayers);
+        }
+        else {
+            // game ended by player disconnection
+            resetGameAttributes();
+            message = "The game has ended due to disconnection of player " + disconnectedPlayer;
+        }
+        userInterface.drawInterface(message);
         logger.info("Game closed.");
-        // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
     }
 }

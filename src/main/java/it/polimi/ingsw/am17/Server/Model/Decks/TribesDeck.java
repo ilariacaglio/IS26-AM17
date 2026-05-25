@@ -1,8 +1,10 @@
 package it.polimi.ingsw.am17.Server.Model.Decks;
 
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 
 import static it.polimi.ingsw.am17.Server.Utility.CardParser.*;
 
@@ -17,7 +19,7 @@ public class TribesDeck {
     private int currIndex;
 
     public TribesDeck(int numPlayers) {
-        tribeCards =  new ArrayList<TribesCard>();
+        tribeCards =  new ArrayList<>();
         currIndex = -1;
         //add cards to list
         tribeCards.addAll(artistsParser(numPlayers));
@@ -46,9 +48,14 @@ public class TribesDeck {
         }
     }
 
+    /**
+     * Draws a card from the deck.
+     * @return  the card drawn
+     * @throws InvalidOperationException with error type EMPTY_DECK
+     */
     public TribesCard Draw() {
         if (currIndex + 1 >= tribeCards.size()) {
-            throw new IllegalStateException("No more cards left in the deck.");
+            throw new InvalidOperationException(ErrorType.EMPTY_DECK);
         }
 
         currIndex++;

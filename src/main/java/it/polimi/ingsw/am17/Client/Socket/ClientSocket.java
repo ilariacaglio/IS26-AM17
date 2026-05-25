@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -81,9 +82,9 @@ public class ClientSocket implements VirtualView {
                                 updateEndTurn(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow());
                         case UPDATE_START_GAME ->
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
-                        case UPDATE_RANKING ->  updateRanking(message.getRanking());
-                        case END_GAME -> notifyEndGame();
+                        case END_GAME -> notifyEndGame(message.getDisconnectedPlayerNickname(), message.getRanking(), message.getOrderedPlayer());
                         case HEARTBEAT -> recordHeartbeat();
+                        case UPDATE_ERROR -> updateError(message.getException());
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -172,13 +173,8 @@ public class ClientSocket implements VirtualView {
     }
 
     @Override
-    public void updateRanking(List<RankingEntry> ranking) {
-        model.updateRanking(ranking);
-    }
-
-    @Override
-    public void notifyEndGame() {
-        model.updateGameEndedByUser();
+    public void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws Exception {
+        model.updateEndGame(disconnectedPlayer, ranking,orderedPlayers);
     }
 
     @Override
@@ -194,5 +190,10 @@ public class ClientSocket implements VirtualView {
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) {
         model.updatePlayerSelectTribeCards(player, tribesCards, buildingCards);
+    }
+
+    @Override
+    public void updateError(InvalidOperationException exception) {
+        model.updateNotifyError(exception);
     }
 }
