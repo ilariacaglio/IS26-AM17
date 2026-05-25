@@ -141,7 +141,7 @@ public class Game extends Subject {
     public void forceEndGame(String nickname) {
         logger.severe("Forcibly closing game with id: " + id);
         this.gameState = GameState.ENDED;
-        notifyEndGame(nickname, Collections.emptyList(), new ArrayDeque<>(0));
+        notifyEndGame(nickname, null, null);
     }
 
     /**
