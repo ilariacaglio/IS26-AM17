@@ -124,7 +124,7 @@ public class GamesController {
      */
     public void createGame(VirtualView client, Player player, int numPlayers) {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
+            logger.info("Client " + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
             try {
                 // game creation
@@ -157,7 +157,7 @@ public class GamesController {
      */
     public void joinGame(VirtualView client, UUID gameId, Player player) {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
+            logger.info("Client " + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
 
             // sign if client is added as an observer
             boolean observerAdded = false;
@@ -215,12 +215,18 @@ public class GamesController {
      */
     public void closeGame(VirtualView client) {
         new Thread(() -> {
-            try {
-                // get uuid of the game from the client (mapping)
-                UUID uuid = gameMapping.get(client);
+            // get uuid of the game from the client (mapping)
+            UUID uuid = gameMapping.get(client);
 
+            if (uuid == null) { // TODO: check if best practice
+                logger.warning("Client " + client.getClass().getSimpleName() + " tried to close a game that doesn't exist.");
+                return;
+            }
+
+            try {
                 // get the game object from uuid to call the end game method
                 Game game = getGameFromId(uuid);
+
                 synchronized (game) {
                     game.forceEndGame();
                 }
@@ -328,7 +334,7 @@ public class GamesController {
      */
     public void getGamesList(VirtualView client) {
         new Thread(() -> {
-            logger.info("Client" + client.getClass().getSimpleName() + " requested the games list.");
+            logger.info("Client " + client.getClass().getSimpleName() + " requested the games list.");
             try {
                 // send the list of open games to the client
                 client.updateGamesIdList(getGamesList());
