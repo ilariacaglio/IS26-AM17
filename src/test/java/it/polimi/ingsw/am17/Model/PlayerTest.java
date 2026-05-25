@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
@@ -38,7 +39,7 @@ class PlayerTest {
 
     @Test
     void addFoodShouldNotGoUnderZero() {
-        assertThrows(IllegalStateException.class, () -> player.addFood(-5));
+        assertThrows(InvalidOperationException.class, () -> player.addFood(-5));
     }
 
     @Test

@@ -8,16 +8,23 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
+/**
+ * Launches a client.
+ * Use --ip ... TODO
+ * Use --debug to raise logging level. TODO
+ * Use --socket to use socket communication (instead or RMI).
+ * Use --gui to launch a graphical interface.
+ */
 public class ClientLauncher {
 
-    public static void main(String[] args) throws IOException, NotBoundException {
+    static void main(String[] args) throws IOException, NotBoundException {
         boolean gui = Arrays.asList(args).contains("--gui");
         boolean socket = Arrays.asList(args).contains("--socket");
 
         if (socket) {
-            new ClientSocket().start("127.0.0.1", gui);
+            new ClientSocket("127.0.0.1", 5000, gui);
         } else {
-            new ClientRMI().start("127.0.0.1", gui);
+            new ClientRMI("127.0.0.1",1099, "MesosRMIServer", gui);
         }
     }
 }
