@@ -351,7 +351,7 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setPickOCPhase(true);
 
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromEndTurn();
     }
 
     /**
@@ -371,7 +371,7 @@ public class ClientModel {
      */
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
         setPlayerOfferingCard(offeringCard, player);
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromPickOffering();
     }
 
     /**
@@ -386,7 +386,7 @@ public class ClientModel {
         removePlayerFromOfferingCard(player);
         removeTribeCards(characterCards);
         removeBuildingCards(buildingCards);
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromPickTribes();
     }
 
     /**

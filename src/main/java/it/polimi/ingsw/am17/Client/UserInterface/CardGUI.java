@@ -72,6 +72,15 @@ public class CardGUI extends StackPane {
         }
     }
 
+    public void updateBorderFromPlayer(Color playerColor){
+        border.setArcWidth(15);
+        border.setArcHeight(15);
+        border.setFill(Color.WHITE);
+        border.setStroke(playerColor);
+        border.setStrokeWidth(playerColor.equals(Color.BLACK) ? 1 : 4);
+
+    }
+
     public boolean isSelected() {
         return isSelected;
     }

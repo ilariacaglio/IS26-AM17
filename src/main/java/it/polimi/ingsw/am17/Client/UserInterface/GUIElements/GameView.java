@@ -126,10 +126,13 @@ public class GameView {
         //offeringCards second
         for(OfferingCard card : game.getOfferingCards()){
             CardGUI offeringCard;
-            if(card.getPlayer() == null)
+            if(card.getPlayer() == null) {
                 offeringCard = new CardGUI(card.getImagePath());
-            else
+                offeringCard.setUserData(card);
+            } else {
                 offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
+                offeringCard.setUserData(card);
+            }
             setOnMouseClickForOffering(offeringCard, card);
             offeringCardGUI.add(offeringCard);
             offeringCardBox.getChildren().add(offeringCard);
@@ -149,7 +152,6 @@ public class GameView {
                     offeringSelected = null;
                     buildingSelected = new ArrayList<>();
                     tribesSelected =  new ArrayList<>();
-                    offeringCardGUI = new ArrayList<>();
                 } else {
                     // get players offering card
                     OfferingCard myOfferingCard = game.getOfferingCards().stream()
@@ -164,7 +166,6 @@ public class GameView {
                         offeringSelected = null;
                         buildingSelected = new ArrayList<>();
                         tribesSelected =  new ArrayList<>();
-                        offeringCardGUI = new ArrayList<>();
                     }
                     else {
                         Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -328,15 +329,67 @@ public class GameView {
         orderPersonalCards();
     }
 
+    public void updateGameCardDecks() {
+        // Update turn overlay visibility
+        turnOverlay.setVisible(game.isPlayerTurn());
+
+        // Update Upper Cards
+        upperCardsBox.getChildren().removeIf(node -> {
+            Object cardData = node.getUserData();
+
+            // Check if the card still exists in the game model
+            boolean stillInTribeRow = game.getUpperTribeRow().contains(cardData);
+            boolean stillInBuildingRow = game.getUpperBuildingRow().contains(cardData);
+
+            // If it is NOT in the tribe row AND NOT in the building row, remove it (return true)
+            return !stillInTribeRow && !stillInBuildingRow;
+        });
+
+        // Update Lower Cards
+        lowerCardsBox.getChildren().removeIf(node -> {
+            Object cardData = node.getUserData();
+
+            // Check if the card still exists in the game model
+            boolean stillInTribeRow = game.getLowerTribeRow().contains(cardData);
+            boolean stillInBuildingRow = game.getLowerBuildingRow().contains(cardData);
+
+            // If it is NOT in the tribe row AND NOT in the building row, remove it
+            return !stillInTribeRow && !stillInBuildingRow;
+        });
+
+        // Update Player stats (Points, Food, Name) and personal board
+        createPlayerCardLabel();
+        orderPersonalCards();
+    }
+
+    public void updateOfferingDeck(){
+        for (CardGUI cardGUI : offeringCardGUI){
+            if(cardGUI.isSelected())
+                cardGUI.setVisualSelection(false);
+        }
+        for(int i=0; i<offeringCardGUI.size(); i++){
+            CardGUI card = offeringCardGUI.get(i);
+            if (game.getOfferingCards().get(i).getPlayer() != null) {
+                card.updateBorderFromPlayer(game.getOfferingCards().get(i).getPlayer().getColor().getFxColor());
+            } else {
+                // Optional: Reset to default border if no player owns it
+                card.updateBorderFromPlayer(javafx.scene.paint.Color.BLACK);
+            }
+        }
+    }
+
+
     private void updateUpperCards() {
         upperCardsBox.getChildren().clear(); // Remove old cards
         for(TribesCard card : game.getUpperTribeRow()){
             CardGUI upperCard = new CardGUI(card.getImagePath());
+            upperCard.setUserData(card);
             setOnMouseClickForTribes(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
         for(BuildingCard card : game.getUpperBuildingRow()){
             CardGUI upperCard = new CardGUI(card.getImagePath());
+            upperCard.setUserData(card);
             setOnMouseClickForBuilding(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
@@ -346,32 +399,23 @@ public class GameView {
         lowerCardsBox.getChildren().clear();
         for(TribesCard card : game.getLowerTribeRow()){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
+            lowerCard.setUserData(card);
             setOnMouseClickForTribes(lowerCard, card);
             lowerCardsBox.getChildren().add(lowerCard);
         }
         for(BuildingCard card : game.getLowerBuildingRow()){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
+            lowerCard.setUserData(card);
             setOnMouseClickForBuilding(lowerCard, card);
             lowerCardsBox.getChildren().add(lowerCard);
         }
     }
 
     private void updateOfferingCards(){
-        offeringCardBox.getChildren().clear();
-        offeringCardGUI.clear(); // Reset the list of selectable offering cards
-        CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
-        offeringCardBox.getChildren().add(turnCard);
-
-        for(OfferingCard card : game.getOfferingCards()){
-            CardGUI offeringCard;
-            if(card.getPlayer() == null) {
-                offeringCard = new CardGUI(card.getImagePath());
-            } else {
-                offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
-            }
-            setOnMouseClickForOffering(offeringCard, card);
-            offeringCardGUI.add(offeringCard);
-            offeringCardBox.getChildren().add(offeringCard);
+        for (CardGUI cardGUI : offeringCardGUI){
+            cardGUI.updateBorderFromPlayer(javafx.scene.paint.Color.BLACK);
+            if(cardGUI.isSelected())
+                cardGUI.setVisualSelection(false);
         }
     }
 
@@ -424,6 +468,14 @@ public class GameView {
             if (!game.isPickOCPhase()) {
                 return; // Not selectable right now
             }
+
+            OfferingCard thisCard = game.getOfferingCards().stream()
+                    .filter(c -> c.equals(card)) // Put your condition inside filter()
+                    .findFirst()
+                    .orElse(null);
+
+            if(thisCard == null || thisCard.getPlayer()!=null)
+                return;
 
             // Handle the game logic
             offeringSelected(card);

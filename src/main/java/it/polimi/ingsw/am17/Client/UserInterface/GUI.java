@@ -86,11 +86,26 @@ public class GUI implements UI {
                         showGameInterface();
                         isGameInterfaceInitialized = true;
                     }
-                    updateGameElements();
+                    gameView.updateGameElements();
                 } else {
                     showLocalInterface();
                 }
             }
+        });
+    }
+    public void updateInterfaceFromEndTurn(){
+        Platform.runLater(() -> {
+            gameView.updateGameElements();
+        });
+    }
+    public void updateInterfaceFromPickTribes() {
+        Platform.runLater(() -> {
+            gameView.updateGameCardDecks();
+        });
+    }
+    public void updateInterfaceFromPickOffering() {
+        Platform.runLater(() -> {
+            gameView.updateOfferingDeck();
         });
     }
 
@@ -107,10 +122,6 @@ public class GUI implements UI {
     private void showGameInterface(){
         gameView = new GameView(this, game, localPlayer);
         scene.setRoot(gameView.getRoot());
-    }
-
-    private void updateGameElements(){
-        gameView.updateGameElements();
     }
 
     public void showPlayerCountSelection(){
