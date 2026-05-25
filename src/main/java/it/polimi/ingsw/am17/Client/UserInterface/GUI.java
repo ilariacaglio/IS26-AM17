@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.GUIElements.*;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -39,6 +40,8 @@ public class GUI implements UI {
     private GameView gameView;
 
     private boolean isGameInterfaceInitialized = false;
+
+    List<Color> availableColors;
 
     public GUI(VirtualServer server, VirtualView view) {
         this.server = server;
@@ -204,6 +207,10 @@ public class GUI implements UI {
     public  void setModel(ClientModel model) {
         this.game = model;
     }
+
+    @Override
+    public void setAvailableColors(List<Color> availableColors) {this.availableColors=availableColors;}
+
 
     /**
      * Updates localPlayer value when the object is updated into the queue by the server

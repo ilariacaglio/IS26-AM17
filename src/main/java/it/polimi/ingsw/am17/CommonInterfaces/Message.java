@@ -164,6 +164,8 @@ public class Message implements Serializable {
     })
     private List<BuildingCard> lowerBuildingRow;
 
+    private InvalidOperationException exception;
+
     private List<RankingEntry> ranking;
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -303,6 +305,11 @@ public class Message implements Serializable {
     public void setLowerBuildingRow(List<BuildingCard> lowerBuildingRow) {
         this.lowerBuildingRow = lowerBuildingRow;
     }
+
+    public InvalidOperationException getException() {return exception; }
+
+    public void setException(InvalidOperationException message) {
+        exception = message;}
 
     public List<RankingEntry> getRanking() {return ranking;}
 

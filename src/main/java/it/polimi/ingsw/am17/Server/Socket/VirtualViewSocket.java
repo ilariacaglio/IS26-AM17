@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Server.Socket;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
@@ -88,6 +89,13 @@ public class VirtualViewSocket implements VirtualView {
         message.setLowerRow(lowerRow);
         message.setUpperBuildingRow(upperBuildingRow);
         message.setOfferingCards(offeringCards);
+        message.send(socket);
+    }
+
+    @Override
+    public void updateError(InvalidOperationException exception) throws Exception {
+        Message message = new Message(MessageType.UPDATE_ERROR);
+        message.setException(exception);
         message.send(socket);
     }
 

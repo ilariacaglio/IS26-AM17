@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -32,13 +33,13 @@ public class GameTest {
     @Test
     void testGameCreation_0players(){
         // test exception when given invalid number of players
-        assertThrows(IllegalArgumentException.class, () -> new Game(id, 0));
+        assertThrows(InvalidOperationException.class, () -> new Game(id, 0));
     }
 
     @Test
     void testGameCreation_6players(){
         // test exception when given invalid number of players
-        assertThrows(IllegalArgumentException.class, () -> new Game(id, 6));
+        assertThrows(InvalidOperationException.class, () -> new Game(id, 6));
     }
 
     @Test
@@ -89,7 +90,7 @@ public class GameTest {
         // add player to game
         game.addPlayer(p);
         // check duplicate player
-        assertThrows(IllegalStateException.class, () -> game.addPlayer(p));
+        assertThrows(InvalidOperationException.class, () -> game.addPlayer(p));
     }
 
     @Nested
@@ -164,7 +165,7 @@ public class GameTest {
         @Test
         void testAddPlayer_Exception() {
             //this checks both started and overflow cases
-            assertThrows(IllegalStateException.class, () -> game.addPlayer(new Player("player4", Color.BLUE)));
+            assertThrows(InvalidOperationException.class, () -> game.addPlayer(new Player("player4", Color.BLUE)));
         }
 
         @Test
@@ -244,7 +245,7 @@ public class GameTest {
             String wrongPlayerNickname = pickWrongPlayer().getNickname();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.selectOfferingCard(wrongPlayerNickname, offeringCardList.getFirst().getOrderLetter()));
         }
 
@@ -269,19 +270,19 @@ public class GameTest {
             game.selectOfferingCard(currentPlayer.getNickname(), offeringCardList.getFirst().getOrderLetter());
             // test card already picked error
             Player finalCurrentPlayer = game.getCurrentPlayer();
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.selectOfferingCard(
                             finalCurrentPlayer.getNickname(),
                             offeringCardList.getFirst().getOrderLetter()));
             // test card null error
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.selectOfferingCard(finalCurrentPlayer.getNickname(), null));
         }
 
         @Test
         void testSelectOfferingCard_CardNotFound(){
             // test offering card not if offeringCardList
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.selectOfferingCard(game.getCurrentPlayer().getNickname(), 'M'));
         }
 
@@ -401,7 +402,7 @@ public class GameTest {
             if(!game.getUpperBuildingRow().isEmpty()) {
                 buildingList.addAll(extractUpperBuildings(numUpper));
             }
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(), Collections.emptyList(), buildingList));
         }
 

@@ -1,6 +1,9 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -409,5 +412,22 @@ public class ClientModel {
         setRanking(new ArrayList<>());
         logger.info("Game closed.");
         // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
+    }
+
+    public void updateNotifyError(InvalidOperationException exception) {
+        ErrorType type = exception.getErrorType();
+        switch (type) {
+            case DUPLICATE_COLOR:
+                userInterface.setAvailableColors(((ColorException)exception).getAvailableColors());
+                setGameState(GameState.NONE);
+                break;
+            case DUPLICATE_NICKNAME:
+                setGameState(GameState.NONE);
+                break;
+        }
+        String messageToDisplay = (type == ErrorType.UNKNOWN)
+                ? exception.getMessage()
+                : type.getMessage();
+        userInterface.drawInterface(messageToDisplay);
     }
 }

@@ -32,6 +32,8 @@ public interface VirtualView {
 
     // ending methods
     void updateRanking(List<RankingEntry> ranking) throws Exception;
-
     void notifyEndGame() throws Exception;
+
+    // notify errors
+    void updateError(InvalidOperationException exception) throws Exception;
 }

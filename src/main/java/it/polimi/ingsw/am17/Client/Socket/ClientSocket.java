@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -84,6 +85,7 @@ public class ClientSocket implements VirtualView {
                         case UPDATE_RANKING ->  updateRanking(message.getRanking());
                         case END_GAME -> notifyEndGame();
                         case HEARTBEAT -> recordHeartbeat();
+                        case UPDATE_ERROR -> updateError(message.getException());
                         default -> System.err.println("Unknown message type: " + message.getType());
                     }
                 }
@@ -194,5 +196,10 @@ public class ClientSocket implements VirtualView {
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) {
         model.updatePlayerSelectTribeCards(player, tribesCards, buildingCards);
+    }
+
+    @Override
+    public void updateError(InvalidOperationException exception) {
+        model.updateNotifyError(exception);
     }
 }

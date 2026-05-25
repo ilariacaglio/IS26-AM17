@@ -4,8 +4,7 @@ import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
-import it.polimi.ingsw.am17.CommonInterfaces.Message;
-import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -203,4 +202,14 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
         model.updatePlayerSelectTribeCards(player,tribesCards,buildingCards);
     }
+
+    /**
+     * Forwarded to the model
+     * @throws RemoteException  remotely called!
+     */
+    @Override
+    public void updateError(InvalidOperationException exception) throws RemoteException {
+        model.updateNotifyError(exception);
+    }
+
 }
