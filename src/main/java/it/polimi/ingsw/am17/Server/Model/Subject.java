@@ -126,7 +126,6 @@ public abstract class Subject {
                 client.notifyEndGame();
             } catch (Exception e) {
                 logger.severe("Subject method failed to call client update" + e.getMessage());
-                System.err.println("Client not reachable: "+ e.getMessage());
             }
         }
     }
