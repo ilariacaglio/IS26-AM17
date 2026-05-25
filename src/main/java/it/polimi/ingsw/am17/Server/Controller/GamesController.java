@@ -215,21 +215,17 @@ public class GamesController {
      */
     public void closeGame(VirtualView client) {
         new Thread(() -> {
-            // get uuid of the game from the client (mapping)
-            UUID uuid = gameMapping.get(client);
-
-            if (uuid == null) { // TODO: check if best practice
-                logger.warning("Client " + client.getClass().getSimpleName() + " tried to close a game that doesn't exist.");
-                return;
-            }
-
             try {
+                // get uuid of the game from the client (mapping)
+                UUID uuid = gameMapping.get(client);
+
                 // get the game object from uuid to call the end game method
                 Game game = getGameFromId(uuid);
 
                 synchronized (game) {
                     game.forceEndGame();
                 }
+
                 // remove client from the game's observer list
                 removeClientAsObserver(client, uuid); // would be fine if moved in the Subject's notifyEndGame
 
