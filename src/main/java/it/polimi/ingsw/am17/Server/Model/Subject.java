@@ -86,6 +86,7 @@ public abstract class Subject {
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         Queue<Player> newQueue = players.stream()
                 .map(p -> {
+                    // Creates a defensive copy of the player, intentionally omitting their cards
                     Player copy = new Player(p.getNickname(), p.getColor());
                     copy.addFood(p.getFood());
                     copy.addPp(p.getPp());
