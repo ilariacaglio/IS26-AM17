@@ -211,6 +211,18 @@ public class GUI implements UI {
     @Override
     public void setAvailableColors(List<Color> availableColors) {this.availableColors=availableColors;}
 
+    // tODO
+    @Override
+    public boolean isBuilding2EffectUsed() {
+        return false;
+    }
+
+    // todo
+    @Override
+    public void setBuilding2EffectUsed(boolean building2EffectUsed) {
+
+    }
+
 
     /**
      * Updates localPlayer value when the object is updated into the queue by the server

@@ -25,6 +25,7 @@ public class CLI implements UI {
     private final VirtualView client;
     private ClientModel readOnlyModel;
     private Player localPlayer;
+    private boolean building2EffectUsed;
     List<Color> availableColors;
     Scanner scanner;
 
@@ -36,6 +37,7 @@ public class CLI implements UI {
         this.client = client;
         this.scanner = new Scanner(System.in);
         resetColors();
+        building2EffectUsed = false;
     }
 
     @Override
@@ -368,10 +370,17 @@ public class CLI implements UI {
                 .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
                 .findFirst().orElse(null);
 
-        // if not found, return
+
         if (myOfferingCard == null) {
-            System.out.println("No offering card chosen!");
-            return;
+            // if player has BuildingType2
+            if (localPlayer.hasBuilding2()) {
+                myOfferingCard = readOnlyModel.getBuilding2OfferingCard();
+            }
+            else {
+                // if not found, return
+                System.out.println("No offering card chosen!");
+                return;
+            }
         }
 
         // calculate the number of cards the user can pick
@@ -482,10 +491,11 @@ public class CLI implements UI {
             return;
         }
 
-
         // call server method
         try{
             virtualServer.pickTribeCards(this.client, characterCards,buildingCards);
+            if(myOfferingCard.equals(readOnlyModel.getBuilding2OfferingCard()))
+                setBuilding2EffectUsed(true);
         }
         catch (Exception e) {
             System.err.println("CLI error while calling pickTribeCards on the virtualServer: " + e.getMessage());
@@ -780,6 +790,16 @@ public class CLI implements UI {
 
     public Player getLocalPlayer() {
         return localPlayer;
+    }
+
+    @Override
+    public boolean isBuilding2EffectUsed() {
+        return building2EffectUsed;
+    }
+
+    @Override
+    public void setBuilding2EffectUsed(boolean building2EffectUsed) {
+        this.building2EffectUsed = building2EffectUsed;
     }
 
     /**
