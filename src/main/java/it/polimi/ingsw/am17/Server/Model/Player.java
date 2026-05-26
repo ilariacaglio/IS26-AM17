@@ -202,13 +202,13 @@ public class Player implements Serializable {
     }
 
     public void addCharacter(CharacterCard card) {
-        //if player has buildingType14 (and all conditions from building are met add food)
-        int foodFromBuildingType14 = 0;
+        //if player has buildingType14 or buildingType10 (and all conditions from building are met add food)
+        int foodBonusFromBuildings = 0;
         for(BuildingCard buildingCard : buildingCards)
         {
-            foodFromBuildingType14+= buildingCard.GetFoodBonusFromCardAcquisition(characterCards, card);
+            foodBonusFromBuildings += buildingCard.GetFoodBonusFromCardAcquisition(characterCards, card);
         }
-        addFood(foodFromBuildingType14);
+        addFood(foodBonusFromBuildings);
         characterCards.add(card);
     }
 
