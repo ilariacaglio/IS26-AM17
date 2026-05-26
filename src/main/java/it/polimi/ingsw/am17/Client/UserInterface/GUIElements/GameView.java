@@ -62,8 +62,7 @@ public class GameView {
         Stage stage = (Stage) mainGui.scene.getWindow();
         stage.setMaximized(true);
 
-        root = new VBox(15);
-        root.setPadding(new Insets(15));
+        root = new VBox(10);
 
         turnOverlay = new VBox();
         turnOverlay.setAlignment(Pos.CENTER);
@@ -73,7 +72,7 @@ public class GameView {
         turnText.setStyle("""
             -fx-background-color: rgba(0, 0, 0, 0.75);
             -fx-background-radius: 15px;
-            -fx-padding: 15px 40px;
+            -fx-padding: 5px 40px;
             -fx-border-color: #c76b22;
             -fx-border-radius: 15px;
             -fx-border-width: 2px;
