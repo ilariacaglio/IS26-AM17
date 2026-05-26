@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
  * Card effect
  * SINGLETON
  */
+@JsonIgnoreProperties({"logger"})
 public class BuildingType14 extends BuildingCard {
     Logger logger = Logger.getLogger(BuildingType14.class.getName());
 
