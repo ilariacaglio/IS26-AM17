@@ -443,7 +443,7 @@ public class GameView {
                 if (serverCard.getPlayer() != null) {
                     card.updateBorderFromPlayer(serverCard.getPlayer().getColor().getFxColor());
                 } else {
-                    card.updateBorderFromPlayer(javafx.scene.paint.Color.BLACK);
+                    card.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
                 }
             }
         }
