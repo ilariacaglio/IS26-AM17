@@ -33,26 +33,35 @@ public class CardGUI extends StackPane {
 
         this.getChildren().add(border);
 
+        this.setPrefSize(CARD_WIDTH, CARD_HEIGHT);
+        this.setMinSize(CARD_WIDTH, CARD_HEIGHT);
+        this.setMaxSize(CARD_WIDTH, CARD_HEIGHT);
+
 
         if (imagePath != null) {
-            Image img = new Image(getClass().getResourceAsStream(imagePath));
-            ImageView view = new ImageView(img);
+            var resourceStream = getClass().getResourceAsStream(imagePath);
+            if(resourceStream!=null) {
+                //Image img = new Image(getClass().getResourceAsStream(imagePath));
+                Image img = new Image(resourceStream);
+                ImageView view = new ImageView(img);
 
-            view.setFitWidth(CARD_WIDTH);
-            view.setFitHeight(CARD_HEIGHT);
-            view.setPreserveRatio(true);
-            view.setSmooth(true);
+                view.setFitWidth(CARD_WIDTH);
+                view.setFitHeight(CARD_HEIGHT);
+                view.setPreserveRatio(true);
+                view.setSmooth(true);
 
-            this.setPrefSize(CARD_WIDTH, CARD_HEIGHT);
-            this.setMinSize(CARD_WIDTH, CARD_HEIGHT);
-            this.setMaxSize(CARD_WIDTH, CARD_HEIGHT);
 
-            Rectangle clip = new Rectangle(90, 130);
-            clip.setArcWidth(12);
-            clip.setArcHeight(12);
-            view.setClip(clip);
+                Rectangle clip = new Rectangle(90, 130);
+                clip.setArcWidth(12);
+                clip.setArcHeight(12);
+                view.setClip(clip);
 
-            this.getChildren().add(view);
+                this.getChildren().add(view);
+
+            }
+            else {
+                System.err.println("ATTENZIONE: File immagine non trovato al percorso: " + imagePath);
+            }
         }
     }
 
