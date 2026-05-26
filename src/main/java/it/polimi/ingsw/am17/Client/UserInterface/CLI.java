@@ -785,4 +785,13 @@ public class CLI implements UI {
         System.out.print("\r> ");
         System.out.flush();
     }
+    public void updateInterfaceFromPickTribes(){
+        drawInterface(null);
+    }
+    public void updateInterfaceFromPickOffering(){
+        drawInterface(null);
+    }
+    public void updateInterfaceFromEndTurn(){
+        drawInterface(null);
+    }
 }
