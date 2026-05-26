@@ -28,8 +28,8 @@ public class CLI implements UI {
     List<Color> availableColors;
     Scanner scanner;
 
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
     public CLI (VirtualServer server, VirtualView client) {
         this.virtualServer = server;
@@ -43,6 +43,7 @@ public class CLI implements UI {
         this.readOnlyModel = model;
     }
 
+    @Override
     public void setAvailableColors(List<Color> availableColors) {this.availableColors=availableColors;}
 
     /**
@@ -58,6 +59,7 @@ public class CLI implements UI {
             String nickname = askNickname();
             Color color = chooseColor();
             localPlayer = new Player(nickname, color);
+            printHelp();
 
             while (running) {
                 showPrompt();
