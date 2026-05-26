@@ -123,6 +123,10 @@ public class GUI implements UI {
         gameView = new GameView(this, game, localPlayer);
         scene.setRoot(gameView.getRoot());
     }
+    public void showStartInterface(){
+        StartView startView = new StartView(this);
+        scene.setRoot(startView.getRoot());
+    }
 
     public void showPlayerCountSelection(){
         PlayerCountSelectionView playerCountSelectionView = new PlayerCountSelectionView(this);
