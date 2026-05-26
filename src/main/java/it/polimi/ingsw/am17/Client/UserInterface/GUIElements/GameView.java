@@ -159,6 +159,15 @@ public class GameView {
                             .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
                             .findFirst().orElse(null);
 
+                    if (myOfferingCard == null) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Azione non consentita");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Non possiedi ancora una Offering Card per questa fase di gioco!");
+                        alert.showAndWait();
+                        return;
+                    }
+
                     Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
                             tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
                             game.getUpperBuildingRow(), game.getLowerBuildingRow());
@@ -417,12 +426,28 @@ public class GameView {
     }
 
     private void updateOfferingCards(){
-        //List<OfferingCard> offeringCardRow = new ArrayList<>(game.getOfferingCards());
+        List<OfferingCard> offeringCardRow = new ArrayList<>(game.getOfferingCards());
         for (CardGUI cardGUI : offeringCardGUI){
             cardGUI.updateBorderFromPlayer(javafx.scene.paint.Color.BLACK);
             if(cardGUI.isSelected())
                 cardGUI.setVisualSelection(false);
         }
+        for (int i = 0; i < offeringCardGUI.size(); i++) {
+            CardGUI card = offeringCardGUI.get(i);
+
+            if (i < offeringCardRow.size()) {
+                OfferingCard serverCard = offeringCardRow.get(i);
+
+                card.setUserData(serverCard);
+
+                if (serverCard.getPlayer() != null) {
+                    card.updateBorderFromPlayer(serverCard.getPlayer().getColor().getFxColor());
+                } else {
+                    card.updateBorderFromPlayer(javafx.scene.paint.Color.BLACK);
+                }
+            }
+        }
+
     }
 
     private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card) {
