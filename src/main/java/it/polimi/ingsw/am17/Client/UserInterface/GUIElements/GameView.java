@@ -23,6 +23,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -158,6 +159,15 @@ public class GameView {
                             .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
                             .findFirst().orElse(null);
 
+                    if (myOfferingCard == null) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Azione non consentita");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Non possiedi ancora una Offering Card per questa fase di gioco!");
+                        alert.showAndWait();
+                        return;
+                    }
+
                     Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
                             tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
                             game.getUpperBuildingRow(), game.getLowerBuildingRow());
@@ -176,7 +186,6 @@ public class GameView {
                     }
 
                 }
-
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -315,6 +324,7 @@ public class GameView {
         // Update turn overlay visibility
         turnOverlay.setVisible(game.isPlayerTurn());
 
+
         // Update Upper Cards
         updateUpperCards();
 
@@ -380,14 +390,16 @@ public class GameView {
 
 
     private void updateUpperCards() {
+        List<TribesCard> upperTribeRow = new ArrayList<>(game.getUpperTribeRow());
+        List<BuildingCard> upperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
         upperCardsBox.getChildren().clear(); // Remove old cards
-        for(TribesCard card : game.getUpperTribeRow()){
+        for(TribesCard card : upperTribeRow){
             CardGUI upperCard = new CardGUI(card.getImagePath());
             upperCard.setUserData(card);
             setOnMouseClickForTribes(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
-        for(BuildingCard card : game.getUpperBuildingRow()){
+        for(BuildingCard card : upperBuildingRow){
             CardGUI upperCard = new CardGUI(card.getImagePath());
             upperCard.setUserData(card);
             setOnMouseClickForBuilding(upperCard, card);
@@ -396,14 +408,16 @@ public class GameView {
     }
 
     private void updateLowerCards(){
+        List<TribesCard> lowerTribeRow = new ArrayList<>(game.getLowerTribeRow());
+        List<BuildingCard> lowerBuildingRow = new ArrayList<>(game.getLowerBuildingRow());
         lowerCardsBox.getChildren().clear();
-        for(TribesCard card : game.getLowerTribeRow()){
+        for(TribesCard card : lowerTribeRow){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
             lowerCard.setUserData(card);
             setOnMouseClickForTribes(lowerCard, card);
             lowerCardsBox.getChildren().add(lowerCard);
         }
-        for(BuildingCard card : game.getLowerBuildingRow()){
+        for(BuildingCard card : lowerBuildingRow){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
             lowerCard.setUserData(card);
             setOnMouseClickForBuilding(lowerCard, card);
@@ -412,11 +426,28 @@ public class GameView {
     }
 
     private void updateOfferingCards(){
+        List<OfferingCard> offeringCardRow = new ArrayList<>(game.getOfferingCards());
         for (CardGUI cardGUI : offeringCardGUI){
             //cardGUI.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
             if(cardGUI.isSelected())
                 cardGUI.setVisualSelection(false);
         }
+        for (int i = 0; i < offeringCardGUI.size(); i++) {
+            CardGUI card = offeringCardGUI.get(i);
+
+            if (i < offeringCardRow.size()) {
+                OfferingCard serverCard = offeringCardRow.get(i);
+
+                card.setUserData(serverCard);
+
+                if (serverCard.getPlayer() != null) {
+                    card.updateBorderFromPlayer(serverCard.getPlayer().getColor().getFxColor());
+                } else {
+                    card.updateBorderFromPlayer(javafx.scene.paint.Color.BLACK);
+                }
+            }
+        }
+
     }
 
     private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card) {
