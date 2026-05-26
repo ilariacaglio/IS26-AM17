@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,7 +16,7 @@ public class BuildingCard extends GameCard implements Serializable {
 
     @JsonCreator
     public BuildingCard(
-            @JsonProperty("era") Integer era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("foodCost") Integer foodCost,
             @JsonProperty("bonusPoints") Integer bonusPoints) {
         super(true, era);
@@ -58,4 +59,9 @@ public class BuildingCard extends GameCard implements Serializable {
     public String toString() {
         return "[" + foodCost + "F " + bonusPoints + "BP";
     }
+
+    public String getImagePath(){
+        return "";
+    }
+
 }

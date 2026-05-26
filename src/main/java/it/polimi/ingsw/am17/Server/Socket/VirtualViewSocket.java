@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Server.Socket;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
@@ -7,6 +8,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
@@ -38,9 +40,9 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updateEra(int era) throws Exception {
-        Message message = new Message(MessageType.UPDATE_ERA);
-        message.setEra(era);
+    public void updateGameState(GameState era) throws Exception {
+        Message message = new Message(MessageType.UPDATE_GAME_STATE);
+        message.setGameState(era);
         message.send(socket);
     }
 
@@ -91,15 +93,18 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void updateRanking(List<RankingEntry> ranking) throws Exception {
-        Message message = new Message(MessageType.UPDATE_RANKING);
-        message.setRanking(ranking);
+    public void updateError(InvalidOperationException exception) throws Exception {
+        Message message = new Message(MessageType.UPDATE_ERROR);
+        message.setException(exception);
         message.send(socket);
     }
 
     @Override
-    public void notifyEndGame() throws Exception {
+    public void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws Exception {
         Message message = new Message(MessageType.END_GAME);
+        message.setDisconnectedPlayerNickname(disconnectedPlayer);
+        message.setRanking(ranking);
+        message.setOrderedPlayer(orderedPlayers);
         message.send(socket);
     }
 }

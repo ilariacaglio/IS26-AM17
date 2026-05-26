@@ -2,7 +2,11 @@ package it.polimi.ingsw.am17.Server.Model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -17,7 +21,43 @@ public class Player implements Serializable {
     private int pp;
     private int food;
     private Color color;
+
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.PROPERTY,
+            property = "JacksonTribeCardType",
+            defaultImpl = CharacterCard.class)
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = Inventor.class, name = "inventor"),
+            @JsonSubTypes.Type(value = Binder.class, name = "binder"),
+            @JsonSubTypes.Type(value = Shaman.class, name = "shaman"),
+            @JsonSubTypes.Type(value = Artist.class, name = "artist"),
+            @JsonSubTypes.Type(value = Hunter.class, name = "hunter"),
+            @JsonSubTypes.Type(value = Builder.class, name = "builder")
+    })
     private List<CharacterCard> characterCards;
+
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.PROPERTY,
+            property = "JacksonBuildingCardType",
+            defaultImpl = BuildingCard.class)
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = BuildingType1.class, name = "building1"),
+            @JsonSubTypes.Type(value = BuildingType2.class, name = "building2"),
+            @JsonSubTypes.Type(value = BuildingType3M.class, name = "building3M"),
+            @JsonSubTypes.Type(value = BuildingType4.class, name = "building4"),
+            @JsonSubTypes.Type(value = BuildingType5.class, name = "building5"),
+            @JsonSubTypes.Type(value = BuildingType6.class, name = "building6"),
+            @JsonSubTypes.Type(value = BuildingType7.class, name = "building7"),
+            @JsonSubTypes.Type(value = BuildingType8.class, name = "building8"),
+            @JsonSubTypes.Type(value = BuildingType9.class, name = "building9"),
+            @JsonSubTypes.Type(value = BuildingType10.class, name = "building10"),
+            @JsonSubTypes.Type(value = BuildingType11.class, name = "building11"),
+            @JsonSubTypes.Type(value = BuildingType12.class, name = "building12"),
+            @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
+            @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
+    })
     private List<BuildingCard> buildingCards;
 
     private static final Logger logger = Logger.getLogger(Game.class.getName());
@@ -29,8 +69,46 @@ public class Player implements Serializable {
     @JsonCreator
     public Player(@JsonProperty("nickname") String nickname,
                   @JsonProperty("color") Color color,
-                  @JsonProperty("characterCards") List<CharacterCard> characterCards,
-                  @JsonProperty("buildingCards") List<BuildingCard> buildingCards) {
+
+                  @JsonProperty("characterCards")
+                  @JsonTypeInfo(
+                          use = JsonTypeInfo.Id.NAME,
+                          include = JsonTypeInfo.As.PROPERTY,
+                          property = "JacksonTribeCardType",
+                          defaultImpl = CharacterCard.class)
+                  @JsonSubTypes({
+                          @JsonSubTypes.Type(value = Inventor.class, name = "inventor"),
+                          @JsonSubTypes.Type(value = Binder.class, name = "binder"),
+                          @JsonSubTypes.Type(value = Shaman.class, name = "shaman"),
+                          @JsonSubTypes.Type(value = Artist.class, name = "artist"),
+                          @JsonSubTypes.Type(value = Hunter.class, name = "hunter"),
+                          @JsonSubTypes.Type(value = Builder.class, name = "builder")
+                  })
+                  List<CharacterCard> characterCards,
+
+                  @JsonProperty("buildingCards")
+                  @JsonTypeInfo(
+                          use = JsonTypeInfo.Id.NAME,
+                          include = JsonTypeInfo.As.PROPERTY,
+                          property = "JacksonBuildingCardType",
+                          defaultImpl = BuildingCard.class)
+                  @JsonSubTypes({
+                          @JsonSubTypes.Type(value = BuildingType1.class, name = "building1"),
+                          @JsonSubTypes.Type(value = BuildingType2.class, name = "building2"),
+                          @JsonSubTypes.Type(value = BuildingType3M.class, name = "building3M"),
+                          @JsonSubTypes.Type(value = BuildingType4.class, name = "building4"),
+                          @JsonSubTypes.Type(value = BuildingType5.class, name = "building5"),
+                          @JsonSubTypes.Type(value = BuildingType6.class, name = "building6"),
+                          @JsonSubTypes.Type(value = BuildingType7.class, name = "building7"),
+                          @JsonSubTypes.Type(value = BuildingType8.class, name = "building8"),
+                          @JsonSubTypes.Type(value = BuildingType9.class, name = "building9"),
+                          @JsonSubTypes.Type(value = BuildingType10.class, name = "building10"),
+                          @JsonSubTypes.Type(value = BuildingType11.class, name = "building11"),
+                          @JsonSubTypes.Type(value = BuildingType12.class, name = "building12"),
+                          @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
+                          @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
+                  })
+                  List<BuildingCard> buildingCards) {
         this.nickname = nickname;
         this.color = color;
         this.characterCards = characterCards != null ? characterCards : new ArrayList<>();
@@ -80,7 +158,7 @@ public class Player implements Serializable {
     public void addFood(int quantity) {
         int newAmount = food + quantity;
         if (newAmount < 0) {
-            throw new IllegalStateException("Not enough food: requested change " + quantity + " having " + food);
+            throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD);
         }
         this.food = newAmount;
     }
@@ -126,20 +204,15 @@ public class Player implements Serializable {
         }
     }
 
-    public void addCharacter(TribesCard card) {
-        if (card.getCardType().isEvent()) {
-            throw new IllegalArgumentException(
-                    "Cannot add an event card to the player's character list."
-            );
-        }
-        //if player has buildingType14 (and all conditions from building are met add food)
-        int foodFromBuildingType14 = 0;
+    public void addCharacter(CharacterCard card) {
+        //if player has buildingType14 or buildingType10 (and all conditions from building are met add food)
+        int foodBonusFromBuildings = 0;
         for(BuildingCard buildingCard : buildingCards)
         {
-            foodFromBuildingType14+= buildingCard.GetFoodBonusFromCardAcquisition(characterCards, (CharacterCard)card);
+            foodBonusFromBuildings += buildingCard.GetFoodBonusFromCardAcquisition(characterCards, card);
         }
-        addFood(foodFromBuildingType14);
-        characterCards.add((CharacterCard) card);
+        addFood(foodBonusFromBuildings);
+        characterCards.add(card);
     }
 
     public void addBuilding(BuildingCard card) {
@@ -149,7 +222,6 @@ public class Player implements Serializable {
 
     /**
      * add cards to player (from playerAction)
-     * TODO: add FoodBonusFromCardAcquisition
      * @param characterCards
      * @param buildingCards
      */
@@ -167,14 +239,14 @@ public class Player implements Serializable {
         }
 
         if(!canBuyBuidings(buildingCards))
-            throw new IllegalStateException("Not enough food to buy building cards");
+            throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD_BUILDINGS);
 
         for (BuildingCard card : buildingCards){
             int cost = calculateBuildingCost(card);
             try {
                 addFood(-cost);
             } catch (IllegalStateException e) {
-                throw new IllegalStateException("Not enough food to buy building cards");
+                throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD_BUILDINGS);
             }
             addBuilding(card);
         }
@@ -483,4 +555,5 @@ public class Player implements Serializable {
         columnMaxLength.put(CardType.BINDER, 8  + fixedGap);
         return columnMaxLength;
     }
+
 }

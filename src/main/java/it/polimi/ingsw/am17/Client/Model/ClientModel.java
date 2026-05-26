@@ -1,10 +1,14 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
@@ -12,13 +16,15 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class ClientModel {
+
+    private String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
+    private UUID id;
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
 
     private final UI userInterface;
 
-    private UUID id;
     private int numPlayers;
-    private int currentEra;
+    private GameState gameState;
     private boolean isPickOCPhase;
 
     private List<UUID> gamesIdList;
@@ -35,9 +41,10 @@ public class ClientModel {
 
     private final List<RankingEntry> ranking;
 
+
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
-        currentEra = -1;
+        gameState = GameState.NONE;
         gamesIdList = new ArrayList<>();
         orderedPlayer = new LinkedList<>();
         offeringCards = new ArrayList<>();
@@ -61,8 +68,10 @@ public class ClientModel {
      */
     public void setGameId(UUID id) {
         this.id = id;
+        setGameState(GameState.LOBBY);
         // UI communication
         userInterface.printGameId(id);
+        userInterface.drawInterface(null);
     }
 
     public UUID getGameId() {
@@ -73,22 +82,23 @@ public class ClientModel {
         this.numPlayers = numPlayers;
     }
 
+
     public int getNumPlayers() {
         return numPlayers;
     }
 
     /**
      * Sets currentEra field and displays it on the screen
-     * @param currentEra    the value to be set
+     * @param gameState    the value to be set
      */
-    public void setCurrentEra(int currentEra){
-        this.currentEra = currentEra;
+    public void setGameState(GameState gameState){
+        this.gameState = gameState;
         // UI communication
         userInterface.printEra();
     }
 
-    public int getCurrentEra(){
-        return currentEra;
+    public GameState getGameState(){
+        return gameState;
     }
 
     public boolean isPickOCPhase() {
@@ -265,12 +275,17 @@ public class ClientModel {
                 .findFirst().ifPresent(card -> card.setPlayer(null));
     }
 
+    public String getTURN_CARD_IMAGE_PATH() {
+        return TURN_CARD_IMAGE_PATH + numPlayers + ".png";
+    }
+
+
     /**
      * Checks if it is the turn of the local player.
      * @return true if it is players turn, false otherwise.
      */
     public boolean isPlayerTurn(){
-        if(currentEra<1)
+        if(!gameState.isGameStarted())
             return false;
         return userInterface.getLocalPlayer().equals(orderedPlayer.peek());
     }
@@ -291,7 +306,7 @@ public class ClientModel {
     public void updatePlayerQueue(Queue<Player> playerQueue) {
         setOrderedPlayers(playerQueue);
         // UI communication
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
     /**
@@ -306,7 +321,7 @@ public class ClientModel {
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
 
-        setCurrentEra(1);
+        setGameState(GameState.ERA1);
         setNumPlayers(players.size());
         setOrderedPlayers(players);
         setTribeCards(upperRow, lowerRow);
@@ -314,7 +329,7 @@ public class ClientModel {
         setOfferingCards(offeringCards);
         setPickOCPhase(true);
 
-        userInterface.drawInterface(this,null);
+        userInterface.drawInterface(null);
     }
 
 
@@ -336,7 +351,7 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setPickOCPhase(true);
 
-        userInterface.drawInterface(this,null);
+        userInterface.updateInterfaceFromEndTurn();
     }
 
     /**
@@ -356,7 +371,7 @@ public class ClientModel {
      */
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
         setPlayerOfferingCard(offeringCard, player);
-        userInterface.drawInterface(this,null);
+        userInterface.updateInterfaceFromPickOffering();
     }
 
     /**
@@ -371,30 +386,64 @@ public class ClientModel {
         removePlayerFromOfferingCard(player);
         removeTribeCards(characterCards);
         removeBuildingCards(buildingCards);
-        userInterface.drawInterface(this,null);
+        userInterface.updateInterfaceFromPickTribes();
     }
 
     /**
-     * Updates ranking field and displays it to screen.
-     * @param ranking   the value to be set
+     * Resets all game rows, offering cards, ranking and player queue
      */
-    public void updateRanking(List<RankingEntry> ranking) {
-        setRanking(ranking);
-        userInterface.drawInterface(this,null);
-    }
-
-    /**
-     * Updates era value when a user disconnects and displays it to the screen
-     */
-    public void updateGameEndedByUser() {
-        // setGameId(null); // TODO: does not work, breaks RMI communication?!
-        currentEra = -1; // TODO: -2 for aborted game? This works anyways
+    public void resetGameAttributes() {
         setOrderedPlayers(new LinkedList<>());
         setOfferingCards(new ArrayList<>());
         setTribeCards(new ArrayList<>(), new ArrayList<>());
         setBuildingCards(new ArrayList<>(), new ArrayList<>());
         setRanking(new ArrayList<>());
+    }
+
+    /**
+     * Updates model when an error occurred handling the users request
+     * @param exception the exception thrown
+     */
+    public void updateNotifyError(InvalidOperationException exception) {
+        ErrorType type = exception.getErrorType();
+        switch (type) {
+            case DUPLICATE_COLOR:
+                userInterface.setAvailableColors(((ColorException)exception).getAvailableColors());
+                setGameState(GameState.NONE);
+                break;
+            case DUPLICATE_NICKNAME:
+                setGameState(GameState.NONE);
+                break;
+        }
+        String messageToDisplay = (type == ErrorType.UNKNOWN)
+                ? exception.getMessage()
+                : type.getMessage();
+        userInterface.drawInterface(messageToDisplay);
+    }
+
+    /**
+     * Updates model when game ends
+     * @param disconnectedPlayer    if not null specifies the disconnected player
+     * @param ranking               if not null, the global ranking
+     * @param orderedPlayers        if not null, the local ranking
+     */
+    public void updateEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
+        String message = null;
+        // reset game state
+        gameState = GameState.NONE;
+        if (disconnectedPlayer == null){
+            // game ended by the server
+            // set global ranking
+            setRanking(ranking);
+            // set local ranking
+            setOrderedPlayers(orderedPlayers);
+        }
+        else {
+            // game ended by player disconnection
+            resetGameAttributes();
+            message = "The game has ended due to disconnection of player " + disconnectedPlayer;
+        }
+        userInterface.drawInterface(message);
         logger.info("Game closed.");
-        // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
     }
 }

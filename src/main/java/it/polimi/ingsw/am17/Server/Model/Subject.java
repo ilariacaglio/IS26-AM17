@@ -15,8 +15,9 @@ import java.util.stream.Collectors;
  * Implements a subject in the observer pattern (an observable "game").
  */
 public abstract class Subject {
-    private final List<VirtualView> clients = new ArrayList<>();
     private final static Logger logger = Logger.getLogger(Subject.class.getName());
+
+    private final List<VirtualView> clients = new ArrayList<>();
 
     /**
      * Attach a client to the subject (start observing).
@@ -24,7 +25,7 @@ public abstract class Subject {
      */
     public void attach(VirtualView client) {
         clients.add(client);
-        logger.info("Added client: " + client.getClass().getSimpleName());
+        logger.info("Added client " + client.getClass().getSimpleName() + " as observer.");
     }
 
     /**
@@ -33,16 +34,20 @@ public abstract class Subject {
      */
     public void detach(VirtualView client) {
         clients.remove(client);
-        logger.info("Removed client: " + client.getClass().getSimpleName());
+        logger.info("Removed client " + client.getClass().getSimpleName() + " from observers.");
 
     }
 
-    void notifyEra(int era) {
+    /**
+     * Notifies the start of a new era
+     * @param era   the era that has started
+     */
+    void notifyGameState(GameState era) {
         for (VirtualView client : clients) {
             try {
-                client.updateEra(era);
+                client.updateGameState(era);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify game state: " + e.getMessage());
             }
         }
     }
@@ -52,7 +57,7 @@ public abstract class Subject {
             try {
                 client.updatePlayerQueue(orderedPlayer);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify player queue" + e.getMessage());
             }
         }
     }
@@ -62,7 +67,7 @@ public abstract class Subject {
             try {
                 client.updatePlayerSelectOfferingCard(player, offeringCard);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify offering card selection: " + e.getMessage());
             }
         }
     }
@@ -72,7 +77,7 @@ public abstract class Subject {
             try {
                 client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify tribes card selection: " + e.getMessage());
             }
         }
     }
@@ -81,6 +86,7 @@ public abstract class Subject {
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         Queue<Player> newQueue = players.stream()
                 .map(p -> {
+                    // Creates a defensive copy of the player, intentionally omitting their cards
                     Player copy = new Player(p.getNickname(), p.getColor());
                     copy.addFood(p.getFood());
                     copy.addPp(p.getPp());
@@ -91,7 +97,7 @@ public abstract class Subject {
             try {
                 client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify end turn: " + e.getMessage());
             }
         }
     }
@@ -102,30 +108,19 @@ public abstract class Subject {
             try {
                 client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify game start: " + e.getMessage());
             }
         }
     }
 
-    void notifyRanking (List<RankingEntry> ranking) {
-        for (VirtualView client : clients) {
-            try {
-                client.updateRanking(ranking);
-            }
-            catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
-            }
-        }
-    }
-
-    // TODO: remove clients from list
-    void notifyEndGame() {
+    void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         for (VirtualView client : clients) {
             logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
             try {
-                client.notifyEndGame();
+                client.notifyEndGame(disconnectedPlayer, ranking, orderedPlayers);
+                clients.remove(client);
             } catch (Exception e) {
-                logger.severe("Subject method failed to call client update" + e.getMessage());
+                logger.severe("Failed to notify end game: " + e.getMessage());
             }
         }
     }

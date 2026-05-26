@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -8,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Binder;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -31,13 +33,13 @@ public class GameTest {
     @Test
     void testGameCreation_0players(){
         // test exception when given invalid number of players
-        assertThrows(IllegalArgumentException.class, () -> new Game(id, 0));
+        assertThrows(InvalidOperationException.class, () -> new Game(id, 0));
     }
 
     @Test
     void testGameCreation_6players(){
         // test exception when given invalid number of players
-        assertThrows(IllegalArgumentException.class, () -> new Game(id, 6));
+        assertThrows(InvalidOperationException.class, () -> new Game(id, 6));
     }
 
     @Test
@@ -68,7 +70,7 @@ public class GameTest {
         assertEquals(3, game.getPlayersList().size());
         // check the game has started
         //check current era updated to 1
-        assertEquals(1, game.getCurrentEra());
+        assertEquals(GameState.ERA1, game.getGameState());
         //check size of upper and lower tribe rows
         assertEquals(4, game.getLowerRow().size());
         assertEquals(7, game.getUpperRow().size());
@@ -88,7 +90,7 @@ public class GameTest {
         // add player to game
         game.addPlayer(p);
         // check duplicate player
-        assertThrows(IllegalStateException.class, () -> game.addPlayer(p));
+        assertThrows(InvalidOperationException.class, () -> game.addPlayer(p));
     }
 
     @Nested
@@ -163,7 +165,7 @@ public class GameTest {
         @Test
         void testAddPlayer_Exception() {
             //this checks both started and overflow cases
-            assertThrows(IllegalStateException.class, () -> game.addPlayer(new Player("player4", Color.BLUE)));
+            assertThrows(InvalidOperationException.class, () -> game.addPlayer(new Player("player4", Color.BLUE)));
         }
 
         @Test
@@ -184,11 +186,11 @@ public class GameTest {
             game.endRound();
             //get upper building row value
             List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
-            assertEquals(1, game.getCurrentEra());
+            assertEquals(GameState.ERA1, game.getGameState());
             //play one more round
             game.endRound();
             // check era changed to 2
-            assertEquals(2, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             // check the building rows
             assertEquals(oldUpperBuildingRow.size(), game.getLowerBuildingRow().size());
             assertTrue(oldUpperBuildingRow.containsAll(game.getLowerBuildingRow()));
@@ -204,10 +206,10 @@ public class GameTest {
             }
             //get upper building row value
             List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
-            assertEquals(2, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             game.endRound();
             // check era changed to 3
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA3, game.getGameState());
             // check the building rows
             assertEquals(oldUpperBuildingRow.size(), game.getLowerBuildingRow().size());
             assertTrue(oldUpperBuildingRow.containsAll(game.getLowerBuildingRow()));
@@ -220,21 +222,21 @@ public class GameTest {
             //play turns
             game.endRound();
             game.endRound();
-            assertEquals(1, game.getCurrentEra());
+            assertEquals(GameState.ERA1, game.getGameState());
             game.endRound();
-            assertEquals(2, game.getCurrentEra());
-            game.endRound();
-            game.endRound();
-            assertEquals(2, game.getCurrentEra());
-            game.endRound();
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             game.endRound();
             game.endRound();
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
+            game.endRound();
+            assertEquals(GameState.ERA3, game.getGameState());
+            game.endRound();
+            game.endRound();
+            assertEquals(GameState.ERA3, game.getGameState());
             game.endRound();
             game.endRound();
             //check if the game has ended
-            assertEquals(-1, game.getCurrentEra());
+            assertEquals(GameState.ENDED, game.getGameState());
         }
 
         @Test
@@ -243,7 +245,7 @@ public class GameTest {
             String wrongPlayerNickname = pickWrongPlayer().getNickname();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.selectOfferingCard(wrongPlayerNickname, offeringCardList.getFirst().getOrderLetter()));
         }
 
@@ -268,19 +270,19 @@ public class GameTest {
             game.selectOfferingCard(currentPlayer.getNickname(), offeringCardList.getFirst().getOrderLetter());
             // test card already picked error
             Player finalCurrentPlayer = game.getCurrentPlayer();
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.selectOfferingCard(
                             finalCurrentPlayer.getNickname(),
                             offeringCardList.getFirst().getOrderLetter()));
             // test card null error
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.selectOfferingCard(finalCurrentPlayer.getNickname(), null));
         }
 
         @Test
         void testSelectOfferingCard_CardNotFound(){
             // test offering card not if offeringCardList
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.selectOfferingCard(game.getCurrentPlayer().getNickname(), 'M'));
         }
 
@@ -382,7 +384,7 @@ public class GameTest {
             setFirstPlayerToOffering(0);
             List<CharacterCard> characterList = new ArrayList<>();
             // add a random card to list
-            characterList.add(new Binder(2,4, null));
+            characterList.add(new Binder(GameState.ERA2,4, null));
             assertThrows(RuntimeException.class, () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(), characterList, Collections.emptyList()));
         }
 
@@ -400,7 +402,7 @@ public class GameTest {
             if(!game.getUpperBuildingRow().isEmpty()) {
                 buildingList.addAll(extractUpperBuildings(numUpper));
             }
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(), Collections.emptyList(), buildingList));
         }
 

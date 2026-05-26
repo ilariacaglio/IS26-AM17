@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -15,7 +16,7 @@ public class Shaman extends CharacterCard {
 
     @JsonCreator
     public Shaman(
-            @JsonProperty("era") Integer era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("minPlayers") Integer minPlayers,
             @JsonProperty("stars") Integer stars,
             @JsonProperty("id") UUID id){
@@ -41,4 +42,11 @@ public class Shaman extends CharacterCard {
     public String getDetails() {
         return super.getDetails() + " " + stars + "★";
     }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Shaman/shaman_"+ stars+".png";
+    }
+
+
 }

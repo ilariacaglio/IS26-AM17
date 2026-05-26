@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +24,7 @@ public class BuildingType13M extends BuildingCard {
 
     @JsonCreator
     public BuildingType13M(
-            @JsonProperty("era") int era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("foodCost") int foodCost,
             @JsonProperty("bonusPoints") int bonusPoints,
             @JsonProperty("characterType") CardType characterType) {
@@ -52,5 +53,10 @@ public class BuildingType13M extends BuildingCard {
     @Override
     public String toString() {
         return super.toString() + " Effect: -1PP/" + characterType.toString() + " in FoodEvent] ";
+    }
+    @Override
+    public String getImagePath()
+    {
+        return "/Images/Buildings/building"+ getEra() +"_13_"+characterType.toString().toLowerCase()+".png";
     }
 }

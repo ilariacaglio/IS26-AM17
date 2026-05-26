@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class Inventor extends CharacterCard {
 
     @JsonCreator
     public  Inventor(
-            @JsonProperty("era") int era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("minPlayers") int minPlayers,
             @JsonProperty("icon") InventorIconType icon,
             @JsonProperty("id") UUID id) {
@@ -42,4 +43,10 @@ public class Inventor extends CharacterCard {
     public String getDetails() {
         return super.getDetails() + "(" + icon.toString() + ")";
     }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Inventor/inventor_"+ icon.toString() +".png";
+    }
+
 }

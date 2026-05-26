@@ -1,9 +1,11 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,34 +39,34 @@ class PlayerTest {
 
     @Test
     void addFoodShouldNotGoUnderZero() {
-        assertThrows(IllegalStateException.class, () -> player.addFood(-5));
+        assertThrows(InvalidOperationException.class, () -> player.addFood(-5));
     }
 
     @Test
     void calculateFinalPointsTest() {
 
         // Builders PP: 5 + 4 = 9
-        Builder builder = new Builder(1, 2, 5, 0, null);
-        Builder builder2 = new Builder(2, 2, 4, 0, null);
+        Builder builder = new Builder(GameState.ERA1, 2, 5, 0, null);
+        Builder builder2 = new Builder(GameState.ERA2, 2, 4, 0, null);
         player.addCards(List.of(builder, builder2), new ArrayList<>());
 
         // Inventors PP: 3 (amount of inventors) * 2 (unique icons) = 6
-        Inventor inv1 = new Inventor(1, 2, InventorIconType.FLUTE, null);
-        Inventor inv2 = new Inventor(1, 2, InventorIconType.FLUTE, null);
-        Inventor inv3 = new Inventor(1, 2, InventorIconType.CANOE, null);
+        Inventor inv1 = new Inventor(GameState.ERA1, 2, InventorIconType.FLUTE, null);
+        Inventor inv2 = new Inventor(GameState.ERA1, 2, InventorIconType.FLUTE, null);
+        Inventor inv3 = new Inventor(GameState.ERA1, 2, InventorIconType.CANOE, null);
         player.addCards(List.of(inv1, inv2, inv3), new ArrayList<>());
 
         // Artists PP: lower(amount/2) * 10 = 20
-        Artist art1 = new Artist(1, 2, null);
-        Artist art2 = new Artist(1, 2, null);
-        Artist art3 = new Artist(1, 2, null);
-        Artist art4 = new Artist(1, 2, null);
-        Artist art5 = new Artist(1, 2, null);
+        Artist art1 = new Artist(GameState.ERA1, 2, null);
+        Artist art2 = new Artist(GameState.ERA1, 2, null);
+        Artist art3 = new Artist(GameState.ERA1, 2, null);
+        Artist art4 = new Artist(GameState.ERA1, 2, null);
+        Artist art5 = new Artist(GameState.ERA1, 2, null);
         player.addCards(List.of(art1, art2, art3, art4, art5), new ArrayList<>());
 
         // Buildings PP (no FinalPoints effects): 4+3 = 7
-        BuildingCard b1 = new BuildingCard(1, 0, 4);
-        BuildingCard b2 = new BuildingCard(1, 0, 3);
+        BuildingCard b1 = new BuildingCard(GameState.ERA1, 0, 4);
+        BuildingCard b2 = new BuildingCard(GameState.ERA1, 0, 3);
         player.addCards(new ArrayList<>(), List.of(b1, b2));
 
         // 9 + 6 + 20 + 7 = 42
@@ -75,7 +77,7 @@ class PlayerTest {
     @Test
     void testHasBuilding2WithMoreBuilding2()
     {
-        BuildingCard b = new BuildingCard(0, 0, 0);
+        BuildingCard b = new BuildingCard(GameState.NONE, 0, 0);
         player.addBuilding(b);
         player.addBuilding(b);
         player.addBuilding(b);
@@ -91,7 +93,7 @@ class PlayerTest {
 
     @Test
     void testHasBuilding2(){
-        BuildingCard b = new BuildingCard(0, 0, 0);
+        BuildingCard b = new BuildingCard(GameState.NONE, 0, 0);
         player.addBuilding(b);
         player.addBuilding(b);
         player.addBuilding(b);
@@ -105,7 +107,7 @@ class PlayerTest {
     @Test
     void testHasBuilding2WithNoBuilding2()
     {
-        BuildingCard b = new BuildingCard(0, 0, 0);
+        BuildingCard b = new BuildingCard(GameState.NONE, 0, 0);
         player.addBuilding(b);
         player.addBuilding(b);
         player.addBuilding(b);
@@ -134,8 +136,8 @@ class PlayerTest {
 
         //add cart to player
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Hunter(0, 0, false, null));
-        cards.add(new Hunter(0, 0, false, null));
+        cards.add(new Hunter(GameState.NONE, 0, false, null));
+        cards.add(new Hunter(GameState.NONE, 0, false, null));
         player.addCards(cards, Collections.emptyList());
 
         //test event with default case
@@ -155,16 +157,16 @@ class PlayerTest {
 
         //add cart to player
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Hunter(0, 0, false, null));
-        cards.add(new Hunter(0, 0, false, null));
+        cards.add(new Hunter(GameState.NONE, 0, false, null));
+        cards.add(new Hunter(GameState.NONE, 0, false, null));
         player.addCards(cards, Collections.emptyList());
 
         List<BuildingCard> buildingCards = new ArrayList<>();
-        buildingCards.add(new BuildingType13M(0, 0, 1, CardType.BUILDER));
-        buildingCards.add(new BuildingType13M(0, 0, 1, CardType.HUNTER));
+        buildingCards.add(new BuildingType13M(GameState.NONE, 0, 1, CardType.BUILDER));
+        buildingCards.add(new BuildingType13M(GameState.NONE, 0, 1, CardType.HUNTER));
 
         //add binder and buildings
-        cards.add(new Binder(0, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
         player.addCards(cards, buildingCards);
 
         //test with binder and buildings
@@ -180,8 +182,8 @@ class PlayerTest {
         player.addPp(1);
 
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Artist(0, 0, null));
-        cards.add(new Artist(0, 0, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
         player.addCards(cards, Collections.emptyList());
 
         //test with no food and negative remaining pp
@@ -207,8 +209,8 @@ class PlayerTest {
         player.addFood(4);
 
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Binder(0, 0, null));
-        cards.add(new Binder(0, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
         player.addCards(cards, Collections.emptyList());
 
         //test with no hunter
@@ -222,12 +224,12 @@ class PlayerTest {
         player.addFood(4);
 
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Binder(0, 0, null));
-        cards.add(new Binder(0, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
         player.addCards(cards, Collections.emptyList());
 
-        cards.add(new Hunter(0, 0, false, null));
-        cards.add(new Hunter(0, 0, false, null));
+        cards.add(new Hunter(GameState.NONE, 0, false, null));
+        cards.add(new Hunter(GameState.NONE, 0, false, null));
         player.addCards(cards, Collections.emptyList());
     }
 
@@ -238,10 +240,10 @@ class PlayerTest {
         player.addFood(8);
 
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Binder(0, 0, null));
-        cards.add(new Hunter(0, 0, false, null));
-        cards.add(new Hunter(0, 0, false, null));
-        cards.add(new Binder(0, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
+        cards.add(new Hunter(GameState.NONE, 0, false, null));
+        cards.add(new Hunter(GameState.NONE, 0, false, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
         List<BuildingCard> bc = new ArrayList<>();
         bc.add(new BuildingType7());
         player.addCards(cards, bc);
@@ -267,8 +269,8 @@ class PlayerTest {
         player.addPp(4);
 
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Binder(0, 0, null));
-        cards.add(new Binder(0, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
         player.addCards(cards, Collections.emptyList());
 
         player.solvePaintingEvent(2, 3, 1);
@@ -281,10 +283,10 @@ class PlayerTest {
         player.addPp(4);
 
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Binder(0, 0, null));
-        cards.add(new Binder(0, 0, null));
-        cards.add(new Artist(0, 0, null));
-        cards.add(new Artist(0, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
 
         player.addCards(cards, Collections.emptyList());
 
@@ -302,10 +304,10 @@ class PlayerTest {
     void testCalculateStarPointsWithNoShaman()
     {
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Binder(0, 0, null));
-        cards.add(new Binder(0, 0, null));
-        cards.add(new Artist(0, 0, null));
-        cards.add(new Artist(0, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
+        cards.add(new Binder(GameState.NONE, 0, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
         player.addCards(cards, Collections.emptyList());
         assertEquals(0, player.calculateStarPoints());
     }
@@ -314,10 +316,10 @@ class PlayerTest {
     void testCalculateStarPoints()
     {
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Shaman(0, 0, 2, null));
-        cards.add(new Shaman(0, 0, 3, null));
-        cards.add(new Artist(0, 0, null));
-        cards.add(new Artist(0, 0, null));
+        cards.add(new Shaman(GameState.NONE, 0, 2, null));
+        cards.add(new Shaman(GameState.NONE, 0, 3, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
         player.addCards(cards, Collections.emptyList());
         assertEquals(5, player.calculateStarPoints());
     }
@@ -327,10 +329,10 @@ class PlayerTest {
     {
         player.addFood(15);
         List<CharacterCard> cards = new ArrayList<>();
-        cards.add(new Shaman(0, 0, 2, null));
-        cards.add(new Shaman(0, 0, 3, null));
-        cards.add(new Artist(0, 0, null));
-        cards.add(new Artist(0, 0, null));
+        cards.add(new Shaman(GameState.NONE, 0, 2, null));
+        cards.add(new Shaman(GameState.NONE, 0, 3, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
+        cards.add(new Artist(GameState.NONE, 0, null));
 
         List<BuildingCard> bc = new ArrayList<>();
         bc.add(new BuildingType7());

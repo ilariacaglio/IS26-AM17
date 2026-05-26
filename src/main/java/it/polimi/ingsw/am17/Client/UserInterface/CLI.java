@@ -1,12 +1,15 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
@@ -22,6 +25,7 @@ public class CLI implements UI {
     private final VirtualView client;
     private ClientModel readOnlyModel;
     private Player localPlayer;
+    List<Color> availableColors;
     Scanner scanner;
 
     public static final String ANSI_RED = "\u001B[31m";
@@ -31,12 +35,15 @@ public class CLI implements UI {
         this.virtualServer = server;
         this.client = client;
         this.scanner = new Scanner(System.in);
+        resetColors();
     }
 
     @Override
     public void setModel(ClientModel model) {
         this.readOnlyModel = model;
     }
+
+    public void setAvailableColors(List<Color> availableColors) {this.availableColors=availableColors;}
 
     /**
      * Starts the cli and collects user commands
@@ -53,7 +60,7 @@ public class CLI implements UI {
             localPlayer = new Player(nickname, color);
 
             while (running) {
-                System.out.print("> ");
+                showPrompt();
                 String input = scanner.nextLine().trim().toLowerCase();
                 switch (input) {
                     case "get games", "gg":
@@ -148,21 +155,19 @@ public class CLI implements UI {
      * @param gameId the id to be printed
      */
     public void printGameId(UUID gameId) {
-        System.out.print("\b\b");
-        System.out.println("You are connected to game: ".concat(gameId.toString()));
-        System.out.print("> ");
+        System.out.println("\nYou are connected to game: ".concat(gameId.toString()));
+        showPrompt();
     }
 
     /**
      * Prints the games id list.
      */
     public void printGamesList(){
-        System.out.print("\b\b");
-        System.out.println("Open games:");
+        System.out.println("\r\033[2KOpen games:");
         for(int i=0; i< readOnlyModel.getGamesIdList().size(); i++){
             System.out.println(i + "\t" + readOnlyModel.getGamesIdList().get(i));
         }
-        System.out.print("> ");
+        showPrompt();
     }
 
     /**
@@ -180,13 +185,9 @@ public class CLI implements UI {
      * Draws the game configuration.
      * @param errorMessage message you want to print
      */
-    public void drawInterface(ClientModel game, String errorMessage)
+    public void drawInterface(String errorMessage)
     {
         try{
-            // update game data
-            setModel(game);
-            // cancel arrow
-            System.out.print("\b\b");
             //clear console
             System.out.print("\033[H\033[2J\033[3J");
             System.out.flush();
@@ -195,17 +196,14 @@ public class CLI implements UI {
                 System.out.println();
             }
 
-            if(errorMessage != null && !errorMessage.isBlank()) {
-                System.out.println(ANSI_RED+errorMessage+ANSI_RESET);
-                System.out.flush(); //ensure error message is before the interface
-            }
+            printError(errorMessage);
 
-            int currentEra = game.getCurrentEra();
+            GameState gameState = readOnlyModel.getGameState();
 
-            if (currentEra >= 0) {
+            if (gameState.isInLobbyOrStarted()) {
                 // print players list
                 printPlayers();
-                if(currentEra == 0){
+                if(gameState.isInLobby()){
                     System.out.println("Waiting for more players to join...");
                 }
                 else {
@@ -226,17 +224,34 @@ public class CLI implements UI {
                     // if the game has begun notify the players turn
                     if(readOnlyModel.isPlayerTurn())
                         System.out.println("It's your turn!");
-                    if(errorMessage == null || errorMessage.isBlank())
-                        System.out.print("> ");
                 }
             }
-            else {
+            else if (gameState.isGameEnded()) {
+                resetColors();
                 drawLocalRanking();
                 drawGlobalRanking();
             }
+            showPrompt();
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
+    }
+
+    /**
+     * Prints error message
+     * @param errorMessage  the error generated by the server
+     */
+    private void printError(String errorMessage) {
+        if(errorMessage != null && !errorMessage.isBlank()) {
+            System.out.println(ANSI_RED + errorMessage + ANSI_RESET);
+        }
+    }
+
+    /**
+     * Resets available color list to all colors
+     */
+    private void resetColors(){
+        setAvailableColors(Arrays.stream(Color.values()).toList());
     }
 
     /**
@@ -360,7 +375,9 @@ public class CLI implements UI {
         }
 
         // calculate the number of cards the user can pick
-        int totalCards = myOfferingCard.getNumCardsUpper()+ myOfferingCard.getNumCardsLower();
+        int upperCards = myOfferingCard.getNumCardsUpper();
+        int lowerCards = myOfferingCard.getNumCardsLower();
+        int totalCards = upperCards + lowerCards;
 
         // if card with letter A, no card can be chosen
         if(totalCards == 0) {
@@ -368,31 +385,47 @@ public class CLI implements UI {
             return;
         }
 
-        System.out.println("You can pick " + myOfferingCard.getNumCardsUpper() + " card from upper row and "
-        + myOfferingCard.getNumCardsLower() +" card from lower row");
+        // print specific selection message
+        StringBuilder pickMessage = new StringBuilder("You can pick ");
+        if (upperCards > 0) {
+            pickMessage.append(upperCards).append(upperCards == 1 ? " card" : " cards").append(" from the upper row");
+        }
+        if (upperCards > 0 && lowerCards > 0) {
+            pickMessage.append(" and ");
+        }
+        if (lowerCards > 0) {
+            pickMessage.append(lowerCards).append(lowerCards == 1 ? " card" : " cards").append(" from the lower row");
+        }
+        System.out.println(pickMessage);
 
         // list of pickable cards
         List<GameCard> pickableCards = new ArrayList<>();
 
-        // add upper character cards
-        pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
-                .filter(c->c.getCardType().isCharacter()).toList());
+        int startingIndex = 1;
+        if (upperCards > 0) {
+            // add upper character cards
+            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
 
-        // add upper building cards
-        pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
+            // add upper building cards
+            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
 
-        // add lower character cards
-        pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
-                .filter(c->c.getCardType().isCharacter()).toList());
+            // print the upper row
+            startingIndex = printPickableRow(true, startingIndex);
+        }
 
-        // add upper building cards
-        if(!readOnlyModel.getLowerBuildingRow().isEmpty())
-            pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+        if (lowerCards > 0) {
+            // add lower character cards
+            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
 
-        // print the upper row
-        int upperPrintIndex = printPickableRow(true,1);
-        // print the lower row
-        printPickableRow(false, upperPrintIndex);
+            // add lower building cards
+            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
+                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+
+            // print the lower row
+            printPickableRow(false, startingIndex);
+        }
 
         // selected cards indexes
         Set<Integer> cardIndexes = new HashSet<>();
@@ -436,17 +469,16 @@ public class CLI implements UI {
         }
 
         //check if move is valid
-        Exception mE = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
+        InvalidOperationException mE = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
                 characterCards, buildingCards, readOnlyModel.getUpperTribeRow(), readOnlyModel.getLowerTribeRow(), readOnlyModel.getUpperBuildingRow(), readOnlyModel.getLowerBuildingRow());
-        if(mE != null)
-        {
-            drawInterface(readOnlyModel, mE.getMessage());
+        if(mE != null) {
+            printError(mE.getErrorType().getMessage());
             return;
         }
 
         //check if player can buy the buildings
         if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
-            drawInterface(readOnlyModel, "Not enough food to buy building cards");
+            printError(ErrorType.INSUFFICIENT_FOOD_BUILDINGS.getMessage());
             return;
         }
 
@@ -505,22 +537,21 @@ public class CLI implements UI {
      * @return  the selected color
      */
     private Color chooseColor() {
-        Color[] colors = Color.values();
-
+        // color selection
         while (true) {
             System.out.println("Available colors:");
-            for (int i = 0; i < colors.length; i++) {
-                System.out.println((i + 1) + ") " + colors[i]);
+            for (int i = 0; i < availableColors.size(); i++) {
+                System.out.println((i + 1) + ") " + availableColors.get(i));
             }
             System.out.print("Choose a color number > ");
 
             String input = scanner.nextLine();
             try {
                 int choice = Integer.parseInt(input) - 1;
-                if (choice >= 0 && choice < colors.length) {
-                    return colors[choice];
+                if (choice >= 0 && choice < availableColors.size()) {
+                    return availableColors.get(choice);
                 } else {
-                    System.out.println("Invalid number. Please choose between 1 and " + colors.length);
+                    System.out.println("Invalid number. Please choose between 1 and " + availableColors.size());
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a valid number, not text.");
@@ -531,7 +562,7 @@ public class CLI implements UI {
     /**
      * Lets player choose new color
      */
-    private void changeColor(){
+    private void changeColor() {
         Color c = chooseColor();
         localPlayer.setColor(c);
     }
@@ -566,13 +597,13 @@ public class CLI implements UI {
      */
     private void createGame(){
         try {
-            if (readOnlyModel.getCurrentEra() < 0) {
+            if (readOnlyModel.getGameState() == GameState.NONE) {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
                 virtualServer.createGame(client, localPlayer, numPlayers);
             } else {
-                System.out.print("Already in a game \n>");
+                System.out.print("Already in a game!");
             }
         }catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -585,7 +616,7 @@ public class CLI implements UI {
     private void closeGame(){
         try {
             if (readOnlyModel.getGameId() == null) {
-                System.out.print("Not in a game \n>");
+                System.out.print("Not in a game");
             } else {
                 virtualServer.closeGame(client);
             }
@@ -599,19 +630,43 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(){
         try {
-            System.out.print("Insert card number (position from 0) > ");
-            int numCard = Integer.parseInt(scanner.nextLine());
-            //check if number is plausible
-            if(numCard<0 || numCard>=readOnlyModel.getOfferingCards().size()){
-                drawInterface(readOnlyModel, "number out of bound");
+            System.out.print("Insert card letter > ");
+            Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
+
+            // check if it is the players turn
+            if (!readOnlyModel.isPlayerTurn()) {
+                printError(ErrorType.OUT_OF_TURN.getMessage());
                 return;
             }
+
+            // check if player already has an offering card
+            List<Player> playersInOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .map(OfferingCard::getPlayer)
+                    .toList();
+            if (playersInOfferingCard.contains(localPlayer)) {
+                printError(ErrorType.OFFERING_CARD_ALREADY_SELECTED.getMessage());
+                return;
+            }
+
+            //check if letter is present in offering card list
+            var letters = readOnlyModel.getOfferingCards()
+                    .stream().map(OfferingCard::getOrderLetter).toList();
+            if(!letters.contains(cardLetter)) {
+                printError(ErrorType.INVALID_OFFERING_CARD_LETTER.getMessage());
+                return;
+            }
+
             //check if card is free
-            if(readOnlyModel.getOfferingCards().get(numCard).getPlayer() != null) {
-                drawInterface(readOnlyModel, "card already taken");
+            OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
+                    .filter(c -> cardLetter.equals(c.getOrderLetter()))
+                    .findFirst().orElseThrow();
+            if(selectedOfferingCard.getPlayer() != null) {
+                printError(ErrorType.UNAVAILABLE_OFFERING_CARD.getMessage());
                 return;
             }
-            virtualServer.pickOfferingCard(this.client, readOnlyModel.getOfferingCards().get(numCard).getOrderLetter());
+
+            // send request
+            virtualServer.pickOfferingCard(this.client, cardLetter);
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
@@ -622,7 +677,7 @@ public class CLI implements UI {
      */
     private void joinGame(){
         try {
-            if (readOnlyModel.getGameId() == null) {
+            if (readOnlyModel.getGameState().equals(GameState.NONE)) {
                 System.out.print("Insert the gameID or index in gameList > ");
                 String input = scanner.nextLine().trim();
                 UUID gameId = null;
@@ -660,11 +715,10 @@ public class CLI implements UI {
 
     /**
      * Prints message on the terminal to notify the user that the new era has begun.
+     * TODO: fix this method
      */
     public void printEra(){
-        if(readOnlyModel.getCurrentEra() > 1) {
-            System.out.println("\nEra "+readOnlyModel.getCurrentEra()+ " has begun!\n");
-        }
+        System.out.println("\nEra "+readOnlyModel.getGameState()+ " has begun!\n");
     }
 
     /**
@@ -726,5 +780,22 @@ public class CLI implements UI {
 
     public Player getLocalPlayer() {
         return localPlayer;
+    }
+
+    /**
+     * prints character to signal that the cli is available for a new command
+     */
+    private void showPrompt() {
+        System.out.print("\r> ");
+        System.out.flush();
+    }
+    public void updateInterfaceFromPickTribes(){
+        drawInterface(null);
+    }
+    public void updateInterfaceFromPickOffering(){
+        drawInterface(null);
+    }
+    public void updateInterfaceFromEndTurn(){
+        drawInterface(null);
     }
 }

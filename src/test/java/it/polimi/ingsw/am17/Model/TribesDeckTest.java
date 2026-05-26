@@ -1,8 +1,10 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -22,7 +24,7 @@ class TribesDeckTest {
             tribesDeck.Draw();
         }
 
-        assertThrows(IllegalStateException.class, () -> tribesDeck.Draw());
+        assertThrows(InvalidOperationException.class, () -> tribesDeck.Draw());
     }
 
     //doesn't create empty list
@@ -38,8 +40,8 @@ class TribesDeckTest {
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
 
-        for(int  i = 0; i<deck.size(); i++) {
-            assertEquals(deck.get(i), tribesDeck.Draw());
+        for (TribesCard tribesCard : deck) {
+            assertEquals(tribesCard, tribesDeck.Draw());
         }
     }
 
@@ -49,11 +51,11 @@ class TribesDeckTest {
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
 
-        TribesCard lastCard = deck.get(deck.size()-1);
+        TribesCard lastCard = deck.getLast();
         TribesCard secondLastCard = deck.get(deck.size()-2);
 
-        assertTrue(!lastCard.getCardType().isCharacter());
-        assertTrue(!secondLastCard.getCardType().isCharacter());
+        assertFalse(lastCard.getCardType().isCharacter());
+        assertFalse(secondLastCard.getCardType().isCharacter());
         assertTrue(((EventCard)lastCard).isFinal());
         assertTrue(((EventCard)secondLastCard).isFinal());
     }
@@ -63,15 +65,28 @@ class TribesDeckTest {
     void shouldHaveRightEraOrder(){
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
-        int previousEra = 1;
+        GameState previousEra = GameState.NONE;
 
         for(int  i = 1; i<deck.size(); i++) {
-            int currentEra = deck.get(i).getEra();
-            assertTrue(previousEra <= currentEra);
-            previousEra = currentEra;
+            GameState currentEra = deck.get(i).getEra();
+            if (previousEra == GameState.NONE){
+                if (currentEra == GameState.ERA2){
+                    previousEra = GameState.ERA1;
+                }
+                else {
+                    assertSame(GameState.ERA1, currentEra);
+                }
+            }
+            else if (previousEra == GameState.ERA1){
+                if (currentEra == GameState.ERA3){
+                    previousEra = GameState.ERA2;
+                }
+                else {
+                    assertSame(GameState.ERA2, currentEra);
+                }
+            }
+            else assertSame(GameState.ERA3, currentEra);
         }
-
-
     }
 
     //the size of the deck is always the same if given numPlayer==2

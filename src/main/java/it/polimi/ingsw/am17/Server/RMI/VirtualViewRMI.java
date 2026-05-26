@@ -1,9 +1,11 @@
 package it.polimi.ingsw.am17.Server.RMI;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
@@ -21,7 +23,7 @@ public interface VirtualViewRMI extends Remote, VirtualView {
     void updateGamesIdList(List<UUID> gamesIdList) throws RemoteException;
 
     // methods called by the game
-    void updateEra(int era) throws RemoteException;
+    void updateGameState(GameState era) throws RemoteException;
     void updatePlayerQueue(Queue<Player> orderedPlayer) throws RemoteException;
     void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException;
     void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException;
@@ -29,7 +31,6 @@ public interface VirtualViewRMI extends Remote, VirtualView {
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws  RemoteException;
     void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                          List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws  RemoteException;
-
-    void updateRanking(List<RankingEntry> ranking) throws RemoteException;
-    void notifyEndGame() throws RemoteException;
+    void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException;
+    void updateError(InvalidOperationException exception) throws RemoteException;
 }

@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class Hunter extends CharacterCard {
 
     @JsonCreator
     public Hunter(
-            @JsonProperty("era") Integer era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("minPlayers") Integer minPlayers,
             @JsonProperty("withIcon") Boolean withIcon,
             @JsonProperty("id") UUID id) {
@@ -42,5 +43,12 @@ public class Hunter extends CharacterCard {
     public String getDetails() {
         if (withIcon) return super.getDetails() + "+";
         else return super.getDetails();
+    }
+    @Override
+    public String getImagePath()
+    {
+        if(withIcon)
+            return "/Images/Hunter/hunter_withIcon.png";
+        return "/Images/Hunter/hunter.png";
     }
 }
