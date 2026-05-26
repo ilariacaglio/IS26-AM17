@@ -478,6 +478,12 @@ public class CLI implements UI {
      * Gets the user selected cards and sends them to server
      */
     private void pickCards() {
+        // check if it is the players turn
+        if (!readOnlyModel.isPlayerTurn()) {
+            printError(ErrorType.OUT_OF_TURN.getMessage());
+            return;
+        }
+
         // get players offering card
         OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
                 .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
