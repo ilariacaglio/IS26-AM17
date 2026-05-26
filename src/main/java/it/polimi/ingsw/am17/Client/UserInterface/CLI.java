@@ -55,10 +55,11 @@ public class CLI implements UI {
         try {
             boolean running = true;
 
-            // Set up the user
+            // set up the user
             String nickname = askNickname();
             Color color = chooseColor();
             localPlayer = new Player(nickname, color);
+            // print help
             printHelp();
 
             while (running) {
@@ -100,7 +101,7 @@ public class CLI implements UI {
                         running = false;
                         break;
                     default:
-                        System.out.println("Command not recognized. Please type 'help' to view the list of available commands.");
+                        System.out.print("Command not recognized. Please type 'help' to view the list of available commands");
                 }
             }
             // exit
@@ -185,7 +186,7 @@ public class CLI implements UI {
 
     /**
      * Draws the game configuration.
-     * @param errorMessage message you want to print
+     * @param errorMessage  the message to display
      */
     public void drawInterface(String errorMessage)
     {
@@ -200,6 +201,7 @@ public class CLI implements UI {
 
             printError(errorMessage);
 
+            // get game state to display the correct items
             GameState gameState = readOnlyModel.getGameState();
 
             if (gameState.isInLobbyOrStarted()) {
@@ -270,7 +272,7 @@ public class CLI implements UI {
     }
 
     /**
-     * prints the ranking of the player in global ranking when game ends
+     * prints global ranking when game ends and player position
      */
     private void drawGlobalRanking(){
         List<RankingEntry> ranking = readOnlyModel.getRanking();
@@ -362,6 +364,117 @@ public class CLI implements UI {
     }
 
     /**
+     * Prints specific selection message
+     * @param offeringCard  the offering card that allows the user to pick cards
+     */
+    private void printSelectionMessage(OfferingCard offeringCard) {
+        int upperCards = offeringCard.getNumCardsUpper();
+        int lowerCards = offeringCard.getNumCardsLower();
+        // print specific selection message
+        StringBuilder pickMessage = new StringBuilder("You can pick ");
+        List<String> pickableRows = new ArrayList<>();
+        if (upperCards > 0) {
+            pickableRows.add(upperCards + (upperCards == 1 ? " card" : " cards") + " from the upper row");
+        }
+        if (lowerCards > 0) {
+            pickableRows.add(lowerCards + (lowerCards == 1 ? " card" : " cards") + " from the lower row");
+        }
+        pickMessage.append(String.join(" and ", pickableRows));
+        System.out.println(pickMessage);
+    }
+
+    /**
+     * Builds the list of tribe cards the user can pick
+     * @param offeringCard      the offering card selected by the user
+     * @return                  the list of cards the user can pick
+     */
+    private List<GameCard> buildPickableCardsList(OfferingCard offeringCard) {
+        List<GameCard> pickableCards = new ArrayList<>();
+        int startingIndex = 1;
+        if (offeringCard.getNumCardsUpper() > 0) {
+            // add upper character cards
+            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
+
+            // add upper building cards
+            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
+
+            // print the upper row
+            startingIndex = printPickableRow(true, startingIndex);
+        }
+
+        if (offeringCard.getNumCardsLower() > 0) {
+            // add lower character cards
+            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
+
+            // add lower building cards
+            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
+                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+
+            // print the lower row
+            printPickableRow(false, startingIndex);
+        }
+        return pickableCards;
+    }
+
+    /**
+     * Allows the user to select offering cards and validates user input
+     * @return  the set of the indexes of the cards selected
+     */
+    private Set<Integer> tribeCardsSelection(int totalCards, int pickableCardsSize){
+        Set<Integer> cardIndexes = new HashSet<>();
+        while (cardIndexes.size() < totalCards) {
+            System.out.print("Type the card number (or 'quit' to stop) > ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (input.equals("quit")) {
+                System.out.println("Selection stopped.");
+                break;
+            }
+            try {
+                int numCard = Integer.parseInt(input)-1;
+                // check if the index is valid
+                if (numCard >= 0 && numCard < pickableCardsSize) {
+                    if (!cardIndexes.add(numCard)) {
+                        // if the set already contains the index print the error
+                        System.err.println("Card already selected. Choose a different one.");
+                    }
+                } else {
+                    System.err.println("Index out of bounds!");
+                }
+            }
+            catch (NumberFormatException e) {
+                System.err.println("Invalid input, please enter a valid number or 'quit' to stop.");
+            }
+        }
+        return cardIndexes;
+    }
+
+    /**
+     * Validates tribes card selection
+     * @param offeringCard      the players offering card
+     * @param characterCards    the character cards selected by the player
+     * @param buildingCards     the building cards selected by the player
+     * @return                  true if selection is valid, false otherwise
+     */
+    private boolean isMoveValid(OfferingCard offeringCard, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        InvalidOperationException mE = MoveValidator.validateCardChoice(offeringCard.getNumCardsUpper(), offeringCard.getNumCardsLower(),
+                characterCards, buildingCards, readOnlyModel.getUpperTribeRow(), readOnlyModel.getLowerTribeRow(), readOnlyModel.getUpperBuildingRow(), readOnlyModel.getLowerBuildingRow());
+        if(mE != null) {
+            printError(mE.getErrorType().getMessage());
+            return false;
+        }
+
+        //check if player can buy the buildings
+        if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
+            printError(ErrorType.INSUFFICIENT_FOOD_BUILDINGS.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Gets the user selected cards and sends them to server
      */
     private void pickCards() {
@@ -377,9 +490,7 @@ public class CLI implements UI {
         }
 
         // calculate the number of cards the user can pick
-        int upperCards = myOfferingCard.getNumCardsUpper();
-        int lowerCards = myOfferingCard.getNumCardsLower();
-        int totalCards = upperCards + lowerCards;
+        int totalCards = myOfferingCard.getNumCardsUpper() + myOfferingCard.getNumCardsLower();
 
         // if card with letter A, no card can be chosen
         if(totalCards == 0) {
@@ -387,75 +498,18 @@ public class CLI implements UI {
             return;
         }
 
-        // print specific selection message
-        StringBuilder pickMessage = new StringBuilder("You can pick ");
-        if (upperCards > 0) {
-            pickMessage.append(upperCards).append(upperCards == 1 ? " card" : " cards").append(" from the upper row");
-        }
-        if (upperCards > 0 && lowerCards > 0) {
-            pickMessage.append(" and ");
-        }
-        if (lowerCards > 0) {
-            pickMessage.append(lowerCards).append(lowerCards == 1 ? " card" : " cards").append(" from the lower row");
-        }
-        System.out.println(pickMessage);
+        printSelectionMessage(myOfferingCard);
 
         // list of pickable cards
-        List<GameCard> pickableCards = new ArrayList<>();
+        List<GameCard> pickableCards = buildPickableCardsList(myOfferingCard);
 
-        int startingIndex = 1;
-        if (upperCards > 0) {
-            // add upper character cards
-            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
-                    .filter(c->c.getCardType().isCharacter()).toList());
-
-            // add upper building cards
-            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
-
-            // print the upper row
-            startingIndex = printPickableRow(true, startingIndex);
+        if (pickableCards.isEmpty()) {
+            System.out.println("You can't pick any card!");
+            return;
         }
-
-        if (lowerCards > 0) {
-            // add lower character cards
-            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
-                    .filter(c->c.getCardType().isCharacter()).toList());
-
-            // add lower building cards
-            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
-                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
-
-            // print the lower row
-            printPickableRow(false, startingIndex);
-        }
-
-        // selected cards indexes
-        Set<Integer> cardIndexes = new HashSet<>();
 
         // cards selection
-        while (cardIndexes.size() < totalCards) {
-            System.out.print("Type the card number (or 'quit' to stop) > ");
-            String input = scanner.nextLine().trim().toLowerCase();
-            if (input.equals("quit")) {
-                System.out.println("Selection stopped.");
-                break;
-            }
-            try {
-                int numCard = Integer.parseInt(input)-1;
-                // check if the index is valid
-                if (numCard >= 0 && numCard < pickableCards.size()) {
-                    if (!cardIndexes.add(numCard)) {
-                        // if the set already contains the index print the error
-                        System.err.println("Card already selected. Choose a different one.");
-                    }
-                } else {
-                    System.err.println("Index out of bounds!");
-                }
-            }
-            catch (NumberFormatException e) {
-                System.err.println("Invalid input, please enter a valid number or 'quit' to stop.");
-            }
-        }
+        Set<Integer> cardIndexes = tribeCardsSelection(totalCards, pickableCards.size());
 
         // build cards lists
         List<CharacterCard> characterCards = new ArrayList<>();
@@ -471,26 +525,14 @@ public class CLI implements UI {
         }
 
         //check if move is valid
-        InvalidOperationException mE = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
-                characterCards, buildingCards, readOnlyModel.getUpperTribeRow(), readOnlyModel.getLowerTribeRow(), readOnlyModel.getUpperBuildingRow(), readOnlyModel.getLowerBuildingRow());
-        if(mE != null) {
-            printError(mE.getErrorType().getMessage());
-            return;
-        }
-
-        //check if player can buy the buildings
-        if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
-            printError(ErrorType.INSUFFICIENT_FOOD_BUILDINGS.getMessage());
-            return;
-        }
-
-
-        // call server method
-        try{
-            virtualServer.pickTribeCards(this.client, characterCards,buildingCards);
-        }
-        catch (Exception e) {
-            System.err.println("CLI error while calling pickTribeCards on the virtualServer: " + e.getMessage());
+        if(isMoveValid(myOfferingCard, characterCards, buildingCards)) {
+            // call server method
+            try{
+                virtualServer.pickTribeCards(this.client, characterCards,buildingCards);
+            }
+            catch (Exception e) {
+                System.err.println("CLI error while calling pickTribeCards on the virtualServer: " + e.getMessage());
+            }
         }
     }
 
