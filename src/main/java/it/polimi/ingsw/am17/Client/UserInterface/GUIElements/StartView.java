@@ -10,12 +10,16 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
+
 public class StartView {
     private VBox root;
     private GUI mainGui;
+    private List<Color> availableColors;
 
-    public StartView(GUI mainGui) {
+    public StartView(GUI mainGui, List<Color> availableColors) {
         this.mainGui = mainGui;
+        this.availableColors = availableColors;
         buildUI();
     }
 
@@ -38,7 +42,10 @@ public class StartView {
 
         //ask for color
         ComboBox<Color> colorPicker = new ComboBox<>();
-        colorPicker.getItems().setAll(Color.values());
+        if(availableColors == null || availableColors.isEmpty())
+            colorPicker.getItems().setAll(Color.values());
+        else
+            colorPicker.getItems().setAll(availableColors);
         colorPicker.setValue(Color.values()[0]);
 
         grid.add(new Label("Nickname:"), 0, 0);

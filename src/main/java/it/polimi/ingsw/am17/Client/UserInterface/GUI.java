@@ -56,7 +56,7 @@ public class GUI implements UI {
         Runnable startFX = () -> {
             Stage stage = new Stage();
 
-            StartView startView = new StartView(this);
+            StartView startView = new StartView(this, null);
             scene = new Scene(startView.getRoot(), START_WINDOW_WIDTH, START_WINDOW_HEIGHT);
             stage.setScene(scene);
             stage.setTitle("MESOS");//window name
@@ -124,7 +124,7 @@ public class GUI implements UI {
         scene.setRoot(gameView.getRoot());
     }
     public void showStartInterface(){
-        StartView startView = new StartView(this);
+        StartView startView = new StartView(this, availableColors);
         scene.setRoot(startView.getRoot());
     }
 
@@ -218,13 +218,23 @@ public class GUI implements UI {
         server.pickTribeCards(client, characterCards, buildingCards);
     }
 
+
     @Override
     public  void setModel(ClientModel model) {
         this.game = model;
     }
 
     @Override
-    public void setAvailableColors(List<Color> availableColors) {this.availableColors=availableColors;}
+    public void setAvailableColors(List<Color> availableColors) {
+        this.availableColors=availableColors;
+        Platform.runLater(()-> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Duplicate Color");
+            alert.setHeaderText(null);
+            alert.setContentText("A player has already chosen your color");
+            alert.showAndWait();
+        });
+    }
 
 
     /**
