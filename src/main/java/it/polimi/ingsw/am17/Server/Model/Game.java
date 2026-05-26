@@ -89,19 +89,17 @@ public class Game extends Subject {
      * @return leftmost offering card with player in the offering track.
      */
     private OfferingCard getNextOccupiedOfferingCard() {
-        logger.fine("Getting next occupied offering card.");
 
-        OfferingCard offCard = offeringCards.stream()
+        // lookup in normal offering cards
+        OfferingCard offeringCard = offeringCards.stream()
                 .filter(card -> card.getPlayer() != null)
                 .min(Comparator.comparing(OfferingCard::getOrderLetter))
                 .orElse(null);
-        if (offCard != null) {
-            return offCard;
-        } else if (building2OfferingCard.getPlayer() == null) {
-            return null;
-        } else {
-            return building2OfferingCard;
-        }
+
+        // if not found, lookup in building2OfferingCard
+        if (offeringCard == null && building2OfferingCard.getPlayer() != null) offeringCard = building2OfferingCard;
+
+        return offeringCard;
     }
 
     /**
@@ -408,10 +406,7 @@ public class Game extends Subject {
                 .findFirst().orElse(null);
 
         //check if offeringCard is valid
-        if (offeringCard == null && offeringCardLetter.equals('Z'))
-            offeringCard = building2OfferingCard;
-        else if (offeringCard == null)
-            throw new InvalidOperationException(ErrorType.INVALID_OFFERING_CARD_LETTER);
+        if (offeringCard == null) throw new InvalidOperationException(ErrorType.INVALID_OFFERING_CARD_LETTER);
 
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
@@ -467,17 +462,16 @@ public class Game extends Subject {
      * @param buildingCards     the building cards picked by the player
      */
     public void pickTribeCards(String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
-        logger.info("Request forwarded to pickTribeCards method in model");
-
         // get player from nickname
         Player player =  orderedPlayers.stream()
                 .filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow(()->new InvalidOperationException(ErrorType.INVALID_PLAYER));
 
-        logger.info("Player " + player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards);
-
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
+
+        logger.info("Player " + player.getNickname() + " wants to pick tribe cards from offering card " +  currentOffering.getOrderLetter() + ": " + characterCards + " and " + buildingCards);
+
 
         // if a player has selected the offering card with letter A
         if (currentOffering.getOrderLetter()=='A') {
@@ -519,9 +513,10 @@ public class Game extends Subject {
 
         if (player.hasBuilding2()) {
             // N.B.: there is a singular buildingType2 per game
-            // N.B.: if calling from building2OfferingCard, the player is removed again hereunder
             logger.fine("Adding player to buildingType2 offering card.");
-            building2OfferingCard.setPlayer(player);
+
+            // N.B.: if calling from building2OfferingCard, don't set the player again
+            if (building2OfferingCard.getPlayer() == null) building2OfferingCard.setPlayer(player);
         }
 
         currentOffering.setPlayer(null);
