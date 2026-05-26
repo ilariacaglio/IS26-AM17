@@ -462,17 +462,16 @@ public class Game extends Subject {
      * @param buildingCards     the building cards picked by the player
      */
     public void pickTribeCards(String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
-        logger.info("Request forwarded to pickTribeCards method in model");
-
         // get player from nickname
         Player player =  orderedPlayers.stream()
                 .filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow(()->new InvalidOperationException(ErrorType.INVALID_PLAYER));
 
-        logger.info("Player " + player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards);
-
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
+
+        logger.info("Player " + player.getNickname() + " wants to pick tribe cards from offering card " +  currentOffering.getOrderLetter() + ": " + characterCards + " and " + buildingCards);
+
 
         // if a player has selected the offering card with letter A
         if (currentOffering.getOrderLetter()=='A') {
@@ -514,9 +513,10 @@ public class Game extends Subject {
 
         if (player.hasBuilding2()) {
             // N.B.: there is a singular buildingType2 per game
-            // N.B.: if calling from building2OfferingCard, the player is removed again hereunder
             logger.fine("Adding player to buildingType2 offering card.");
-            building2OfferingCard.setPlayer(player);
+
+            // N.B.: if calling from building2OfferingCard, don't set the player again
+            if (building2OfferingCard.getPlayer() == null) building2OfferingCard.setPlayer(player);
         }
 
         currentOffering.setPlayer(null);
