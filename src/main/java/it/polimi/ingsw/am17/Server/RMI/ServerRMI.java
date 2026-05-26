@@ -6,7 +6,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
-import it.polimi.ingsw.am17.Server.ServerInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -24,13 +23,12 @@ import java.util.logging.Logger;
 /**
  * Sets up and starts an RMI server to handle requests from multiple clients.
  */
-public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI, ServerInterface {
+public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
     private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
 
     ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
     ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
     long lastHeartbeatReceived = System.currentTimeMillis();
-
     final GamesController controller;
     final List<VirtualViewRMI> clients;
 
