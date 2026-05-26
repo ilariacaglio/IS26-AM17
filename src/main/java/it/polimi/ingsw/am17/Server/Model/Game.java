@@ -89,19 +89,17 @@ public class Game extends Subject {
      * @return leftmost offering card with player in the offering track.
      */
     private OfferingCard getNextOccupiedOfferingCard() {
-        logger.fine("Getting next occupied offering card.");
 
-        OfferingCard offCard = offeringCards.stream()
+        // lookup in normal offering cards
+        OfferingCard offeringCard = offeringCards.stream()
                 .filter(card -> card.getPlayer() != null)
                 .min(Comparator.comparing(OfferingCard::getOrderLetter))
                 .orElse(null);
-        if (offCard != null) {
-            return offCard;
-        } else if (building2OfferingCard.getPlayer() == null) {
-            return null;
-        } else {
-            return building2OfferingCard;
-        }
+
+        // if not found, lookup in building2OfferingCard
+        if (offeringCard == null && building2OfferingCard.getPlayer() != null) offeringCard = building2OfferingCard;
+
+        return offeringCard;
     }
 
     /**
@@ -408,10 +406,7 @@ public class Game extends Subject {
                 .findFirst().orElse(null);
 
         //check if offeringCard is valid
-        if (offeringCard == null && offeringCardLetter.equals('Z'))
-            offeringCard = building2OfferingCard;
-        else if (offeringCard == null)
-            throw new InvalidOperationException(ErrorType.INVALID_OFFERING_CARD_LETTER);
+        if (offeringCard == null) throw new InvalidOperationException(ErrorType.INVALID_OFFERING_CARD_LETTER);
 
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
