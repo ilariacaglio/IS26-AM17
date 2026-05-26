@@ -52,8 +52,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
         // launch a thread to ping the server every second
         heartbeater.scheduleAtFixedRate(() -> {
             try {
-                logger.finer("Pinging server");
-                server.ping();
+                logger.fine("Pinging server");
+                server.ping(this);
                 failedHeartbeats = 0;
             } catch (RemoteException e) {
                 logger.warning("Failed sending heartbeat to server: " + serverName + " with error: " + e.getMessage());
