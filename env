@@ -1,0 +1,3 @@
+DB_URL=jdbc:postgresql://ep-steep-wildflower-aln0o8o3.c-3.eu-central-1.aws.neon.tech/neondb?sslmode=require
+DB_USER=neondb_owner
+DB_PASSWORD=npg_YXcAx6Sydt0K

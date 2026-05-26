@@ -73,7 +73,6 @@ public class Game extends Subject {
 
         if (numPlayers < 2 || numPlayers > 5) {
             logger.warning("Invalid number of players: " + numPlayers);
-            throw new IllegalArgumentException("Wrong number of players");
             throw new InvalidOperationException(ErrorType.INVALID_NUMBER_OF_PLAYERS);
         }
     }
@@ -115,12 +114,10 @@ public class Game extends Subject {
 
         if (isStarted()) {
             logger.warning("in Game, in addPlayer(), problem in if(isStarted())");
-            throw new IllegalStateException("The game has already started.");
             throw new InvalidOperationException(ErrorType.GAME_ALREADY_STARTED);
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
            logger.warning("The nickname " + p.getNickname() + " is not available.");
-            throw new IllegalStateException("The game has already a player with the same nickname.");
             throw new InvalidOperationException(ErrorType.DUPLICATE_NICKNAME);
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
@@ -162,7 +159,6 @@ public class Game extends Subject {
         switch (gameState) {
             case GameState.LOBBY:
                 era1();
-                notifyEra(currentEra);
                 break;
             case GameState.ERA1:
                 era2();
