@@ -373,7 +373,7 @@ public class GameView {
                 card.updateBorderFromPlayer(game.getOfferingCards().get(i).getPlayer().getColor().getFxColor());
             } else {
                 // Optional: Reset to default border if no player owns it
-                card.updateBorderFromPlayer(javafx.scene.paint.Color.BLACK);
+                card.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
             }
         }
     }
@@ -413,7 +413,7 @@ public class GameView {
 
     private void updateOfferingCards(){
         for (CardGUI cardGUI : offeringCardGUI){
-            cardGUI.updateBorderFromPlayer(javafx.scene.paint.Color.BLACK);
+            //cardGUI.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
             if(cardGUI.isSelected())
                 cardGUI.setVisualSelection(false);
         }
