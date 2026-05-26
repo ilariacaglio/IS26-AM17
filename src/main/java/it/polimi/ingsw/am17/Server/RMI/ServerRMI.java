@@ -58,14 +58,13 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
 
         ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
         ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
-        long lastHeartbeatReceived = System.currentTimeMillis();
+        lastHeartbeats.put(client, new AtomicLong(System.currentTimeMillis()));
 
         heartbeater.scheduleAtFixedRate(pinger(client, heartbeater, heartwatcher), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
 
         heartwatcher.scheduleAtFixedRate(() -> {
             long now = System.currentTimeMillis();
-            long diff = now - lastHeartbeatReceived;
-
+            long diff = now - lastHeartbeats.get(client).get();
             if (diff > 5000) {
                 logger.severe("No heartbeat received in " + diff + "ms, RMI client considered dead.");
                 onClientDisconnection(client, heartbeater, heartwatcher);
@@ -80,7 +79,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void ping(VirtualViewRMI client) throws RemoteException {
-        logger.finer("Received ping");
+        logger.fine("Received ping");
         AtomicLong ts = lastHeartbeats.get(client);
         if (ts != null) ts.set(System.currentTimeMillis());
         else logger.warning("Received ping from client " + client.getClass().getSimpleName() + " but it is not registered. (Resurrection?)");
