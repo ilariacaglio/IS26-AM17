@@ -322,9 +322,6 @@ public class Game extends Subject {
             }
         }
 
-        // remove player from buildingType2 offering card
-        building2OfferingCard.setPlayer(null);
-
         notifyEndTurn(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
@@ -520,9 +517,11 @@ public class Game extends Subject {
         upperRow.removeAll(characterCards); // if not present, no worries
         lowerRow.removeAll(characterCards); // if not present, no worries
 
-        //if the player has the buildingType2 card set it to offering card
-        if (building2OfferingCard.getPlayer() == null) {
-            addPlayerToBT2OfferingCard(player);
+        if (player.hasBuilding2()) {
+            // N.B.: there is a singular buildingType2 per game
+            // N.B.: if calling from building2OfferingCard, the player is removed again hereunder
+            logger.fine("Adding player to buildingType2 offering card.");
+            building2OfferingCard.setPlayer(player);
         }
 
         currentOffering.setPlayer(null);
@@ -554,28 +553,13 @@ public class Game extends Subject {
     }
 
     /**
-     * Dequeues and enqueues the player
+     * Dequeues and enqueues the player to allow other players to play.
      */
     private void movePlayerInQueue() {
         // remove player from queue
         Player lastPlayer = orderedPlayers.poll();
         // add player as last element of queue
         orderedPlayers.add(lastPlayer);
-    }
-
-
-    /**
-     * Checks if the player has the BuildingType2 card and sets it to buildingType2OfferingCard
-     *
-     * @param player the player to be set
-     */
-    private void addPlayerToBT2OfferingCard(Player player) {
-        logger.fine("Adding player to buildingType2 offering card.");
-
-        //Important: there is a singular buildingType2 per game
-        if (player.hasBuilding2()) {
-            building2OfferingCard.setPlayer(player);
-        }
     }
 
     public UUID getId() {
