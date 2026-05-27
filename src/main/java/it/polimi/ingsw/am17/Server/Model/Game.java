@@ -338,11 +338,10 @@ public class Game extends Subject {
         events.stream().filter(e -> e.getCardType() != CardType.FOOD_EVENT).toList().forEach(
                 event -> event.computeScore(orderedPlayers)
         );
-        logger.info("All the events that aren't FOOD_EVENT have been solved. ");
+
         events.stream().filter(e -> e.getCardType() == CardType.FOOD_EVENT).toList().forEach(
                 event -> event.computeScore(orderedPlayers)
         );
-        logger.info("FOOD_EVENT has been solved. ");
 
         // 2. 3. 4. Reorganize cards.
         lowerRow = new ArrayList<>(upperRow);
@@ -396,11 +395,10 @@ public class Game extends Subject {
         events.stream().filter(e -> e.getCardType() != CardType.FOOD_EVENT).toList().forEach(
                 event -> event.computeScore(orderedPlayers)
         );
-        logger.info("All the events that aren't FOOD_EVENT have been solved. ");
+
         events.stream().filter(e -> e.getCardType() == CardType.FOOD_EVENT).toList().forEach(
                 event -> event.computeScore(orderedPlayers)
         );
-        logger.info("FOOD_EVENT has been solved. ");
 
         for (Player player : orderedPlayers) {
             player.calculateFinalPoints();
