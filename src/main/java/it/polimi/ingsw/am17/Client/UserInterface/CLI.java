@@ -372,9 +372,15 @@ public class CLI implements UI {
 
 
         if (myOfferingCard == null) {
-            // if not found, return
-            System.out.println("No offering card chosen!");
-            return;
+            // if player has BuildingType2
+            if (localPlayer.hasBuilding2()) {
+                myOfferingCard = readOnlyModel.getBuildingTwoOfferingCard();
+            }
+            else {
+                // if not found, return
+                System.out.println("No offering card chosen!");
+                return;
+            }
         }
 
         // calculate the number of cards the user can pick
@@ -801,6 +807,8 @@ public class CLI implements UI {
         System.out.print("\r> ");
         System.out.flush();
     }
+
+
     public void updateInterfaceFromPickTribes(){
         drawInterface(null);
     }

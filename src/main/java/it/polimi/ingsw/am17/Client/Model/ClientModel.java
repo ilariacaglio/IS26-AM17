@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class ClientModel {
 
-    private String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
+    private final String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
     private UUID id;
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
 
@@ -41,6 +41,7 @@ public class ClientModel {
 
     private final List<RankingEntry> ranking;
 
+    private final OfferingCard buildingTwoOfferingCard;
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
@@ -53,6 +54,7 @@ public class ClientModel {
         upperBuildingRow = new ArrayList<>();
         lowerBuildingRow  = new ArrayList<>();
         ranking = new ArrayList<>();
+        buildingTwoOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
     }
 
     /**
@@ -252,6 +254,10 @@ public class ClientModel {
         return Collections.unmodifiableList(offeringCards);
     }
 
+    public OfferingCard getBuildingTwoOfferingCard() {
+        return buildingTwoOfferingCard;
+    }
+
     /**
      * @return true if every player of the game is into an offering card, false otherwise
      */
@@ -264,6 +270,24 @@ public class ClientModel {
                 return false;
         }
         return true;
+    }
+
+    /**
+     * @return true if every player of the game is not into an offering card, false otherwise
+     */
+    private boolean noPlayerInOfferingCards(){
+        for (OfferingCard oc : offeringCards) {
+            if(oc.getPlayer() != null)
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return true if the player is in an offering card, false otherwise
+     */
+    private boolean isPlayerInOfferingCard(Player player){
+        return offeringCards.stream().anyMatch(o -> player.equals(o.getPlayer()));
     }
 
     /**
@@ -284,8 +308,22 @@ public class ClientModel {
      * @return true if it is players turn, false otherwise.
      */
     public boolean isPlayerTurn(){
+        // if the game hasn't started it is not the players turn
         if(!gameState.isGameStarted())
             return false;
+
+        // game started
+
+        if (!isPickOCPhase){
+            // if is pick tribe cards phase
+            // if all the players have picked their cards check if localPlayer has buildingType2
+            if (noPlayerInOfferingCards() && !userInterface.isBuilding2EffectUsed())
+                return userInterface.getLocalPlayer().hasBuilding2();
+        }
+
+        // default check
+        // if is pick offering card phase the player has to be at head of the queue
+        // same in pick tribes without building type 2
         return userInterface.getLocalPlayer().equals(orderedPlayer.peek());
     }
 
@@ -350,6 +388,7 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setPickOCPhase(true);
 
+        userInterface.setBuilding2EffectUsed(false);
         userInterface.updateInterfaceFromEndTurn();
     }
 
@@ -382,9 +421,22 @@ public class ClientModel {
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
         setPlayerInQueue(player);
-        removePlayerFromOfferingCard(player);
+
+        // check if player has an offering card
+        if (isPlayerInOfferingCard(player)) {
+            removePlayerFromOfferingCard(player);
+        }
+        else{
+            // if not, is buildingType2 move
+            if (player.equals(userInterface.getLocalPlayer()) &&
+                    !userInterface.isBuilding2EffectUsed()) {
+                        userInterface.setBuilding2EffectUsed(true);
+            }
+        }
+
         removeTribeCards(characterCards);
         removeBuildingCards(buildingCards);
+
         userInterface.updateInterfaceFromPickTribes();
     }
 
