@@ -372,15 +372,9 @@ public class CLI implements UI {
 
 
         if (myOfferingCard == null) {
-            // if player has BuildingType2
-            if (localPlayer.hasBuilding2()) {
-                myOfferingCard = readOnlyModel.getBuilding2OfferingCard();
-            }
-            else {
-                // if not found, return
-                System.out.println("No offering card chosen!");
-                return;
-            }
+            // if not found, return
+            System.out.println("No offering card chosen!");
+            return;
         }
 
         // calculate the number of cards the user can pick
@@ -494,8 +488,6 @@ public class CLI implements UI {
         // call server method
         try{
             virtualServer.pickTribeCards(this.client, characterCards,buildingCards);
-            if(myOfferingCard.equals(readOnlyModel.getBuilding2OfferingCard()))
-                setBuilding2EffectUsed(true);
         }
         catch (Exception e) {
             System.err.println("CLI error while calling pickTribeCards on the virtualServer: " + e.getMessage());
