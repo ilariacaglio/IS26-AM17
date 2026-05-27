@@ -83,6 +83,7 @@ public class Game extends Subject {
     }
 
     public boolean isEnded() {
+        logger.info("State of the Game: " + gameState.isGameEnded());
         return gameState.isGameEnded();
     }
 
@@ -99,7 +100,10 @@ public class Game extends Subject {
                 .orElse(null);
 
         // if not found, lookup in building2OfferingCard
-        if (offeringCard == null && building2OfferingCard.getPlayer() != null) offeringCard = building2OfferingCard;
+        if (offeringCard == null && building2OfferingCard.getPlayer() != null) {
+            logger.info("OfferingCard not found, looked in building2OfferingCard");
+            offeringCard = building2OfferingCard;
+        }
 
         return offeringCard;
     }
@@ -113,7 +117,7 @@ public class Game extends Subject {
         logger.info("Adding player " + p.getNickname() + " to game with id " + id);
 
         if (isStarted()) {
-            logger.warning("in Game, in addPlayer(), problem in if(isStarted())");
+            logger.warning("Impossible adding " + p.getNickname() + ": the Game is alredy started (isStarted = true).");
             throw new InvalidOperationException(ErrorType.GAME_ALREADY_STARTED);
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
@@ -121,21 +125,25 @@ public class Game extends Subject {
             throw new InvalidOperationException(ErrorType.DUPLICATE_NICKNAME);
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
-            logger.warning("The color " + p.getColor() + " is not available");
             String message = "The game has already a player with the same color. Unused colors: ";
             //Get All colors
             List<Color> unusedColors = new ArrayList<>(EnumSet.allOf(Color.class).stream().toList());
             //Remove the colors that are currently in use
             orderedPlayers.forEach(player -> unusedColors.remove(player.getColor()));
+            logger.warning("The color " + p.getColor() + " is not available");
             throw new ColorException(ErrorType.DUPLICATE_COLOR,unusedColors);
         }
 
         orderedPlayers.add(p);
+        logger.info(p.getNickname() + " was added successfully");
         notifyPlayerQueue(orderedPlayers);
 
         //if we reached the number of players for the game we start the game
-        if (orderedPlayers.size() == numPlayers)
+        if (orderedPlayers.size() == numPlayers){
+            logger.info("Game starts");
             nextEra();
+        }
+
     }
 
     /**
@@ -201,6 +209,7 @@ public class Game extends Subject {
         Collections.shuffle(players);
         orderedPlayers.clear();
         orderedPlayers.addAll(players);
+        logger.info("Player queue shuffled. Total players in queue: " + orderedPlayers.size());
     }
 
     /**
@@ -210,20 +219,26 @@ public class Game extends Subject {
         logger.info("Starting game (switching to era 1).");
 
         if (isStarted()) {
+            logger.warning("Game is already started, gameState is already in era1");
             throw new InvalidOperationException(ErrorType.GAME_ALREADY_STARTED);
         }
 
         // Set era and shuffle players
         this.gameState = GameState.ERA1;
+        logger.info("gameState is setted at era1");
         shuffleQueue();
 
         giveFoodToPlayers();
+        logger.info("Starting food was given to the players");
 
         // Populate the rows
         int targetLowerRowSize = numPlayers + 1;
+        logger.info("Size of lowerRow is supposed to be numPlayers+1: " + (numPlayers+1));
         int targetUpperRowSize = numPlayers + 4;
+        logger.info("Size of upperRow is supposed to be numPlayers+4: " + (numPlayers+4));
 
         while (lowerRow.size() < targetLowerRowSize) {
+            logger.fine("Lower row setup loop - Current lower size: " + lowerRow.size() + "/" + targetLowerRowSize);
             TribesCard drawnCard = tribesDeck.Draw();
 
             if (drawnCard.getCardType().isCharacter()) {
@@ -238,10 +253,11 @@ public class Game extends Subject {
         }
 
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra1());
+        logger.info("Rows populated successfully. Triggering notifyStartGame.");
 
         notifyStartGame(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
-
+//TODO:continuare logger da era2()
     /**
      * Sets up the second era.
      */
