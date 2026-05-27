@@ -362,6 +362,7 @@ public class Game extends Subject {
                     logger.info("The card deck is empty, so the game ended. ");
                 }
                 logger.warning("Method endRound() is returning EARLY due to exception. notifyEndTurn WILL NOT BE CALLED!");
+                logger.warning(e.getMessage());
                 return;
             }
             catch(Exception unknownEx) {
