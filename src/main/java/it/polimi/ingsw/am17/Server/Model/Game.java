@@ -302,7 +302,7 @@ public class Game extends Subject {
                 }
                 else {
                     p.addFood(turnFoodPoints[i]);
-                    logger.info(p.getNickname() + " is first at the end round, so they lost "
+                    logger.info(p.getNickname() + " is last at the end round, so they lost "
                                 + (-turnFoodPoints[i]) + " food.");
                 }
                 logger.info("Player " + p.getNickname() + " has " +  p.getFood() + " food and "
