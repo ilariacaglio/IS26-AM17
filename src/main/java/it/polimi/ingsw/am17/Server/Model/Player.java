@@ -60,7 +60,7 @@ public class Player implements Serializable {
     })
     private List<BuildingCard> buildingCards;
 
-    private static final Logger logger = Logger.getLogger(Game.class.getName());
+    private static final Logger logger = Logger.getLogger(Player.class.getName());
 
 
     /**
@@ -157,12 +157,14 @@ public class Player implements Serializable {
 
     public void addFood(int quantity) {
         int newAmount = food + quantity;
+        logger.info("Player ["+ this.getNickname() +"] initial food: " + food + ". New quantity: " + quantity + ". New food amount: " + newAmount);
         if (newAmount < 0) {
             throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD);
         }
         this.food = newAmount;
+        logger.info("Food added successfully. ");
     }
-
+//TODO: start from here
     public void calculateFinalPoints(){
         // add pp of builders
         int pointsBuilders = characterCards.stream()
