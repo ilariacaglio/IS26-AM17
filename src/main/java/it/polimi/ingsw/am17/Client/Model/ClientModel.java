@@ -82,7 +82,6 @@ public class ClientModel {
         this.numPlayers = numPlayers;
     }
 
-
     public int getNumPlayers() {
         return numPlayers;
     }
@@ -429,8 +428,8 @@ public class ClientModel {
      */
     public void updateEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         String message = null;
-        // reset game state
-        gameState = GameState.NONE;
+        // set game state to ended
+        gameState = GameState.ENDED;
         if (disconnectedPlayer == null){
             // game ended by the server
             // set global ranking
@@ -445,5 +444,7 @@ public class ClientModel {
         }
         userInterface.drawInterface(message);
         logger.info("Game closed.");
+        // reset game state
+        gameState = GameState.NONE;
     }
 }
