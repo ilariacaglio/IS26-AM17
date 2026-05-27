@@ -41,7 +41,6 @@ public class ClientModel {
 
     private final List<RankingEntry> ranking;
 
-    private final OfferingCard building2OfferingCard;
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
@@ -54,7 +53,6 @@ public class ClientModel {
         upperBuildingRow = new ArrayList<>();
         lowerBuildingRow  = new ArrayList<>();
         ranking = new ArrayList<>();
-        building2OfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
     }
 
     /**
@@ -269,17 +267,6 @@ public class ClientModel {
     }
 
     /**
-     * @return true if every player of the game is not into an offering card, false otherwise
-     */
-    private boolean noPlayerInOfferingCards(){
-        for (OfferingCard oc : offeringCards) {
-            if(oc.getPlayer() != null)
-                return false;
-        }
-        return true;
-    }
-
-    /**
      * Sets to null the player field of the offering card with letter A.
      */
     public void setNullOfferingCardAPlayer() {
@@ -296,23 +283,9 @@ public class ClientModel {
      * Checks if it is the turn of the local player.
      * @return true if it is players turn, false otherwise.
      */
-    public boolean isPlayerTurn() {
-        // if the game hasn't started it is not the players turn
+    public boolean isPlayerTurn(){
         if(!gameState.isGameStarted())
             return false;
-
-        // game started
-
-        if (!isPickOCPhase){
-            // if is pick tribe cards phase
-            // if all the players have picked their cards check if localPlayer has buildingType2
-            if (noPlayerInOfferingCards() && !userInterface.isBuilding2EffectUsed())
-                return userInterface.getLocalPlayer().hasBuilding2();
-        }
-
-        // default check
-        // if is pick offering card phase the player has to be at head of the queue
-        // same in pick tribes without building type 2
         return userInterface.getLocalPlayer().equals(orderedPlayer.peek());
     }
 
@@ -377,8 +350,7 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setPickOCPhase(true);
 
-        userInterface.setBuilding2EffectUsed(false);
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromEndTurn();
     }
 
     /**
@@ -398,7 +370,7 @@ public class ClientModel {
      */
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
         setPlayerOfferingCard(offeringCard, player);
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromPickOffering();
     }
 
     /**
@@ -413,7 +385,7 @@ public class ClientModel {
         removePlayerFromOfferingCard(player);
         removeTribeCards(characterCards);
         removeBuildingCards(buildingCards);
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromPickTribes();
     }
 
     /**
@@ -474,9 +446,5 @@ public class ClientModel {
         logger.info("Game closed.");
         // reset game state
         gameState = GameState.NONE;
-    }
-
-    public OfferingCard getBuilding2OfferingCard() {
-        return building2OfferingCard;
     }
 }

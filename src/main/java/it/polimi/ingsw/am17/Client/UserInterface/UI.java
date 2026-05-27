@@ -8,6 +8,9 @@ import java.util.UUID;
 
 public interface UI {
     void start();
+    void updateInterfaceFromPickTribes();
+    void updateInterfaceFromPickOffering();
+    void updateInterfaceFromEndTurn();
     void drawInterface(String errorMessage);
     void printGameId(UUID gameId);
     void printEra();

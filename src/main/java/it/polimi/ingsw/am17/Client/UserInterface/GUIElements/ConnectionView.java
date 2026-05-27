@@ -28,10 +28,11 @@ public class ConnectionView {
         //create Buttons
         Button createGameButton = new Button("CREATE GAME");
         Button  joinGameButton = new Button("JOIN GAME");
+        Button  backButton = new Button("BACK");
         Button exitButton = new Button("EXIT");
 
         // Apply style and width to all
-        for (Button b : new Button[]{createGameButton, joinGameButton, exitButton}) {
+        for (Button b : new Button[]{createGameButton, joinGameButton, backButton, exitButton}) {
             b.setPrefWidth(250);
             b.setCursor(Cursor.HAND);
         }
@@ -40,7 +41,7 @@ public class ConnectionView {
         title.setStyle("-fx-font-size: 30px; -fx-font-family: 'Arial Black';");
 
         // Use a VBox for the buttons so they stack vertically (standard for game menus)
-        VBox buttonContainer = new VBox(15, createGameButton, joinGameButton, exitButton);
+        VBox buttonContainer = new VBox(15, createGameButton, joinGameButton, backButton, exitButton);
         buttonContainer.setAlignment(Pos.CENTER);
         //createGameButton opens drawInterface only for testing purposes
         createGameButton.setOnAction(e -> {
@@ -50,11 +51,13 @@ public class ConnectionView {
             // Cambia la radice della scena con l'interfaccia per l'ID
             mainGui.showJoinInterface();
         });
+        backButton.setOnAction(e ->{
+            mainGui.showStartInterface();
+        });
 
         exitButton.setOnAction(e -> {
             Platform.exit();//close window
             System.exit(0);
-            //TODO: chiudere connessione con socket e RMI
         });
         //add Buttons to root
         root.getChildren().addAll(title,buttonContainer);
