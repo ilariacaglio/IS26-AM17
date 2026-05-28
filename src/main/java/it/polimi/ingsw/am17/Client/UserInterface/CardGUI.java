@@ -29,7 +29,7 @@ public class CardGUI extends StackPane {
     }
 
     private void createGraphics(String imagePath) {
-        // 1. The Selection Border (Base Layer)
+
         border = new Rectangle(100, 140);
         border.setArcWidth(15);
         border.setArcHeight(15);
@@ -38,7 +38,6 @@ public class CardGUI extends StackPane {
         border.setStrokeWidth(1);
         this.getChildren().add(border);
 
-        // 2. The Card Image (Middle Layer)
         if (imagePath != null) {
             Image img = new Image(getClass().getResourceAsStream(imagePath));
             ImageView view = new ImageView(img);
@@ -70,7 +69,7 @@ public class CardGUI extends StackPane {
 
         // Position the totem at the top center, slightly overhanging the edge
         StackPane.setAlignment(totemView, Pos.TOP_CENTER);
-        StackPane.setMargin(totemView, new Insets(-15, 0, 0, 0));
+        StackPane.setMargin(totemView, new Insets(0, 0, 0, 0));
 
         this.getChildren().add(totemView);
     }

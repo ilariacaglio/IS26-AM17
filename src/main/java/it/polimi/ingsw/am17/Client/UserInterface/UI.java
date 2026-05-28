@@ -11,6 +11,7 @@ public interface UI {
     void updateInterfaceFromPickTribes();
     void updateInterfaceFromPickOffering();
     void updateInterfaceFromEndTurn();
+    void updateInterfacePlayerQueue();
     void drawInterface(String errorMessage);
     void printGameId(UUID gameId);
     void printEra();

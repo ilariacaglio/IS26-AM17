@@ -5,17 +5,14 @@ import it.polimi.ingsw.am17.Client.UserInterface.GUIElements.*;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.Color;
-import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -183,6 +180,9 @@ public class GUI implements UI {
     @Override
     public void printEra(){
 
+    }
+    @Override public void updateInterfacePlayerQueue(){
+        gameView.updatePlayerQueue();
     }
     @Override
     public void printGamesList(){

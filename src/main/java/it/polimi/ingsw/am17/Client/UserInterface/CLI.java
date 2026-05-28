@@ -794,6 +794,10 @@ public class CLI implements UI {
         this.building2EffectUsed = building2EffectUsed;
     }
 
+    @Override
+    public void updateInterfacePlayerQueue(){
+        drawInterface(null);
+    }
     /**
      * prints character to signal that the cli is available for a new command
      */

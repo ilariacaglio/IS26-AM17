@@ -305,7 +305,7 @@ public class ClientModel {
     public void updatePlayerQueue(Queue<Player> playerQueue) {
         setOrderedPlayers(playerQueue);
         // UI communication
-        userInterface.drawInterface(null);
+        userInterface.updateInterfacePlayerQueue();
     }
 
     /**

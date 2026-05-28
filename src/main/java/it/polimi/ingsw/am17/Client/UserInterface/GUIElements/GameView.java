@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CardGUI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
+import it.polimi.ingsw.am17.Client.UserInterface.TurnCardGUI;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -10,10 +11,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Characte
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -23,7 +21,6 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,6 +35,7 @@ public class GameView {
     private ClientModel game;
     private Player localPlayer;
     private List<CardGUI> offeringCardGUI = new ArrayList<>();
+    private TurnCardGUI turnCard;
     private List<CharacterCard> tribesSelected = new ArrayList<>();
     private List<BuildingCard> buildingSelected = new ArrayList<>();
     private OfferingCard offeringSelected = null;
@@ -120,7 +118,7 @@ public class GameView {
         //put turnCard and offeringCard in the same HBox
         offeringCardBox = new HBox(20);
         //turnCard first
-        CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
+        turnCard = new TurnCardGUI(game.getTURN_CARD_IMAGE_PATH(), game.getNumPlayers());
         offeringCardBox.getChildren().add(turnCard);
 
         //offeringCards second
@@ -319,6 +317,11 @@ public class GameView {
     }
 
 
+    public void updatePlayerQueue(){
+        // Update turn overlay visibility
+        turnOverlay.setVisible(game.isPlayerTurn());
+    }
+
     public void updateGameElements() {
         // Update turn overlay visibility
         turnOverlay.setVisible(game.isPlayerTurn());
@@ -326,6 +329,13 @@ public class GameView {
 
         // Update Upper Cards
         updateUpperCards();
+
+        //UpdateTurnCards
+        List<Color> currentTurnOrder = game.getOrderedPlayers().stream()
+                .map(Player::getColor)
+                .toList();
+
+        turnCard.updateTurnOrder(currentTurnOrder);
 
         // Update Offering Cards
         updateOfferingCards();
@@ -372,14 +382,19 @@ public class GameView {
     }
 
     public void updateOfferingDeck(){
+        // Update turn overlay visibility
+        turnOverlay.setVisible(game.isPlayerTurn());
+
         for (CardGUI cardGUI : offeringCardGUI){
             if(cardGUI.isSelected())
                 cardGUI.setVisualSelection(false);
         }
         for(int i=0; i<offeringCardGUI.size(); i++){
             CardGUI card = offeringCardGUI.get(i);
-            if (game.getOfferingCards().get(i).getPlayer() != null) {
-                card.updateBorderFromPlayer(game.getOfferingCards().get(i).getPlayer().getColor().getFxColor());
+            Player p = game.getOfferingCards().get(i).getPlayer();
+            if (p != null) {
+                card.updateBorderFromPlayer(p.getColor().getFxColor());
+                turnCard.removePlayerTotem(p.getColor());
             } else {
                 // Optional: Reset to default border if no player owns it
                 card.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
