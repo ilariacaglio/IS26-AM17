@@ -78,7 +78,7 @@ public class TurnCardGUI extends StackPane {
             case 4:
                 return new double[] { -40, -20, 0, 20 };
             case 5:
-                return new double[] { -40, -20, 0, 20, 40 };
+                return new double[] { -50, -30, -10, 10, 30 };
             default:
                 return new double[numSlots];
         }
