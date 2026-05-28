@@ -36,6 +36,7 @@ public class RitualEvent extends EventCard {
     }
     @Override
     public void computeScore(Queue<Player> list){
+        logger.fine("Solving RitualEvent. ");
         //array for counting stars of each player
         int[] stars = new int[list.size()];
         //counting stars icon for each player
@@ -90,11 +91,11 @@ public class RitualEvent extends EventCard {
                 }
             }
             j++;
-            logger.info("Solved Ritual Event. ");
             logger.info("Player " + player.getNickname() + " has "
                     + player.getFood() + " food "
                     + player.getPp() + " points after Ritual Event");
         }
+        logger.fine("RitualEvent solved. ");
     }
 
     @Override
