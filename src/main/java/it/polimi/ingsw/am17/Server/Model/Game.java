@@ -520,7 +520,11 @@ public class Game extends Subject {
         }
 
         currentOffering.setPlayer(null);
-        movePlayerInQueue();
+
+        // if is building2 move, the queue should not be modified
+        if (!currentOffering.equals(building2OfferingCard)) {
+            movePlayerInQueue();
+        }
 
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
 

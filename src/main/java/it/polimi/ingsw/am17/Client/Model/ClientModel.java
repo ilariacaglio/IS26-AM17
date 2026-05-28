@@ -121,17 +121,36 @@ public class ClientModel {
     }
 
     /**
-     * Replaces the player in the queue managing turn order with the value passed as parameter.
-     * @param player    the player to be set
+     * Updates data of a single player in the queue
+     * If the player is the local player updates UI
+     * @param player    the player to be updated in the queue
      */
-    public void setPlayerInQueue(Player player){
+    private void updatePlayerDataInQueue(Player player){
         List<Player> players = new ArrayList<>(orderedPlayer);
         players.replaceAll(p -> p.equals(player) ? player : p);
         orderedPlayer.clear();
         orderedPlayer.addAll(players);
+
+        // if the player is the local player, update UI
+        if (player.equals(userInterface.getLocalPlayer()))
+            userInterface.setLocalPlayer();
+    }
+
+    /**
+     * Dequeues and enqueues the player to keep turn order
+     */
+    private void movePlayerInQueue(){
         Player lastPlayer = orderedPlayer.poll();
         orderedPlayer.add(lastPlayer);
-        userInterface.setLocalPlayer();
+    }
+
+    /**
+     * Replaces the player in the queue managing turn order with the value passed as parameter.
+     * @param player    the player to be set
+     */
+    public void setPlayerInQueue(Player player){
+        updatePlayerDataInQueue(player);
+        movePlayerInQueue();
     }
 
     public void setOfferingCards(List<OfferingCard> offeringCards){
@@ -420,14 +439,19 @@ public class ClientModel {
      */
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
-        setPlayerInQueue(player);
+
 
         // check if player has an offering card
         if (isPlayerInOfferingCard(player)) {
+            // update data and manage queue
+            setPlayerInQueue(player);
+            // cards selection based on "usual" offering cards
             removePlayerFromOfferingCard(player);
         }
         else{
             // if not, is buildingType2 move
+            // update data without managing queue
+            updatePlayerDataInQueue(player);
             if (player.equals(userInterface.getLocalPlayer()) &&
                     !userInterface.isBuilding2EffectUsed()) {
                         userInterface.setBuilding2EffectUsed(true);
