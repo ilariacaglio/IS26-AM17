@@ -166,7 +166,7 @@ public class GamesController {
                 // retrieve game (also check if it exists)
                 Game game = getGameFromId(gameId);
 
-                // Sign up client as an observer (see N.B. hereunder)
+                // Sign up client as an observer
                 signUpAsObserver(client, gameId);
                 observerAdded = true;
 
@@ -192,6 +192,13 @@ public class GamesController {
         }).start();
     }
 
+    /**
+     * Removes client from observer list and notifies error to the client
+     * @param client                the client that made the join request
+     * @param gameId                the id of the game to be joined
+     * @param observerAdded         if true, the client was added to the list as on observer of the game
+     * @param errorToNotify         the error occurred
+     */
     private void rollbackAndNotify(VirtualView client, UUID gameId, boolean observerAdded, InvalidOperationException errorToNotify) {
         // N.B. we need to sign up the client before joining the player
         // so that it's notified from the addPlayer, if something goes wrong,
@@ -209,8 +216,6 @@ public class GamesController {
 
     /**
      * Closes a game (also when a player disconnects [unexpectedly]).
-     * TODO: add check on "creator" player, i.e. only the creator can close the game.
-     * TODO: use player parameter and add it to the notify (who closed the game?) for unexpected disconnections.
      * @param client client generating the request.
      */
     public void closeGame(VirtualView client) {
