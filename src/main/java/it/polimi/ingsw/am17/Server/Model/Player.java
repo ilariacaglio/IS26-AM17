@@ -164,7 +164,7 @@ public class Player implements Serializable {
         this.food = newAmount;
         logger.info("Food added successfully. ");
     }
-//TODO: start from here
+
     public void calculateFinalPoints(){
         // add pp of builders
         int pointsBuilders = characterCards.stream()
@@ -173,6 +173,7 @@ public class Player implements Serializable {
                     .sum();
 
         addPp(pointsBuilders);
+        logger.info("Player " + this.getNickname() + " has " + pointsBuilders + "  PP from builders at the end Game. ");
 
         // add pp of inventors and icons
         int inventorCount = (int) characterCards.stream()
@@ -186,6 +187,7 @@ public class Player implements Serializable {
                 .count();
 
         addPp((int) (inventorCount * uniqueIcons));
+        logger.info("Player " + this.getNickname() + " has " + ((int) (inventorCount * uniqueIcons)) + " PP from inventors at the end Game. ");
 
         // add ten points for each artist couple
         int numArtists = (int) characterCards.stream()
@@ -193,12 +195,14 @@ public class Player implements Serializable {
                 .count();
         int numCouples = Math.floorDiv(numArtists,2);
         addPp(numCouples*10);
+        logger.info("Player " + this.getNickname() + " has " + (numCouples*10) + " PP from each artist couple at the end Game. ");
 
         // points of buildings
         int cardPoints = buildingCards.stream()
                 .mapToInt(BuildingCard::getBonusPoints)
                 .sum();
         addPp(cardPoints);
+        logger.info("Player " + this.getNickname() + " has " + (cardPoints) + " PP from buildings at the end Game. ");
 
         // final effects of buildings
         for (BuildingCard card : buildingCards) {
@@ -214,6 +218,8 @@ public class Player implements Serializable {
             foodBonusFromBuildings += buildingCard.GetFoodBonusFromCardAcquisition(characterCards, card);
         }
         addFood(foodBonusFromBuildings);
+        logger.info("Player " + this.getNickname() + " has received " + foodBonusFromBuildings +
+                        " food from building 10 or 14. ");
         characterCards.add(card);
     }
 
@@ -237,6 +243,7 @@ public class Player implements Serializable {
             // get bonus food for each Hunter if the Hunter has the icon
             if (card.getCardType().equals(CardType.HUNTER) && ((Hunter)card).isWithIcon()) {
                 addFood(getNumberOfHunters());
+                logger.info("Player " + this.getNickname() + " has " + getNumberOfHunters() + " food from hunters with icon. ");
             }
         }
 
@@ -251,6 +258,7 @@ public class Player implements Serializable {
                 throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD_BUILDINGS);
             }
             addBuilding(card);
+            logger.info("Player " + this.getNickname() + " paid " + cost + " for building: " + card);
         }
     }
 
@@ -304,7 +312,7 @@ public class Player implements Serializable {
      * @param pointLost number of point lost if player doesn't have enough food
      */
    public void solveFoodEvent(int pointLost)
-   {
+   {logger.fine("Solving FoodEvent. ");
        //count number of Binder
        long numBinder = this.characterCards.stream()
                .filter(c -> c.getCardType().equals(CardType.BINDER))
@@ -315,16 +323,20 @@ public class Player implements Serializable {
        for(BuildingCard c: this.buildingCards){
            foodDiscount += c.GetFoodDiscountInFoodEvent(this.characterCards);
        }
+       logger.info("Player " + this.getNickname() + " has " + foodDiscount + " food discount from buildings for FoodEvent. ");
        //count totalDiscount given by numBinder and foodDiscount
        int totalDiscount = Math.toIntExact((3*numBinder) + foodDiscount);
+       logger.info("Player " + this.getNickname() + " has " + totalDiscount + " total food discount for FoodEvent. ");
        //count totalCards, witch are all the player cards
        int totalCards = this.characterCards.size();
        //find foodPrice, witch is what the player has to pay
        int foodPrice = totalCards - totalDiscount;
+       logger.info("Player " + this.getNickname() + " has " + foodPrice + " foodPrice to pay in FoodEvent. ");
        //if foodPrice<0, the player doesn't lose pp nor food
        if(foodPrice<=0){
            addPp(0);
            addFood(0);
+           logger.info("Player " + this.getNickname() + " doesn't have to pay. ");
        }//if food is not enough, player loses pp and all the food he has
        else if (food < foodPrice) {
            int remaining = foodPrice - food;
@@ -333,17 +345,18 @@ public class Player implements Serializable {
 
            addPp(lostPp * (-1));
            addFood(food * (-1));
-           logger.info("Player " + getNickname() + " has lost all food and " + lostPp
+           logger.info("Player " + getNickname() + " has lost all food (" + food + ") and " + lostPp
                     + " points from FoodEvent.");
        } //if food is enough
        else {
            addFood(foodPrice * (-1));
            logger.info("Player " + getNickname() + " has lost " + foodPrice + " food from FoodEvent.");
        }
+       logger.fine("FoodEvent solved. ");
    }
 
-   public void solveHuntingEvent(int pointEarned)
-   {
+   public void solveHuntingEvent(int pointEarned) {
+       logger.fine("Solving HuntingEvent. ");
        int totalFood=0;
        int totalPP=0;
        //count number of hunter
@@ -362,12 +375,14 @@ public class Player implements Serializable {
        //add food and points
        this.addFood(totalFood);
        this.addPp(totalPP);
-       logger.info("Player " + getNickname() + " had gained " + totalFood + " food and "
-                   + totalPP + " points from HuntingEvent.");
        }
+       logger.info("Player " + getNickname() + " has gained " + totalFood + " food and "
+               + totalPP + " points from HuntingEvent.");
+       logger.fine("HuntingEvent solved. ");
    }
 
    public void solvePaintingEvent(int numMax, int pointsMax, int pointsLow){
+       logger.fine("Solving PaintingEvent. ");
        //count number of artists
        int numArtist = (int) characterCards.stream()
                .filter(c-> c.getCardType().equals(CardType.ARTIST))
@@ -375,12 +390,12 @@ public class Player implements Serializable {
        //assign PP based on number of artists
        if(numArtist>=numMax){
            addPp(numArtist * pointsMax);
-           logger.info("Player " + getNickname() + " had gained " + numArtist*pointsMax
+           logger.info("Player " + getNickname() + " has gained " + numArtist*pointsMax
                    + " points for PaintingEvent.");
        }
        else {
            addPp(pointsLow*(-1));
-           logger.info("Player " + getNickname() + " had gained " + pointsLow
+           logger.info("Player " + getNickname() + " has lost " + pointsLow
                    + " points for PaintingEvent.");
        }
 
@@ -394,11 +409,11 @@ public class Player implements Serializable {
        //add additionalFood
        addFood(additionalFood);
        logger.info("Player " + getNickname() + " had gained " + additionalFood
-               + " food for PaintingEvent.");
+               + " food from buildings for PaintingEvent.");
+       logger.fine("PaintingEvent solved. ");
    }
 
-   public int calculateStarPoints()
-   {
+   public int calculateStarPoints() {
        int starBonus=0;
 
        //additional stars given by BuildingType9
