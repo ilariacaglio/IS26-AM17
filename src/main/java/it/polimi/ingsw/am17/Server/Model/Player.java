@@ -312,7 +312,7 @@ public class Player implements Serializable {
      * @param pointLost number of point lost if player doesn't have enough food
      */
    public void solveFoodEvent(int pointLost)
-   {logger.fine("Solving FoodEvent. ");
+   {
        //count number of Binder
        long numBinder = this.characterCards.stream()
                .filter(c -> c.getCardType().equals(CardType.BINDER))
@@ -352,11 +352,9 @@ public class Player implements Serializable {
            addFood(foodPrice * (-1));
            logger.info("Player " + getNickname() + " has lost " + foodPrice + " food from FoodEvent.");
        }
-       logger.fine("FoodEvent solved. ");
    }
 
    public void solveHuntingEvent(int pointEarned) {
-       logger.fine("Solving HuntingEvent. ");
        int totalFood=0;
        int totalPP=0;
        //count number of hunter
@@ -378,11 +376,9 @@ public class Player implements Serializable {
        }
        logger.info("Player " + getNickname() + " has gained " + totalFood + " food and "
                + totalPP + " points from HuntingEvent.");
-       logger.fine("HuntingEvent solved. ");
    }
 
    public void solvePaintingEvent(int numMax, int pointsMax, int pointsLow){
-       logger.fine("Solving PaintingEvent. ");
        //count number of artists
        int numArtist = (int) characterCards.stream()
                .filter(c-> c.getCardType().equals(CardType.ARTIST))
@@ -410,7 +406,6 @@ public class Player implements Serializable {
        addFood(additionalFood);
        logger.info("Player " + getNickname() + " had gained " + additionalFood
                + " food from buildings for PaintingEvent.");
-       logger.fine("PaintingEvent solved. ");
    }
 
    public int calculateStarPoints() {
