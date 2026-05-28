@@ -41,7 +41,7 @@ public class MoveValidator {
                 numToSelectFromLower--;
                 lowerRowCharacterCards.remove(card);
             } else {
-                return new InvalidOperationException(ErrorType.INVALID_CHARACTER_CARD);
+                return new InvalidOperationException(ErrorType.INVALID_CHARACTER_CARD, "Character card does not exists");
             }
         }
         for (BuildingCard card : buildingCards) {
@@ -50,14 +50,14 @@ public class MoveValidator {
             } else if (lowerBuildingRow.contains(card)) {
                 numToSelectFromLower--;
             } else {
-                return new InvalidOperationException(ErrorType.INVALID_BUILDING_CARD);
+                return new InvalidOperationException(ErrorType.INVALID_BUILDING_CARD, "Building card does not exists");
             }
         }
 
         // if the player still has cards to select (counters != 0),
         // AND it is possible to select more cards (i.e. row not empty), the choice is not valid.
         if ((numToSelectFromUpper != 0 && !upperRowCharacterCards.isEmpty()) || (numToSelectFromLower != 0 && !lowerRowCharacterCards.isEmpty())) {
-            return new InvalidOperationException(ErrorType.INVALID_CARDS_NUMBER);
+            return new InvalidOperationException(ErrorType.INVALID_CARDS_NUMBER, "Wrong number of card in selection");
         }
         return null;
 
