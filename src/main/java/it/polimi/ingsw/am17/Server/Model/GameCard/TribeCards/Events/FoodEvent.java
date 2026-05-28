@@ -32,13 +32,15 @@ public class FoodEvent extends EventCard{
 
     @Override
     public void computeScore(Queue<Player> list){
+        logger.fine("Solving FoodEvent. ");
         for (Player player : list) {
             player.solveFoodEvent(pointLost);
-            logger.info("Solved Food Event. ");
+
             logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
                             + player.getPp() + " points after Food Event");
 
         }
+        logger.fine("Solved Food Event. ");
     }
 
     @Override
