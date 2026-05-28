@@ -27,14 +27,13 @@ import java.util.List;
 
 public class GameView {
     private VBox root;
-    private GUI mainGui;
+    private final GUI mainGui;
     private VBox turnOverlay;
     private HBox upperCardsBox;
     private HBox lowerCardsBox;
-    private HBox offeringCardBox;
-    private ClientModel game;
-    private Player localPlayer;
-    private List<CardGUI> offeringCardGUI = new ArrayList<>();
+    private final ClientModel game;
+    private final Player localPlayer;
+    private final List<CardGUI> offeringCardGUI = new ArrayList<>();
     private TurnCardGUI turnCard;
     private List<CharacterCard> tribesSelected = new ArrayList<>();
     private List<BuildingCard> buildingSelected = new ArrayList<>();
@@ -42,9 +41,6 @@ public class GameView {
     private Player selectedPlayer;
     private HBox playerCardsBox;
     private HBox playerResourcesBox;
-    private Label name;
-    private Label food;
-    private Label points;
 
 
     public GameView(GUI mainGui, ClientModel game, Player localPlayer) {
@@ -116,7 +112,7 @@ public class GameView {
         upperCardsBox =new HBox(10);
 
         //put turnCard and offeringCard in the same HBox
-        offeringCardBox = new HBox(20);
+        HBox offeringCardBox = new HBox(20);
         //turnCard first
         turnCard = new TurnCardGUI(game.getTURN_CARD_IMAGE_PATH(), game.getNumPlayers());
         offeringCardBox.getChildren().add(turnCard);
@@ -141,61 +137,7 @@ public class GameView {
         lowerCardsBox =  new HBox(10);
 
         //send button
-        Button sendButton = new Button("SEND");
-        sendButton.setOnAction(e ->
-        {
-            try {
-                if (offeringSelected != null) {
-                    mainGui.pickOfferingCard(offeringSelected);
-                    offeringSelected = null;
-                    buildingSelected = new ArrayList<>();
-                    tribesSelected =  new ArrayList<>();
-                } else {
-                    // get players offering card
-                    OfferingCard myOfferingCard = game.getOfferingCards().stream()
-                            .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
-                            .findFirst().orElse(null);
-
-                    if (myOfferingCard == null) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Azione non consentita");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Non possiedi ancora una Offering Card per questa fase di gioco!");
-                        alert.showAndWait();
-                        return;
-                    }
-
-                    Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
-                            tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
-                            game.getUpperBuildingRow(), game.getLowerBuildingRow());
-                    if(exception == null) {
-                        mainGui.pickTribeCards(tribesSelected, buildingSelected);
-                        offeringSelected = null;
-                        buildingSelected = new ArrayList<>();
-                        tribesSelected =  new ArrayList<>();
-                    }
-                    else {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(exception.getMessage());
-                        alert.showAndWait();
-                    }
-
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        sendButton.setStyle("""
-            -fx-background-color: #5c2c16;\s
-            -fx-text-fill: white;
-            -fx-font-weight: bold;
-            -fx-background-radius: 5px;
-            -fx-cursor: hand;
-            -fx-font-size: 16px;
-            -fx-padding: 10px 20px;
-            """);
+        Button sendButton = getSendButton();
         HBox sendButtonBox = new HBox();
         sendButtonBox.getChildren().add(sendButton);
         sendButtonBox.setAlignment(Pos.CENTER);
@@ -314,6 +256,65 @@ public class GameView {
 
         root.getChildren().addAll(turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox, lowerCardsBox, sendButtonBox,
                 playerResourcesBox, playerCardsContainer, spacer, playersButtonBox);
+    }
+
+    private Button getSendButton() {
+        Button sendButton = new Button("SEND");
+        sendButton.setOnAction(e ->
+        {
+            try {
+                if (offeringSelected != null) {
+                    mainGui.pickOfferingCard(offeringSelected);
+                    offeringSelected = null;
+                    buildingSelected = new ArrayList<>();
+                    tribesSelected =  new ArrayList<>();
+                } else {
+                    // get players offering card
+                    OfferingCard myOfferingCard = game.getOfferingCards().stream()
+                            .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
+                            .findFirst().orElse(null);
+
+                    if (myOfferingCard == null) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("You need to pick a card");
+                        alert.showAndWait();
+                        return;
+                    }
+
+                    Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
+                            tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
+                            game.getUpperBuildingRow(), game.getLowerBuildingRow());
+                    if(exception == null) {
+                        mainGui.pickTribeCards(tribesSelected, buildingSelected);
+                        offeringSelected = null;
+                        buildingSelected = new ArrayList<>();
+                        tribesSelected =  new ArrayList<>();
+                    }
+                    else {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(exception.getMessage());
+                        alert.showAndWait();
+                    }
+
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        sendButton.setStyle("""
+            -fx-background-color: #5c2c16;\s
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-background-radius: 5px;
+            -fx-cursor: hand;
+            -fx-font-size: 16px;
+            -fx-padding: 10px 20px;
+            """);
+        return sendButton;
     }
 
 
@@ -590,19 +591,19 @@ public class GameView {
     }
 
     private void createPlayerCardLabel(){
-        name = new Label("Name: " + selectedPlayer.getNickname());
+        Label name = new Label("Name: " + selectedPlayer.getNickname());
         name.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
         """);
-        food = new Label("Food: " + selectedPlayer.getFood());
+        Label food = new Label("Food: " + selectedPlayer.getFood());
         food.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
         """);
-        points = new Label("Points: "+ selectedPlayer.getPp());
+        Label points = new Label("Points: " + selectedPlayer.getPp());
         points.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
