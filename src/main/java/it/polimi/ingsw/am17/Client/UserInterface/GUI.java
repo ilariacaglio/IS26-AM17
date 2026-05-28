@@ -182,7 +182,11 @@ public class GUI implements UI {
 
     }
     @Override public void updateInterfacePlayerQueue(){
-        gameView.updatePlayerQueue();
+        if(this.gameView != null) {
+            Platform.runLater(() -> {
+                gameView.updatePlayerQueue();
+            });
+        }
     }
     @Override
     public void printGamesList(){
