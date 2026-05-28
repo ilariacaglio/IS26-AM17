@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CardGUI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.TurnCardGUI;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -283,7 +284,7 @@ public class GameView {
                         return;
                     }
 
-                    Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
+                    InvalidOperationException exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
                             tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
                             game.getUpperBuildingRow(), game.getLowerBuildingRow());
                     if(exception == null) {
@@ -296,7 +297,7 @@ public class GameView {
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Error in selection");
                         alert.setHeaderText(null);
-                        alert.setContentText(exception.getMessage());
+                        alert.setContentText(exception.getErrorType().getMessage());
                         alert.showAndWait();
                     }
 
