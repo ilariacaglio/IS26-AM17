@@ -273,7 +273,7 @@ public class ClientModel {
     }
 
     /**
-     * @return true if every player of the game is not into an offering card, false otherwise
+     * @return true if every player of the game is not into an offering card (excluding building2OfferingCard), false otherwise
      */
     private boolean noPlayerInOfferingCards(){
         for (OfferingCard oc : offeringCards) {
@@ -284,7 +284,7 @@ public class ClientModel {
     }
 
     /**
-     * @return true if the player is in an offering card, false otherwise
+     * @return true if the player is in an offering card (excluding building2OfferingCard), false otherwise
      */
     private boolean isPlayerInOfferingCard(Player player){
         return offeringCards.stream().anyMatch(o -> player.equals(o.getPlayer()));
