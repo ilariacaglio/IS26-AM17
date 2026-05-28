@@ -45,12 +45,14 @@ public class PaintingEvent extends EventCard {
 
     @Override
     public void computeScore(Queue<Player> list) {
+        logger.info("Solving PaintingEvent. ");
         for (Player player : list) {
             player.solvePaintingEvent(numMax, pointsMax, pointsLow);
-            logger.info("Solved Painting Event. ");
+
             logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
                     + player.getPp() + " points after Painting Event");
         }
+        logger.info("PaintingEvent solved. ");
     }
 
     @Override
