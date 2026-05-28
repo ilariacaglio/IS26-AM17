@@ -31,12 +31,14 @@ public class HuntingEvent extends EventCard {
 
     @Override
     public void computeScore(Queue<Player> list){
+        logger.info("Solving HuntingEvent. ");
         for(Player player: list){
            player.solveHuntingEvent(pointEarned);
-            logger.info("Solved Hunting Event. ");
+
             logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
                     + player.getPp() + " points after Hunting Event");
         }
+        logger.info("Solved Hunting Event. ");
     }
 
     @Override
