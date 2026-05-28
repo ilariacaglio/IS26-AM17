@@ -89,19 +89,17 @@ public class Game extends Subject {
      * @return leftmost offering card with player in the offering track.
      */
     private OfferingCard getNextOccupiedOfferingCard() {
-        logger.fine("Getting next occupied offering card.");
 
-        OfferingCard offCard = offeringCards.stream()
+        // lookup in normal offering cards
+        OfferingCard offeringCard = offeringCards.stream()
                 .filter(card -> card.getPlayer() != null)
                 .min(Comparator.comparing(OfferingCard::getOrderLetter))
                 .orElse(null);
-        if (offCard != null) {
-            return offCard;
-        } else if (building2OfferingCard.getPlayer() == null) {
-            return null;
-        } else {
-            return building2OfferingCard;
-        }
+
+        // if not found, lookup in building2OfferingCard
+        if (offeringCard == null && building2OfferingCard.getPlayer() != null) offeringCard = building2OfferingCard;
+
+        return offeringCard;
     }
 
     /**
@@ -322,9 +320,6 @@ public class Game extends Subject {
             }
         }
 
-        // remove player from buildingType2 offering card
-        building2OfferingCard.setPlayer(null);
-
         notifyEndTurn(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
@@ -411,10 +406,7 @@ public class Game extends Subject {
                 .findFirst().orElse(null);
 
         //check if offeringCard is valid
-        if (offeringCard == null && offeringCardLetter.equals('Z'))
-            offeringCard = building2OfferingCard;
-        else if (offeringCard == null)
-            throw new InvalidOperationException(ErrorType.INVALID_OFFERING_CARD_LETTER);
+        if (offeringCard == null) throw new InvalidOperationException(ErrorType.INVALID_OFFERING_CARD_LETTER);
 
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
@@ -470,17 +462,16 @@ public class Game extends Subject {
      * @param buildingCards     the building cards picked by the player
      */
     public void pickTribeCards(String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
-        logger.info("Request forwarded to pickTribeCards method in model");
-
         // get player from nickname
         Player player =  orderedPlayers.stream()
                 .filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow(()->new InvalidOperationException(ErrorType.INVALID_PLAYER));
 
-        logger.info("Player " + player.getNickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards);
-
         // Get leftmost occupied offering card.
         OfferingCard currentOffering = getNextOccupiedOfferingCard();
+
+        logger.info("Player " + player.getNickname() + " wants to pick tribe cards from offering card " +  currentOffering.getOrderLetter() + ": " + characterCards + " and " + buildingCards);
+
 
         // if a player has selected the offering card with letter A
         if (currentOffering.getOrderLetter()=='A') {
@@ -520,9 +511,12 @@ public class Game extends Subject {
         upperRow.removeAll(characterCards); // if not present, no worries
         lowerRow.removeAll(characterCards); // if not present, no worries
 
-        //if the player has the buildingType2 card set it to offering card
-        if (building2OfferingCard.getPlayer() == null) {
-            addPlayerToBT2OfferingCard(player);
+        if (player.hasBuilding2()) {
+            // N.B.: there is a singular buildingType2 per game
+            logger.fine("Adding player to buildingType2 offering card.");
+
+            // N.B.: if calling from building2OfferingCard, don't set the player again
+            if (building2OfferingCard.getPlayer() == null) building2OfferingCard.setPlayer(player);
         }
 
         currentOffering.setPlayer(null);
@@ -554,28 +548,13 @@ public class Game extends Subject {
     }
 
     /**
-     * Dequeues and enqueues the player
+     * Dequeues and enqueues the player to allow other players to play.
      */
     private void movePlayerInQueue() {
         // remove player from queue
         Player lastPlayer = orderedPlayers.poll();
         // add player as last element of queue
         orderedPlayers.add(lastPlayer);
-    }
-
-
-    /**
-     * Checks if the player has the BuildingType2 card and sets it to buildingType2OfferingCard
-     *
-     * @param player the player to be set
-     */
-    private void addPlayerToBT2OfferingCard(Player player) {
-        logger.fine("Adding player to buildingType2 offering card.");
-
-        //Important: there is a singular buildingType2 per game
-        if (player.hasBuilding2()) {
-            building2OfferingCard.setPlayer(player);
-        }
     }
 
     public UUID getId() {
