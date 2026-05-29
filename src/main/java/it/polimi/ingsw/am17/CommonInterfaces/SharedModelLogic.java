@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 public class SharedModelLogic {
+    private static final Logger logger = Logger.getLogger(SharedModelLogic.class.getName());
     /**
      * Dequeues and enqueues the player to allow other players to play.
      */
@@ -88,6 +90,8 @@ public class SharedModelLogic {
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers,
                                        boolean isPickOCPhase, GameState gameState,
                                        List<OfferingCard> offeringCards, OfferingCard building2OC) {
+        logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
+
         // if the game hasn't started it is not the players turn
         if(!gameState.isGameStarted())
             return false;
@@ -107,11 +111,16 @@ public class SharedModelLogic {
         return isPlayerTurn(playerToCheck, orderedPlayers);
     }
 
+    // These overrides are to avoid to pass null or unmeaningful parameters values
+    // to avoid redundant checks
+    // (e.g. the era check when method is called from class game, we know for sure the game has started)
+
     /**
      * Checks if it is the turn of the given player.
      * @return true if it is players turn, false otherwise.
      */
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers){
+        logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
         return playerToCheck.equals(orderedPlayers.peek());
     }
 
@@ -121,6 +130,8 @@ public class SharedModelLogic {
      */
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers,
                                        List<OfferingCard> offeringCards, OfferingCard building2OC){
+        logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
+
         if (noPlayerInOfferingCards(offeringCards) && !isBuilding2EffectUsed(offeringCards, building2OC))
             return playerToCheck.hasBuilding2();
 
@@ -141,6 +152,8 @@ public class SharedModelLogic {
      */
     public static void validateOfferingCardChoice(Character offeringCardLetter, Player player,
                                                   Queue<Player> orderedPlayers, List<OfferingCard> offeringCards) {
+        logger.info("Validating offering card choice");
+
         // check if letter is null
         if(offeringCardLetter == null)
             throw new InvalidOperationException(ErrorType.MISSING_OFFERING_CARD_LETTER);
@@ -173,6 +186,7 @@ public class SharedModelLogic {
                                                 List<OfferingCard> offeringCards, OfferingCard building2OC, List<CharacterCard> characterCards,
                                                 List<BuildingCard> buildingCards, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+        logger.info("Validating tribes card choice");
 
         // Check if it's player turn
         if (isPlayerTurn(player, orderedPlayers, offeringCards, building2OC))
