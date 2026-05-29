@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CardGUI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -143,10 +144,26 @@ public class GameView {
         {
             try {
                 if (offeringSelected != null) {
-                    mainGui.pickOfferingCard(offeringSelected);
-                    offeringSelected = null;
-                    buildingSelected = new ArrayList<>();
-                    tribesSelected =  new ArrayList<>();
+                    try{
+                        game.validatePickOfferingCard(offeringSelected.getOrderLetter());
+                        mainGui.pickOfferingCard(offeringSelected);
+                        offeringSelected = null;
+                        buildingSelected = new ArrayList<>();
+                        tribesSelected =  new ArrayList<>();
+                    } catch (InvalidOperationException invalidOperationException) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
+                        alert.showAndWait();
+                    } catch (Exception ex) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(ex.getMessage());
+                        alert.showAndWait();
+                    }
+
                 } else {
                     // get players offering card
                     OfferingCard myOfferingCard = game.getOfferingCards().stream()
@@ -162,20 +179,23 @@ public class GameView {
                         return;
                     }
 
-                    Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
-                            tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
-                            game.getUpperBuildingRow(), game.getLowerBuildingRow());
-                    if(exception == null) {
+                    try {
+                        game.validatePickTribeCards(tribesSelected, buildingSelected);
                         mainGui.pickTribeCards(tribesSelected, buildingSelected);
                         offeringSelected = null;
                         buildingSelected = new ArrayList<>();
                         tribesSelected =  new ArrayList<>();
-                    }
-                    else {
+                    } catch (InvalidOperationException invalidOperationException) {
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Error in selection");
                         alert.setHeaderText(null);
-                        alert.setContentText(exception.getMessage());
+                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
+                        alert.showAndWait();
+                    } catch (Exception ex) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(ex.getMessage());
                         alert.showAndWait();
                     }
 
