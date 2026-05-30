@@ -10,7 +10,6 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 /**
@@ -205,6 +204,8 @@ public class GamesController {
             rollbackObserverAdded(client,  gameId, observerAdded);
             notifyErrorToClient(client, new InvalidOperationException(message));
         }
+
+        notifyErrorToClient(client, errorToNotify);
     }
 
     /**
@@ -274,7 +275,7 @@ public class GamesController {
             }
         }
         catch(InvalidOperationException e) {
-            logger.warning("Error calling game selectOfferingCard: " + e.getMessage());
+            logger.warning("Error calling game selectOfferingCard: " + e.getErrorType().getMessage());
             notifyErrorToClient(client, e);
         }
         catch(Exception e) {
