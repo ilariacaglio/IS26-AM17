@@ -358,7 +358,7 @@ public class ClientModel {
      * @param oldP  the outdated value of the player
      * @param newP  the new value of the player
      */
-    private static void updatePlayerValue(Player oldP, Player newP) {
+    private static void addPPandFood(Player oldP, Player newP) {
         oldP.addPp(newP.getPp()- oldP.getPp());
         oldP.addFood(newP.getFood() - oldP.getFood());
     }
@@ -391,7 +391,7 @@ public class ClientModel {
     /**
      * Resets all game rows, offering cards, ranking and player queue
      */
-    public void resetGameAttributes() {
+    private void resetGameAttributes() {
         setOrderedPlayers(new LinkedList<>());
         setOfferingCards(new ArrayList<>());
         setTribeCards(new ArrayList<>(), new ArrayList<>());
