@@ -10,6 +10,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 /**
@@ -17,9 +18,9 @@ import java.util.logging.Logger;
  * Receives requests from the client via a ServerSocket/RMI and forwards it to the model.
  */
 public class GamesController {
-    private final Map<UUID,Game> games;
-    private final Map<VirtualView, UUID> gameMapping;
-    private final Map<VirtualView, String> playerMapping; // string field is for nickname
+    private final ConcurrentMap<UUID,Game> games;
+    private final ConcurrentMap<VirtualView, UUID> gameMapping;
+    private final ConcurrentMap<VirtualView, String> playerMapping; // string field is for nickname
 
     private final static Logger logger = Logger.getLogger(GamesController.class.getName());
 
