@@ -111,13 +111,12 @@ public class GamesController {
     }
 
     /**
-     * Removes client from observer list and notifies error to the client
+     * Removes client from observer list  and notifies error to the client
      * @param client                the client that made the join request
      * @param gameId                the id of the game to be joined
      * @param observerAdded         if true, the client was added to the list as on observer of the game
-     * @param errorToNotify         the error occurred
      */
-    private void rollbackAndNotify(VirtualView client, UUID gameId, boolean observerAdded, InvalidOperationException errorToNotify) {
+    private void rollbackObserverAdded(VirtualView client, UUID gameId, boolean observerAdded) {
         // N.B. we need to sign up the client before joining the player
         // so that it's notified from the addPlayer, if something goes wrong,
         // we remove it here.
@@ -128,8 +127,6 @@ public class GamesController {
                 logger.warning("Error removing client as observer: " + ex.getMessage());
             }
         }
-
-        notifyErrorToClient(client, errorToNotify);
     }
 
     //** public methods: CLIENT ACTIONS **//
@@ -199,12 +196,14 @@ public class GamesController {
             playerMapping.put(client, player.getNickname());
         } catch (InvalidOperationException e) {
             logger.info("Error joining game: " + e.getErrorType().getMessage());
-            rollbackAndNotify(client, gameId, observerAdded, e);
+            rollbackObserverAdded(client,  gameId, observerAdded);
+            notifyErrorToClient(client, e);
 
         } catch (Exception e) {
             String message = e.getMessage();
             logger.warning("Error joining game: " + message);
-            rollbackAndNotify(client, gameId, observerAdded, new InvalidOperationException(message));
+            rollbackObserverAdded(client,  gameId, observerAdded);
+            notifyErrorToClient(client, new InvalidOperationException(message));
         }
     }
 
