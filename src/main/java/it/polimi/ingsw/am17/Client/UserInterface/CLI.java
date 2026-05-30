@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
@@ -12,7 +13,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
 
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
@@ -21,8 +21,7 @@ import it.polimi.ingsw.am17.Server.Utility.TurnFoodHandler;
 import java.util.*;
 
 public class CLI implements UI {
-    private final VirtualServer virtualServer;
-    private final VirtualView client;
+    private final ServerAdapter serverAdapter;
     private ClientModel readOnlyModel;
     private Player localPlayer;
     private boolean building2EffectUsed;
@@ -32,9 +31,8 @@ public class CLI implements UI {
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
-    public CLI (VirtualServer server, VirtualView client) {
-        this.virtualServer = server;
-        this.client = client;
+    public CLI (ServerAdapter serverAdapter) {
+        this.serverAdapter = serverAdapter;
         this.scanner = new Scanner(System.in);
         resetColors();
         building2EffectUsed = false;
@@ -177,9 +175,9 @@ public class CLI implements UI {
      */
     private void getGamesList(){
         try {
-            virtualServer.getGamesList(client);
+            serverAdapter.getGamesList().join();
         } catch (Exception e) {
-            System.out.println("CLI error: " + e.getMessage());
+            System.err.println("CLI error: " + e.getCause().getMessage());
         }
     }
 
@@ -486,11 +484,10 @@ public class CLI implements UI {
         }
 
         // call server method
-        try{
-            virtualServer.pickTribeCards(this.client, characterCards,buildingCards);
-        }
-        catch (Exception e) {
-            System.err.println("CLI error while calling pickTribeCards on the virtualServer: " + e.getMessage());
+        try {
+            serverAdapter.pickTribeCards(characterCards, buildingCards).join();
+        } catch (Exception e) {
+            System.err.println("CLI error: " + e.getCause().getMessage());
         }
     }
 
@@ -603,7 +600,7 @@ public class CLI implements UI {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
-                virtualServer.createGame(client, localPlayer, numPlayers);
+                serverAdapter.createGame(localPlayer, numPlayers).join();
             } else {
                 System.out.print("Already in a game!");
             }
@@ -620,7 +617,7 @@ public class CLI implements UI {
             if (readOnlyModel.getGameId() == null) {
                 System.out.print("Not in a game");
             } else {
-                virtualServer.closeGame(client);
+                serverAdapter.closeGame().join();
             }
         }catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
@@ -668,7 +665,7 @@ public class CLI implements UI {
             }
 
             // send request
-            virtualServer.pickOfferingCard(this.client, cardLetter);
+            serverAdapter.pickOfferingCard(cardLetter).join();
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
@@ -705,7 +702,7 @@ public class CLI implements UI {
                 //If we successfully got a gameId, proceed
                 if (gameId != null) {
                     System.out.println("Trying to connect...");
-                    virtualServer.joinGame(client, gameId, localPlayer);
+                    serverAdapter.joinGame(gameId, localPlayer).join();
                 }
             } else {
                 System.out.println("Already in a game!");
