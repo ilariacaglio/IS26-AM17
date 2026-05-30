@@ -84,9 +84,10 @@ public class GUI implements UI {
                         isGameInterfaceInitialized = true;
                     }
                     gameView.updateGameElements();
-                } else {
-                    showLocalInterface();
                 }
+            }
+            if(gameState.isGameEnded()){
+                showLocalInterface();
             }
         });
     }
