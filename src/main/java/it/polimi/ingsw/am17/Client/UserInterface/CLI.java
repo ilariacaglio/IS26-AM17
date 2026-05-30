@@ -2,7 +2,6 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.ServerAdapter;
-import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -12,9 +11,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
