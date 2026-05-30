@@ -85,6 +85,7 @@ public class SharedModelLogic {
 
     /**
      * Checks if it is the turn of the given player.
+     * Called from ClientModel class
      * @return true if it is players turn, false otherwise.
      */
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers,
@@ -117,6 +118,7 @@ public class SharedModelLogic {
 
     /**
      * Checks if it is the turn of the given player.
+     * Called from Game class in pickOfferingCard
      * @return true if it is players turn, false otherwise.
      */
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers){
@@ -126,6 +128,7 @@ public class SharedModelLogic {
 
     /**
      * Checks if it is the turn of the given player.
+     * Called from Game class in pickTribeCards
      * @return true if it is players turn, false otherwise.
      */
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers,
