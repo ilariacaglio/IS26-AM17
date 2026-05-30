@@ -24,10 +24,7 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 /**
@@ -41,6 +38,8 @@ public class ClientSocket implements VirtualView, ServerAdapter {
     ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
     int failedHeartbeats;
     long lastHeartbeatReceived = System.currentTimeMillis();
+
+    ExecutorService uiStarter = Executors.newSingleThreadExecutor();
 
     VirtualServerSocket server;
     ClientModel model;
@@ -133,7 +132,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
         model = new ClientModel(userInterface);
         userInterface.setModel(model);
-        model.startInterface();  // note: not threaded
+        uiStarter.execute(this.model::startInterface);
     }
 
     private void onServerDisconnection() {

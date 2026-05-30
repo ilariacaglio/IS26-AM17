@@ -21,10 +21,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 /**
@@ -38,6 +35,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
     int failedHeartbeats = 0;
     ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
     long lastHeartbeatReceived = System.currentTimeMillis();
+
+    ExecutorService uiStarter = Executors.newSingleThreadExecutor();
 
     private final ClientModel model;
     private final VirtualServerRMI server;
@@ -88,7 +87,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
         }
         this.model = new ClientModel(userInterface);
         userInterface.setModel(model);
-        this.model.startInterface(); // todo: thread??
+        uiStarter.execute(this.model::startInterface);
     }
 
     /**
