@@ -194,22 +194,22 @@ public class GUI implements UI {
     }
     public void getGameList(){
         try {
-            serverAdapter.getGamesList();
+            serverAdapter.getGamesList().join();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public void joinGame(UUID gameId) throws Exception{
-        serverAdapter.joinGame(gameId,localPlayer);
+        serverAdapter.joinGame(gameId,localPlayer).join();
     }
     public void createGame(int numPlayer) throws Exception{
-        serverAdapter.createGame(localPlayer, numPlayer);
+        serverAdapter.createGame(localPlayer, numPlayer).join();
     }
     public void pickOfferingCard(OfferingCard card) throws Exception{
-        serverAdapter.pickOfferingCard(card.getOrderLetter());
+        serverAdapter.pickOfferingCard(card.getOrderLetter()).join();
     }
     public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
-        serverAdapter.pickTribeCards(characterCards, buildingCards);
+        serverAdapter.pickTribeCards(characterCards, buildingCards).join();
     }
 
 
