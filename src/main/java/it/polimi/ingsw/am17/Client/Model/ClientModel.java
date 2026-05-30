@@ -303,7 +303,10 @@ public class ClientModel {
      * @param playerQueue   the value to be set
      */
     public void updatePlayerQueue(Queue<Player> playerQueue) {
-        setOrderedPlayers(playerQueue);
+        synchronized (this) {
+            setOrderedPlayers(playerQueue);
+        }
+
         // UI communication
         userInterface.drawInterface(null);
     }
@@ -319,15 +322,15 @@ public class ClientModel {
      */
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
-
-        setGameState(GameState.ERA1);
-        setNumPlayers(players.size());
-        setOrderedPlayers(players);
-        setTribeCards(upperRow, lowerRow);
-        setBuildingCards(upperBuildingRow, lowerBuildingRow);
-        setOfferingCards(offeringCards);
-        setPickOCPhase(true);
-
+        synchronized (this) {
+            setGameState(GameState.ERA1);
+            setNumPlayers(players.size());
+            setOrderedPlayers(players);
+            setTribeCards(upperRow, lowerRow);
+            setBuildingCards(upperBuildingRow, lowerBuildingRow);
+            setOfferingCards(offeringCards);
+            setPickOCPhase(true);
+        }
         userInterface.drawInterface(null);
     }
 
@@ -342,13 +345,15 @@ public class ClientModel {
      */
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                      List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
-        for(Player player : players) {
-            // update player PP and food in player queue
-            updatePlayerValue(getPlayerFromList(player), player);
+        synchronized (this) {
+            for(Player player : players) {
+                // update player PP and food in player queue
+                addPPandFood(getPlayerFromList(player), player);
+            }
+            setBuildingCards(upperBuildingRow, lowerBuildingRow);
+            setTribeCards(upperRow, lowerRow);
+            setPickOCPhase(true);
         }
-        setBuildingCards(upperBuildingRow, lowerBuildingRow);
-        setTribeCards(upperRow, lowerRow);
-        setPickOCPhase(true);
 
         userInterface.updateInterfaceFromEndTurn();
     }
@@ -369,7 +374,9 @@ public class ClientModel {
      * @param offeringCard      the offering card picked
      */
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
-        setPlayerOfferingCard(offeringCard, player);
+        synchronized (this) {
+            setPlayerOfferingCard(offeringCard, player);
+        }
         userInterface.updateInterfaceFromPickOffering();
     }
 
@@ -381,10 +388,12 @@ public class ClientModel {
      */
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
-        setPlayerInQueue(player);
-        removePlayerFromOfferingCard(player);
-        removeTribeCards(characterCards);
-        removeBuildingCards(buildingCards);
+        synchronized (this) {
+            setPlayerInQueue(player);
+            removePlayerFromOfferingCard(player);
+            removeTribeCards(characterCards);
+            removeBuildingCards(buildingCards);
+        }
         userInterface.updateInterfaceFromPickTribes();
     }
 
@@ -405,14 +414,16 @@ public class ClientModel {
      */
     public void updateNotifyError(InvalidOperationException exception) {
         ErrorType type = exception.getErrorType();
-        switch (type) {
-            case DUPLICATE_COLOR:
-                userInterface.setAvailableColors(((ColorException)exception).getAvailableColors());
-                setGameState(GameState.NONE);
-                break;
-            case DUPLICATE_NICKNAME:
-                setGameState(GameState.NONE);
-                break;
+        synchronized (this) {
+            switch (type) {
+                case DUPLICATE_COLOR:
+                    userInterface.setAvailableColors(((ColorException) exception).getAvailableColors());
+                    setGameState(GameState.NONE);
+                    break;
+                case DUPLICATE_NICKNAME:
+                    setGameState(GameState.NONE);
+                    break;
+            }
         }
         String messageToDisplay = (type == ErrorType.UNKNOWN)
                 ? exception.getMessage()
@@ -428,23 +439,26 @@ public class ClientModel {
      */
     public void updateEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         String message = null;
-        // set game state to ended
-        gameState = GameState.ENDED;
-        if (disconnectedPlayer == null){
-            // game ended by the server
-            // set global ranking
-            setRanking(ranking);
-            // set local ranking
-            setOrderedPlayers(orderedPlayers);
-        }
-        else {
-            // game ended by player disconnection
-            resetGameAttributes();
-            message = "The game has ended due to disconnection of player " + disconnectedPlayer;
+        synchronized (this) {
+            // set game state to ended
+            gameState = GameState.ENDED;
+            if (disconnectedPlayer == null) {
+                // game ended by the server
+                // set global ranking
+                setRanking(ranking);
+                // set local ranking
+                setOrderedPlayers(orderedPlayers);
+            } else {
+                // game ended by player disconnection
+                resetGameAttributes();
+                message = "The game has ended due to disconnection of player " + disconnectedPlayer;
+            }
         }
         userInterface.drawInterface(message);
         logger.info("Game closed.");
         // reset game state
-        gameState = GameState.NONE;
+        synchronized (this) {
+            gameState = GameState.NONE;
+        }
     }
 }
