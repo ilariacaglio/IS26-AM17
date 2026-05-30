@@ -13,9 +13,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Utility.DatabaseManager;
 
-import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
-import it.polimi.ingsw.am17.Server.Utility.TurnFoodHandler;
-
+import static it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic.*;
 import static it.polimi.ingsw.am17.Server.Utility.CardParser.loadOfferingCards;
 
 import java.util.*;
@@ -65,7 +63,7 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>();
         lowerBuildingRow = new ArrayList<>();
 
-        turnFoodPoints = TurnFoodHandler.getTurnFoodPoints(numPlayers);
+        turnFoodPoints = getTurnFoodPoints(numPlayers);
     }
 
     private void checkNumPlayers(int numPlayers) {
@@ -83,23 +81,6 @@ public class Game extends Subject {
 
     public boolean isEnded() {
         return gameState.isGameEnded();
-    }
-
-    /**
-     * @return leftmost offering card with player in the offering track.
-     */
-    private OfferingCard getNextOccupiedOfferingCard() {
-
-        // lookup in normal offering cards
-        OfferingCard offeringCard = offeringCards.stream()
-                .filter(card -> card.getPlayer() != null)
-                .min(Comparator.comparing(OfferingCard::getOrderLetter))
-                .orElse(null);
-
-        // if not found, lookup in building2OfferingCard
-        if (offeringCard == null && building2OfferingCard.getPlayer() != null) offeringCard = building2OfferingCard;
-
-        return offeringCard;
     }
 
     /**
@@ -163,7 +144,7 @@ public class Game extends Subject {
                 notifyGameState(gameState);
                 break;
             default:
-                throw  new InvalidOperationException(ErrorType.INVALID_GAME_STATE);
+                throw new InvalidOperationException(ErrorType.INVALID_GAME_STATE);
         }
     }
 
@@ -188,6 +169,9 @@ public class Game extends Subject {
         }
     }
 
+    /**
+     * Shuffles player queues to create casual order
+     */
     private void shuffleQueue() {
         List<Player> players = new ArrayList<>(orderedPlayers);
         Collections.shuffle(players);
@@ -257,6 +241,9 @@ public class Game extends Subject {
         upperBuildingRow = new ArrayList<>(buildingDeck.drawAllEra3());
     }
 
+    /**
+     * Gives food to players at the end of the turn
+     */
     private void turnOrderFoodBonus() {
         logger.fine("Calculating turn order food bonus.");
 
@@ -357,23 +344,6 @@ public class Game extends Subject {
     }
 
     /**
-     * Validates card selection for the player action "pickTribeCards".
-     *
-     * @param numToSelectFromUpper Number of cards that must be selected (if possible!) from the upper row.
-     * @param numToSelectFromLower Number of cards that must be selected (if possible!) from the lower row.
-     * @param characterCards       Selected character cards.
-     * @param buildingCards        Selected building cards.
-     */
-    private void validateCardChoice(int numToSelectFromUpper, int numToSelectFromLower, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
-        logger.fine("Validating card selection.");
-
-        Exception e = MoveValidator.validateCardChoice(numToSelectFromUpper, numToSelectFromLower,
-                characterCards, buildingCards, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
-        if(e != null)
-            throw e;
-    }
-
-    /**
      * check if the values are plausible and set player to offering card
      * notify observer
      *
@@ -382,47 +352,29 @@ public class Game extends Subject {
      */
     public void selectOfferingCard(String nickname, Character offeringCardLetter) {
         logger.info("Request forwarded to selectOfferingCard method in model");
-        // check if letter is null
-        if(offeringCardLetter == null)
-            throw new InvalidOperationException(ErrorType.MISSING_OFFERING_CARD_LETTER);
 
         // get player from nickname
         Player player = orderedPlayers.stream().filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow(() -> new InvalidOperationException(ErrorType.INVALID_PLAYER));
 
-        //check if is player turn
-        if (!player.equals(orderedPlayers.peek()))
-            throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
-
-
-        // check if player is not in an Offering Card already
-        if (offeringCards.stream().anyMatch(card -> card.getPlayer() != null && card.getPlayer().equals(player)))
-            throw new InvalidOperationException(ErrorType.OFFERING_CARD_ALREADY_SELECTED);
-
-
-        // get offering card from letter
-        OfferingCard offeringCard = offeringCards.stream()
-                .filter(c -> offeringCardLetter.equals(c.getOrderLetter()))
-                .findFirst().orElse(null);
-
-        //check if offeringCard is valid
-        if (offeringCard == null) throw new InvalidOperationException(ErrorType.INVALID_OFFERING_CARD_LETTER);
-
-
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
 
-        // check if offering card is free
-        if(offeringCard.getPlayer() != null)
-            throw new InvalidOperationException(ErrorType.OFFERING_CARD_ALREADY_SELECTED);
+        //check if is player turn
+        if (!isPlayerTurn(player, orderedPlayers))
+            throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
+
+        validateOfferingCardChoice(offeringCardLetter, player, offeringCards);
+
+        OfferingCard offeringCard = getOfferingCardFromLetter(offeringCardLetter, offeringCards);
 
         //set player to offeringCard
         offeringCard.setPlayer(player);
 
         // dequeue and enqueue the player in last position
-        movePlayerInQueue();
+        movePlayerInQueue(orderedPlayers);
 
         // when all player have an offering card recalculate queue
-        if (allPlayersPickedOfferingCards())
+        if (isEveryPlayerInOfferingCard(orderedPlayers, offeringCards))
             recalculatePlayerQueue();
 
         // notify changes
@@ -446,16 +398,6 @@ public class Game extends Subject {
     }
 
     /**
-     * Checks that every player is set into an offering card
-     * @return true if they are, false otherwise
-     */
-    private Boolean allPlayersPickedOfferingCards() {
-        return orderedPlayers.stream().allMatch(player ->
-                offeringCards.stream().anyMatch(card -> card.getPlayer() != null && card.getPlayer().equals(player))
-        );
-    }
-
-    /**
      * Emulates a player action (picking cards).
      * @param nickname          the nickname of the player that has picked the cards
      * @param characterCards    the character cards picked by the player
@@ -468,27 +410,25 @@ public class Game extends Subject {
                 .findFirst().orElseThrow(()->new InvalidOperationException(ErrorType.INVALID_PLAYER));
 
         // Get leftmost occupied offering card.
-        OfferingCard currentOffering = getNextOccupiedOfferingCard();
+        OfferingCard currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
 
         logger.info("Player " + player.getNickname() + " wants to pick tribe cards from offering card " +  currentOffering.getOrderLetter() + ": " + characterCards + " and " + buildingCards);
-
 
         // if a player has selected the offering card with letter A
         if (currentOffering.getOrderLetter()=='A') {
             handleOfferingCardWithLetterA(currentOffering);
             // recalculate next occupied offering card
-            currentOffering = getNextOccupiedOfferingCard();
+            currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
         }
 
-        // Check if the player is current next player
-        if (!player.equals(currentOffering.getPlayer()))
+        // Check if it's player turn
+        if (!isPlayerTurn(player, orderedPlayers, offeringCards, building2OfferingCard))
             throw new IllegalStateException(ErrorType.OUT_OF_TURN.toString());
 
         // check if cards selection is legal based on the offeringCard
-        int numUpper = currentOffering.getNumCardsUpper();
-        int numLower = currentOffering.getNumCardsLower();
         try {
-            validateCardChoice(numUpper, numLower, characterCards, buildingCards);
+            validateTribesCardChoice(player, offeringCards, building2OfferingCard,
+                    characterCards, buildingCards, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
         } catch (InvalidOperationException e) {
             throw e;
         }
@@ -496,16 +436,6 @@ public class Game extends Subject {
             throw new InvalidOperationException(e.getMessage());
         }
 
-        // selection legal: obtain cards
-        try {
-            player.addCards(characterCards, buildingCards);
-        } catch (InvalidOperationException e) {
-            if (e.getErrorType()==ErrorType.INSUFFICIENT_FOOD_BUILDINGS) {
-                throw e;
-            } else {
-                throw new InvalidOperationException(ErrorType.UNKNOWN);
-            }
-        }
         upperBuildingRow.removeAll(buildingCards); // if not present, no worries
         lowerBuildingRow.removeAll(buildingCards); // if not present, no worries
         upperRow.removeAll(characterCards); // if not present, no worries
@@ -520,9 +450,13 @@ public class Game extends Subject {
         }
 
         currentOffering.setPlayer(null);
-        movePlayerInQueue();
 
-        OfferingCard nextOfferingCard = getNextOccupiedOfferingCard();
+        // if is building2 move, the queue should not be modified
+        if (!currentOffering.equals(building2OfferingCard)) {
+            movePlayerInQueue(orderedPlayers);
+        }
+
+        OfferingCard nextOfferingCard = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
 
         notifyPlayerSelectTribesCard(player, characterCards, buildingCards);
         //check everybody played his base turn
@@ -544,17 +478,7 @@ public class Game extends Subject {
         // remove player from offering card
         offeringCard.setPlayer(null);
         // move the player to last position in queue
-        movePlayerInQueue();
-    }
-
-    /**
-     * Dequeues and enqueues the player to allow other players to play.
-     */
-    private void movePlayerInQueue() {
-        // remove player from queue
-        Player lastPlayer = orderedPlayers.poll();
-        // add player as last element of queue
-        orderedPlayers.add(lastPlayer);
+        movePlayerInQueue(orderedPlayers);
     }
 
     public UUID getId() {

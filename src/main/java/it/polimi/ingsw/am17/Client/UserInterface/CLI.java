@@ -13,11 +13,14 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
-import it.polimi.ingsw.am17.Server.Utility.TurnFoodHandler;
 
 import java.util.*;
+
+import static it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic.getTurnFoodPoints;
 
 public class CLI implements UI {
     private final ServerAdapter serverAdapter;
@@ -212,7 +215,7 @@ public class CLI implements UI {
                     drawRow(true);
 
                     //draw offering card
-                    drawOfferingCard();
+                    drawOfferingCards();
 
                     //draw lower row
                     drawRow(false);
@@ -323,7 +326,7 @@ public class CLI implements UI {
                 .filter(player -> !playersInOfferingCard.contains(player))
                 .toList();
 
-        int[] turnFood = TurnFoodHandler.getTurnFoodPoints(readOnlyModel.getNumPlayers());
+        int[] turnFood = getTurnFoodPoints(readOnlyModel.getNumPlayers());
 
         // calculate offset basing on game phase
         int offset = readOnlyModel.isPickOCPhase() ? turnFood.length - playersToPrint.size() : 0;
@@ -369,9 +372,15 @@ public class CLI implements UI {
 
 
         if (myOfferingCard == null) {
-            // if not found, return
-            System.out.println("No offering card chosen!");
-            return;
+            // if player has BuildingType2
+            if (localPlayer.hasBuilding2()) {
+                myOfferingCard = readOnlyModel.getBuildingTwoOfferingCard();
+            }
+            else {
+                // if not found, return
+                System.out.println("No offering card chosen!");
+                return;
+            }
         }
 
         // calculate the number of cards the user can pick
@@ -469,16 +478,13 @@ public class CLI implements UI {
         }
 
         //check if move is valid
-        InvalidOperationException mE = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
-                characterCards, buildingCards, readOnlyModel.getUpperTribeRow(), readOnlyModel.getLowerTribeRow(), readOnlyModel.getUpperBuildingRow(), readOnlyModel.getLowerBuildingRow());
-        if(mE != null) {
-            printError(mE.getErrorType().getMessage());
+        try{
+            readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
+        } catch (InvalidOperationException e){
+            printError(e.getErrorType().getMessage());
             return;
-        }
-
-        //check if player can buy the buildings
-        if(!buildingCards.isEmpty() && !localPlayer.canBuyBuidings(buildingCards)) {
-            printError(ErrorType.INSUFFICIENT_FOOD_BUILDINGS.getMessage());
+        } catch (Exception e) {
+            printError(e.getMessage());
             return;
         }
 
@@ -631,42 +637,14 @@ public class CLI implements UI {
             System.out.print("Insert card letter > ");
             Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
 
-            // check if it is the players turn
-            if (!readOnlyModel.isPlayerTurn()) {
-                printError(ErrorType.OUT_OF_TURN.getMessage());
-                return;
-            }
-
-            // check if player already has an offering card
-            List<Player> playersInOfferingCard = readOnlyModel.getOfferingCards().stream()
-                    .map(OfferingCard::getPlayer)
-                    .toList();
-            if (playersInOfferingCard.contains(localPlayer)) {
-                printError(ErrorType.OFFERING_CARD_ALREADY_SELECTED.getMessage());
-                return;
-            }
-
-            //check if letter is present in offering card list
-            var letters = readOnlyModel.getOfferingCards()
-                    .stream().map(OfferingCard::getOrderLetter).toList();
-            if(!letters.contains(cardLetter)) {
-                printError(ErrorType.INVALID_OFFERING_CARD_LETTER.getMessage());
-                return;
-            }
-
-            //check if card is free
-            OfferingCard selectedOfferingCard = readOnlyModel.getOfferingCards().stream()
-                    .filter(c -> cardLetter.equals(c.getOrderLetter()))
-                    .findFirst().orElseThrow();
-            if(selectedOfferingCard.getPlayer() != null) {
-                printError(ErrorType.UNAVAILABLE_OFFERING_CARD.getMessage());
-                return;
-            }
+            readOnlyModel.validatePickOfferingCard(cardLetter);
 
             // send request
             serverAdapter.pickOfferingCard(cardLetter).join();
+        } catch (InvalidOperationException e) {
+            drawInterface(e.getErrorType().getMessage());
         } catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            drawInterface(e.getMessage());
         }
     }
 
@@ -755,7 +733,7 @@ public class CLI implements UI {
     /**
      * Draws the offering cards list
      */
-    private void drawOfferingCard(){
+    private void drawOfferingCards(){
         var offeringCards = readOnlyModel.getOfferingCards();
         if(!offeringCards.isEmpty()){
             System.out.print("Bidding trail: ");
@@ -797,6 +775,7 @@ public class CLI implements UI {
         System.out.print("\r> ");
         System.out.flush();
     }
+
     public void updateInterfaceFromPickTribes(){
         drawInterface(null);
     }

@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -15,9 +16,11 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic.*;
+
 public class ClientModel {
 
-    private String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
+    private final String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
     private UUID id;
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
 
@@ -29,7 +32,7 @@ public class ClientModel {
 
     private List<UUID> gamesIdList;
 
-    private final Queue<Player> orderedPlayer;
+    private final Queue<Player> orderedPlayers;
 
     private List<OfferingCard> offeringCards;
 
@@ -41,18 +44,20 @@ public class ClientModel {
 
     private final List<RankingEntry> ranking;
 
+    private final OfferingCard buildingTwoOfferingCard;
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
         gameState = GameState.NONE;
         gamesIdList = new ArrayList<>();
-        orderedPlayer = new LinkedList<>();
+        orderedPlayers = new LinkedList<>();
         offeringCards = new ArrayList<>();
         upperRow = new ArrayList<>();
         lowerRow = new ArrayList<>();
         upperBuildingRow = new ArrayList<>();
         lowerBuildingRow  = new ArrayList<>();
         ranking = new ArrayList<>();
+        buildingTwoOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
     }
 
     /**
@@ -109,13 +114,29 @@ public class ClientModel {
     }
 
     public void setOrderedPlayers(Queue<Player> orderedPlayers){
-        this.orderedPlayer.clear();
-        this.orderedPlayer.addAll(orderedPlayers);
+        this.orderedPlayers.clear();
+        this.orderedPlayers.addAll(orderedPlayers);
         userInterface.setLocalPlayer();
     }
 
     public List<Player> getOrderedPlayers(){
-        return Collections.unmodifiableCollection(orderedPlayer).stream().toList();
+        return Collections.unmodifiableCollection(orderedPlayers).stream().toList();
+    }
+
+    /**
+     * Updates data of a single player in the queue
+     * If the player is the local player updates UI
+     * @param player    the player to be updated in the queue
+     */
+    private void updatePlayerDataInQueue(Player player){
+        List<Player> players = new ArrayList<>(orderedPlayers);
+        players.replaceAll(p -> p.equals(player) ? player : p);
+        orderedPlayers.clear();
+        orderedPlayers.addAll(players);
+
+        // if the player is the local player, update UI
+        if (player.equals(userInterface.getLocalPlayer()))
+            userInterface.setLocalPlayer();
     }
 
     /**
@@ -123,13 +144,8 @@ public class ClientModel {
      * @param player    the player to be set
      */
     public void setPlayerInQueue(Player player){
-        List<Player> players = new ArrayList<>(orderedPlayer);
-        players.replaceAll(p -> p.equals(player) ? player : p);
-        orderedPlayer.clear();
-        orderedPlayer.addAll(players);
-        Player lastPlayer = orderedPlayer.poll();
-        orderedPlayer.add(lastPlayer);
-        userInterface.setLocalPlayer();
+        updatePlayerDataInQueue(player);
+        movePlayerInQueue(orderedPlayers);
     }
 
     public void setOfferingCards(List<OfferingCard> offeringCards){
@@ -214,7 +230,7 @@ public class ClientModel {
      */
     public Player getPlayerFromList(Player player)
     {
-        return orderedPlayer.stream()
+        return orderedPlayers.stream()
             .filter(p -> p.equals(player))
             .findFirst().orElse(null);
     }
@@ -231,7 +247,7 @@ public class ClientModel {
                 .filter(o -> o.equals(offeringCard))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(player));
-        if(everyPlayerInOfferingCard()) {
+        if(isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)) {
             setPickOCPhase(false);
             setNullOfferingCardAPlayer();
         }
@@ -248,22 +264,20 @@ public class ClientModel {
                 .ifPresent(o -> o.setPlayer(null));
     }
 
+    /**
+     * @return  true is it is local player turn, false otherwise
+     */
+    public boolean isPlayerTurn(){
+        return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
+                gameState, offeringCards, buildingTwoOfferingCard);
+    }
+
     public List<OfferingCard> getOfferingCards(){
         return Collections.unmodifiableList(offeringCards);
     }
 
-    /**
-     * @return true if every player of the game is into an offering card, false otherwise
-     */
-    public boolean everyPlayerInOfferingCard(){
-        for(Player p : orderedPlayer){
-            OfferingCard oc = offeringCards.stream()
-                    .filter(c-> c.getPlayer()!= null && c.getPlayer().equals(p))
-                    .findFirst().orElse(null);
-            if(oc == null)
-                return false;
-        }
-        return true;
+    public OfferingCard getBuildingTwoOfferingCard() {
+        return buildingTwoOfferingCard;
     }
 
     /**
@@ -276,17 +290,6 @@ public class ClientModel {
 
     public String getTURN_CARD_IMAGE_PATH() {
         return TURN_CARD_IMAGE_PATH + numPlayers + ".png";
-    }
-
-
-    /**
-     * Checks if it is the turn of the local player.
-     * @return true if it is players turn, false otherwise.
-     */
-    public boolean isPlayerTurn(){
-        if(!gameState.isGameStarted())
-            return false;
-        return userInterface.getLocalPlayer().equals(orderedPlayer.peek());
     }
 
     public void setRanking (List<RankingEntry> ranking) {
@@ -355,6 +358,7 @@ public class ClientModel {
             setPickOCPhase(true);
         }
 
+        userInterface.setBuilding2EffectUsed(false);
         userInterface.updateInterfaceFromEndTurn();
     }
 
@@ -388,12 +392,30 @@ public class ClientModel {
      */
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
+
         synchronized (this) {
-            setPlayerInQueue(player);
-            removePlayerFromOfferingCard(player);
+
+            // check if player has an offering card
+            if (isPlayerInOfferingCard(player,offeringCards)) {
+                // update data and manage queue
+                setPlayerInQueue(player);
+                // cards selection based on "usual" offering cards
+                removePlayerFromOfferingCard(player);
+            }
+            else{
+                // if not, is buildingType2 move
+                // update data without managing queue
+                updatePlayerDataInQueue(player);
+                if (player.equals(userInterface.getLocalPlayer()) &&
+                        !userInterface.isBuilding2EffectUsed()) {
+                    userInterface.setBuilding2EffectUsed(true);
+                }
+            }
+
             removeTribeCards(characterCards);
             removeBuildingCards(buildingCards);
         }
+
         userInterface.updateInterfaceFromPickTribes();
     }
 
@@ -460,5 +482,19 @@ public class ClientModel {
         synchronized (this) {
             gameState = GameState.NONE;
         }
+    }
+
+    public void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
+                gameState, offeringCards, buildingTwoOfferingCard);
+        validateTribesCardChoice(userInterface.getLocalPlayer(),
+                offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
+                upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+    }
+
+    public void validatePickOfferingCard(Character offeringCardLetter){
+        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase, gameState,
+                offeringCards, buildingTwoOfferingCard);
+        validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
     }
 }
