@@ -471,12 +471,16 @@ public class ClientModel {
     }
 
     public void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        validateTribesCardChoice(userInterface.getLocalPlayer(), orderedPlayers,
+        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
+                gameState, offeringCards, buildingTwoOfferingCard);
+        validateTribesCardChoice(userInterface.getLocalPlayer(),
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     public void validatePickOfferingCard(Character offeringCardLetter){
-        validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), orderedPlayers, offeringCards);
+        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase, gameState,
+                offeringCards, buildingTwoOfferingCard);
+        validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
     }
 }

@@ -359,7 +359,11 @@ public class Game extends Subject {
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
 
-        validateOfferingCardChoice(offeringCardLetter, player, orderedPlayers, offeringCards);
+        //check if is player turn
+        if (!isPlayerTurn(player, orderedPlayers))
+            throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
+
+        validateOfferingCardChoice(offeringCardLetter, player, offeringCards);
 
         OfferingCard offeringCard = getOfferingCardFromLetter(offeringCardLetter, offeringCards);
 
@@ -417,9 +421,13 @@ public class Game extends Subject {
             currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
         }
 
+        // Check if it's player turn
+        if (!isPlayerTurn(player, orderedPlayers, offeringCards, building2OfferingCard))
+            throw new IllegalStateException(ErrorType.OUT_OF_TURN.toString());
+
         // check if cards selection is legal based on the offeringCard
         try {
-            validateTribesCardChoice(player, orderedPlayers, offeringCards, building2OfferingCard,
+            validateTribesCardChoice(player, offeringCards, building2OfferingCard,
                     characterCards, buildingCards, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
         } catch (InvalidOperationException e) {
             throw e;

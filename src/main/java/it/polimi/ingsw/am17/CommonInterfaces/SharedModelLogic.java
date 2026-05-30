@@ -150,8 +150,7 @@ public class SharedModelLogic {
     /**
      * Validates card selection for the player action "pickOfferingCard".
      */
-    public static void validateOfferingCardChoice(Character offeringCardLetter, Player player,
-                                                  Queue<Player> orderedPlayers, List<OfferingCard> offeringCards) {
+    public static void validateOfferingCardChoice(Character offeringCardLetter, Player player, List<OfferingCard> offeringCards) {
         logger.info("Validating offering card choice");
 
         // check if letter is null
@@ -164,10 +163,6 @@ public class SharedModelLogic {
         //check if offeringCard is valid
         if (offeringCard == null)
             throw new InvalidOperationException(ErrorType.INVALID_OFFERING_CARD_LETTER);
-
-        //check if is player turn
-        if (isPlayerTurn(player, orderedPlayers))
-            throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
 
         // check if player is not in an Offering Card already
         if (isPlayerInOfferingCard(player,offeringCards))
@@ -182,15 +177,11 @@ public class SharedModelLogic {
     /**
      * Validates card selection for the player action "pickTribeCards".
      */
-    public static void validateTribesCardChoice(Player player, Queue<Player> orderedPlayers,
-                                                List<OfferingCard> offeringCards, OfferingCard building2OC, List<CharacterCard> characterCards,
+    public static void validateTribesCardChoice(Player player, List<OfferingCard> offeringCards,
+                                                OfferingCard building2OC, List<CharacterCard> characterCards,
                                                 List<BuildingCard> buildingCards, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         logger.info("Validating tribes card choice");
-
-        // Check if it's player turn
-        if (isPlayerTurn(player, orderedPlayers, offeringCards, building2OC))
-            throw new IllegalStateException(ErrorType.OUT_OF_TURN.toString());
 
         // get next occupied offering card
         OfferingCard currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OC);
