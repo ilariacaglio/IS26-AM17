@@ -18,9 +18,9 @@ import java.util.logging.Logger;
  * Receives requests from the client via a ServerSocket/RMI and forwards it to the model.
  */
 public class GamesController {
-    private final ConcurrentMap<UUID,Game> games;
-    private final ConcurrentMap<VirtualView, UUID> gameMapping;
-    private final ConcurrentMap<VirtualView, String> playerMapping; // string field is for nickname
+    private final ConcurrentHashMap<UUID,Game> games;
+    private final ConcurrentHashMap<VirtualView, UUID> gameMapping;
+    private final ConcurrentHashMap<VirtualView, String> playerMapping; // string field is for nickname
 
     private final static Logger logger = Logger.getLogger(GamesController.class.getName());
 
