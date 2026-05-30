@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client.Socket;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
@@ -20,8 +21,10 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +34,7 @@ import java.util.logging.Logger;
  * Sets up the socket connection with the server.
  * Receives requests from the server to update the ClientModel.
  */
-public class ClientSocket implements VirtualView {
+public class ClientSocket implements VirtualView, ServerAdapter {
     private final Logger logger = Logger.getLogger(ClientSocket.class.getName());
 
     ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
@@ -123,9 +126,9 @@ public class ClientSocket implements VirtualView {
 
         UI userInterface;
         if(gui) {
-            userInterface = new GUI(server, this);
+            userInterface = new GUI(this);
         } else {
-            userInterface = new CLI(server,this);
+            userInterface = new CLI(this);
         }
 
         model = new ClientModel(userInterface);
@@ -195,5 +198,71 @@ public class ClientSocket implements VirtualView {
     @Override
     public void updateError(InvalidOperationException exception) {
         model.updateNotifyError(exception);
+    }
+
+    @Override
+    public CompletableFuture<Void> getGamesList() {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.getGamesList(this);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> createGame(Player player, int numPlayers) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.createGame(this, player, numPlayers);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> closeGame() {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.closeGame(this);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> joinGame(UUID gameId, Player player) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.joinGame(this, gameId, player);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> pickOfferingCard(Character offeringCardLetter) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.pickOfferingCard(this, offeringCardLetter);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+               server.pickTribeCards(this, characterCards, buildingCards);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
     }
 }
