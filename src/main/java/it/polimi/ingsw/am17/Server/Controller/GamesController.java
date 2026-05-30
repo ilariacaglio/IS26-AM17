@@ -204,8 +204,6 @@ public class GamesController {
             rollbackObserverAdded(client,  gameId, observerAdded);
             notifyErrorToClient(client, new InvalidOperationException(message));
         }
-
-        notifyErrorToClient(client, errorToNotify);
     }
 
     /**
