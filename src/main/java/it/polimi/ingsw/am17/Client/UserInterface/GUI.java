@@ -75,8 +75,21 @@ public class GUI implements UI {
 
     @Override
     public void drawInterface(String errorMessagge) {
+        //LEAVE UNTIL SYNCHRONIZATION PROBLEMS ARE SOLVED
         Platform.runLater(() -> {
+            if (game == null) {
+                System.out.println("DEBUG: Il modello 'game' è NULL!");
+                return;
+            }
             GameState gameState = game.getGameState();
+            if (gameState == null) {
+                System.out.println("DEBUG: Il gameState è NULL!");
+                return;
+            }
+
+            System.out.println("DEBUG: drawInterface chiamato. Started: " + gameState.isGameStarted() + " | Ended: " + gameState.isGameEnded());
+        //Platform.runLater(() -> {
+
             if(gameState.isGameStarted()) {
                 if (!gameState.isGameEnded()) {
                     if (!isGameInterfaceInitialized) {
@@ -87,8 +100,11 @@ public class GUI implements UI {
                 }
             }
             if(gameState.isGameEnded()){
+                System.out.println("DEBUG: Tento di mostrare showLocalInterface()...");
                 showLocalInterface();
             }
+
+            //}
         });
     }
     public void updateInterfaceFromEndTurn(){
