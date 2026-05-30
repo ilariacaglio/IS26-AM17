@@ -1,21 +1,17 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.Client.UserInterface.GUIElements.*;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.Color;
-import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -29,8 +25,7 @@ public class GUI implements UI {
     private final double START_WINDOW_WIDTH = 400;
     private final double START_WINDOW_HEIGHT = 300;
 
-    private VirtualServer server;
-    private VirtualView client;
+    private final ServerAdapter serverAdapter;
     private ClientModel game;
     private Player localPlayer;
 
@@ -43,9 +38,8 @@ public class GUI implements UI {
 
     List<Color> availableColors;
 
-    public GUI(VirtualServer server, VirtualView view) {
-        this.server = server;
-        client = view;
+    public GUI(ServerAdapter serverAdapter) {
+        this.serverAdapter = serverAdapter;
     }
     JoinView joinView;
 
@@ -200,22 +194,22 @@ public class GUI implements UI {
     }
     public void getGameList(){
         try {
-            server.getGamesList(client);
+            serverAdapter.getGamesList();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     public void joinGame(UUID gameId) throws Exception{
-            server.joinGame(client, gameId,localPlayer);
+        serverAdapter.joinGame(gameId,localPlayer);
     }
     public void createGame(int numPlayer) throws Exception{
-            server.createGame(client, localPlayer, numPlayer);
+        serverAdapter.createGame(localPlayer, numPlayer);
     }
     public void pickOfferingCard(OfferingCard card) throws Exception{
-        server.pickOfferingCard(client, card.getOrderLetter());
+        serverAdapter.pickOfferingCard(card.getOrderLetter());
     }
     public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
-        server.pickTribeCards(client, characterCards, buildingCards);
+        serverAdapter.pickTribeCards(characterCards, buildingCards);
     }
 
 
