@@ -78,16 +78,17 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
             }
         }, 10, 5, TimeUnit.SECONDS);
 
+        // model and ui init
         UI userInterface;
         if(graphic){
-            userInterface = new GUI(server, this);
+            userInterface = new GUI(this);
         }
         else {
-            userInterface = new CLI(server,this);
+            userInterface = new CLI(this);
         }
         this.model = new ClientModel(userInterface);
         userInterface.setModel(model);
-        this.model.startInterface(); // N.B. not threaded?
+        this.model.startInterface(); // todo: thread??
     }
 
     /**
