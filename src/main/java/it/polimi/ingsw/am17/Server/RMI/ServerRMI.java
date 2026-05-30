@@ -26,8 +26,6 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
 
     private final ConcurrentHashMap<VirtualView, AtomicLong> lastHeartbeats = new ConcurrentHashMap<>();
 
-    private final ExecutorService requestHandlingPool = Executors.newCachedThreadPool();
-
     final GamesController controller;
 
     /**
@@ -115,7 +113,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
     private void onClientDisconnection(VirtualViewRMI client, ScheduledExecutorService heartbeater, ScheduledExecutorService heartwatcher) {
         logger.warning("Removing RMI Client" + client.getClass().getSimpleName());
         lastHeartbeats.remove(client);
-        requestHandlingPool.submit(() -> controller.closeGame(client));
+        controller.closeGame(client);
         heartbeater.shutdown();
         heartwatcher.shutdown();
     }
@@ -126,7 +124,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void getGamesList(VirtualView client) throws RemoteException {
-        requestHandlingPool.submit(() -> controller.getGamesList(client));
+        controller.getGamesList(client);
     }
 
     /**
@@ -135,7 +133,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
-        requestHandlingPool.submit(() -> controller.createGame(client, player, numPlayers));
+        controller.createGame(client, player, numPlayers);
     }
 
     /**
@@ -144,7 +142,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void closeGame(VirtualView client) throws RemoteException {
-        requestHandlingPool.submit(() -> controller.closeGame(client));
+        controller.closeGame(client);
     }
 
     /**
@@ -153,7 +151,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
-        requestHandlingPool.submit(() -> controller.joinGame(client, gameId, player));
+        controller.joinGame(client, gameId, player);
     }
 
     /**
@@ -162,7 +160,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void pickOfferingCard(VirtualView client, Character offeringCardLetter) throws RemoteException {
-        requestHandlingPool.submit(() -> controller.pickOfferingCard(client, offeringCardLetter));
+        controller.pickOfferingCard(client, offeringCardLetter);
     }
 
     /**
@@ -171,6 +169,6 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        requestHandlingPool.submit(() -> controller.pickTribeCards(client, characterCards, buildingCards));
+        controller.pickTribeCards(client, characterCards, buildingCards);
     }
 }
