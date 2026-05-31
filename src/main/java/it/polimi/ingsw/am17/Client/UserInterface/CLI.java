@@ -106,7 +106,7 @@ public class CLI implements UI {
             System.exit(0);
 
         } catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            System.err.println("CLI error: " + e.getMessage());//TODO: mettere logger
         }
     }
 
