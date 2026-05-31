@@ -171,15 +171,6 @@ public class GameView {
                             .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
                             .findFirst().orElse(null);
 
-                    if (myOfferingCard == null) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Azione non consentita");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Non possiedi ancora una Offering Card per questa fase di gioco!");
-                        alert.showAndWait();
-                        return;
-                    }
-
                     try {
                         game.validatePickTribeCards(tribesSelected, buildingSelected);
                         mainGui.pickTribeCards(tribesSelected, buildingSelected);
