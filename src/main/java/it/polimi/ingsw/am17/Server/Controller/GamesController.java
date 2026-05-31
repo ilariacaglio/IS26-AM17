@@ -283,7 +283,7 @@ public class GamesController {
                 }
             }
             catch(InvalidOperationException e) {
-                logger.warning("Error calling game selectOfferingCard: " + e.getMessage());
+                logger.warning("Error calling game selectOfferingCard: " + e.getErrorType().getMessage());
                 notifyErrorToClient(client, e);
             }
             catch(Exception e) {
