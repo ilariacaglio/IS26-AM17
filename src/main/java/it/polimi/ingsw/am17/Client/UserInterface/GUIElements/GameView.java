@@ -11,7 +11,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -92,13 +91,13 @@ public class GameView {
             turnOverlay.setVisible(true);
         }
 
-        root.setStyle("-fx-background-image: url('/images/background_game.png');");
-        root.setStyle("""
-            -fx-background-image: url('/images/background_game.png');
-            -fx-background-size: cover;
-            -fx-background-position: center center;
-            -fx-background-repeat: no-repeat;
-        """);
+        String bgUrl = getClass().getResource("/images/background_game.png").toExternalForm();
+        root.setStyle(
+                "-fx-background-image: url('" + bgUrl + "');" +
+                        "-fx-background-size: cover;" +
+                        "-fx-background-position: center center;" +
+                        "-fx-background-repeat: no-repeat;"
+        );
 
         Label localPlayerName = new Label("Local Player: " + localPlayer.getNickname());
         localPlayerName.setStyle("""
@@ -335,6 +334,10 @@ public class GameView {
                 playerResourcesBox, playerCardsContainer, spacer, playersButtonBox);
     }
 
+    public void updatePlayerQueue(){
+        // Update turn overlay visibility
+        turnOverlay.setVisible(game.isPlayerTurn());
+    }
 
     public void updateGameElements() {
         // Update turn overlay visibility
