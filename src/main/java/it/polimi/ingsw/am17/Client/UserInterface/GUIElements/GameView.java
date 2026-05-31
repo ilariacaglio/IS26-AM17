@@ -421,16 +421,14 @@ public class GameView {
 
 
     private void updateUpperCards() {
-        List<TribesCard> upperTribeRow = new ArrayList<>(game.getUpperTribeRow());
-        List<BuildingCard> upperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
         upperCardsBox.getChildren().clear(); // Remove old cards
-        for(TribesCard card : upperTribeRow){
+        for(TribesCard card : game.getUpperTribeRow()){
             CardGUI upperCard = new CardGUI(card.getImagePath());
             upperCard.setUserData(card);
             setOnMouseClickForTribes(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
-        for(BuildingCard card : upperBuildingRow){
+        for(BuildingCard card : game.getUpperBuildingRow()){
             CardGUI upperCard = new CardGUI(card.getImagePath());
             upperCard.setUserData(card);
             setOnMouseClickForBuilding(upperCard, card);
@@ -439,16 +437,14 @@ public class GameView {
     }
 
     private void updateLowerCards(){
-        List<TribesCard> lowerTribeRow = new ArrayList<>(game.getLowerTribeRow());
-        List<BuildingCard> lowerBuildingRow = new ArrayList<>(game.getLowerBuildingRow());
         lowerCardsBox.getChildren().clear();
-        for(TribesCard card : lowerTribeRow){
+        for(TribesCard card : game.getLowerTribeRow()){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
             lowerCard.setUserData(card);
             setOnMouseClickForTribes(lowerCard, card);
             lowerCardsBox.getChildren().add(lowerCard);
         }
-        for(BuildingCard card : lowerBuildingRow){
+        for(BuildingCard card : game.getLowerBuildingRow()){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
             lowerCard.setUserData(card);
             setOnMouseClickForBuilding(lowerCard, card);
