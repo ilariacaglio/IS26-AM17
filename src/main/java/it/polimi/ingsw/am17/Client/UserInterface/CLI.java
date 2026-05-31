@@ -366,11 +366,11 @@ public class CLI implements UI {
      */
     private void pickCards() {
         // check if it is player turn
-        try {
-            readOnlyModel.isPlayerTurn();
-        } catch (InvalidOperationException e) {
-            drawInterface(e.getErrorType().getMessage());
+        if (!readOnlyModel.isPlayerTurn()) {
+            drawInterface("It is not your turn!");
+            return;
         }
+
         // get players offering card
         OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
                 .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
