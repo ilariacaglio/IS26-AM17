@@ -30,6 +30,7 @@ public class GUI implements UI {
     private VirtualView client;
     private ClientModel game;
     private Player localPlayer;
+    private boolean building2EffectUsed;
 
     private VBox root;
     public Scene scene;
@@ -260,13 +261,13 @@ public class GUI implements UI {
     // tODO
     @Override
     public boolean isBuilding2EffectUsed() {
-        return false;
+        return building2EffectUsed;
     }
 
     // todo
     @Override
     public void setBuilding2EffectUsed(boolean building2EffectUsed) {
-
+        this.building2EffectUsed = building2EffectUsed;
     }
 
 
