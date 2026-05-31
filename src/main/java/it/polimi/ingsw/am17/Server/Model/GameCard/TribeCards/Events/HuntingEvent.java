@@ -9,8 +9,10 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 public class HuntingEvent extends EventCard {
+    private static final Logger logger = Logger.getLogger(HuntingEvent.class.getName());
     private final Integer pointEarned;
 
     public Integer getPointEarned() {
@@ -29,9 +31,14 @@ public class HuntingEvent extends EventCard {
 
     @Override
     public void computeScore(Queue<Player> list){
+        logger.info("Solving HuntingEvent. ");
         for(Player player: list){
            player.solveHuntingEvent(pointEarned);
+
+            logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
+                    + player.getPp() + " points after Hunting Event");
         }
+        logger.info("Solved Hunting Event. ");
     }
 
     @Override

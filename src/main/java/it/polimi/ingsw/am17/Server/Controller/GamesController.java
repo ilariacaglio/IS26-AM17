@@ -10,7 +10,6 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 /**

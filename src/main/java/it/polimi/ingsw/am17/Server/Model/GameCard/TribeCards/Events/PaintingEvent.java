@@ -9,8 +9,10 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class PaintingEvent extends EventCard {
+    private static final Logger logger = Logger.getLogger(PaintingEvent.class.getName());
     private final Integer pointsLow;
     private final Integer pointsMax;
     private final Integer numMax;
@@ -43,9 +45,14 @@ public class PaintingEvent extends EventCard {
 
     @Override
     public void computeScore(Queue<Player> list) {
+        logger.info("Solving PaintingEvent. ");
         for (Player player : list) {
             player.solvePaintingEvent(numMax, pointsMax, pointsLow);
+
+            logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
+                    + player.getPp() + " points after Painting Event");
         }
+        logger.info("PaintingEvent solved. ");
     }
 
     @Override
