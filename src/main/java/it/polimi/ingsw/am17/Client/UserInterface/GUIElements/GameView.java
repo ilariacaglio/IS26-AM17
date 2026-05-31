@@ -592,6 +592,7 @@ public class GameView {
     }
 
     private void createPlayerCardLabel(){
+        selectedPlayer = game.getPlayerFromList(selectedPlayer);
         Label name = new Label("Name: " + selectedPlayer.getNickname());
         name.setStyle("""
             -fx-text-fill: white;
