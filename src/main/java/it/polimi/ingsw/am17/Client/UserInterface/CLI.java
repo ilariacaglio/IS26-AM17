@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -364,6 +365,12 @@ public class CLI implements UI {
      * Gets the user selected cards and sends them to server
      */
     private void pickCards() {
+        // check if it is player turn
+        try {
+            readOnlyModel.isPlayerTurn();
+        } catch (InvalidOperationException e) {
+            drawInterface(e.getErrorType().getMessage());
+        }
         // get players offering card
         OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
                 .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
@@ -634,6 +641,9 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(){
         try {
+            if (!readOnlyModel.isPlayerTurn())
+                throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
+
             System.out.print("Insert card letter > ");
             Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
 
