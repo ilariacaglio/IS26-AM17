@@ -218,48 +218,32 @@ public class GameView {
             Button playerButton = new Button(p.getNickname() );
             //set nickname color
             Color nicknameColor = p.getColor();
-            switch (nicknameColor) {
-                case RED:
-                    playerButton.setStyle("""
-                              -fx-text-fill: red;
-                              -fx-background-color: #aaaaaa;
-                              -fx-font-weight: bold;
-                              -fx-font-size: 15px;
-                    """);
-                    break;
-                case BLUE:
-                    playerButton.setStyle("""
-                              -fx-text-fill: blue;
-                              -fx-background-color: #aaaaaa;
-                              -fx-font-weight: bold;
-                              -fx-font-size: 15px;
-                    """);
-                    break;
-                case WHITE:
-                    playerButton.setStyle("""
-                              -fx-text-fill: white;
-                              -fx-background-color: #aaaaaa;
-                              -fx-font-weight: bold;
-                              -fx-font-size: 15px;
-                    """);
-                    break;
-                case BLACK:
-                    playerButton.setStyle("""
-                              -fx-text-fill: black;
-                              -fx-background-color: #aaaaaa;
-                              -fx-font-weight: bold;
-                              -fx-font-size: 15px;
-                    """);
-                    break;
-                case YELLOW:
-                    playerButton.setStyle("""
-                              -fx-text-fill: yellow;
-                              -fx-background-color: #aaaaaa;
-                              -fx-font-weight: bold;
-                              -fx-font-size: 15px;
-                    """);
-                    break;
-            }
+            String colorName = nicknameColor.name().toLowerCase(); // e.g., "red", "blue"
+
+            playerButton.setStyle("""
+    /* Smooth metallic gradient background */
+    -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%%, #c3cfe2 100%%);
+    
+    /* Rounded pill-like edges */
+    -fx-background-radius: 25;
+    
+    /* Comfortable padding to shape the button */
+    -fx-padding: 12px 30px;
+    
+    /* Soft drop shadow for 3D depth */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
+    
+    /* Dynamic color insertion */
+    -fx-text-fill: %s;
+    
+    /* Modern, clean typography */
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    
+    /* Change cursor to pointer on hover */
+    -fx-cursor: hand;
+""".formatted(colorName));
             //add area for other players' cards
 
             otherScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
