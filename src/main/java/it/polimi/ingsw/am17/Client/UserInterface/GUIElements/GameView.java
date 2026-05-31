@@ -3,8 +3,6 @@ package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CardGUI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
-import it.polimi.ingsw.am17.Client.UserInterface.TurnCardGUI;
-import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -42,6 +40,9 @@ public class GameView {
     private Player selectedPlayer;
     private HBox playerCardsBox;
     private HBox playerResourcesBox;
+    private Label name;
+    private Label food;
+    private Label points;
 
 
     public GameView(GUI mainGui, ClientModel game, Player localPlayer) {
@@ -138,7 +139,80 @@ public class GameView {
         lowerCardsBox =  new HBox(10);
 
         //send button
-        Button sendButton = getSendButton();
+        Button sendButton = new Button("SEND");
+        sendButton.setOnAction(e ->
+        {
+            try {
+                if (offeringSelected != null) {
+                    try{
+                        game.validatePickOfferingCard(offeringSelected.getOrderLetter());
+                        mainGui.pickOfferingCard(offeringSelected);
+                        offeringSelected = null;
+                        buildingSelected = new ArrayList<>();
+                        tribesSelected =  new ArrayList<>();
+                    } catch (InvalidOperationException invalidOperationException) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
+                        alert.showAndWait();
+                    } catch (Exception ex) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(ex.getMessage());
+                        alert.showAndWait();
+                    }
+
+                } else {
+                    // get players offering card
+                    OfferingCard myOfferingCard = game.getOfferingCards().stream()
+                            .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
+                            .findFirst().orElse(null);
+
+                    if (myOfferingCard == null) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Azione non consentita");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Non possiedi ancora una Offering Card per questa fase di gioco!");
+                        alert.showAndWait();
+                        return;
+                    }
+
+                    try {
+                        game.validatePickTribeCards(tribesSelected, buildingSelected);
+                        mainGui.pickTribeCards(tribesSelected, buildingSelected);
+                        offeringSelected = null;
+                        buildingSelected = new ArrayList<>();
+                        tribesSelected =  new ArrayList<>();
+                    } catch (InvalidOperationException invalidOperationException) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
+                        alert.showAndWait();
+                    } catch (Exception ex) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(ex.getMessage());
+                        alert.showAndWait();
+                    }
+
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        sendButton.setStyle("""
+            -fx-background-color: #5c2c16;\s
+            -fx-text-fill: white;
+            -fx-font-weight: bold;
+            -fx-background-radius: 5px;
+            -fx-cursor: hand;
+            -fx-font-size: 16px;
+            -fx-padding: 10px 20px;
+            """);
         HBox sendButtonBox = new HBox();
         sendButtonBox.getChildren().add(sendButton);
         sendButtonBox.setAlignment(Pos.CENTER);
@@ -259,70 +333,6 @@ public class GameView {
                 playerResourcesBox, playerCardsContainer, spacer, playersButtonBox);
     }
 
-    private Button getSendButton() {
-        Button sendButton = new Button("SEND");
-        sendButton.setOnAction(e ->
-        {
-            try {
-                if (offeringSelected != null) {
-                    mainGui.pickOfferingCard(offeringSelected);
-                    offeringSelected = null;
-                    buildingSelected = new ArrayList<>();
-                    tribesSelected =  new ArrayList<>();
-                } else {
-                    // get players offering card
-                    OfferingCard myOfferingCard = game.getOfferingCards().stream()
-                            .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
-                            .findFirst().orElse(null);
-
-                    if (myOfferingCard == null) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error");
-                        alert.setHeaderText(null);
-                        alert.setContentText("You need to pick a card");
-                        alert.showAndWait();
-                        return;
-                    }
-
-                    InvalidOperationException exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
-                            tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
-                            game.getUpperBuildingRow(), game.getLowerBuildingRow());
-                    if(exception == null) {
-                        mainGui.pickTribeCards(tribesSelected, buildingSelected);
-                        offeringSelected = null;
-                        buildingSelected = new ArrayList<>();
-                        tribesSelected =  new ArrayList<>();
-                    }
-                    else {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(exception.getErrorType().getMessage());
-                        alert.showAndWait();
-                    }
-
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        sendButton.setStyle("""
-            -fx-background-color: #5c2c16;\s
-            -fx-text-fill: white;
-            -fx-font-weight: bold;
-            -fx-background-radius: 5px;
-            -fx-cursor: hand;
-            -fx-font-size: 16px;
-            -fx-padding: 10px 20px;
-            """);
-        return sendButton;
-    }
-
-
-    public void updatePlayerQueue(){
-        // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn());
-    }
 
     public void updateGameElements() {
         // Update turn overlay visibility

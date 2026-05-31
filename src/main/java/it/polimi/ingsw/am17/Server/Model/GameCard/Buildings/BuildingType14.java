@@ -13,9 +13,8 @@ import java.util.logging.Logger;
  * Card effect
  * SINGLETON
  */
-@JsonIgnoreProperties({"logger"})
 public class BuildingType14 extends BuildingCard {
-    Logger logger = Logger.getLogger(BuildingType14.class.getName());
+    private static final Logger logger = Logger.getLogger(BuildingType14.class.getName());
 
     private static final GameState era = GameState.ERA1;
     private static final int foodCost = 6;
