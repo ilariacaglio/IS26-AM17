@@ -94,7 +94,7 @@ public class Game extends Subject {
         logger.info("Adding player " + p.getNickname() + " to game with id " + id);
 
         if (isStarted()) {
-            logger.warning("Impossible adding " + p.getNickname() + ": the Game is alredy started (isStarted = true).");
+            logger.warning("Impossible adding " + p.getNickname() + ": the Game is already started (isStarted = true).");
             throw new InvalidOperationException(ErrorType.GAME_ALREADY_STARTED);
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getNickname().equals(p.getNickname()))) {
@@ -102,7 +102,6 @@ public class Game extends Subject {
             throw new InvalidOperationException(ErrorType.DUPLICATE_NICKNAME);
         }
         if (orderedPlayers.stream().anyMatch(player -> player.getColor().equals(p.getColor()))) {
-            String message = "The game has already a player with the same color. Unused colors: ";
             //Get All colors
             List<Color> unusedColors = new ArrayList<>(EnumSet.allOf(Color.class).stream().toList());
             //Remove the colors that are currently in use
@@ -205,7 +204,7 @@ public class Game extends Subject {
 
         // Set era and shuffle players
         this.gameState = GameState.ERA1;
-        logger.info("gameState is setted at era1");
+        logger.info("gameState is set at era1");
         shuffleQueue();
 
         giveFoodToPlayers();
@@ -347,7 +346,7 @@ public class Game extends Subject {
                 return;
             }
             catch(Exception unknownEx) {
-                logger.severe("UNKNOWN EXCEPTION CAUGHT IN ENDROUND: " + unknownEx.getMessage());
+                logger.severe("UNKNOWN EXCEPTION CAUGHT IN END ROUND: " + unknownEx.getMessage());
                 throw new InvalidOperationException(ErrorType.UNKNOWN);
             }
         }
