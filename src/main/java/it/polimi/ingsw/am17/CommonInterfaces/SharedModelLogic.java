@@ -19,6 +19,7 @@ public class SharedModelLogic {
      * Dequeues and enqueues the player to allow other players to play.
      */
     public static void movePlayerInQueue(Queue<Player> orderedPlayers) {
+        logger.info("Moving player in queue");
         // remove player from queue
         Player lastPlayer = orderedPlayers.poll();
         // add player as last element of queue
@@ -30,6 +31,7 @@ public class SharedModelLogic {
      * @return true if they are, false otherwise
      */
     public static boolean isEveryPlayerInOfferingCard(Queue<Player> orderedPlayers, List<OfferingCard> offeringCards) {
+        logger.info("Checking if every  player has an offering card");
         return orderedPlayers.stream()
                 .allMatch(player ->
                         offeringCards.stream()
@@ -43,6 +45,7 @@ public class SharedModelLogic {
      * @return true if the player is in an offering card (excluding building2OfferingCard), false otherwise
      */
     public static boolean isPlayerInOfferingCard(Player player, List<OfferingCard> offeringCards) {
+        logger.info("Checking if player " + player.getNickname() + " has an offering card");
         return offeringCards.stream().anyMatch(o -> player.equals(o.getPlayer()));
     }
 
@@ -50,6 +53,7 @@ public class SharedModelLogic {
      * @return true if every player of the game is not into an offering card (excluding building2OfferingCard), false otherwise
      */
     private static boolean noPlayerInOfferingCards(List<OfferingCard> offeringCards) {
+        logger.info("Checking if no player has an offering card");
         for (OfferingCard oc : offeringCards) {
             if(oc.getPlayer() != null)
                 return false;
@@ -91,7 +95,6 @@ public class SharedModelLogic {
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers,
                                        boolean isPickOCPhase, GameState gameState,
                                        List<OfferingCard> offeringCards, OfferingCard building2OC) {
-        logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
 
         // if the game hasn't started it is not the players turn
         if(!gameState.isGameStarted())
@@ -133,7 +136,6 @@ public class SharedModelLogic {
      */
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers,
                                        List<OfferingCard> offeringCards, OfferingCard building2OC){
-        logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
 
         if (noPlayerInOfferingCards(offeringCards) && !isBuilding2EffectUsed(offeringCards, building2OC))
             return playerToCheck.hasBuilding2();

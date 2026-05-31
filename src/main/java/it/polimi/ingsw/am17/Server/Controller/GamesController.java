@@ -209,8 +209,6 @@ public class GamesController {
 
     /**
      * Closes a game (also when a player disconnects [unexpectedly]).
-     * TODO: add check on "creator" player, i.e. only the creator can close the game.
-     * TODO: use player parameter and add it to the notify (who closed the game?) for unexpected disconnections.
      * @param client client generating the request.
      */
     public void closeGame(VirtualView client) {
