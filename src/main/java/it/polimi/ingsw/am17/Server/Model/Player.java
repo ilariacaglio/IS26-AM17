@@ -61,7 +61,6 @@ public class Player implements Serializable {
     private List<BuildingCard> buildingCards;
 
     private static final Logger logger = Logger.getLogger(Player.class.getName());
-//TODO:cambiare fine in info
 
     /**
      * Used for (de)serialization.

@@ -69,7 +69,7 @@ public class Game extends Subject {
     }
 
     private void checkNumPlayers(int numPlayers) {
-        logger.fine("Checking number of players: " + numPlayers);
+        logger.info("Checking number of players: " + numPlayers);
 
         if (numPlayers < 2 || numPlayers > 5) {
             logger.warning("Invalid number of players: " + numPlayers);
@@ -78,7 +78,7 @@ public class Game extends Subject {
     }
 
     public boolean isStarted() {
-        logger.fine("Checking if game is started.");
+        logger.info("Checking if game is started.");
         return gameState.isGameStarted();
     }
 
@@ -91,7 +91,7 @@ public class Game extends Subject {
      * @return leftmost offering card with player in the offering track.
      */
     private OfferingCard getNextOccupiedOfferingCard() {
-        logger.fine("Getting next occupied offering card.");
+        logger.info("Getting next occupied offering card.");
 
         // lookup in normal offering cards
         OfferingCard offeringCard = offeringCards.stream()
@@ -182,7 +182,7 @@ public class Game extends Subject {
     }
 
     private void moveDownBuildingCards() {
-        logger.fine("Moving down building cards.");
+        logger.info("Moving down building cards.");
 
         lowerBuildingRow = new ArrayList<>(upperBuildingRow);
         upperBuildingRow.clear();
@@ -192,7 +192,7 @@ public class Game extends Subject {
      * Gives the starting food to players
      */
     private void giveFoodToPlayers() {
-        logger.fine("Giving starting food to players.");
+        logger.info("Giving starting food to players.");
 
         int[] startingFood = {2, 3, 3, 4, 4};
         int i = 0;
@@ -238,7 +238,7 @@ public class Game extends Subject {
         logger.info("Size of upperRow is supposed to be numPlayers+4: " + (numPlayers+4));
 
         while (lowerRow.size() < targetLowerRowSize) {
-            logger.fine("Lower row setup loop - Current lower size: " + lowerRow.size() + "/" + targetLowerRowSize);
+            logger.info("Lower row setup loop - Current lower size: " + lowerRow.size() + "/" + targetLowerRowSize);
             TribesCard drawnCard = tribesDeck.Draw();
 
             if (drawnCard.getCardType().isCharacter()) {
@@ -288,7 +288,7 @@ public class Game extends Subject {
     }
 
     private void turnOrderFoodBonus() {
-        logger.fine("Calculating turn order food bonus.");
+        logger.info("Calculating turn order food bonus.");
 
         int i = 0;
         for (Player p : orderedPlayers) {
@@ -420,7 +420,7 @@ public class Game extends Subject {
      * @param buildingCards        Selected building cards.
      */
     private void validateCardChoice(int numToSelectFromUpper, int numToSelectFromLower, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
-        logger.fine("Validating card selection. Upper requested: " + numToSelectFromUpper + ", Lower requested: " + numToSelectFromLower);
+        logger.info("Validating card selection. Upper requested: " + numToSelectFromUpper + ", Lower requested: " + numToSelectFromLower);
 
         Exception e = MoveValidator.validateCardChoice(numToSelectFromUpper, numToSelectFromLower,
                 characterCards, buildingCards, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
@@ -496,7 +496,7 @@ public class Game extends Subject {
      * Replaces player queue with new order from offering cards
      */
     private void recalculatePlayerQueue() {
-        logger.fine("Recalculate player queue");
+        logger.info("Recalculate player queue");
         // get players from offering cards
         List <Player> playersList = offeringCards.stream()
                 .filter(card -> card.getPlayer()!=null)
@@ -527,7 +527,7 @@ public class Game extends Subject {
      * @param buildingCards     the building cards picked by the player
      */
     public void pickTribeCards(String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
-        logger.fine("Picking tribeCards. ");
+        logger.info("Picking tribeCards. ");
         // get player from nickname
         Player player =  orderedPlayers.stream()
                 .filter(p->nickname.equals(p.getNickname()))
@@ -582,7 +582,7 @@ public class Game extends Subject {
 
         if (player.hasBuilding2()) {
             // N.B.: there is a singular buildingType2 per game
-            logger.fine("Adding player to buildingType2 offering card.");
+            logger.info("Adding player to buildingType2 offering card.");
 
             // N.B.: if calling from building2OfferingCard, don't set the player again
             if (building2OfferingCard.getPlayer() == null) building2OfferingCard.setPlayer(player);
@@ -607,7 +607,7 @@ public class Game extends Subject {
      * @param offeringCard reference to offering card with letter A
      */
     private void handleOfferingCardWithLetterA(OfferingCard offeringCard) {
-        logger.fine("Handling offering card with letter A.");
+        logger.info("Handling offering card with letter A.");
 
         // give +3 food to the player
         offeringCard.getPlayer().addFood(3);
