@@ -423,7 +423,7 @@ public class CLI implements UI {
     }
 
     /**
-     * Allows the user to select offering cards and validates user input
+     * Allows the user to select offering cards
      * @return  the set of the indexes of the cards selected
      */
     private Set<Integer> tribeCardsSelection(int totalCards, int pickableCardsSize){
@@ -456,21 +456,31 @@ public class CLI implements UI {
 
     /**
      * Validates tribes card selection
-     * @param offeringCard      the players offering card
      * @param characterCards    the character cards selected by the player
      * @param buildingCards     the building cards selected by the player
      * @return                  true if selection is valid, false otherwise
      */
-    private boolean isMoveValid(OfferingCard offeringCard, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    private boolean isMoveValid(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try{
             readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
+            return true;
         } catch (InvalidOperationException e){
             printError(e.getErrorType().getMessage());
-            return;
         } catch (Exception e) {
             printError(e.getMessage());
-            return;
         }
+        return false;
+    }
+
+    /**
+     * @return the local player's offering card
+     */
+    private OfferingCard getPlayerOfferingCard(){
+        OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
+                .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
+                .findFirst().orElse(null);
+        if (myOfferingCard == null && localPlayer.hasBuilding2()) return readOnlyModel.getBuildingTwoOfferingCard();
+        return myOfferingCard;
     }
 
     /**
@@ -484,26 +494,15 @@ public class CLI implements UI {
         }
 
         // get players offering card
-        // todo: method
-        OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
-                .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
-                .findFirst().orElse(null);
-
+        OfferingCard myOfferingCard = getPlayerOfferingCard();
 
         if (myOfferingCard == null) {
-            // if player has BuildingType2
-            if (localPlayer.hasBuilding2()) {
-                myOfferingCard = readOnlyModel.getBuildingTwoOfferingCard();
-            }
-            else {
-                // if not found, return
-                System.out.println("No offering card chosen!");
-                return;
-            }
+            // if not found, return
+            drawInterface("No offering card selected.");
+            return;
         }
 
         // calculate the number of cards the user can pick
-        // todo: method
         int totalCards = myOfferingCard.getNumCardsUpper() + myOfferingCard.getNumCardsLower();
 
         // if card with letter A, no card can be chosen
@@ -526,20 +525,11 @@ public class CLI implements UI {
         Set<Integer> cardIndexes = tribeCardsSelection(totalCards, pickableCards.size());
 
         // build cards lists
-        List<CharacterCard> characterCards = new ArrayList<>();
-        List<BuildingCard> buildingCards = new ArrayList<>();
-        for(Integer i : cardIndexes) {
-            GameCard pickedCard = pickableCards.get(i);
-            if(pickedCard.getIsBuilding()){
-                buildingCards.add((BuildingCard) pickedCard);
-            }
-            else {
-                characterCards.add((CharacterCard) pickedCard);
-            }
-        }
+        List<CharacterCard> characterCards = buildCharacterList(cardIndexes, pickableCards);
+        List<BuildingCard> buildingCards = buildBuildingList(cardIndexes, pickableCards);
 
         //check if move is valid
-        if(isMoveValid(myOfferingCard, characterCards, buildingCards)) {
+        if(isMoveValid(characterCards, buildingCards)) {
             // call server method
             try {
                 serverAdapter.pickTribeCards(characterCards, buildingCards).join();
@@ -549,6 +539,31 @@ public class CLI implements UI {
         }
     }
 
+    /**
+     * @return the list of character cards selected by the user
+     */
+    private List<CharacterCard> buildCharacterList(Set<Integer> cardIndexes, List<GameCard> pickableCards) {
+        List<CharacterCard> characterCards = new ArrayList<>();
+        for(Integer i : cardIndexes) {
+            GameCard pickedCard = pickableCards.get(i);
+            if(!pickedCard.getIsBuilding())
+                characterCards.add((CharacterCard) pickedCard);
+        }
+        return characterCards;
+    }
+
+    /**
+     * @return the list of building cards selected by the user
+     */
+    private List<BuildingCard> buildBuildingList(Set<Integer> cardIndexes, List<GameCard> pickableCards) {
+        List<BuildingCard> buildingCards = new ArrayList<>();
+        for(Integer i : cardIndexes) {
+            GameCard pickedCard = pickableCards.get(i);
+            if(pickedCard.getIsBuilding())
+                buildingCards.add((BuildingCard) pickedCard);
+        }
+        return buildingCards;
+    }
 
     /**
      * Prints all the character and building cards in the row
