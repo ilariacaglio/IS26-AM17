@@ -97,8 +97,7 @@ public class ClientModel {
      */
     public void setGameState(GameState gameState){
         this.gameState = gameState;
-        // UI communication
-        userInterface.printEra();
+        userInterface.setDisplayEra(true);
     }
 
     public GameState getGameState(){

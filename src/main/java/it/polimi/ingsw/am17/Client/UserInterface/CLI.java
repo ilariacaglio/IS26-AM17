@@ -23,6 +23,7 @@ public class CLI implements UI {
     private ClientModel readOnlyModel;
     private Player localPlayer;
     private boolean building2EffectUsed;
+    private boolean displayEra;
     List<Color> availableColors;
     Scanner scanner;
 
@@ -86,7 +87,7 @@ public class CLI implements UI {
                         joinGame();
                         break;
                     case "pick cards", "p":
-                        pickCards();
+                        pickTribeCards();
                         break;
                     case "view player", "vp":
                         printPlayer();
@@ -198,6 +199,8 @@ public class CLI implements UI {
             }
 
             printError(errorMessage);
+
+            printEra();
 
             // get game state to display the correct items
             GameState gameState = readOnlyModel.getGameState();
@@ -486,7 +489,7 @@ public class CLI implements UI {
     /**
      * Gets the user selected cards and sends them to server
      */
-    private void pickCards() {
+    private void pickTribeCards() {
         // check if it is the players turn
         if (!readOnlyModel.isPlayerTurn()) {
             printError(ErrorType.OUT_OF_TURN.getMessage());
@@ -763,10 +766,17 @@ public class CLI implements UI {
 
     /**
      * Prints message on the terminal to notify the user that the new era has begun.
-     * TODO: fix this method
      */
-    public void printEra(){
-        System.out.println("\nEra "+readOnlyModel.getGameState()+ " has begun!\n");
+    private void printEra(){
+        if(displayEra){
+            String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
+            System.out.println("Era "+ eraToDisplay + " has begun!");
+            setDisplayEra(false);
+        }
+    }
+
+    public void setDisplayEra(boolean displayEra) {
+        this.displayEra = displayEra;
     }
 
     /**
