@@ -12,8 +12,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
-
-import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
@@ -272,16 +270,22 @@ public class CLI implements UI {
     }
 
     /**
+     * @return the entry of the local player in global ranking
+     */
+    private RankingEntry getUserEntry(){
+        return readOnlyModel.getRanking().stream().filter(e -> e.getGameId().equals(readOnlyModel.getGameId())
+                        && e.getNickname().equals(localPlayer.getNickname()))
+                .findFirst().orElse(null);
+    }
+
+    /**
      * prints global ranking when game ends and player position
      */
     private void drawGlobalRanking(){
         List<RankingEntry> ranking = readOnlyModel.getRanking();
         if (!ranking.isEmpty()) {
             System.out.println("\n--- YOUR POSITION IN GLOBAL RANKING ---");
-            RankingEntry userEntry = ranking.stream()
-                    .filter(e -> e.getGameId().equals(readOnlyModel.getGameId())
-                            && e.getNickname().equals(localPlayer.getNickname()))
-                    .findFirst().orElse(null);
+            RankingEntry userEntry = getUserEntry();
             if (userEntry != null) {
                 int pos = ranking.indexOf(userEntry) + 1;
                 System.out.println(pos + ")\t"+userEntry.getNickname()+"\t"+ userEntry.getFinalPoints());
@@ -293,7 +297,7 @@ public class CLI implements UI {
             System.out.println("\n--- GLOBAL RANKING ---");
             System.out.printf("N.\t%-12s\t%-15s\t%s%n", "DATA", "NICKNAME", "SCORE");
             int rank = 1;
-            for (RankingEntry entry: readOnlyModel.getRanking()) {
+            for (RankingEntry entry: ranking) {
                 System.out.println(rank + ")\t" + entry);
                 rank++;
             }
