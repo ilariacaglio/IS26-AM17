@@ -353,7 +353,6 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setPickOCPhase(true);
 
-        userInterface.setBuilding2EffectUsed(false);
         userInterface.updateInterfaceFromEndTurn();
     }
 
@@ -386,22 +385,21 @@ public class ClientModel {
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
 
-
         // check if player has an offering card
         if (isPlayerInOfferingCard(player,offeringCards)) {
             // update data and manage queue
             setPlayerInQueue(player);
             // cards selection based on "usual" offering cards
             removePlayerFromOfferingCard(player);
+            // if player has building two, book extra turn
+            if (player.hasBuilding2())
+                buildingTwoOfferingCard.setPlayer(player);
         }
         else{
             // if not, is buildingType2 move
+            buildingTwoOfferingCard.setPlayer(null);
             // update data without managing queue
             updatePlayerDataInQueue(player);
-            if (player.equals(userInterface.getLocalPlayer()) &&
-                    !userInterface.isBuilding2EffectUsed()) {
-                        userInterface.setBuilding2EffectUsed(true);
-            }
         }
 
         removeTribeCards(characterCards);

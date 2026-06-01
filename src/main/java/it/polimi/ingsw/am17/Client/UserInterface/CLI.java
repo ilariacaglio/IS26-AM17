@@ -23,7 +23,6 @@ public class CLI implements UI {
     private final ServerAdapter serverAdapter;
     private ClientModel readOnlyModel;
     private Player localPlayer;
-    private boolean building2EffectUsed;
     List<Color> availableColors;
     Scanner scanner;
 
@@ -34,7 +33,6 @@ public class CLI implements UI {
         this.serverAdapter = serverAdapter;
         this.scanner = new Scanner(System.in);
         resetColors();
-        building2EffectUsed = false;
     }
 
     @Override
@@ -762,16 +760,6 @@ public class CLI implements UI {
 
     public Player getLocalPlayer() {
         return localPlayer;
-    }
-
-    @Override
-    public boolean isBuilding2EffectUsed() {
-        return building2EffectUsed;
-    }
-
-    @Override
-    public void setBuilding2EffectUsed(boolean building2EffectUsed) {
-        this.building2EffectUsed = building2EffectUsed;
     }
 
     /**
