@@ -629,43 +629,6 @@ public class CLI implements UI {
     }
 
     /**
-     * Sends server command to close the current game
-     */
-    private void closeGame(){
-        try {
-            if (readOnlyModel.getGameId() == null) {
-                System.out.print("Not in a game");
-            } else {
-                serverAdapter.closeGame().join();
-            }
-        }catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Sends server command to pick offering card
-     */
-    private void pickOfferingCard(){
-        try {
-            if (!readOnlyModel.isPlayerTurn())
-                throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
-
-            System.out.print("Insert card letter > ");
-            Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
-
-            readOnlyModel.validatePickOfferingCard(cardLetter);
-
-            // send request
-            serverAdapter.pickOfferingCard(cardLetter).join();
-        } catch (InvalidOperationException e) {
-            drawInterface(e.getErrorType().getMessage());
-        } catch (Exception e) {
-            drawInterface(e.getMessage());
-        }
-    }
-
-    /**
      * Sends server command to join game
      */
     private void joinGame(){
@@ -703,6 +666,28 @@ public class CLI implements UI {
             }
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends server command to pick offering card
+     */
+    private void pickOfferingCard(){
+        try {
+            if (!readOnlyModel.isPlayerTurn())
+                throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
+
+            System.out.print("Insert card letter > ");
+            Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
+
+            readOnlyModel.validatePickOfferingCard(cardLetter);
+
+            // send request
+            serverAdapter.pickOfferingCard(cardLetter).join();
+        } catch (InvalidOperationException e) {
+            drawInterface(e.getErrorType().getMessage());
+        } catch (Exception e) {
+            drawInterface(e.getMessage());
         }
     }
 
@@ -759,6 +744,21 @@ public class CLI implements UI {
             } catch (Exception e) {
                 System.err.println("CLI error: " + e.getCause().getMessage());
             }
+        }
+    }
+
+    /**
+     * Sends server command to close the current game
+     */
+    private void closeGame(){
+        try {
+            if (readOnlyModel.getGameId() == null) {
+                System.out.print("Not in a game");
+            } else {
+                serverAdapter.closeGame().join();
+            }
+        }catch (Exception e) {
+            System.err.println("CLI error: " + e.getMessage());
         }
     }
 
