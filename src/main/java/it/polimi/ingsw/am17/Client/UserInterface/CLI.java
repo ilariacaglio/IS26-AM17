@@ -76,6 +76,7 @@ public class CLI implements UI {
                 showPrompt();
                 String input = scanner.nextLine().trim().toLowerCase();
                 switch (input) {
+                    // lobby stage
                     case "get games", "gg":
                         getGamesList();
                         break;
@@ -88,20 +89,21 @@ public class CLI implements UI {
                     case "create", "c":
                         createGame();
                         break;
-                    case "close game", "xxx":
-                        closeGame();
-                        break;
-                    case "pick offering card", "po":
-                        pickOfferingCard();
-                        break;
                     case "join", "j":
                         joinGame();
+                        break;
+                    // game stage
+                    case "pick offering card", "po":
+                        pickOfferingCard();
                         break;
                     case "pick cards", "p":
                         pickTribeCards();
                         break;
                     case "view player", "vp":
                         printPlayer();
+                        break;
+                    case "close game", "xxx":
+                        closeGame();
                         break;
                     case "help", "h":
                         printHelp();
