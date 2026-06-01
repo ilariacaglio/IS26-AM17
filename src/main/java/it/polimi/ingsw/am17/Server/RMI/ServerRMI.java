@@ -11,13 +11,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 /**
@@ -26,11 +24,9 @@ import java.util.logging.Logger;
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
     private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
 
-    ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
-    ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
-    long lastHeartbeatReceived = System.currentTimeMillis();
+    private final ConcurrentHashMap<VirtualView, AtomicLong> lastHeartbeats = new ConcurrentHashMap<>();
+
     final GamesController controller;
-    final List<VirtualViewRMI> clients;
 
     /**
      * Create and start an RMI server.
@@ -42,7 +38,6 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
         super(); // needed for UnicastRemoteObject
 
         this.controller = controller;
-        clients = new ArrayList<>();
 
         // Set up the RMI server
         Registry registry = LocateRegistry.createRegistry(port);
@@ -56,27 +51,36 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void connect(VirtualView client) throws RemoteException {
-        synchronized (this.clients) {
-            this.clients.add((VirtualViewRMI) client);
-            logger.info("RMI Client connected " + client.getClass().getSimpleName());
-        }
+    public void connect(VirtualViewRMI client) throws RemoteException {
+        logger.info("RMI Client connected " + client.getClass().getSimpleName());
 
-        // TODO: fix RejectedExecutionException on "unclean restart"
-        heartbeater.scheduleAtFixedRate(pinger((VirtualViewRMI) client, heartbeater), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+        ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
+        lastHeartbeats.put(client, new AtomicLong(System.currentTimeMillis()));
+
+        heartbeater.scheduleAtFixedRate(pinger(client, heartbeater, heartwatcher), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
 
         heartwatcher.scheduleAtFixedRate(() -> {
             long now = System.currentTimeMillis();
-            long diff = now - lastHeartbeatReceived;
-
+            long diff = now - lastHeartbeats.get(client).get();
             if (diff > 5000) {
-                logger.severe("No heartbeat received in " + diff + "ms, client considered dead.");
-                clients.remove(client);
-                controller.closeGame(client);
-                heartbeater.shutdown();
-                heartwatcher.shutdown();
+                logger.severe("No heartbeat received in " + diff + "ms, RMI client considered dead.");
+                onClientDisconnection(client, heartbeater, heartwatcher);
+
             }
         }, 10, 5, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Allows a client to ping the server.
+     * @throws RemoteException remotely called!
+     */
+    @Override
+    public void ping(VirtualViewRMI client) throws RemoteException {
+        logger.fine("Received ping");
+        AtomicLong ts = lastHeartbeats.get(client);
+        if (ts != null) ts.set(System.currentTimeMillis());
+        else logger.warning("Received ping from client " + client.getClass().getSimpleName() + " but it is not registered. (Resurrection?)");
     }
 
     /**
@@ -85,28 +89,33 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @param heartbeater to stop
      * @return Runnable to pass the executor.
      */
-    private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService heartbeater) {
+    private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService heartbeater, ScheduledExecutorService heartwatcher) {
         AtomicInteger failedHeartbeats = new AtomicInteger();
 
         return () -> {
             logger.fine("Starting heartbeat thread for RMI client");
 
             try {
-                logger.finer("Pinging client " + client.getClass().getSimpleName());
+                logger.finer("Pinging RMI client " + client.getClass().getSimpleName());
                 client.ping();
                 failedHeartbeats.set(0);
             } catch (RemoteException e) {
                 failedHeartbeats.getAndIncrement();
                 logger.info("Failed heartbeat (Count: " + failedHeartbeats + "): " + e.getMessage());
                 if (failedHeartbeats.get() > 3) {
-                    logger.severe("Too many failed heartbeats, client considered dead.");
-                    clients.remove(client);
-                    controller.closeGame(client);
-                    heartbeater.shutdown();
-                    heartwatcher.shutdown();
+                    logger.severe("Too many failed heartbeats, RMI client considered dead.");
+                    onClientDisconnection(client, heartbeater, heartwatcher);
                 }
             }
         };
+    }
+
+    private void onClientDisconnection(VirtualViewRMI client, ScheduledExecutorService heartbeater, ScheduledExecutorService heartwatcher) {
+        logger.warning("Removing RMI Client" + client.getClass().getSimpleName());
+        lastHeartbeats.remove(client);
+        controller.closeGame(client);
+        heartbeater.shutdown();
+        heartwatcher.shutdown();
     }
 
     /**
@@ -117,7 +126,6 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
     public void getGamesList(VirtualView client) throws RemoteException {
         controller.getGamesList(client);
     }
-
 
     /**
      * Forwarded to the controller.
@@ -162,15 +170,5 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
     @Override
     public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
         controller.pickTribeCards(client, characterCards, buildingCards);
-    }
-
-    /**
-     * Allows a client to ping the server.
-     * @throws RemoteException remotely called!
-     */
-    @Override
-    public void ping() throws RemoteException {
-        logger.finer("Received ping");
-        lastHeartbeatReceived = System.currentTimeMillis();
     }
 }

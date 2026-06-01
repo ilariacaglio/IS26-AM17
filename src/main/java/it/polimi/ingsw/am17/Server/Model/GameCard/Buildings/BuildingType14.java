@@ -1,10 +1,12 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Get 5 food each time you complete a set of 6 cards.
@@ -12,6 +14,8 @@ import java.util.*;
  * SINGLETON
  */
 public class BuildingType14 extends BuildingCard {
+    private static final Logger logger = Logger.getLogger(BuildingType14.class.getName());
+
     private static final GameState era = GameState.ERA1;
     private static final int foodCost = 6;
     private static final int bonusPoints = 4;
@@ -24,6 +28,7 @@ public class BuildingType14 extends BuildingCard {
 
     @Override
     public int GetFoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) {
+        int foodBonus;
 
         //create frequency array
         int[] presenceByCharacterType = new int[numberOfCharacter];
@@ -44,9 +49,12 @@ public class BuildingType14 extends BuildingCard {
         int minValueAfter = Arrays.stream(presenceByCharacterType).min().orElse(0);
 
         if(minValueAfter > minValueBefore)
-            return 5;
+            foodBonus = 5;
         else
-            return 0;
+            foodBonus = 0;
+
+        logger.info("BuildingType14 is giving" + foodBonus + " food as bonus.");
+        return foodBonus;
     }
 
     @Override

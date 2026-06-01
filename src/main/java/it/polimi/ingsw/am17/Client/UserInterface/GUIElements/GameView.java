@@ -3,17 +3,14 @@ package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CardGUI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.Utility.MoveValidator;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -61,8 +58,7 @@ public class GameView {
         Stage stage = (Stage) mainGui.scene.getWindow();
         stage.setMaximized(true);
 
-        root = new VBox(15);
-        root.setPadding(new Insets(15));
+        root = new VBox(10);
 
         turnOverlay = new VBox();
         turnOverlay.setAlignment(Pos.CENTER);
@@ -72,7 +68,7 @@ public class GameView {
         turnText.setStyle("""
             -fx-background-color: rgba(0, 0, 0, 0.75);
             -fx-background-radius: 15px;
-            -fx-padding: 15px 40px;
+            -fx-padding: 5px 40px;
             -fx-border-color: #c76b22;
             -fx-border-radius: 15px;
             -fx-border-width: 2px;
@@ -126,10 +122,13 @@ public class GameView {
         //offeringCards second
         for(OfferingCard card : game.getOfferingCards()){
             CardGUI offeringCard;
-            if(card.getPlayer() == null)
+            if(card.getPlayer() == null) {
                 offeringCard = new CardGUI(card.getImagePath());
-            else
+                offeringCard.setUserData(card);
+            } else {
                 offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
+                offeringCard.setUserData(card);
+            }
             setOnMouseClickForOffering(offeringCard, card);
             offeringCardGUI.add(offeringCard);
             offeringCardBox.getChildren().add(offeringCard);
@@ -145,37 +144,62 @@ public class GameView {
         {
             try {
                 if (offeringSelected != null) {
-                    mainGui.pickOfferingCard(offeringSelected);
-                    offeringSelected = null;
-                    buildingSelected = new ArrayList<>();
-                    tribesSelected =  new ArrayList<>();
-                    offeringCardGUI = new ArrayList<>();
+                    try{
+                        game.validatePickOfferingCard(offeringSelected.getOrderLetter());
+                        mainGui.pickOfferingCard(offeringSelected);
+                        offeringSelected = null;
+                        buildingSelected = new ArrayList<>();
+                        tribesSelected =  new ArrayList<>();
+                    } catch (InvalidOperationException invalidOperationException) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
+                        alert.showAndWait();
+                    } catch (Exception ex) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(ex.getMessage());
+                        alert.showAndWait();
+                    }
+
                 } else {
                     // get players offering card
                     OfferingCard myOfferingCard = game.getOfferingCards().stream()
                             .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
                             .findFirst().orElse(null);
 
-                    Exception exception = MoveValidator.validateCardChoice(myOfferingCard.getNumCardsUpper(), myOfferingCard.getNumCardsLower(),
-                            tribesSelected, buildingSelected, game.getUpperTribeRow(), game.getLowerTribeRow(),
-                            game.getUpperBuildingRow(), game.getLowerBuildingRow());
-                    if(exception == null) {
+                    if (myOfferingCard == null) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Azione non consentita");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Non possiedi ancora una Offering Card per questa fase di gioco!");
+                        alert.showAndWait();
+                        return;
+                    }
+
+                    try {
+                        game.validatePickTribeCards(tribesSelected, buildingSelected);
                         mainGui.pickTribeCards(tribesSelected, buildingSelected);
                         offeringSelected = null;
                         buildingSelected = new ArrayList<>();
                         tribesSelected =  new ArrayList<>();
-                        offeringCardGUI = new ArrayList<>();
-                    }
-                    else {
+                    } catch (InvalidOperationException invalidOperationException) {
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Error in selection");
                         alert.setHeaderText(null);
-                        alert.setContentText(exception.getMessage());
+                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
+                        alert.showAndWait();
+                    } catch (Exception ex) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Error in selection");
+                        alert.setHeaderText(null);
+                        alert.setContentText(ex.getMessage());
                         alert.showAndWait();
                     }
 
                 }
-
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -314,6 +338,7 @@ public class GameView {
         // Update turn overlay visibility
         turnOverlay.setVisible(game.isPlayerTurn());
 
+
         // Update Upper Cards
         updateUpperCards();
 
@@ -328,51 +353,115 @@ public class GameView {
         orderPersonalCards();
     }
 
+    public void updateGameCardDecks() {
+        // Update turn overlay visibility
+        turnOverlay.setVisible(game.isPlayerTurn());
+
+        // Update Upper Cards
+        upperCardsBox.getChildren().removeIf(node -> {
+            Object cardData = node.getUserData();
+
+            // Check if the card still exists in the game model
+            boolean stillInTribeRow = game.getUpperTribeRow().contains(cardData);
+            boolean stillInBuildingRow = game.getUpperBuildingRow().contains(cardData);
+
+            // If it is NOT in the tribe row AND NOT in the building row, remove it (return true)
+            return !stillInTribeRow && !stillInBuildingRow;
+        });
+
+        // Update Lower Cards
+        lowerCardsBox.getChildren().removeIf(node -> {
+            Object cardData = node.getUserData();
+
+            // Check if the card still exists in the game model
+            boolean stillInTribeRow = game.getLowerTribeRow().contains(cardData);
+            boolean stillInBuildingRow = game.getLowerBuildingRow().contains(cardData);
+
+            // If it is NOT in the tribe row AND NOT in the building row, remove it
+            return !stillInTribeRow && !stillInBuildingRow;
+        });
+
+        // Update Player stats (Points, Food, Name) and personal board
+        createPlayerCardLabel();
+        orderPersonalCards();
+    }
+
+    public void updateOfferingDeck(){
+        for (CardGUI cardGUI : offeringCardGUI){
+            if(cardGUI.isSelected())
+                cardGUI.setVisualSelection(false);
+        }
+        for(int i=0; i<offeringCardGUI.size(); i++){
+            CardGUI card = offeringCardGUI.get(i);
+            if (game.getOfferingCards().get(i).getPlayer() != null) {
+                card.updateBorderFromPlayer(game.getOfferingCards().get(i).getPlayer().getColor().getFxColor());
+            } else {
+                // Optional: Reset to default border if no player owns it
+                card.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
+            }
+        }
+    }
+
+
     private void updateUpperCards() {
+        List<TribesCard> upperTribeRow = new ArrayList<>(game.getUpperTribeRow());
+        List<BuildingCard> upperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
         upperCardsBox.getChildren().clear(); // Remove old cards
-        for(TribesCard card : game.getUpperTribeRow()){
+        for(TribesCard card : upperTribeRow){
             CardGUI upperCard = new CardGUI(card.getImagePath());
+            upperCard.setUserData(card);
             setOnMouseClickForTribes(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
-        for(BuildingCard card : game.getUpperBuildingRow()){
+        for(BuildingCard card : upperBuildingRow){
             CardGUI upperCard = new CardGUI(card.getImagePath());
+            upperCard.setUserData(card);
             setOnMouseClickForBuilding(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
     }
 
     private void updateLowerCards(){
+        List<TribesCard> lowerTribeRow = new ArrayList<>(game.getLowerTribeRow());
+        List<BuildingCard> lowerBuildingRow = new ArrayList<>(game.getLowerBuildingRow());
         lowerCardsBox.getChildren().clear();
-        for(TribesCard card : game.getLowerTribeRow()){
+        for(TribesCard card : lowerTribeRow){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
+            lowerCard.setUserData(card);
             setOnMouseClickForTribes(lowerCard, card);
             lowerCardsBox.getChildren().add(lowerCard);
         }
-        for(BuildingCard card : game.getLowerBuildingRow()){
+        for(BuildingCard card : lowerBuildingRow){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
+            lowerCard.setUserData(card);
             setOnMouseClickForBuilding(lowerCard, card);
             lowerCardsBox.getChildren().add(lowerCard);
         }
     }
 
     private void updateOfferingCards(){
-        offeringCardBox.getChildren().clear();
-        offeringCardGUI.clear(); // Reset the list of selectable offering cards
-        CardGUI turnCard = new CardGUI(game.getTURN_CARD_IMAGE_PATH());
-        offeringCardBox.getChildren().add(turnCard);
-
-        for(OfferingCard card : game.getOfferingCards()){
-            CardGUI offeringCard;
-            if(card.getPlayer() == null) {
-                offeringCard = new CardGUI(card.getImagePath());
-            } else {
-                offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
-            }
-            setOnMouseClickForOffering(offeringCard, card);
-            offeringCardGUI.add(offeringCard);
-            offeringCardBox.getChildren().add(offeringCard);
+        List<OfferingCard> offeringCardRow = new ArrayList<>(game.getOfferingCards());
+        for (CardGUI cardGUI : offeringCardGUI){
+            //cardGUI.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
+            if(cardGUI.isSelected())
+                cardGUI.setVisualSelection(false);
         }
+        for (int i = 0; i < offeringCardGUI.size(); i++) {
+            CardGUI card = offeringCardGUI.get(i);
+
+            if (i < offeringCardRow.size()) {
+                OfferingCard serverCard = offeringCardRow.get(i);
+
+                card.setUserData(serverCard);
+
+                if (serverCard.getPlayer() != null) {
+                    card.updateBorderFromPlayer(serverCard.getPlayer().getColor().getFxColor());
+                } else {
+                    card.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
+                }
+            }
+        }
+
     }
 
     private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card) {
@@ -424,6 +513,14 @@ public class GameView {
             if (!game.isPickOCPhase()) {
                 return; // Not selectable right now
             }
+
+            OfferingCard thisCard = game.getOfferingCards().stream()
+                    .filter(c -> c.equals(card)) // Put your condition inside filter()
+                    .findFirst()
+                    .orElse(null);
+
+            if(thisCard == null || thisCard.getPlayer()!=null)
+                return;
 
             // Handle the game logic
             offeringSelected(card);
