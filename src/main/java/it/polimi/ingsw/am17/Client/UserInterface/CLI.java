@@ -262,16 +262,16 @@ public class CLI implements UI {
     private void printHelp() {
         System.out.println("Available commands:");
         System.out.println("- help, h: shows this menu");
-        System.out.println("- exit, quit, q: closes the application");
         System.out.println("- get games, gg: get the list of starting games");
         System.out.println("- change nickname, cn: changes the player's nickname");
         System.out.println("- change color, cc: changes the player's color");
         System.out.println("- create, c: creates a new game");
-        System.out.println("- close game, xxx: closes the current game");
         System.out.println("- join, j: joins an existing game");
         System.out.println("- pick offering card, po: choose the offering card to take");
         System.out.println("- pick cards, p: choose the cards to take");
         System.out.println("- view player, vp: shows a player's cards, food, and points");
+        System.out.println("- close game, xxx: closes the current game");
+        System.out.println("- exit, quit, q: closes the application");
     }
 
     /**
