@@ -184,7 +184,7 @@ public class CLI implements UI {
      * Draws the game configuration.
      * @param errorMessage message you want to print
      */
-    public void drawInterface(String errorMessage)
+    public synchronized void drawInterface(String errorMessage)
     {
         try{
             //clear console
