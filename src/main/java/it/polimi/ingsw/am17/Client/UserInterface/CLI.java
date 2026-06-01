@@ -37,17 +37,28 @@ public class CLI implements UI {
         building2EffectUsed = false;
     }
 
+
+
+    // methods called by RMI-Socket clients
+
     @Override
     public void setModel(ClientModel model) {
         this.readOnlyModel = model;
     }
 
+
+
+    // methods called by the model
+
     @Override
-    public void setAvailableColors(List<Color> availableColors) {this.availableColors=availableColors;}
+    public void setAvailableColors(List<Color> availableColors) {
+        this.availableColors=availableColors;
+    }
 
     /**
      * Starts the cli and collects user commands
      */
+    @Override
     public void start() {
         System.out.println("=== Welcome to Mesos ===");
 
@@ -112,50 +123,10 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the commands list
-     */
-    private void printHelp() {
-        System.out.println("Available commands:");
-        System.out.println("- help, h: shows this menu");
-        System.out.println("- exit, quit, q: closes the application");
-        System.out.println("- get games, gg: get the list of starting games");
-        System.out.println("- change nickname, cn: changes the player's nickname");
-        System.out.println("- change color, cc: changes the player's color");
-        System.out.println("- create, c: creates a new game");
-        System.out.println("- close game, xxx: closes the current game");
-        System.out.println("- join, j: joins an existing game");
-        System.out.println("- pick offering card, po: choose the offering card to take");
-        System.out.println("- pick cards, p: choose the cards to take");
-        System.out.println("- view player, vp: shows a player's cards, food, and points");
-    }
-
-    /**
-     * Asks the user for a player and prints its cards, food, and points.
-     */
-    private void printPlayer() {
-        System.out.print("\b\b");
-        System.out.print("Insert nickname > ");
-        String nickname = scanner.nextLine().trim();
-
-        // search for Player in ordered players
-        Player player = readOnlyModel.getOrderedPlayers().stream()
-                .filter(p->p.getNickname().equals(nickname))
-                .findFirst().orElse(null);
-
-        // if player not found print error
-        if(player == null) {
-            System.out.println("Player " + nickname + " not found!");
-        }
-        else {
-            // print the player
-            System.out.println(player);
-        }
-    }
-
-    /**
      * Prints the gameId on the terminal.
      * @param gameId the id to be printed
      */
+    @Override
     public void printGameId(UUID gameId) {
         System.out.println("\nYou are connected to game: ".concat(gameId.toString()));
         showPrompt();
@@ -164,6 +135,7 @@ public class CLI implements UI {
     /**
      * Prints the games id list.
      */
+    @Override
     public void printGamesList(){
         System.out.println("\r\033[2KOpen games:");
         for(int i=0; i< readOnlyModel.getGamesIdList().size(); i++){
@@ -173,20 +145,10 @@ public class CLI implements UI {
     }
 
     /**
-     * Sends the get id list request to server.
-     */
-    private void getGamesList(){
-        try {
-            serverAdapter.getGamesList().join();
-        } catch (Exception e) {
-            System.err.println("CLI error: " + e.getCause().getMessage());
-        }
-    }
-
-    /**
      * Draws the game configuration.
      * @param errorMessage  the message to display
      */
+    @Override
     public synchronized void drawInterface(String errorMessage)
     {
         try{
@@ -242,6 +204,97 @@ public class CLI implements UI {
         }
     }
 
+    @Override
+    public void setDisplayEra(boolean displayEra) {
+        this.displayEra = displayEra;
+    }
+
+    /**
+     * Updates localPlayer value when the object is updated into the queue by the server
+     * Used to update food, pp and cards of the player
+     */
+    @Override
+    public void setLocalPlayer() {
+        readOnlyModel.getOrderedPlayers().stream()
+                .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
+                .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
+    }
+
+    @Override
+    public Player getLocalPlayer() {
+        return localPlayer;
+    }
+
+    @Override
+    public boolean isBuilding2EffectUsed() {
+        return building2EffectUsed;
+    }
+
+    @Override
+    public void setBuilding2EffectUsed(boolean building2EffectUsed) {
+        this.building2EffectUsed = building2EffectUsed;
+    }
+
+    @Override
+    public void updateInterfaceFromPickTribes(){
+        drawInterface(null);
+    }
+
+    @Override
+    public void updateInterfaceFromPickOffering(){
+        drawInterface(null);
+    }
+
+    @Override
+    public void updateInterfaceFromEndTurn(){
+        drawInterface(null);
+    }
+
+
+
+    // Methods called by the CLI used to print data
+
+    /**
+     * Prints the commands list
+     */
+    private void printHelp() {
+        System.out.println("Available commands:");
+        System.out.println("- help, h: shows this menu");
+        System.out.println("- exit, quit, q: closes the application");
+        System.out.println("- get games, gg: get the list of starting games");
+        System.out.println("- change nickname, cn: changes the player's nickname");
+        System.out.println("- change color, cc: changes the player's color");
+        System.out.println("- create, c: creates a new game");
+        System.out.println("- close game, xxx: closes the current game");
+        System.out.println("- join, j: joins an existing game");
+        System.out.println("- pick offering card, po: choose the offering card to take");
+        System.out.println("- pick cards, p: choose the cards to take");
+        System.out.println("- view player, vp: shows a player's cards, food, and points");
+    }
+
+    /**
+     * Asks the user for a player and prints its cards, food, and points.
+     */
+    private void printPlayer() {
+        System.out.print("\b\b");
+        System.out.print("Insert nickname > ");
+        String nickname = scanner.nextLine().trim();
+
+        // search for Player in ordered players
+        Player player = readOnlyModel.getOrderedPlayers().stream()
+                .filter(p->p.getNickname().equals(nickname))
+                .findFirst().orElse(null);
+
+        // if player not found print error
+        if(player == null) {
+            System.out.println("Player " + nickname + " not found!");
+        }
+        else {
+            // print the player
+            System.out.println(player);
+        }
+    }
+
     /**
      * Prints error message
      * @param errorMessage  the error generated by the server
@@ -250,13 +303,6 @@ public class CLI implements UI {
         if(errorMessage != null && !errorMessage.isBlank()) {
             System.out.println(ANSI_RED + errorMessage + ANSI_RESET);
         }
-    }
-
-    /**
-     * Resets available color list to all colors
-     */
-    private void resetColors(){
-        setAvailableColors(Arrays.stream(Color.values()).toList());
     }
 
     /**
@@ -270,15 +316,6 @@ public class CLI implements UI {
             cards = "           no cards yet";
         }
         System.out.println(cards);
-    }
-
-    /**
-     * @return the entry of the local player in global ranking
-     */
-    private RankingEntry getUserEntry(){
-        return readOnlyModel.getRanking().stream().filter(e -> e.getGameId().equals(readOnlyModel.getGameId())
-                        && e.getNickname().equals(localPlayer.getNickname()))
-                .findFirst().orElse(null);
     }
 
     /**
@@ -374,7 +411,7 @@ public class CLI implements UI {
      * Prints specific selection message
      * @param offeringCard  the offering card that allows the user to pick cards
      */
-    private void printSelectionMessage(OfferingCard offeringCard) {
+    private void printTribeCardsSelectionMessage(OfferingCard offeringCard) {
         int upperCards = offeringCard.getNumCardsUpper();
         int lowerCards = offeringCard.getNumCardsLower();
         // print specific selection message
@@ -391,188 +428,10 @@ public class CLI implements UI {
     }
 
     /**
-     * Builds the list of tribe cards the user can pick
-     * @param offeringCard      the offering card selected by the user
-     * @return                  the list of cards the user can pick
-     */
-    private List<GameCard> buildPickableCardsList(OfferingCard offeringCard) {
-        List<GameCard> pickableCards = new ArrayList<>();
-        int startingIndex = 1;
-        if (offeringCard.getNumCardsUpper() > 0) {
-            // add upper character cards
-            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
-                    .filter(c->c.getCardType().isCharacter()).toList());
-
-            // add upper building cards
-            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
-
-            // print the upper row
-            startingIndex = printPickableRow(true, startingIndex);
-        }
-
-        if (offeringCard.getNumCardsLower() > 0) {
-            // add lower character cards
-            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
-                    .filter(c->c.getCardType().isCharacter()).toList());
-
-            // add lower building cards
-            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
-                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
-
-            // print the lower row
-            printPickableRow(false, startingIndex);
-        }
-        return pickableCards;
-    }
-
-    /**
-     * Allows the user to select offering cards
-     * @return  the set of the indexes of the cards selected
-     */
-    private Set<Integer> tribeCardsSelection(int totalCards, int pickableCardsSize){
-        Set<Integer> cardIndexes = new HashSet<>();
-        while (cardIndexes.size() < totalCards) {
-            System.out.print("Type the card number (or 'quit' to stop) > ");
-            String input = scanner.nextLine().trim().toLowerCase();
-            if (input.equals("quit")) {
-                System.out.println("Selection stopped.");
-                break;
-            }
-            try {
-                int numCard = Integer.parseInt(input)-1;
-                // check if the index is valid
-                if (numCard >= 0 && numCard < pickableCardsSize) {
-                    if (!cardIndexes.add(numCard)) {
-                        // if the set already contains the index print the error
-                        System.err.println("Card already selected. Choose a different one.");
-                    }
-                } else {
-                    System.err.println("Index out of bounds!");
-                }
-            }
-            catch (NumberFormatException e) {
-                System.err.println("Invalid input, please enter a valid number or 'quit' to stop.");
-            }
-        }
-        return cardIndexes;
-    }
-
-    /**
-     * Validates tribes card selection
-     * @param characterCards    the character cards selected by the player
-     * @param buildingCards     the building cards selected by the player
-     * @return                  true if selection is valid, false otherwise
-     */
-    private boolean isMoveValid(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        try{
-            readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
-            return true;
-        } catch (InvalidOperationException e){
-            printError(e.getErrorType().getMessage());
-        } catch (Exception e) {
-            printError(e.getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * @return the local player's offering card
-     */
-    private OfferingCard getPlayerOfferingCard(){
-        OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
-                .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
-                .findFirst().orElse(null);
-        if (myOfferingCard == null && localPlayer.hasBuilding2()) return readOnlyModel.getBuildingTwoOfferingCard();
-        return myOfferingCard;
-    }
-
-    /**
-     * Gets the user selected cards and sends them to server
-     */
-    private void pickTribeCards() {
-        // check if it is the players turn
-        if (!readOnlyModel.isPlayerTurn()) {
-            printError(ErrorType.OUT_OF_TURN.getMessage());
-            return;
-        }
-
-        // get players offering card
-        OfferingCard myOfferingCard = getPlayerOfferingCard();
-
-        if (myOfferingCard == null) {
-            // if not found, return
-            drawInterface("No offering card selected.");
-            return;
-        }
-
-        // calculate the number of cards the user can pick
-        int totalCards = myOfferingCard.getNumCardsUpper() + myOfferingCard.getNumCardsLower();
-
-        // if card with letter A, no card can be chosen
-        if(totalCards == 0) {
-            System.out.println("You can't pick any card!");
-            return;
-        }
-
-        printSelectionMessage(myOfferingCard);
-
-        // list of pickable cards
-        List<GameCard> pickableCards = buildPickableCardsList(myOfferingCard);
-
-        if (pickableCards.isEmpty()) {
-            System.out.println("You can't pick any card!");
-            return;
-        }
-
-        // cards selection
-        Set<Integer> cardIndexes = tribeCardsSelection(totalCards, pickableCards.size());
-
-        // build cards lists
-        List<CharacterCard> characterCards = buildCharacterList(cardIndexes, pickableCards);
-        List<BuildingCard> buildingCards = buildBuildingList(cardIndexes, pickableCards);
-
-        //check if move is valid
-        if(isMoveValid(characterCards, buildingCards)) {
-            // call server method
-            try {
-                serverAdapter.pickTribeCards(characterCards, buildingCards).join();
-            } catch (Exception e) {
-                System.err.println("CLI error: " + e.getCause().getMessage());
-            }
-        }
-    }
-
-    /**
-     * @return the list of character cards selected by the user
-     */
-    private List<CharacterCard> buildCharacterList(Set<Integer> cardIndexes, List<GameCard> pickableCards) {
-        List<CharacterCard> characterCards = new ArrayList<>();
-        for(Integer i : cardIndexes) {
-            GameCard pickedCard = pickableCards.get(i);
-            if(!pickedCard.getIsBuilding())
-                characterCards.add((CharacterCard) pickedCard);
-        }
-        return characterCards;
-    }
-
-    /**
-     * @return the list of building cards selected by the user
-     */
-    private List<BuildingCard> buildBuildingList(Set<Integer> cardIndexes, List<GameCard> pickableCards) {
-        List<BuildingCard> buildingCards = new ArrayList<>();
-        for(Integer i : cardIndexes) {
-            GameCard pickedCard = pickableCards.get(i);
-            if(pickedCard.getIsBuilding())
-                buildingCards.add((BuildingCard) pickedCard);
-        }
-        return buildingCards;
-    }
-
-    /**
      * Prints all the character and building cards in the row
      * @param upper if true prints the upper row, if false prints the lower row
      */
-    private int printPickableRow(boolean upper, int startingIndex){
+    private int printPickableTribeRow(boolean upper, int startingIndex){
         List<TribesCard> tribeRow;
         List<BuildingCard> buildingRow;
         // set lists basing on upper value
@@ -608,6 +467,93 @@ public class CLI implements UI {
     }
 
     /**
+     * Prints message on the terminal to notify the user that the new era has begun.
+     */
+    private void printEra(){
+        if(displayEra){
+            String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
+            System.out.println("Era "+ eraToDisplay + " has begun!");
+            setDisplayEra(false);
+        }
+    }
+
+    /**
+     * Draws the tribe and building row
+     * @param upper if true prints the upper row, if false prints the lower row
+     */
+    private void drawRow(boolean upper){
+        List<TribesCard> tribeRow;
+        List<BuildingCard> buildingRow;
+        if(upper) {
+            tribeRow = readOnlyModel.getUpperTribeRow();
+            buildingRow = readOnlyModel.getUpperBuildingRow();
+        }
+        else {
+            tribeRow = readOnlyModel.getLowerTribeRow();
+            buildingRow = readOnlyModel.getLowerBuildingRow();
+        }
+        if(!(tribeRow.isEmpty() && buildingRow.isEmpty())){
+            if(upper) System.out.print("Upper row:     ");
+            else System.out.print("Lower row:     ");
+
+            if(!tribeRow.isEmpty()) {
+                for (TribesCard c : tribeRow) {
+                    System.out.print(c);
+                }
+            }
+            if(!buildingRow.isEmpty()){
+                for(BuildingCard c : buildingRow) {
+                    System.out.print(c);
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * Draws the offering cards list
+     */
+    private void drawOfferingCards(){
+        var offeringCards = readOnlyModel.getOfferingCards();
+        if(!offeringCards.isEmpty()){
+            System.out.print("Bidding trail: ");
+            for(OfferingCard c : offeringCards) {
+                System.out.print(c);
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * prints character to signal that the cli is available for a new command
+     */
+    private void showPrompt() {
+        System.out.print("\r> ");
+        System.out.flush();
+    }
+
+
+
+    // methods used to implement user functions
+
+    /**
+     * Asks the user to type their nickname
+     * @return the nickname to be set
+     */
+    private String askNickname() {
+        String nickname = "";
+        while (nickname.isEmpty()) {
+            System.out.print("Insert your nickname (max 10 char) > ");
+            nickname = scanner.nextLine().trim();
+            if(nickname.length() >10 ) {
+                nickname = "";
+                System.out.print("Your nickname has more than 10 characters!\n");
+            }
+        }
+        return nickname;
+    }
+
+    /**
      * Prints the list of available colors and
      * lets the user select one of them
      * @return  the selected color
@@ -636,11 +582,14 @@ public class CLI implements UI {
     }
 
     /**
-     * Lets player choose new color
+     * Sends the get id list request to server.
      */
-    private void changeColor() {
-        Color c = chooseColor();
-        localPlayer.setColor(c);
+    private void getGamesList(){
+        try {
+            serverAdapter.getGamesList().join();
+        } catch (Exception e) {
+            System.err.println("CLI error: " + e.getCause().getMessage());
+        }
     }
 
     /**
@@ -652,20 +601,11 @@ public class CLI implements UI {
     }
 
     /**
-     * Asks the user to type their nickname
-     * @return the nickname to be set
+     * Lets player choose new color
      */
-    private String askNickname() {
-        String nickname = "";
-        while (nickname.isEmpty()) {
-            System.out.print("Insert your nickname (max 10 char) > ");
-            nickname = scanner.nextLine().trim();
-            if(nickname.length() >10 ) {
-                nickname = "";
-                System.out.print("Your nickname has more than 10 characters!\n");
-            }
-        }
-        return nickname;
+    private void changeColor() {
+        Color c = chooseColor();
+        localPlayer.setColor(c);
     }
 
     /**
@@ -765,106 +705,201 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints message on the terminal to notify the user that the new era has begun.
+     * Gets the user selected cards and sends them to server
      */
-    private void printEra(){
-        if(displayEra){
-            String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
-            System.out.println("Era "+ eraToDisplay + " has begun!");
-            setDisplayEra(false);
+    private void pickTribeCards() {
+        // check if it is the players turn
+        if (!readOnlyModel.isPlayerTurn()) {
+            printError(ErrorType.OUT_OF_TURN.getMessage());
+            return;
+        }
+
+        // get players offering card
+        OfferingCard myOfferingCard = getPlayerOfferingCard();
+
+        if (myOfferingCard == null) {
+            // if not found, return
+            drawInterface("No offering card selected.");
+            return;
+        }
+
+        // calculate the number of cards the user can pick
+        int totalCards = myOfferingCard.getNumCardsUpper() + myOfferingCard.getNumCardsLower();
+
+        // if card with letter A, no card can be chosen
+        if(totalCards == 0) {
+            System.out.println("You can't pick any card!");
+            return;
+        }
+
+        printTribeCardsSelectionMessage(myOfferingCard);
+
+        // list of pickable cards
+        List<GameCard> pickableCards = buildPickableCardsList(myOfferingCard);
+
+        if (pickableCards.isEmpty()) {
+            System.out.println("You can't pick any card!");
+            return;
+        }
+
+        // cards selection
+        Set<Integer> cardIndexes = tribeCardsSelection(totalCards, pickableCards.size());
+
+        // build cards lists
+        List<CharacterCard> characterCards = buildCharacterList(cardIndexes, pickableCards);
+        List<BuildingCard> buildingCards = buildBuildingList(cardIndexes, pickableCards);
+
+        //check if move is valid
+        if(isMoveValid(characterCards, buildingCards)) {
+            // call server method
+            try {
+                serverAdapter.pickTribeCards(characterCards, buildingCards).join();
+            } catch (Exception e) {
+                System.err.println("CLI error: " + e.getCause().getMessage());
+            }
         }
     }
 
-    public void setDisplayEra(boolean displayEra) {
-        this.displayEra = displayEra;
+
+
+    // Utility methods
+
+    /**
+     * Resets available color list to all colors
+     */
+    private void resetColors(){
+        setAvailableColors(Arrays.stream(Color.values()).toList());
     }
 
     /**
-     * Draws the tribe and building row
-     * @param upper if true prints the upper row, if false prints the lower row
+     * @return the entry of the local player in global ranking
      */
-    private void drawRow(boolean upper){
-        List<TribesCard> tribeRow;
-        List<BuildingCard> buildingRow;
-        if(upper) {
-            tribeRow = readOnlyModel.getUpperTribeRow();
-            buildingRow = readOnlyModel.getUpperBuildingRow();
-        }
-        else {
-            tribeRow = readOnlyModel.getLowerTribeRow();
-            buildingRow = readOnlyModel.getLowerBuildingRow();
-        }
-        if(!(tribeRow.isEmpty() && buildingRow.isEmpty())){
-            if(upper) System.out.print("Upper row:     ");
-            else System.out.print("Lower row:     ");
+    private RankingEntry getUserEntry(){
+        return readOnlyModel.getRanking().stream().filter(e -> e.getGameId().equals(readOnlyModel.getGameId())
+                        && e.getNickname().equals(localPlayer.getNickname()))
+                .findFirst().orElse(null);
+    }
 
-            if(!tribeRow.isEmpty()) {
-                for (TribesCard c : tribeRow) {
-                    System.out.print(c);
+
+    /**
+     * Builds the list of tribe cards the user can pick
+     * @param offeringCard      the offering card selected by the user
+     * @return                  the list of cards the user can pick
+     */
+    private List<GameCard> buildPickableCardsList(OfferingCard offeringCard) {
+        List<GameCard> pickableCards = new ArrayList<>();
+        int startingIndex = 1;
+        if (offeringCard.getNumCardsUpper() > 0) {
+            // add upper character cards
+            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
+
+            // add upper building cards
+            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
+
+            // print the upper row
+            startingIndex = printPickableTribeRow(true, startingIndex);
+        }
+
+        if (offeringCard.getNumCardsLower() > 0) {
+            // add lower character cards
+            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
+
+            // add lower building cards
+            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
+                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+
+            // print the lower row
+            printPickableTribeRow(false, startingIndex);
+        }
+        return pickableCards;
+    }
+
+    /**
+     * Allows the user to select offering cards
+     * @return  the set of the indexes of the cards selected
+     */
+    private Set<Integer> tribeCardsSelection(int totalCards, int pickableCardsSize){
+        Set<Integer> cardIndexes = new HashSet<>();
+        while (cardIndexes.size() < totalCards) {
+            System.out.print("Type the card number (or 'quit' to stop) > ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (input.equals("quit")) {
+                System.out.println("Selection stopped.");
+                break;
+            }
+            try {
+                int numCard = Integer.parseInt(input)-1;
+                // check if the index is valid
+                if (numCard >= 0 && numCard < pickableCardsSize) {
+                    if (!cardIndexes.add(numCard)) {
+                        // if the set already contains the index print the error
+                        System.err.println("Card already selected. Choose a different one.");
+                    }
+                } else {
+                    System.err.println("Index out of bounds!");
                 }
             }
-            if(!buildingRow.isEmpty()){
-                for(BuildingCard c : buildingRow) {
-                    System.out.print(c);
-                }
+            catch (NumberFormatException e) {
+                System.err.println("Invalid input, please enter a valid number or 'quit' to stop.");
             }
-            System.out.println();
         }
+        return cardIndexes;
     }
 
     /**
-     * Draws the offering cards list
+     * Validates tribes card selection
+     * @param characterCards    the character cards selected by the player
+     * @param buildingCards     the building cards selected by the player
+     * @return                  true if selection is valid, false otherwise
      */
-    private void drawOfferingCards(){
-        var offeringCards = readOnlyModel.getOfferingCards();
-        if(!offeringCards.isEmpty()){
-            System.out.print("Bidding trail: ");
-            for(OfferingCard c : offeringCards) {
-                System.out.print(c);
-            }
-            System.out.println();
+    private boolean isMoveValid(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        try{
+            readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
+            return true;
+        } catch (InvalidOperationException e){
+            printError(e.getErrorType().getMessage());
+        } catch (Exception e) {
+            printError(e.getMessage());
         }
+        return false;
     }
 
     /**
-     * Updates localPlayer value when the object is updated into the queue by the server
-     * Used to update food, pp and cards of the player
+     * @return the local player's offering card
      */
-    public void setLocalPlayer() {
-        readOnlyModel.getOrderedPlayers().stream()
-                .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
-                .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
-    }
-
-    public Player getLocalPlayer() {
-        return localPlayer;
-    }
-
-    @Override
-    public boolean isBuilding2EffectUsed() {
-        return building2EffectUsed;
-    }
-
-    @Override
-    public void setBuilding2EffectUsed(boolean building2EffectUsed) {
-        this.building2EffectUsed = building2EffectUsed;
+    private OfferingCard getPlayerOfferingCard(){
+        OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
+                .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
+                .findFirst().orElse(null);
+        if (myOfferingCard == null && localPlayer.hasBuilding2()) return readOnlyModel.getBuildingTwoOfferingCard();
+        return myOfferingCard;
     }
 
     /**
-     * prints character to signal that the cli is available for a new command
+     * @return the list of character cards selected by the user
      */
-    private void showPrompt() {
-        System.out.print("\r> ");
-        System.out.flush();
+    private List<CharacterCard> buildCharacterList(Set<Integer> cardIndexes, List<GameCard> pickableCards) {
+        List<CharacterCard> characterCards = new ArrayList<>();
+        for(Integer i : cardIndexes) {
+            GameCard pickedCard = pickableCards.get(i);
+            if(!pickedCard.getIsBuilding())
+                characterCards.add((CharacterCard) pickedCard);
+        }
+        return characterCards;
     }
 
-    public void updateInterfaceFromPickTribes(){
-        drawInterface(null);
-    }
-    public void updateInterfaceFromPickOffering(){
-        drawInterface(null);
-    }
-    public void updateInterfaceFromEndTurn(){
-        drawInterface(null);
+    /**
+     * @return the list of building cards selected by the user
+     */
+    private List<BuildingCard> buildBuildingList(Set<Integer> cardIndexes, List<GameCard> pickableCards) {
+        List<BuildingCard> buildingCards = new ArrayList<>();
+        for(Integer i : cardIndexes) {
+            GameCard pickedCard = pickableCards.get(i);
+            if(pickedCard.getIsBuilding())
+                buildingCards.add((BuildingCard) pickedCard);
+        }
+        return buildingCards;
     }
 }
