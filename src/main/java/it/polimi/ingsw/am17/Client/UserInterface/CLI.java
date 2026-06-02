@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
@@ -858,6 +859,7 @@ public class CLI implements UI {
      */
     private boolean isMoveValid(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try{
+            readOnlyModel.isPlayerTurn();
             readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
             return true;
         } catch (InvalidOperationException e){

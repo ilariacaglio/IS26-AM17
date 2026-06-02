@@ -485,17 +485,13 @@ public class ClientModel {
 
     // todo: check if synchro needed, add javadoc
     public synchronized void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
-                gameState, offeringCards, buildingTwoOfferingCard);
-        validateTribesCardChoice(userInterface.getLocalPlayer(),
+        validateTribesCardChoice(userInterface.getLocalPlayer(), orderedPlayers,
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     // todo: check if synchro needed, add javadoc
     public synchronized void validatePickOfferingCard(Character offeringCardLetter){
-        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase, gameState,
-                offeringCards, buildingTwoOfferingCard);
-        validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
+        validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), orderedPlayers, offeringCards);
     }
 }
