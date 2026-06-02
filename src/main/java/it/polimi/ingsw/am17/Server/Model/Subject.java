@@ -129,12 +129,27 @@ public abstract class Subject {
         }
     }
 
-    void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
+    void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         for (VirtualView client : clients) {
             notifyService.submit(() -> {
                 logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
                 try {
-                    client.notifyEndGame(disconnectedPlayer, ranking, orderedPlayers);
+                    client.notifyEndGame(ranking, orderedPlayers);
+
+                } catch (Exception e) {
+                    logger.severe("Failed to notify end game: " + e.getMessage());
+                }
+            });
+        }
+        clients.clear();
+    }
+
+    void notifyForceEndGame(String disconnectedPlayer) {
+        for (VirtualView client : clients) {
+            notifyService.submit(() -> {
+                logger.info("Calling notifyForceEndGame on client " + client.getClass().getSimpleName());
+                try {
+                    client.notifyForceEndGame(disconnectedPlayer);
 
                 } catch (Exception e) {
                     logger.severe("Failed to notify end game: " + e.getMessage());
