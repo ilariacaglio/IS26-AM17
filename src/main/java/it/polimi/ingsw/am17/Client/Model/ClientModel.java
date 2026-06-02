@@ -442,29 +442,36 @@ public class ClientModel {
     }
 
     /**
-     * Updates model when game ends
-     * @param disconnectedPlayer    if not null specifies the disconnected player
-     * @param ranking               if not null, the global ranking
-     * @param orderedPlayers        if not null, the local ranking
+     * Updates model when the game ends.
+     * @param ranking to show in the UI.
+     * @param orderedPlayers to show in the UI.
      */
-    public void updateEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
-        String message = null;
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         // set game state to ended
         gameState = GameState.ENDED;
-        if (disconnectedPlayer == null){
-            // game ended by the server
-            // set global ranking
-            setRanking(ranking);
-            // set local ranking
-            setOrderedPlayers(orderedPlayers);
-        }
-        else {
-            // game ended by player disconnection
-            resetGameAttributes();
-            message = "The game has ended due to disconnection of player " + disconnectedPlayer;
-        }
-        userInterface.drawInterface(message);
+
+        // set global ranking
+        setRanking(ranking);
+
+        // set local ranking
+        setOrderedPlayers(orderedPlayers);
+
+        userInterface.drawInterface(null);
         logger.info("Game closed.");
+
+        // reset game state
+        gameState = GameState.NONE;
+    }
+
+    /**
+     * Updates model when the game forcibly ends (by player disconnection).
+     * @param disconnectedPlayer the disconnected player to show in the UI.
+     */
+    public void updateForceEndGame(String disconnectedPlayer) {
+        resetGameAttributes();
+        userInterface.drawInterface("The game has ended due to disconnection of player " + disconnectedPlayer);
+        logger.info("Game closed.");
+
         // reset game state
         gameState = GameState.NONE;
     }

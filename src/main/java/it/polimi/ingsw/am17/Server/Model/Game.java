@@ -129,7 +129,7 @@ public class Game extends Subject {
     public void forceEndGame(String nickname) {
         logger.severe("Forcibly closing game with id: " + id);
         this.gameState = GameState.ENDED;
-        notifyEndGame(nickname, null, null); // no ranking and ... when game closed early
+        notifyForceEndGame(nickname);
     }
 
     /**
@@ -389,7 +389,7 @@ public class Game extends Subject {
         DatabaseManager.insertGameData(this);
         logger.info("Database is updated. ");
 
-        notifyEndGame(null, DatabaseManager.getRanking(this.numPlayers), orderedPlayers);
+        notifyEndGame(DatabaseManager.getRanking(this.numPlayers), orderedPlayers);
         logger.info("End game has been notified successfully. ");
     }
 
