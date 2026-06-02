@@ -13,7 +13,7 @@ public interface UI {
     void updateInterfaceFromEndTurn();
     void drawInterface(String errorMessage);
     void printGameId(UUID gameId);
-    void printEra();
+    void setDisplayEra(boolean displayEra);
     void printGamesList();
     void setLocalPlayer();
     Player getLocalPlayer();

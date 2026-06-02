@@ -12,7 +12,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
-
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
@@ -23,11 +22,13 @@ public class CLI implements UI {
     private final ServerAdapter serverAdapter;
     private ClientModel readOnlyModel;
     private Player localPlayer;
+    private boolean building2EffectUsed;
+    private boolean displayEra;
     List<Color> availableColors;
     Scanner scanner;
 
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
     public CLI (ServerAdapter serverAdapter) {
         this.serverAdapter = serverAdapter;
@@ -35,31 +36,46 @@ public class CLI implements UI {
         resetColors();
     }
 
+
+
+    // methods called by RMI-Socket clients
+
     @Override
     public void setModel(ClientModel model) {
         this.readOnlyModel = model;
     }
 
-    public void setAvailableColors(List<Color> availableColors) {this.availableColors=availableColors;}
+
+
+    // methods called by the model
+
+    @Override
+    public void setAvailableColors(List<Color> availableColors) {
+        this.availableColors=availableColors;
+    }
 
     /**
      * Starts the cli and collects user commands
      */
+    @Override
     public void start() {
         System.out.println("=== Welcome to Mesos ===");
 
         try {
             boolean running = true;
 
-            // Set up the user
+            // set up the user
             String nickname = askNickname();
             Color color = chooseColor();
             localPlayer = new Player(nickname, color);
+            // print help
+            printHelp();
 
             while (running) {
                 showPrompt();
                 String input = scanner.nextLine().trim().toLowerCase();
                 switch (input) {
+                    // lobby stage
                     case "get games", "gg":
                         getGamesList();
                         break;
@@ -72,20 +88,21 @@ public class CLI implements UI {
                     case "create", "c":
                         createGame();
                         break;
-                    case "close game", "xxx":
-                        closeGame();
-                        break;
-                    case "pick offering card", "po":
-                        pickOfferingCard();
-                        break;
                     case "join", "j":
                         joinGame();
                         break;
+                    // game stage
+                    case "pick offering card", "po":
+                        pickOfferingCard();
+                        break;
                     case "pick cards", "p":
-                        pickCards();
+                        pickTribeCards();
                         break;
                     case "view player", "vp":
                         printPlayer();
+                        break;
+                    case "close game", "xxx":
+                        closeGame();
                         break;
                     case "help", "h":
                         printHelp();
@@ -95,7 +112,7 @@ public class CLI implements UI {
                         running = false;
                         break;
                     default:
-                        System.out.println("Command not recognized. Please type 'help' to view the list of available commands.");
+                        System.out.print("Command not recognized. Please type 'help' to view the list of available commands");
                 }
             }
             // exit
@@ -107,50 +124,10 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the commands list
-     */
-    private void printHelp() {
-        System.out.println("Available commands:");
-        System.out.println("- help, h: shows this menu");
-        System.out.println("- exit, quit, q: closes the application");
-        System.out.println("- get games, gg: get the list of starting games");
-        System.out.println("- change nickname, cn: changes the player's nickname");
-        System.out.println("- change color, cc: changes the player's color");
-        System.out.println("- create, c: creates a new game");
-        System.out.println("- close game, xxx: closes the current game");
-        System.out.println("- join, j: joins an existing game");
-        System.out.println("- pick offering card, po: choose the offering card to take");
-        System.out.println("- pick cards, p: choose the cards to take");
-        System.out.println("- view player, vp: shows a player's cards, food, and points");
-    }
-
-    /**
-     * Asks the user for a player and prints its cards, food, and points.
-     */
-    private void printPlayer() {
-        System.out.print("\b\b");
-        System.out.print("Insert nickname > ");
-        String nickname = scanner.nextLine().trim();
-
-        // search for Player in ordered players
-        Player player = readOnlyModel.getOrderedPlayers().stream()
-                .filter(p->p.getNickname().equals(nickname))
-                .findFirst().orElse(null);
-
-        // if player not found print error
-        if(player == null) {
-            System.out.println("Player " + nickname + " not found!");
-        }
-        else {
-            // print the player
-            System.out.println(player);
-        }
-    }
-
-    /**
      * Prints the gameId on the terminal.
      * @param gameId the id to be printed
      */
+    @Override
     public void printGameId(UUID gameId) {
         System.out.println("\nYou are connected to game: ".concat(gameId.toString()));
         showPrompt();
@@ -159,6 +136,7 @@ public class CLI implements UI {
     /**
      * Prints the games id list.
      */
+    @Override
     public void printGamesList(){
         System.out.println("\r\033[2KOpen games:");
         for(int i=0; i< readOnlyModel.getGamesIdList().size(); i++){
@@ -168,20 +146,10 @@ public class CLI implements UI {
     }
 
     /**
-     * Sends the get id list request to server.
-     */
-    private void getGamesList(){
-        try {
-            serverAdapter.getGamesList().join();
-        } catch (Exception e) {
-            System.err.println("CLI error: " + e.getCause().getMessage());
-        }
-    }
-
-    /**
      * Draws the game configuration.
-     * @param errorMessage message you want to print
+     * @param errorMessage  the message to display
      */
+    @Override
     public synchronized void drawInterface(String errorMessage)
     {
         try{
@@ -195,6 +163,9 @@ public class CLI implements UI {
 
             printError(errorMessage);
 
+            printEra();
+
+            // get game state to display the correct items
             GameState gameState = readOnlyModel.getGameState();
 
             if (gameState.isInLobbyOrStarted()) {
@@ -234,6 +205,97 @@ public class CLI implements UI {
         }
     }
 
+    @Override
+    public void setDisplayEra(boolean displayEra) {
+        this.displayEra = displayEra;
+    }
+
+    /**
+     * Updates localPlayer value when the object is updated into the queue by the server
+     * Used to update food, pp and cards of the player
+     */
+    @Override
+    public void setLocalPlayer() {
+        readOnlyModel.getOrderedPlayers().stream()
+                .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
+                .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
+    }
+
+    @Override
+    public Player getLocalPlayer() {
+        return localPlayer;
+    }
+
+    @Override
+    public boolean isBuilding2EffectUsed() {
+        return building2EffectUsed;
+    }
+
+    @Override
+    public void setBuilding2EffectUsed(boolean building2EffectUsed) {
+        this.building2EffectUsed = building2EffectUsed;
+    }
+
+    @Override
+    public void updateInterfaceFromPickTribes(){
+        drawInterface(null);
+    }
+
+    @Override
+    public void updateInterfaceFromPickOffering(){
+        drawInterface(null);
+    }
+
+    @Override
+    public void updateInterfaceFromEndTurn(){
+        drawInterface(null);
+    }
+
+
+
+    // Methods called by the CLI used to print data
+
+    /**
+     * Prints the commands list
+     */
+    private void printHelp() {
+        System.out.println("Available commands:");
+        System.out.println("- help, h: shows this menu");
+        System.out.println("- get games, gg: get the list of starting games");
+        System.out.println("- change nickname, cn: changes the player's nickname");
+        System.out.println("- change color, cc: changes the player's color");
+        System.out.println("- create, c: creates a new game");
+        System.out.println("- join, j: joins an existing game");
+        System.out.println("- pick offering card, po: choose the offering card to take");
+        System.out.println("- pick cards, p: choose the cards to take");
+        System.out.println("- view player, vp: shows a player's cards, food, and points");
+        System.out.println("- close game, xxx: closes the current game");
+        System.out.println("- exit, quit, q: closes the application");
+    }
+
+    /**
+     * Asks the user for a player and prints its cards, food, and points.
+     */
+    private void printPlayer() {
+        System.out.print("\b\b");
+        System.out.print("Insert nickname > ");
+        String nickname = scanner.nextLine().trim();
+
+        // search for Player in ordered players
+        Player player = readOnlyModel.getOrderedPlayers().stream()
+                .filter(p->p.getNickname().equals(nickname))
+                .findFirst().orElse(null);
+
+        // if player not found print error
+        if(player == null) {
+            System.out.println("Player " + nickname + " not found!");
+        }
+        else {
+            // print the player
+            System.out.println(player);
+        }
+    }
+
     /**
      * Prints error message
      * @param errorMessage  the error generated by the server
@@ -242,13 +304,6 @@ public class CLI implements UI {
         if(errorMessage != null && !errorMessage.isBlank()) {
             System.out.println(ANSI_RED + errorMessage + ANSI_RESET);
         }
-    }
-
-    /**
-     * Resets available color list to all colors
-     */
-    private void resetColors(){
-        setAvailableColors(Arrays.stream(Color.values()).toList());
     }
 
     /**
@@ -265,16 +320,13 @@ public class CLI implements UI {
     }
 
     /**
-     * prints the ranking of the player in global ranking when game ends
+     * prints global ranking when game ends and player position
      */
     private void drawGlobalRanking(){
         List<RankingEntry> ranking = readOnlyModel.getRanking();
         if (!ranking.isEmpty()) {
             System.out.println("\n--- YOUR POSITION IN GLOBAL RANKING ---");
-            RankingEntry userEntry = ranking.stream()
-                    .filter(e -> e.getGameId().equals(readOnlyModel.getGameId())
-                            && e.getNickname().equals(localPlayer.getNickname()))
-                    .findFirst().orElse(null);
+            RankingEntry userEntry = getUserEntry();
             if (userEntry != null) {
                 int pos = ranking.indexOf(userEntry) + 1;
                 System.out.println(pos + ")\t"+userEntry.getNickname()+"\t"+ userEntry.getFinalPoints());
@@ -286,7 +338,7 @@ public class CLI implements UI {
             System.out.println("\n--- GLOBAL RANKING ---");
             System.out.printf("N.\t%-12s\t%-15s\t%s%n", "DATA", "NICKNAME", "SCORE");
             int rank = 1;
-            for (RankingEntry entry: readOnlyModel.getRanking()) {
+            for (RankingEntry entry: ranking) {
                 System.out.println(rank + ")\t" + entry);
                 rank++;
             }
@@ -357,151 +409,30 @@ public class CLI implements UI {
     }
 
     /**
-     * Gets the user selected cards and sends them to server
+     * Prints specific selection message
+     * @param offeringCard  the offering card that allows the user to pick cards
      */
-    private void pickCards() {
-        // check if it is player turn
-        if (!readOnlyModel.isPlayerTurn()) {
-            drawInterface("It is not your turn!");
-            return;
-        }
-
-        // get players offering card
-        OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
-                .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
-                .findFirst().orElse(null);
-
-
-        if (myOfferingCard == null) {
-            // if player has BuildingType2
-            if (localPlayer.hasBuilding2()) {
-                myOfferingCard = readOnlyModel.getBuildingTwoOfferingCard();
-            }
-            else {
-                // if not found, return
-                System.out.println("No offering card chosen!");
-                return;
-            }
-        }
-
-        // calculate the number of cards the user can pick
-        int upperCards = myOfferingCard.getNumCardsUpper();
-        int lowerCards = myOfferingCard.getNumCardsLower();
-        int totalCards = upperCards + lowerCards;
-
-        // if card with letter A, no card can be chosen
-        if(totalCards == 0) {
-            System.out.println("You can't pick any card!");
-            return;
-        }
-
+    private void printTribeCardsSelectionMessage(OfferingCard offeringCard) {
+        int upperCards = offeringCard.getNumCardsUpper();
+        int lowerCards = offeringCard.getNumCardsLower();
         // print specific selection message
         StringBuilder pickMessage = new StringBuilder("You can pick ");
+        List<String> pickableRows = new ArrayList<>();
         if (upperCards > 0) {
-            pickMessage.append(upperCards).append(upperCards == 1 ? " card" : " cards").append(" from the upper row");
-        }
-        if (upperCards > 0 && lowerCards > 0) {
-            pickMessage.append(" and ");
+            pickableRows.add(upperCards + (upperCards == 1 ? " card" : " cards") + " from the upper row");
         }
         if (lowerCards > 0) {
-            pickMessage.append(lowerCards).append(lowerCards == 1 ? " card" : " cards").append(" from the lower row");
+            pickableRows.add(lowerCards + (lowerCards == 1 ? " card" : " cards") + " from the lower row");
         }
+        pickMessage.append(String.join(" and ", pickableRows));
         System.out.println(pickMessage);
-
-        // list of pickable cards
-        List<GameCard> pickableCards = new ArrayList<>();
-
-        int startingIndex = 1;
-        if (upperCards > 0) {
-            // add upper character cards
-            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
-                    .filter(c->c.getCardType().isCharacter()).toList());
-
-            // add upper building cards
-            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
-
-            // print the upper row
-            startingIndex = printPickableRow(true, startingIndex);
-        }
-
-        if (lowerCards > 0) {
-            // add lower character cards
-            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
-                    .filter(c->c.getCardType().isCharacter()).toList());
-
-            // add lower building cards
-            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
-                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
-
-            // print the lower row
-            printPickableRow(false, startingIndex);
-        }
-
-        // selected cards indexes
-        Set<Integer> cardIndexes = new HashSet<>();
-
-        // cards selection
-        while (cardIndexes.size() < totalCards) {
-            System.out.print("Type the card number (or 'quit' to stop) > ");
-            String input = scanner.nextLine().trim().toLowerCase();
-            if (input.equals("quit")) {
-                System.out.println("Selection stopped.");
-                break;
-            }
-            try {
-                int numCard = Integer.parseInt(input)-1;
-                // check if the index is valid
-                if (numCard >= 0 && numCard < pickableCards.size()) {
-                    if (!cardIndexes.add(numCard)) {
-                        // if the set already contains the index print the error
-                        System.err.println("Card already selected. Choose a different one.");
-                    }
-                } else {
-                    System.err.println("Index out of bounds!");
-                }
-            }
-            catch (NumberFormatException e) {
-                System.err.println("Invalid input, please enter a valid number or 'quit' to stop.");
-            }
-        }
-
-        // build cards lists
-        List<CharacterCard> characterCards = new ArrayList<>();
-        List<BuildingCard> buildingCards = new ArrayList<>();
-        for(Integer i : cardIndexes) {
-            GameCard pickedCard = pickableCards.get(i);
-            if(pickedCard.getIsBuilding()){
-                buildingCards.add((BuildingCard) pickedCard);
-            }
-            else {
-                characterCards.add((CharacterCard) pickedCard);
-            }
-        }
-
-        //check if move is valid
-        try{
-            readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
-        } catch (InvalidOperationException e){
-            printError(e.getErrorType().getMessage());
-            return;
-        } catch (Exception e) {
-            printError(e.getMessage());
-            return;
-        }
-
-        // call server method
-        try {
-            serverAdapter.pickTribeCards(characterCards, buildingCards).join();
-        } catch (Exception e) {
-            System.err.println("CLI error: " + e.getCause().getMessage());
-        }
     }
 
     /**
      * Prints all the character and building cards in the row
      * @param upper if true prints the upper row, if false prints the lower row
      */
-    private int printPickableRow(boolean upper, int startingIndex){
+    private int printPickableTribeRow(boolean upper, int startingIndex){
         List<TribesCard> tribeRow;
         List<BuildingCard> buildingRow;
         // set lists basing on upper value
@@ -537,168 +468,14 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the list of available colors and
-     * lets the user select one of them
-     * @return  the selected color
-     */
-    private Color chooseColor() {
-        // color selection
-        while (true) {
-            System.out.println("Available colors:");
-            for (int i = 0; i < availableColors.size(); i++) {
-                System.out.println((i + 1) + ") " + availableColors.get(i));
-            }
-            System.out.print("Choose a color number > ");
-
-            String input = scanner.nextLine();
-            try {
-                int choice = Integer.parseInt(input) - 1;
-                if (choice >= 0 && choice < availableColors.size()) {
-                    return availableColors.get(choice);
-                } else {
-                    System.out.println("Invalid number. Please choose between 1 and " + availableColors.size());
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid number, not text.");
-            }
-        }
-    }
-
-    /**
-     * Lets player choose new color
-     */
-    private void changeColor() {
-        Color c = chooseColor();
-        localPlayer.setColor(c);
-    }
-
-    /**
-     * Asks the user for a new nickname and sets it to player
-     */
-    private void changeNickname(){
-        String nickname = askNickname();
-        localPlayer.setNickname(nickname);
-    }
-
-    /**
-     * Asks the user to type their nickname
-     * @return the nickname to be set
-     */
-    private String askNickname() {
-        String nickname = "";
-        while (nickname.isEmpty()) {
-            System.out.print("Insert your nickname (max 10 char) > ");
-            nickname = scanner.nextLine().trim();
-            if(nickname.length() >10 ) {
-                nickname = "";
-                System.out.print("Your nickname has more than 10 characters!\n");
-            }
-        }
-        return nickname;
-    }
-
-    /**
-     * Sends server command to create a game
-     */
-    private void createGame(){
-        try {
-            if (readOnlyModel.getGameState() == GameState.NONE) {
-                System.out.print("How many players? (2 to 5) > ");
-                int numPlayers = Integer.parseInt(scanner.nextLine());
-                System.out.println("Trying to create game...");
-                serverAdapter.createGame(localPlayer, numPlayers).join();
-            } else {
-                System.out.print("Already in a game!");
-            }
-        }catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Sends server command to close the current game
-     */
-    private void closeGame(){
-        try {
-            if (readOnlyModel.getGameId() == null) {
-                System.out.print("Not in a game");
-            } else {
-                serverAdapter.closeGame().join();
-            }
-        }catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Sends server command to pick offering card
-     */
-    private void pickOfferingCard(){
-        try {
-            if (!readOnlyModel.isPlayerTurn())
-                throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
-
-            System.out.print("Insert card letter > ");
-            Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
-
-            readOnlyModel.validatePickOfferingCard(cardLetter);
-
-            // send request
-            serverAdapter.pickOfferingCard(cardLetter).join();
-        } catch (InvalidOperationException e) {
-            drawInterface(e.getErrorType().getMessage());
-        } catch (Exception e) {
-            drawInterface(e.getMessage());
-        }
-    }
-
-    /**
-     * Sends server command to join game
-     */
-    private void joinGame(){
-        try {
-            if (readOnlyModel.getGameState().equals(GameState.NONE)) {
-                System.out.print("Insert the gameID or index in gameList > ");
-                String input = scanner.nextLine().trim();
-                UUID gameId = null;
-
-                // Try to treat input as an index (Integer)
-                if (input.matches("\\d+")) {
-                    int index = Integer.parseInt(input);
-                    if (index >= 0 && index < readOnlyModel.getGamesIdList().size()) {
-                        gameId = readOnlyModel.getGamesIdList().get(index);
-                    } else {
-                        System.out.println("Index out of bounds.");
-                    }
-                }
-                //Otherwise, try to treat input as a UUID
-                else {
-                    try {
-                        gameId = UUID.fromString(input);
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid format. Please enter a number or a valid UUID.");
-                    }
-                }
-
-                //If we successfully got a gameId, proceed
-                if (gameId != null) {
-                    System.out.println("Trying to connect...");
-                    serverAdapter.joinGame(gameId, localPlayer).join();
-                }
-            } else {
-                System.out.println("Already in a game!");
-            }
-        } catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
-        }
-    }
-
-    /**
      * Prints message on the terminal to notify the user that the new era has begun.
-     * TODO: fix this method
      */
-    public void printEra(){
-        System.out.println("\nEra "+readOnlyModel.getGameState()+ " has begun!\n");
+    private void printEra(){
+        if(displayEra){
+            String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
+            System.out.println("Era "+ eraToDisplay + " has begun!");
+            setDisplayEra(false);
+        }
     }
 
     /**
@@ -749,20 +526,6 @@ public class CLI implements UI {
     }
 
     /**
-     * Updates localPlayer value when the object is updated into the queue by the server
-     * Used to update food, pp and cards of the player
-     */
-    public void setLocalPlayer() {
-        readOnlyModel.getOrderedPlayers().stream()
-                .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
-                .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
-    }
-
-    public Player getLocalPlayer() {
-        return localPlayer;
-    }
-
-    /**
      * prints character to signal that the cli is available for a new command
      */
     private void showPrompt() {
@@ -770,13 +533,374 @@ public class CLI implements UI {
         System.out.flush();
     }
 
-    public void updateInterfaceFromPickTribes(){
-        drawInterface(null);
+
+
+    // methods used to implement user functions
+
+    /**
+     * Asks the user to type their nickname
+     * @return the nickname to be set
+     */
+    private String askNickname() {
+        String nickname = "";
+        while (nickname.isEmpty()) {
+            System.out.print("Insert your nickname (max 10 char) > ");
+            nickname = scanner.nextLine().trim();
+            if(nickname.length() >10 ) {
+                nickname = "";
+                System.out.print("Your nickname has more than 10 characters!\n");
+            }
+        }
+        return nickname;
     }
-    public void updateInterfaceFromPickOffering(){
-        drawInterface(null);
+
+    /**
+     * Prints the list of available colors and
+     * lets the user select one of them
+     * @return  the selected color
+     */
+    private Color chooseColor() {
+        // color selection
+        while (true) {
+            System.out.println("Available colors:");
+            for (int i = 0; i < availableColors.size(); i++) {
+                System.out.println((i + 1) + ") " + availableColors.get(i));
+            }
+            System.out.print("Choose a color number > ");
+
+            String input = scanner.nextLine();
+            try {
+                int choice = Integer.parseInt(input) - 1;
+                if (choice >= 0 && choice < availableColors.size()) {
+                    return availableColors.get(choice);
+                } else {
+                    System.out.println("Invalid number. Please choose between 1 and " + availableColors.size());
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number, not text.");
+            }
+        }
     }
-    public void updateInterfaceFromEndTurn(){
-        drawInterface(null);
+
+    /**
+     * Sends the get id list request to server.
+     */
+    private void getGamesList(){
+        try {
+            serverAdapter.getGamesList().join();
+        } catch (Exception e) {
+            System.err.println("CLI error: " + e.getCause().getMessage());
+        }
+    }
+
+    /**
+     * Asks the user for a new nickname and sets it to player
+     */
+    private void changeNickname(){
+        String nickname = askNickname();
+        localPlayer.setNickname(nickname);
+    }
+
+    /**
+     * Lets player choose new color
+     */
+    private void changeColor() {
+        Color c = chooseColor();
+        localPlayer.setColor(c);
+    }
+
+    /**
+     * Sends server command to create a game
+     */
+    private void createGame(){
+        try {
+            if (readOnlyModel.getGameState() == GameState.NONE) {
+                System.out.print("How many players? (2 to 5) > ");
+                int numPlayers = Integer.parseInt(scanner.nextLine());
+                System.out.println("Trying to create game...");
+                serverAdapter.createGame(localPlayer, numPlayers).join();
+            } else {
+                System.out.print("Already in a game!");
+            }
+        }catch (Exception e) {
+            System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends server command to join game
+     */
+    private void joinGame(){
+        try {
+            if (readOnlyModel.getGameState().equals(GameState.NONE)) {
+                System.out.print("Insert the gameID or index in gameList > ");
+                String input = scanner.nextLine().trim();
+                UUID gameId = null;
+
+                // Try to treat input as an index (Integer)
+                if (input.matches("\\d+")) {
+                    int index = Integer.parseInt(input);
+                    if (index >= 0 && index < readOnlyModel.getGamesIdList().size()) {
+                        gameId = readOnlyModel.getGamesIdList().get(index);
+                    } else {
+                        System.out.println("Index out of bounds.");
+                    }
+                }
+                //Otherwise, try to treat input as a UUID
+                else {
+                    try {
+                        gameId = UUID.fromString(input);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid format. Please enter a number or a valid UUID.");
+                    }
+                }
+
+                //If we successfully got a gameId, proceed
+                if (gameId != null) {
+                    System.out.println("Trying to connect...");
+                    serverAdapter.joinGame(gameId, localPlayer).join();
+                }
+            } else {
+                System.out.println("Already in a game!");
+            }
+        } catch (Exception e) {
+            System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends server command to pick offering card
+     */
+    private void pickOfferingCard(){
+        try {
+            if (!readOnlyModel.isPlayerTurn())
+                throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
+
+            System.out.print("Insert card letter > ");
+            Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
+
+            readOnlyModel.validatePickOfferingCard(cardLetter);
+
+            // send request
+            serverAdapter.pickOfferingCard(cardLetter).join();
+        } catch (InvalidOperationException e) {
+            drawInterface(e.getErrorType().getMessage());
+        } catch (Exception e) {
+            drawInterface(e.getMessage());
+        }
+    }
+
+    /**
+     * Gets the user selected cards and sends them to server
+     */
+    private void pickTribeCards() {
+        // check if it is the players turn
+        if (!readOnlyModel.isPlayerTurn()) {
+            printError(ErrorType.OUT_OF_TURN.getMessage());
+            return;
+        }
+
+        // get players offering card
+        OfferingCard myOfferingCard = getPlayerOfferingCard();
+
+        if (myOfferingCard == null) {
+            // if not found, return
+            drawInterface("No offering card selected.");
+            return;
+        }
+
+        // calculate the number of cards the user can pick
+        int totalCards = myOfferingCard.getNumCardsUpper() + myOfferingCard.getNumCardsLower();
+
+        // if card with letter A, no card can be chosen
+        if(totalCards == 0) {
+            System.out.println("You can't pick any card!");
+            return;
+        }
+
+        printTribeCardsSelectionMessage(myOfferingCard);
+
+        // list of pickable cards
+        List<GameCard> pickableCards = buildPickableCardsList(myOfferingCard);
+
+        if (pickableCards.isEmpty()) {
+            System.out.println("You can't pick any card!");
+            return;
+        }
+
+        // cards selection
+        Set<Integer> cardIndexes = tribeCardsSelection(totalCards, pickableCards.size());
+
+        // build cards lists
+        List<CharacterCard> characterCards = buildCharacterList(cardIndexes, pickableCards);
+        List<BuildingCard> buildingCards = buildBuildingList(cardIndexes, pickableCards);
+
+        //check if move is valid
+        if(isMoveValid(characterCards, buildingCards)) {
+            // call server method
+            try {
+                serverAdapter.pickTribeCards(characterCards, buildingCards).join();
+            } catch (Exception e) {
+                System.err.println("CLI error: " + e.getCause().getMessage());
+            }
+        }
+    }
+
+    /**
+     * Sends server command to close the current game
+     */
+    private void closeGame(){
+        try {
+            if (readOnlyModel.getGameId() == null) {
+                System.out.print("Not in a game");
+            } else {
+                serverAdapter.closeGame().join();
+            }
+        }catch (Exception e) {
+            System.err.println("CLI error: " + e.getMessage());
+        }
+    }
+
+
+
+    // Utility methods
+
+    /**
+     * Resets available color list to all colors
+     */
+    private void resetColors(){
+        setAvailableColors(Arrays.stream(Color.values()).toList());
+    }
+
+    /**
+     * @return the entry of the local player in global ranking
+     */
+    private RankingEntry getUserEntry(){
+        return readOnlyModel.getRanking().stream().filter(e -> e.getGameId().equals(readOnlyModel.getGameId())
+                        && e.getNickname().equals(localPlayer.getNickname()))
+                .findFirst().orElse(null);
+    }
+
+
+    /**
+     * Builds the list of tribe cards the user can pick
+     * @param offeringCard      the offering card selected by the user
+     * @return                  the list of cards the user can pick
+     */
+    private List<GameCard> buildPickableCardsList(OfferingCard offeringCard) {
+        List<GameCard> pickableCards = new ArrayList<>();
+        int startingIndex = 1;
+        if (offeringCard.getNumCardsUpper() > 0) {
+            // add upper character cards
+            pickableCards.addAll(readOnlyModel.getUpperTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
+
+            // add upper building cards
+            pickableCards.addAll(readOnlyModel.getUpperBuildingRow());
+
+            // print the upper row
+            startingIndex = printPickableTribeRow(true, startingIndex);
+        }
+
+        if (offeringCard.getNumCardsLower() > 0) {
+            // add lower character cards
+            pickableCards.addAll(readOnlyModel.getLowerTribeRow().stream()
+                    .filter(c->c.getCardType().isCharacter()).toList());
+
+            // add lower building cards
+            if(!readOnlyModel.getLowerBuildingRow().isEmpty())
+                pickableCards.addAll(readOnlyModel.getLowerBuildingRow());
+
+            // print the lower row
+            printPickableTribeRow(false, startingIndex);
+        }
+        return pickableCards;
+    }
+
+    /**
+     * Allows the user to select offering cards
+     * @return  the set of the indexes of the cards selected
+     */
+    private Set<Integer> tribeCardsSelection(int totalCards, int pickableCardsSize){
+        Set<Integer> cardIndexes = new HashSet<>();
+        while (cardIndexes.size() < totalCards) {
+            System.out.print("Type the card number (or 'quit' to stop) > ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (input.equals("quit")) {
+                System.out.println("Selection stopped.");
+                break;
+            }
+            try {
+                int numCard = Integer.parseInt(input)-1;
+                // check if the index is valid
+                if (numCard >= 0 && numCard < pickableCardsSize) {
+                    if (!cardIndexes.add(numCard)) {
+                        // if the set already contains the index print the error
+                        System.err.println("Card already selected. Choose a different one.");
+                    }
+                } else {
+                    System.err.println("Index out of bounds!");
+                }
+            }
+            catch (NumberFormatException e) {
+                System.err.println("Invalid input, please enter a valid number or 'quit' to stop.");
+            }
+        }
+        return cardIndexes;
+    }
+
+    /**
+     * Validates tribes card selection
+     * @param characterCards    the character cards selected by the player
+     * @param buildingCards     the building cards selected by the player
+     * @return                  true if selection is valid, false otherwise
+     */
+    private boolean isMoveValid(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        try{
+            readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
+            return true;
+        } catch (InvalidOperationException e){
+            printError(e.getErrorType().getMessage());
+        } catch (Exception e) {
+            printError(e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * @return the local player's offering card
+     */
+    private OfferingCard getPlayerOfferingCard(){
+        OfferingCard myOfferingCard = readOnlyModel.getOfferingCards().stream()
+                .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
+                .findFirst().orElse(null);
+        if (myOfferingCard == null && localPlayer.hasBuilding2()) return readOnlyModel.getBuildingTwoOfferingCard();
+        return myOfferingCard;
+    }
+
+    /**
+     * @return the list of character cards selected by the user
+     */
+    private List<CharacterCard> buildCharacterList(Set<Integer> cardIndexes, List<GameCard> pickableCards) {
+        List<CharacterCard> characterCards = new ArrayList<>();
+        for(Integer i : cardIndexes) {
+            GameCard pickedCard = pickableCards.get(i);
+            if(!pickedCard.getIsBuilding())
+                characterCards.add((CharacterCard) pickedCard);
+        }
+        return characterCards;
+    }
+
+    /**
+     * @return the list of building cards selected by the user
+     */
+    private List<BuildingCard> buildBuildingList(Set<Integer> cardIndexes, List<GameCard> pickableCards) {
+        List<BuildingCard> buildingCards = new ArrayList<>();
+        for(Integer i : cardIndexes) {
+            GameCard pickedCard = pickableCards.get(i);
+            if(pickedCard.getIsBuilding())
+                buildingCards.add((BuildingCard) pickedCard);
+        }
+        return buildingCards;
     }
 }

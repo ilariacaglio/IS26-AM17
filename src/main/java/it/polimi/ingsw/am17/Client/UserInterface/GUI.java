@@ -174,10 +174,12 @@ public class GUI implements UI {
     public void printGameId(UUID gameId) {
 
     }
+
     @Override
-    public void printEra(){
+    public void setDisplayEra(boolean displayEra) {
 
     }
+
     @Override
     public void printGamesList(){
         // Check if the user is currently looking at the Join Screen
