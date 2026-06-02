@@ -31,7 +31,8 @@ public interface VirtualView {
     void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws Exception;
 
     // ending methods
-    void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws Exception;
+    void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws Exception;
+    void notifyForceEndGame(String disconnectedPlayer) throws Exception;
 
     // notify errors
     void updateError(InvalidOperationException exception) throws Exception;
