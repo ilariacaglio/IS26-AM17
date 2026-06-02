@@ -96,15 +96,7 @@ public abstract class Subject {
 
     void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
-        Queue<Player> newQueue = players.stream()
-                .map(p -> {
-                    // Creates a defensive copy of the player, intentionally omitting their cards
-                    Player copy = new Player(p.getNickname(), p.getColor());
-                    copy.addFood(p.getFood());
-                    copy.addPp(p.getPp());
-                    return copy;
-                })
-                .collect(Collectors.toCollection(LinkedList::new));
+        Queue<Player> newQueue = buildQueueWithoutPlayers(players);
         for (VirtualView client : clients) {
             notifyService.submit(() -> {
                 try {
@@ -130,11 +122,12 @@ public abstract class Subject {
     }
 
     void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
+        Queue<Player> newQueue = buildQueueWithoutPlayers(orderedPlayers);
         for (VirtualView client : clients) {
             notifyService.submit(() -> {
                 logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
                 try {
-                    client.notifyEndGame(ranking, orderedPlayers);
+                    client.notifyEndGame(ranking, newQueue);
 
                 } catch (Exception e) {
                     logger.severe("Failed to notify end game: " + e.getMessage());
@@ -157,5 +150,20 @@ public abstract class Subject {
             });
         }
         clients.clear();
+    }
+
+    /**
+     * @return the given queue without the cards field in player object
+     */
+    private LinkedList<Player> buildQueueWithoutPlayers(Queue<Player> orderedPlayers) {
+        return orderedPlayers.stream()
+                .map(p -> {
+                    // Creates a defensive copy of the player, intentionally omitting their cards
+                    Player copy = new Player(p.getNickname(), p.getColor());
+                    copy.addFood(p.getFood());
+                    copy.addPp(p.getPp());
+                    return copy;
+                })
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 }
