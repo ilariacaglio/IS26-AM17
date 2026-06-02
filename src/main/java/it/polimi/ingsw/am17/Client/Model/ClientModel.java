@@ -477,12 +477,12 @@ public class ClientModel {
     }
 
     public void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        validateTribesCardChoice(userInterface.getLocalPlayer(), orderedPlayers,
+        validateTribesCardChoice(userInterface.getLocalPlayer(),
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     public void validatePickOfferingCard(Character offeringCardLetter){
-        validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), orderedPlayers, offeringCards);
+        validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
     }
 }
