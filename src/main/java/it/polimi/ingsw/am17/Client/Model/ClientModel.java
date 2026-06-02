@@ -437,7 +437,7 @@ public class ClientModel {
     /**
      * Resets all game rows, offering cards, ranking and player queue
      */
-    private void resetGameAttributes() {
+    private synchronized void resetGameAttributes() {
         setOrderedPlayers(new LinkedList<>());
         setOfferingCards(new ArrayList<>());
         setTribeCards(new ArrayList<>(), new ArrayList<>());
@@ -503,7 +503,7 @@ public class ClientModel {
      * @param disconnectedPlayer the disconnected player to show in the UI.
      */
     public void updateForceEndGame(String disconnectedPlayer) {
-        resetGameAttributes(); // todo: synchronize?
+        resetGameAttributes();
         userInterface.drawInterface("The game has ended due to disconnection of player " + disconnectedPlayer);
         logger.info("Game closed.");
 
