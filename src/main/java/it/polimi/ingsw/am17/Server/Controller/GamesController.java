@@ -241,9 +241,9 @@ public class GamesController {
             removeGameFromId(uuid);
         }
         catch (InvalidOperationException e) {
+            logger.warning("Error calling forceEndGame: " +  e.getErrorType().getMessage());
             // notify error only if game isn't already closed
             if(!e.getErrorType().equals(ErrorType.INVALID_GAME)){
-                logger.warning("Error calling forceEndGame: " +  e.getErrorType().getMessage());
                 notifyErrorToClient(client, e);
             }
         }
