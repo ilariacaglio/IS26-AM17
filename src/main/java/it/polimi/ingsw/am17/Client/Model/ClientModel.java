@@ -67,21 +67,12 @@ public class ClientModel {
         this.userInterface.start();
     }
 
-    /**
-     * Sets field gameId and displays it on the screen.
-     * @param id    the value to be set
-     */
-    public void setGameId(UUID id) {
-        synchronized (this) {
-            this.id = id;
-            setGameState(GameState.LOBBY);
-        }
-
-        userInterface.notifyGameIdChange();
-    }
-
     public synchronized UUID getGameId() {
         return id;
+    }
+
+    private synchronized void setGameId(UUID gameId) {
+        this.id = gameId;
     }
 
     public synchronized void setNumPlayers(int numPlayers) {
@@ -528,5 +519,16 @@ public class ClientModel {
      */
     public synchronized void validatePickOfferingCard(Character offeringCardLetter){
         validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
+    }
+
+    public void updateGameState(GameState gameState) {
+        setGameState(gameState);
+        userInterface.updateInterfaceFromGameStateChange();
+    }
+
+    public void updateGameId(UUID gameId) {
+        setGameId(gameId);
+        setGameState(GameState.LOBBY);
+        userInterface.updateInterfaceFromIdChange();
     }
 }

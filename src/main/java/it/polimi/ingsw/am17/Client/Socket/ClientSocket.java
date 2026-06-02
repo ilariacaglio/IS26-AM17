@@ -151,7 +151,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
     @Override
     public void updateGameState(GameState gameState) {
-        model.setGameState(gameState);
+        model.updateGameState(gameState);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
     @Override
     public void updateGameId(UUID gameId) {
-       model.setGameId(gameId);
+       model.updateGameId(gameId);
     }
 
     @Override
