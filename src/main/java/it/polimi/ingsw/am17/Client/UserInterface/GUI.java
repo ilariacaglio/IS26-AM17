@@ -240,7 +240,7 @@ public class GUI implements UI {
     }
 
     @Override
-    public void notifyGameIdChange() {
+    public void updateInterfaceFromIdChange() {
 
     }
 

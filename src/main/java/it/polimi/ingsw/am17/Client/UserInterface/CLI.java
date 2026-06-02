@@ -229,8 +229,15 @@ public class CLI implements UI {
     }
 
     @Override
-    public void notifyGameIdChange() {
+    public void updateInterfaceFromIdChange() {
         System.out.println("\nYou are connected to game: ".concat(readOnlyModel.getGameId().toString()));
+        drawInterface(null);
+        showPrompt();
+    }
+
+    @Override
+    public void updateInterfaceFromGameStateChange() {
+        System.out.println("\nNew game state".concat(readOnlyModel.getGameState().toString()));
         drawInterface(null);
         showPrompt();
     }
