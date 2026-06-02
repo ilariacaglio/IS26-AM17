@@ -80,15 +80,15 @@ public class ClientModel {
         userInterface.notifyGameIdChange();
     }
 
-    public UUID getGameId() {
+    public synchronized UUID getGameId() {
         return id;
     }
 
-    public void setNumPlayers(int numPlayers) {
+    public synchronized void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
     }
 
-    public int getNumPlayers() {
+    public synchronized int getNumPlayers() {
         return numPlayers;
     }
 
@@ -97,29 +97,34 @@ public class ClientModel {
      * @param gameState    the value to be set
      */
     public void setGameState(GameState gameState){
-        this.gameState = gameState;
+        synchronized (this) {
+            this.gameState = gameState;
+        }
         userInterface.setDisplayEra(true);
     }
 
-    public GameState getGameState(){
+    public synchronized GameState getGameState(){
         return gameState;
     }
 
-    public boolean isPickOCPhase() {
+    public synchronized boolean isPickOCPhase() {
         return isPickOCPhase;
     }
 
-    public void setPickOCPhase(boolean value) {
+    public synchronized void setPickOCPhase(boolean value) {
         isPickOCPhase = value;
     }
 
     public void setOrderedPlayers(Queue<Player> orderedPlayers){
-        this.orderedPlayers.clear();
-        this.orderedPlayers.addAll(orderedPlayers);
+        synchronized (this) {
+            this.orderedPlayers.clear();
+            this.orderedPlayers.addAll(orderedPlayers);
+        }
+
         userInterface.setLocalPlayer();
     }
 
-    public List<Player> getOrderedPlayers(){
+    public synchronized List<Player> getOrderedPlayers(){
         return Collections.unmodifiableCollection(orderedPlayers).stream().toList();
     }
 
@@ -129,10 +134,12 @@ public class ClientModel {
      * @param player    the player to be updated in the queue
      */
     private void updatePlayerDataInQueue(Player player){
-        List<Player> players = new ArrayList<>(orderedPlayers);
-        players.replaceAll(p -> p.equals(player) ? player : p);
-        orderedPlayers.clear();
-        orderedPlayers.addAll(players);
+        synchronized (this) {
+            List<Player> players = new ArrayList<>(orderedPlayers);
+            players.replaceAll(p -> p.equals(player) ? player : p);
+            orderedPlayers.clear();
+            orderedPlayers.addAll(players);
+        }
 
         // if the player is the local player, update UI
         if (player.equals(userInterface.getLocalPlayer()))
@@ -143,12 +150,12 @@ public class ClientModel {
      * Replaces the player in the queue managing turn order with the value passed as parameter.
      * @param player    the player to be set
      */
-    public void setPlayerInQueue(Player player){
+    public synchronized void setPlayerInQueue(Player player){
         updatePlayerDataInQueue(player);
         movePlayerInQueue(orderedPlayers);
     }
 
-    public void setOfferingCards(List<OfferingCard> offeringCards){
+    public synchronized void setOfferingCards(List<OfferingCard> offeringCards){
         this.offeringCards = offeringCards;
     }
 
@@ -157,18 +164,18 @@ public class ClientModel {
      * @param upperRow  the new list to be set
      * @param lowerRow  the new list to be set
      */
-    public void setTribeCards(List<TribesCard> upperRow, List<TribesCard> lowerRow){
+    public synchronized void setTribeCards(List<TribesCard> upperRow, List<TribesCard> lowerRow){
         this.upperRow.clear();
         this.upperRow.addAll(upperRow);
         this.lowerRow.clear();
         this.lowerRow.addAll(lowerRow);
     }
 
-    public List<TribesCard> getUpperTribeRow(){
+    public synchronized List<TribesCard> getUpperTribeRow(){
         return Collections.unmodifiableList(upperRow);
     }
 
-    public List<TribesCard> getLowerTribeRow(){
+    public synchronized List<TribesCard> getLowerTribeRow(){
         return Collections.unmodifiableList(lowerRow);
     }
 
@@ -176,7 +183,7 @@ public class ClientModel {
      * Removes all the cards in the param from upper and lower tribe rows
      * @param tribeCards    the cards to be removed.
      */
-    public void removeTribeCards(List<CharacterCard> tribeCards){
+    public synchronized void removeTribeCards(List<CharacterCard> tribeCards){
         upperRow.removeAll(tribeCards);
         lowerRow.removeAll(tribeCards);
     }
@@ -186,18 +193,18 @@ public class ClientModel {
      * @param upperBuildingRow  the new list to be set
      * @param lowerBuildingRow  the new list to be set
      */
-    public void setBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
+    public synchronized void setBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         this.upperBuildingRow.clear();
         this.upperBuildingRow.addAll(upperBuildingRow);
         this.lowerBuildingRow.clear();
         if (lowerBuildingRow != null) this.lowerBuildingRow.addAll(lowerBuildingRow);
     }
 
-    public List<BuildingCard> getLowerBuildingRow(){
+    public synchronized List<BuildingCard> getLowerBuildingRow(){
         return Collections.unmodifiableList(lowerBuildingRow);
     }
 
-    public List<BuildingCard> getUpperBuildingRow(){
+    public synchronized List<BuildingCard> getUpperBuildingRow(){
         return Collections.unmodifiableList(upperBuildingRow);
     }
 
@@ -205,7 +212,7 @@ public class ClientModel {
      * Removes all the cards in the param from upper and lower building rows
      * @param buildingCards    the cards to be removed.
      */
-    public void removeBuildingCards(List<BuildingCard> buildingCards){
+    public synchronized void removeBuildingCards(List<BuildingCard> buildingCards){
         upperBuildingRow.removeAll(buildingCards);
         lowerBuildingRow.removeAll(buildingCards);
     }
@@ -215,11 +222,13 @@ public class ClientModel {
      * @param gamesIdList   the value to be set
      */
     public void setGameIdList(List<UUID> gamesIdList){
-        this.gamesIdList = new  ArrayList<>(gamesIdList);
+        synchronized (this) {
+            this.gamesIdList = new  ArrayList<>(gamesIdList);
+        }
         userInterface.printGamesList();
     }
 
-    public List<UUID> getGamesIdList(){
+    public synchronized List<UUID> getGamesIdList(){
         return Collections.unmodifiableList(gamesIdList);
     }
 
@@ -228,7 +237,7 @@ public class ClientModel {
      * @param player    the player to look for
      * @return          the player object in player collection
      */
-    public Player getPlayerFromList(Player player)
+    public synchronized Player getPlayerFromList(Player player)
     {
         return orderedPlayers.stream()
             .filter(p -> p.equals(player))
@@ -241,7 +250,7 @@ public class ClientModel {
      * @param offeringCard  offering card value
      * @param player        player to be set into offering card
      */
-    public void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
+    public synchronized void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
     {
         offeringCards.stream()
                 .filter(o -> o.equals(offeringCard))
@@ -257,7 +266,7 @@ public class ClientModel {
      * Removes player from currently assigned offering card.
      * @param player the player already present into the offering card field
      */
-    public void removePlayerFromOfferingCard(Player player){
+    private void removePlayerFromOfferingCard(Player player){
         offeringCards.stream()
                 .filter(o -> o.getPlayer()!= null && o.getPlayer().equals(player))
                 .findFirst()
@@ -267,37 +276,37 @@ public class ClientModel {
     /**
      * @return  true is it is local player turn, false otherwise
      */
-    public boolean isPlayerTurn(){
+    public synchronized boolean isPlayerTurn(){
         return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
                 gameState, offeringCards, buildingTwoOfferingCard);
     }
 
-    public List<OfferingCard> getOfferingCards(){
+    public synchronized List<OfferingCard> getOfferingCards(){
         return Collections.unmodifiableList(offeringCards);
     }
 
-    public OfferingCard getBuildingTwoOfferingCard() {
+    public synchronized OfferingCard getBuildingTwoOfferingCard() {
         return buildingTwoOfferingCard;
     }
 
     /**
      * Sets to null the player field of the offering card with letter A.
      */
-    public void setNullOfferingCardAPlayer() {
+    public synchronized void setNullOfferingCardAPlayer() {
         offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
                 .findFirst().ifPresent(card -> card.setPlayer(null));
     }
 
-    public String getTURN_CARD_IMAGE_PATH() {
+    public synchronized String getTURN_CARD_IMAGE_PATH() {
         return TURN_CARD_IMAGE_PATH + numPlayers + ".png";
     }
 
-    public void setRanking (List<RankingEntry> ranking) {
+    public synchronized void setRanking (List<RankingEntry> ranking) {
         this.ranking.clear();
         this.ranking.addAll(ranking);
     }
 
-    public List<RankingEntry> getRanking(){
+    public synchronized List<RankingEntry> getRanking(){
         return Collections.unmodifiableList(ranking);
     }
 
@@ -306,7 +315,10 @@ public class ClientModel {
      * @param playerQueue   the value to be set
      */
     public void updatePlayerQueue(Queue<Player> playerQueue) {
-        setOrderedPlayers(playerQueue);
+        synchronized (this) {
+            setOrderedPlayers(playerQueue);
+        }
+
         // UI communication
         userInterface.drawInterface(null);
     }
@@ -322,15 +334,15 @@ public class ClientModel {
      */
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
-
-        setGameState(GameState.ERA1);
-        setNumPlayers(players.size());
-        setOrderedPlayers(players);
-        setTribeCards(upperRow, lowerRow);
-        setBuildingCards(upperBuildingRow, lowerBuildingRow);
-        setOfferingCards(offeringCards);
-        setPickOCPhase(true);
-
+        synchronized (this) {
+            setGameState(GameState.ERA1);
+            setNumPlayers(players.size());
+            setOrderedPlayers(players);
+            setTribeCards(upperRow, lowerRow);
+            setBuildingCards(upperBuildingRow, lowerBuildingRow);
+            setOfferingCards(offeringCards);
+            setPickOCPhase(true);
+        }
         userInterface.drawInterface(null);
     }
 
@@ -345,13 +357,15 @@ public class ClientModel {
      */
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                      List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
-        for(Player player : players) {
-            // update player PP and food in player queue
-            updatePlayerValue(getPlayerFromList(player), player);
+        synchronized (this) {
+            for(Player player : players) {
+                // update player PP and food in player queue
+                addPPandFood(getPlayerFromList(player), player);
+            }
+            setBuildingCards(upperBuildingRow, lowerBuildingRow);
+            setTribeCards(upperRow, lowerRow);
+            setPickOCPhase(true);
         }
-        setBuildingCards(upperBuildingRow, lowerBuildingRow);
-        setTribeCards(upperRow, lowerRow);
-        setPickOCPhase(true);
 
         userInterface.setBuilding2EffectUsed(false);
         userInterface.updateInterfaceFromEndTurn();
@@ -362,7 +376,7 @@ public class ClientModel {
      * @param oldP  the outdated value of the player
      * @param newP  the new value of the player
      */
-    private static void updatePlayerValue(Player oldP, Player newP) {
+    private static void addPPandFood(Player oldP, Player newP) {
         oldP.addPp(newP.getPp()- oldP.getPp());
         oldP.addFood(newP.getFood() - oldP.getFood());
     }
@@ -373,7 +387,9 @@ public class ClientModel {
      * @param offeringCard      the offering card picked
      */
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
-        setPlayerOfferingCard(offeringCard, player);
+        synchronized (this) {
+            setPlayerOfferingCard(offeringCard, player);
+        }
         userInterface.updateInterfaceFromPickOffering();
     }
 
@@ -386,26 +402,32 @@ public class ClientModel {
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
 
-
-        // check if player has an offering card
-        if (isPlayerInOfferingCard(player,offeringCards)) {
-            // update data and manage queue
-            setPlayerInQueue(player);
-            // cards selection based on "usual" offering cards
-            removePlayerFromOfferingCard(player);
-        }
-        else{
-            // if not, is buildingType2 move
-            // update data without managing queue
-            updatePlayerDataInQueue(player);
-            if (player.equals(userInterface.getLocalPlayer()) &&
-                    !userInterface.isBuilding2EffectUsed()) {
-                        userInterface.setBuilding2EffectUsed(true);
+        boolean pickedFromOfferingCardZ = false;
+        synchronized (this) {
+            // check if player has an offering card
+            if (isPlayerInOfferingCard(player,offeringCards)) {
+                // update data and manage queue
+                setPlayerInQueue(player);
+                // cards selection based on "usual" offering cards
+                removePlayerFromOfferingCard(player);
             }
+            else {
+                // if not, is buildingType2 move
+                // update data without managing queue
+                updatePlayerDataInQueue(player);
+                pickedFromOfferingCardZ = true;
+            }
+
+            removeTribeCards(characterCards);
+            removeBuildingCards(buildingCards);
         }
 
-        removeTribeCards(characterCards);
-        removeBuildingCards(buildingCards);
+        if (player.equals(userInterface.getLocalPlayer()) && pickedFromOfferingCardZ) {
+            if (userInterface.isBuilding2EffectUsed()) {
+                logger.severe("Local player used the building 2 effect but was already used!");
+            }
+            else userInterface.setBuilding2EffectUsed(true);
+        }
 
         userInterface.updateInterfaceFromPickTribes();
     }
@@ -413,7 +435,7 @@ public class ClientModel {
     /**
      * Resets all game rows, offering cards, ranking and player queue
      */
-    public void resetGameAttributes() {
+    private synchronized void resetGameAttributes() {
         setOrderedPlayers(new LinkedList<>());
         setOfferingCards(new ArrayList<>());
         setTribeCards(new ArrayList<>(), new ArrayList<>());
@@ -427,15 +449,21 @@ public class ClientModel {
      */
     public void updateNotifyError(InvalidOperationException exception) {
         ErrorType type = exception.getErrorType();
+
         switch (type) {
             case DUPLICATE_COLOR:
-                userInterface.setAvailableColors(((ColorException)exception).getAvailableColors());
-                setGameState(GameState.NONE);
+                userInterface.setAvailableColors(((ColorException) exception).getAvailableColors());
+                synchronized (this) {
+                    gameState = GameState.NONE;
+                }
                 break;
             case DUPLICATE_NICKNAME:
-                setGameState(GameState.NONE);
+                synchronized (this) {
+                    gameState = GameState.NONE;
+                }
                 break;
         }
+
         String messageToDisplay = (type == ErrorType.UNKNOWN)
                 ? exception.getMessage()
                 : type.getMessage();
@@ -449,7 +477,9 @@ public class ClientModel {
      */
     public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         // set game state to ended
-        gameState = GameState.ENDED;
+        synchronized (this) {
+            gameState = GameState.ENDED;
+        }
 
         // set global ranking
         setRanking(ranking);
@@ -461,7 +491,9 @@ public class ClientModel {
         logger.info("Game closed.");
 
         // reset game state
-        gameState = GameState.NONE;
+        synchronized (this) {
+            gameState = GameState.NONE;
+        }
     }
 
     /**
@@ -474,20 +506,27 @@ public class ClientModel {
         logger.info("Game closed.");
 
         // reset game state
-        gameState = GameState.NONE;
+        synchronized (this){
+            gameState = GameState.NONE;
+        }
     }
 
-    public void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
-                gameState, offeringCards, buildingTwoOfferingCard);
+    /**
+     * Calls the SharedModelLogic validation for pickTribeCards action.
+     * @param characterCards
+     * @param buildingCards
+     */
+    public synchronized void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         validateTribesCardChoice(userInterface.getLocalPlayer(),
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
-    public void validatePickOfferingCard(Character offeringCardLetter){
-        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase, gameState,
-                offeringCards, buildingTwoOfferingCard);
+    /**
+     * Calls the SharedModelLogic validation for pickOfferingCard action.
+     * @param offeringCardLetter
+     */
+    public synchronized void validatePickOfferingCard(Character offeringCardLetter){
         validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
     }
 }
