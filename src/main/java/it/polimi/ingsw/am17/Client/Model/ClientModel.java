@@ -72,11 +72,12 @@ public class ClientModel {
      * @param id    the value to be set
      */
     public void setGameId(UUID id) {
-        this.id = id;
-        setGameState(GameState.LOBBY);
-        // UI communication
-        userInterface.printGameId(id);
-        userInterface.drawInterface(null);
+        synchronized (this) {
+            this.id = id;
+            setGameState(GameState.LOBBY);
+        }
+
+        userInterface.notifyGameIdChange();
     }
 
     public UUID getGameId() {

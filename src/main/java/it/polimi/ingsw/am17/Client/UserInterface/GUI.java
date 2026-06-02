@@ -171,11 +171,6 @@ public class GUI implements UI {
     }
 
     @Override
-    public void printGameId(UUID gameId) {
-
-    }
-
-    @Override
     public void setDisplayEra(boolean displayEra) {
 
     }
@@ -241,6 +236,11 @@ public class GUI implements UI {
     // todo
     @Override
     public void setBuilding2EffectUsed(boolean building2EffectUsed) {
+
+    }
+
+    @Override
+    public void notifyGameIdChange() {
 
     }
 

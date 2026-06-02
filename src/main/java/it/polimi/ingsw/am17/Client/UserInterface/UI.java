@@ -12,7 +12,6 @@ public interface UI {
     void updateInterfaceFromPickOffering();
     void updateInterfaceFromEndTurn();
     void drawInterface(String errorMessage);
-    void printGameId(UUID gameId);
     void setDisplayEra(boolean displayEra);
     void printGamesList();
     void setLocalPlayer();
@@ -21,4 +20,6 @@ public interface UI {
     void setAvailableColors(List<Color> availableColors);
     boolean isBuilding2EffectUsed();
     void setBuilding2EffectUsed(boolean building2EffectUsed);
+
+    void notifyGameIdChange();
 }

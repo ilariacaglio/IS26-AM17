@@ -125,16 +125,6 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the gameId on the terminal.
-     * @param gameId the id to be printed
-     */
-    @Override
-    public void printGameId(UUID gameId) {
-        System.out.println("\nYou are connected to game: ".concat(gameId.toString()));
-        showPrompt();
-    }
-
-    /**
      * Prints the games id list.
      */
     @Override
@@ -235,6 +225,13 @@ public class CLI implements UI {
     @Override
     public void setBuilding2EffectUsed(boolean building2EffectUsed) {
         this.building2EffectUsed = building2EffectUsed;
+    }
+
+    @Override
+    public void notifyGameIdChange() {
+        System.out.println("\nYou are connected to game: ".concat(readOnlyModel.getGameId().toString()));
+        drawInterface(null);
+        showPrompt();
     }
 
     @Override
