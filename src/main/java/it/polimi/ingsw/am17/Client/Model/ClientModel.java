@@ -20,31 +20,22 @@ import static it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic.*;
 
 public class ClientModel {
 
-    private final String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
-    private UUID id;
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
-
+    private final String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
     private final UI userInterface;
-
+    private final Queue<Player> orderedPlayers;
+    private final List<TribesCard> upperRow;
+    private final List<TribesCard> lowerRow;
+    private final List<BuildingCard> upperBuildingRow;
+    private final List<BuildingCard> lowerBuildingRow;
+    private final List<RankingEntry> ranking;
+    private final OfferingCard buildingTwoOfferingCard;
+    private UUID id;
     private int numPlayers;
     private GameState gameState;
     private boolean isPickOCPhase;
-
     private List<UUID> gamesIdList;
-
-    private final Queue<Player> orderedPlayers;
-
     private List<OfferingCard> offeringCards;
-
-    private final List<TribesCard> upperRow;
-    private final List<TribesCard> lowerRow;
-
-    private final List<BuildingCard> upperBuildingRow;
-    private final List<BuildingCard> lowerBuildingRow;
-
-    private final List<RankingEntry> ranking;
-
-    private final OfferingCard buildingTwoOfferingCard;
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
@@ -58,6 +49,16 @@ public class ClientModel {
         lowerBuildingRow  = new ArrayList<>();
         ranking = new ArrayList<>();
         buildingTwoOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
+    }
+
+    /**
+     * Updates PP and food of the old player with values from the new player
+     * @param oldP  the outdated value of the player
+     * @param newP  the new value of the player
+     */
+    private static void addPPandFood(Player oldP, Player newP) {
+        oldP.addPp(newP.getPp()- oldP.getPp());
+        oldP.addFood(newP.getFood() - oldP.getFood());
     }
 
     /**
@@ -79,12 +80,20 @@ public class ClientModel {
         this.id = gameId;
     }
 
+    public synchronized int getNumPlayers() {
+        return numPlayers;
+    }
+
     /**
      * Setter method of ClientModel
      * This method is not synchronized! Should only be called within synchronized blocks of changes.
      */
     private void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
+    }
+
+    public synchronized GameState getGameState(){
+        return gameState;
     }
 
     /**
@@ -95,24 +104,16 @@ public class ClientModel {
             this.gameState = gameState;
     }
 
-
-
-    public synchronized int getNumPlayers() {
-        return numPlayers;
-    }
-
-
-
-    public synchronized GameState getGameState(){
-        return gameState;
-    }
-
     public synchronized boolean isPickOCPhase() {
         return isPickOCPhase;
     }
 
     public synchronized void setPickOCPhase(boolean value) {
         isPickOCPhase = value;
+    }
+
+    public synchronized List<Player> getOrderedPlayers(){
+        return Collections.unmodifiableCollection(orderedPlayers).stream().toList();
     }
 
     public void setOrderedPlayers(Queue<Player> orderedPlayers){
@@ -122,10 +123,6 @@ public class ClientModel {
         }
 
         userInterface.setLocalPlayer();
-    }
-
-    public synchronized List<Player> getOrderedPlayers(){
-        return Collections.unmodifiableCollection(orderedPlayers).stream().toList();
     }
 
     /**
@@ -153,10 +150,6 @@ public class ClientModel {
     public synchronized void setPlayerInQueue(Player player){
         updatePlayerDataInQueue(player);
         movePlayerInQueue(orderedPlayers);
-    }
-
-    public synchronized void setOfferingCards(List<OfferingCard> offeringCards){
-        this.offeringCards = offeringCards;
     }
 
     /**
@@ -285,6 +278,10 @@ public class ClientModel {
         return Collections.unmodifiableList(offeringCards);
     }
 
+    public synchronized void setOfferingCards(List<OfferingCard> offeringCards){
+        this.offeringCards = offeringCards;
+    }
+
     public synchronized OfferingCard getBuildingTwoOfferingCard() {
         return buildingTwoOfferingCard;
     }
@@ -301,13 +298,13 @@ public class ClientModel {
         return TURN_CARD_IMAGE_PATH + numPlayers + ".png";
     }
 
+    public synchronized List<RankingEntry> getRanking(){
+        return Collections.unmodifiableList(ranking);
+    }
+
     public synchronized void setRanking (List<RankingEntry> ranking) {
         this.ranking.clear();
         this.ranking.addAll(ranking);
-    }
-
-    public synchronized List<RankingEntry> getRanking(){
-        return Collections.unmodifiableList(ranking);
     }
 
     /**
@@ -346,7 +343,6 @@ public class ClientModel {
         userInterface.drawInterface(null);
     }
 
-
     /**
      * Sets model params to new values when turn ends and displays it to screen.
      * @param players               the players queue value to be set.
@@ -368,16 +364,6 @@ public class ClientModel {
         }
 
         userInterface.updateInterfaceFromEndTurn();
-    }
-
-    /**
-     * Updates PP and food of the old player with values from the new player
-     * @param oldP  the outdated value of the player
-     * @param newP  the new value of the player
-     */
-    private static void addPPandFood(Player oldP, Player newP) {
-        oldP.addPp(newP.getPp()- oldP.getPp());
-        oldP.addFood(newP.getFood() - oldP.getFood());
     }
 
     /**
