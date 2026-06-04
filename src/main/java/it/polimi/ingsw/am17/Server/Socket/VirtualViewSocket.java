@@ -100,7 +100,7 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws Exception {
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws Exception {
         Message message = new Message(MessageType.END_GAME);
         message.setRanking(ranking);
         message.setOrderedPlayer(orderedPlayers);
@@ -108,7 +108,7 @@ public class VirtualViewSocket implements VirtualView {
     }
 
     @Override
-    public void notifyForceEndGame(String disconnectedPlayer) throws Exception {
+    public void updateForceEndGame(String disconnectedPlayer) throws Exception {
         Message message = new Message(MessageType.END_GAME_FORCED);
         message.setDisconnectedPlayerNickname(disconnectedPlayer);
     }

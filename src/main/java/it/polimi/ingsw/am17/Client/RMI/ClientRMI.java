@@ -186,12 +186,12 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
     }
 
     @Override
-    public void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
         model.updateEndGame(ranking, orderedPlayers);
     }
 
     @Override
-    public void notifyForceEndGame(String disconnectedPlayer) throws RemoteException {
+    public void updateForceEndGame(String disconnectedPlayer) throws RemoteException {
         model.updateForceEndGame(disconnectedPlayer);
     }
 
