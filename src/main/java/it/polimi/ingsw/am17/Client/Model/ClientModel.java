@@ -210,16 +210,7 @@ public class ClientModel {
         lowerBuildingRow.removeAll(buildingCards);
     }
 
-    /**
-     * sets gameIdList value and displays it on the screen
-     * @param gamesIdList   the value to be set
-     */
-    public void setGameIdList(List<UUID> gamesIdList){
-        synchronized (this) {
-            this.gamesIdList = new  ArrayList<>(gamesIdList);
-        }
-        userInterface.printGamesList();
-    }
+
 
     public synchronized List<UUID> getGamesIdList(){
         return Collections.unmodifiableList(gamesIdList);
@@ -308,111 +299,6 @@ public class ClientModel {
     }
 
     /**
-     * Updates players in queue and displays it to screen
-     * @param playerQueue   the value to be set
-     */
-    public void updatePlayerQueue(Queue<Player> playerQueue) {
-        synchronized (this) {
-            setOrderedPlayers(playerQueue);
-        }
-
-        // UI communication
-        userInterface.drawInterface(null);
-    }
-
-    /**
-     * Sets model params to new values when game starts and displays it to screen.
-     * @param players               the players queue value to be set.
-     * @param upperRow              the upper tribe row value to be set.
-     * @param lowerRow              the lower tribe row value to be set.
-     * @param upperBuildingRow      the upper building row value to be set.
-     * @param lowerBuildingRow      the lower building row value to be set.
-     * @param offeringCards         the offering cards value to be set.
-     */
-    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
-        synchronized (this) {
-            setGameState(GameState.ERA1);
-            setNumPlayers(players.size());
-            setOrderedPlayers(players);
-            setTribeCards(upperRow, lowerRow);
-            setBuildingCards(upperBuildingRow, lowerBuildingRow);
-            setOfferingCards(offeringCards);
-            setPickOCPhase(true);
-        }
-        userInterface.drawInterface(null);
-    }
-
-    /**
-     * Sets model params to new values when turn ends and displays it to screen.
-     * @param players               the players queue value to be set.
-     * @param upperRow              the upper tribe row value to be set.
-     * @param lowerRow              the lower tribe row value to be set.
-     * @param upperBuildingRow      the upper building row value to be set.
-     * @param lowerBuildingRow      the lower building row value to be set.
-     */
-    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                     List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
-        synchronized (this) {
-            for(Player player : players) {
-                // update player PP and food in player queue
-                addPPandFood(getPlayerFromList(player), player);
-            }
-            setBuildingCards(upperBuildingRow, lowerBuildingRow);
-            setTribeCards(upperRow, lowerRow);
-            setPickOCPhase(true);
-        }
-
-        userInterface.updateInterfaceFromEndTurn();
-    }
-
-    /**
-     * Updates offering cards list when a player selects one and displays it to screen.
-     * @param player            the player that picks the offering card
-     * @param offeringCard      the offering card picked
-     */
-    public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
-        synchronized (this) {
-            setPlayerOfferingCard(offeringCard, player);
-        }
-        userInterface.updateInterfaceFromPickOffering();
-    }
-
-    /**
-     * Updates player cards and rows when player picks cards and displays it to screen.
-     * @param player            the player that picked the cards
-     * @param characterCards    the character cards picked by the player
-     * @param buildingCards     the building cards picked by the player
-     */
-    public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        logger.info(characterCards.toString() + " " + buildingCards.toString());
-
-        synchronized (this) {
-            // check if player has an offering card
-            if (isPlayerInOfferingCard(player,offeringCards)) {
-                // update data and manage queue
-                setPlayerInQueue(player);
-                // cards selection based on "usual" offering cards
-                removePlayerFromOfferingCard(player);
-                // if player has building two, book extra turn
-                if (player.hasBuilding2())
-                    buildingTwoOfferingCard.setPlayer(player);
-            }
-            else{
-                // if not, is buildingType2 move
-                buildingTwoOfferingCard.setPlayer(null);
-                // update data without managing queue
-                updatePlayerDataInQueue(player);
-            }
-        }
-
-            removeTribeCards(characterCards);
-            removeBuildingCards(buildingCards);
-
-        userInterface.updateInterfaceFromPickTribes();
-    }
-
-    /**
      * Resets all game rows, offering cards, ranking and player queue
      */
     private synchronized void resetGameAttributes() {
@@ -451,47 +337,6 @@ public class ClientModel {
     }
 
     /**
-     * Updates model when the game ends.
-     * @param ranking to show in the UI.
-     * @param orderedPlayers to show in the UI.
-     */
-    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
-        // set game state to ended
-        synchronized (this) {
-            gameState = GameState.ENDED;
-        }
-
-        // set global ranking
-        setRanking(ranking);
-
-        // set local ranking
-        setOrderedPlayers(orderedPlayers);
-
-        userInterface.drawInterface(null);
-        logger.info("Game closed.");
-
-        // reset game state
-        synchronized (this) {
-            gameState = GameState.NONE;
-        }
-    }
-
-    /**
-     * Updates model when the game forcibly ends (by player disconnection).
-     * @param disconnectedPlayer the disconnected player to show in the UI.
-     */
-    public void updateForceEndGame(String disconnectedPlayer) {
-        resetGameAttributes();
-        userInterface.drawInterface("The game has ended due to disconnection of player " + disconnectedPlayer);
-        logger.info("Game closed.");
-
-        // reset game state
-        synchronized (this){
-            gameState = GameState.NONE;
-        }
-    }
-
-    /**
      * Calls the SharedModelLogic validation for pickTribeCards action.
      * @param characterCards
      * @param buildingCards
@@ -510,14 +355,188 @@ public class ClientModel {
         validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
     }
 
+    /* UPDATE METHODS */
+    // todo: rework UI calls
+    // todo: optionally make all updates one overloaded method
+    // todo: remove synchro from setters
+    // todo: improve validateo
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updateGameId(UUID gameId) {
+        synchronized (this) {
+            setGameId(gameId);
+            setGameState(GameState.LOBBY);
+        }
+
+        userInterface.updateInterfaceFromIdChange();
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updateGameIdList(List<UUID> gamesIdList){
+        synchronized (this) {
+            this.gamesIdList = new  ArrayList<>(gamesIdList);
+        }
+
+        userInterface.printGamesList();
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
     public void updateGameState(GameState gameState) {
-        setGameState(gameState);
+        synchronized (this) {
+            setGameState(gameState);
+        }
+
         userInterface.updateInterfaceFromGameStateChange();
     }
 
-    public void updateGameId(UUID gameId) {
-        setGameId(gameId);
-        setGameState(GameState.LOBBY);
-        userInterface.updateInterfaceFromIdChange();
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updatePlayerQueue(Queue<Player> playerQueue) {
+        synchronized (this) {
+            setOrderedPlayers(playerQueue);
+        }
+
+        userInterface.drawInterface(null);
     }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
+        synchronized (this) {
+            setPlayerOfferingCard(offeringCard, player);
+        }
+
+        userInterface.updateInterfaceFromPickOffering();
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        logger.info(characterCards.toString() + " " + buildingCards.toString());
+
+        synchronized (this) {
+            // check if player has an offering card
+            if (isPlayerInOfferingCard(player,offeringCards)) {
+                // update data and manage queue
+                setPlayerInQueue(player);
+                // cards selection based on "usual" offering cards
+                removePlayerFromOfferingCard(player);
+                // if player has building two, book extra turn
+                if (player.hasBuilding2())
+                    buildingTwoOfferingCard.setPlayer(player);
+            }
+            else{
+                // if not, is buildingType2 move
+                buildingTwoOfferingCard.setPlayer(null);
+                // update data without managing queue
+                updatePlayerDataInQueue(player);
+            }
+
+            removeTribeCards(characterCards);
+            removeBuildingCards(buildingCards);
+
+        }
+
+        userInterface.updateInterfaceFromPickTribes();
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                              List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+        synchronized (this) {
+            for(Player player : players) {
+                // update player PP and food in player queue
+                addPPandFood(getPlayerFromList(player), player);
+            }
+            setBuildingCards(upperBuildingRow, lowerBuildingRow);
+            setTribeCards(upperRow, lowerRow);
+            setPickOCPhase(true);
+        }
+
+        userInterface.updateInterfaceFromEndTurn();
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
+        synchronized (this) {
+            setGameState(GameState.ERA1);
+            setNumPlayers(players.size());
+            setOrderedPlayers(players);
+            setTribeCards(upperRow, lowerRow);
+            setBuildingCards(upperBuildingRow, lowerBuildingRow);
+            setOfferingCards(offeringCards);
+            setPickOCPhase(true);
+        }
+
+        userInterface.drawInterface(null);
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
+
+        // set game state to ended
+        synchronized (this) {
+            gameState = GameState.ENDED;
+
+            // set global ranking
+            setRanking(ranking);
+
+            // set local ranking
+            setOrderedPlayers(orderedPlayers);
+        }
+
+        userInterface.drawInterface(null);
+
+        // reset game state
+        synchronized (this) {
+            gameState = GameState.NONE;
+        }
+
+        logger.info("Game closed.");
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    public void updateForceEndGame(String disconnectedPlayer) {
+        synchronized (this) {
+            resetGameAttributes();
+        }
+
+        userInterface.drawInterface("The game has ended due to disconnection of player " + disconnectedPlayer);
+
+        // reset game state
+        synchronized (this){
+            gameState = GameState.NONE;
+        }
+
+        logger.info("Game forcibly closed.");
+    }
+
 }

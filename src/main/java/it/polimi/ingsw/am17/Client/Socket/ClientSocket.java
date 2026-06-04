@@ -21,7 +21,6 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.*;
@@ -166,7 +165,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
     @Override
     public void updateGamesIdList(List<UUID> gameIdsList) {
-        model.setGameIdList(gameIdsList);
+        model.updateGameIdList(gameIdsList);
     }
 
     @Override
