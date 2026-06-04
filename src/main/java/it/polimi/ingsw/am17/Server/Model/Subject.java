@@ -96,7 +96,7 @@ public abstract class Subject {
 
     void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
-        Queue<Player> newQueue = buildQueueWithoutPlayers(players);
+        Queue<Player> newQueue = buildQueueWithoutPlayerCards(players);
         for (VirtualView client : clients) {
             notifyService.submit(() -> {
                 try {
@@ -122,7 +122,7 @@ public abstract class Subject {
     }
 
     void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
-        Queue<Player> newQueue = buildQueueWithoutPlayers(orderedPlayers);
+        Queue<Player> newQueue = buildQueueWithoutPlayerCards(orderedPlayers);
         for (VirtualView client : clients) {
             notifyService.submit(() -> {
                 logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
