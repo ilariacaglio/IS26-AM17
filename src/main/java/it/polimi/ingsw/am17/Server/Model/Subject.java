@@ -155,7 +155,7 @@ public abstract class Subject {
     /**
      * @return the given queue without the cards field in player object
      */
-    private LinkedList<Player> buildQueueWithoutPlayers(Queue<Player> orderedPlayers) {
+    private LinkedList<Player> buildQueueWithoutPlayerCards(Queue<Player> orderedPlayers) {
         return orderedPlayers.stream()
                 .map(p -> {
                     // Creates a defensive copy of the player, intentionally omitting their cards
