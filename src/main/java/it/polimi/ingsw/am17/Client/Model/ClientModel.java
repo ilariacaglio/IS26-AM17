@@ -108,7 +108,7 @@ public class ClientModel {
         return isPickOCPhase;
     }
 
-    public synchronized void setPickOCPhase(boolean value) {
+    private synchronized void setPickOCPhase(boolean value) {
         isPickOCPhase = value;
     }
 
@@ -116,13 +116,9 @@ public class ClientModel {
         return Collections.unmodifiableCollection(orderedPlayers).stream().toList();
     }
 
-    public void setOrderedPlayers(Queue<Player> orderedPlayers){
-        synchronized (this) {
-            this.orderedPlayers.clear();
-            this.orderedPlayers.addAll(orderedPlayers);
-        }
-
-        userInterface.setLocalPlayer();
+    private void setOrderedPlayers(Queue<Player> orderedPlayers){
+        this.orderedPlayers.clear();
+        this.orderedPlayers.addAll(orderedPlayers);
     }
 
     /**
@@ -463,6 +459,7 @@ public class ClientModel {
             setPickOCPhase(true);
         }
 
+        userInterface.setLocalPlayer(); // todo: review
         userInterface.drawInterface(null);
     }
 
@@ -483,6 +480,7 @@ public class ClientModel {
             setOrderedPlayers(orderedPlayers);
         }
 
+        userInterface.setLocalPlayer(); // todo: review
         userInterface.drawInterface(null);
 
         // reset game state
@@ -502,6 +500,7 @@ public class ClientModel {
             resetGameAttributes();
         }
 
+        userInterface.setLocalPlayer(); // todo: review
         userInterface.drawInterface("The game has ended due to disconnection of player " + disconnectedPlayer);
 
         // reset game state
