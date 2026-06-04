@@ -40,7 +40,7 @@ public class BuildingType4 extends BuildingCard {
         // Return 6 points for each complete set of 6 different character types
         // The number of complete sets is determined by the character type with the fewest cards
         int totalPoints = bonusPoints * Collections.min(typeCounts.values()).intValue();
-        logger.info("Getting " + totalPoints + " from BuildingType4");
+        logger.info("Getting +" + totalPoints + "PP from BuildingType4");
         return totalPoints;
     }
 
