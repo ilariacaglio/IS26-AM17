@@ -71,28 +71,37 @@ public class ClientModel {
         return id;
     }
 
-    private synchronized void setGameId(UUID gameId) {
+    /**
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setGameId(UUID gameId) {
         this.id = gameId;
     }
 
-    public synchronized void setNumPlayers(int numPlayers) {
+    /**
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
     }
+
+    /**
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setGameState(GameState gameState){
+            this.gameState = gameState;
+    }
+
+
 
     public synchronized int getNumPlayers() {
         return numPlayers;
     }
 
-    /**
-     * Sets currentEra field and displays it on the screen
-     * @param gameState    the value to be set
-     */
-    public void setGameState(GameState gameState){
-        synchronized (this) {
-            this.gameState = gameState;
-        }
-        userInterface.setDisplayEra(true);
-    }
+
 
     public synchronized GameState getGameState(){
         return gameState;
