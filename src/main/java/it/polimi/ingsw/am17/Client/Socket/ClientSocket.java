@@ -201,7 +201,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
     @Override
     public void updateError(InvalidOperationException exception) {
-        model.updateNotifyError(exception);
+        model.updateError(exception);
     }
 
     @Override

@@ -201,7 +201,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
      */
     @Override
     public void updateError(InvalidOperationException exception) throws RemoteException {
-        model.updateNotifyError(exception);
+        model.updateError(exception);
     }
 
     @Override

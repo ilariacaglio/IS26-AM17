@@ -310,33 +310,6 @@ public class ClientModel {
     }
 
     /**
-     * Updates model when an error occurred handling the users request
-     * @param exception the exception thrown
-     */
-    public void updateNotifyError(InvalidOperationException exception) {
-        ErrorType type = exception.getErrorType();
-
-        switch (type) {
-            case DUPLICATE_COLOR:
-                userInterface.setAvailableColors(((ColorException) exception).getAvailableColors());
-                synchronized (this) {
-                    gameState = GameState.NONE;
-                }
-                break;
-            case DUPLICATE_NICKNAME:
-                synchronized (this) {
-                    gameState = GameState.NONE;
-                }
-                break;
-        }
-
-        String messageToDisplay = (type == ErrorType.UNKNOWN)
-                ? exception.getMessage()
-                : type.getMessage();
-        userInterface.drawInterface(messageToDisplay);
-    }
-
-    /**
      * Calls the SharedModelLogic validation for pickTribeCards action.
      * @param characterCards
      * @param buildingCards
@@ -539,4 +512,33 @@ public class ClientModel {
         logger.info("Game forcibly closed.");
     }
 
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     * Updates model when an error occurred handling the users request
+     * @param exception the exception thrown
+     */
+    public void updateError(InvalidOperationException exception) {
+        ErrorType type = exception.getErrorType();
+
+        switch (type) {
+            case DUPLICATE_COLOR:
+                userInterface.setAvailableColors(((ColorException) exception).getAvailableColors());
+                synchronized (this) {
+                    gameState = GameState.NONE;
+                }
+                break;
+            case DUPLICATE_NICKNAME:
+                synchronized (this) {
+                    gameState = GameState.NONE;
+                }
+                break;
+        }
+
+        String messageToDisplay = (type == ErrorType.UNKNOWN)
+                ? exception.getMessage()
+                : type.getMessage();
+
+        userInterface.drawInterface(messageToDisplay);
+    }
 }
