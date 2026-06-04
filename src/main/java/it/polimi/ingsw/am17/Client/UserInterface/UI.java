@@ -25,7 +25,4 @@ public interface UI {
     Player getLocalPlayer();
     void setModel(ClientModel model);
     void setAvailableColors(List<Color> availableColors);
-    boolean isBuilding2EffectUsed();
-    void setBuilding2EffectUsed(boolean building2EffectUsed);
-
 }

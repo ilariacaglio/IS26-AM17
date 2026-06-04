@@ -227,23 +227,10 @@ public class GUI implements UI {
         });
     }
 
-    // tODO
-    @Override
-    public boolean isBuilding2EffectUsed() {
-        return false;
-    }
-
-    // todo
-    @Override
-    public void setBuilding2EffectUsed(boolean building2EffectUsed) {
-
-    }
-
     @Override
     public void updateInterfaceFromIdChange() {
 
     }
-
 
     /**
      * Updates localPlayer value when the object is updated into the queue by the server
