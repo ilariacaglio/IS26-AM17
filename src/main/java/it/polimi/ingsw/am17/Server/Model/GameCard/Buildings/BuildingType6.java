@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Get double the points from Builders
@@ -20,16 +21,20 @@ public class BuildingType6 extends BuildingCard {
         super(era, foodCost, bonusPoints);
     }
 
+    private static final Logger logger = Logger.getLogger(BuildingType2.class.getName());
+
     @Override
     public int GetAdditionalFinalPoints(List<CharacterCard> characterCards) {
-        // get builders with stream magic
+        // get builders
         List<Builder> builders = characterCards.stream()
                 .filter(card -> card.getCardType() == CardType.BUILDER)
                 .map(card -> (Builder) card)
                 .toList();
 
         // return the sum of bonus points ONCE (as they should be counted once already)
-        return builders.stream().mapToInt(Builder::getPointBonus).sum();
+        int bonusPoints = builders.stream().mapToInt(Builder::getPointBonus).sum();;
+        logger.info("Doubling points from Builders: +" + bonusPoints + "PP");
+        return bonusPoints;
     }
 
     @Override

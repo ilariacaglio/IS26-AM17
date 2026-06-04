@@ -8,6 +8,7 @@ import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 /**
  * Gives extra points for each character of given type.
@@ -18,6 +19,8 @@ public class BuildingType3M extends BuildingCard {
     private final Integer pointsFromEachCharacter; // amount from each characterType
     private final CardType characterType;
     private static final GameState era = GameState.ERA3;
+
+    private static final Logger logger = Logger.getLogger(BuildingType3M.class.getName());
 
     @JsonCreator
     public BuildingType3M(
@@ -43,7 +46,9 @@ public class BuildingType3M extends BuildingCard {
     @Override
     public int GetAdditionalFinalPoints(List<CharacterCard> playerCharacterCards) {
         int characterCount = (int) playerCharacterCards.stream().filter(card -> card.getCardType() == characterType).count();
-        return characterCount * pointsFromEachCharacter;
+        int totalPoints = pointsFromEachCharacter * characterCount;
+        logger.info("Adding " + totalPoints + " points to the player from BuildingType3M");
+        return totalPoints;
     }
 
     @Override

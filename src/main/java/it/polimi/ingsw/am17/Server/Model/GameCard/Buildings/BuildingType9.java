@@ -1,9 +1,8 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
-import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 
-import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Adds 3 stars when counting for the RitualEvent
@@ -14,12 +13,16 @@ public class BuildingType9 extends BuildingCard {
     private static final GameState era = GameState.ERA2;
     private static final int foodCost = 6;
     private static final int bonusPoints = 4;
+
+    private static final Logger logger = Logger.getLogger(BuildingType9.class.getName());
+
     public BuildingType9() {
         super(era, foodCost, bonusPoints);
     }
 
     @Override
-    public int GiveBonusStarInRitualEvent(List<CharacterCard> characterCards) {
+    public int GiveBonusStarInRitualEvent() {
+        logger.info("Giving +3 extra stars for ritualEvent from BuildingType9");
         return 3;
     }
 

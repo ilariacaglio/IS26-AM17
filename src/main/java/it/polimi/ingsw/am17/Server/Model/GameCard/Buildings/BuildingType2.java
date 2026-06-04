@@ -2,6 +2,8 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
 import it.polimi.ingsw.am17.Server.Model.GameState;
 
+import java.util.logging.Logger;
+
 /**
  * Allows to get one more card from the upper row.
  * Game effect
@@ -15,9 +17,11 @@ public class BuildingType2 extends BuildingCard {
         super(era, foodCost, bonusPoints);
     }
 
+    private static final Logger logger = Logger.getLogger(BuildingType2.class.getName());
+
     @Override
     public boolean hasOneMoreMove() {
-//        // TODO: make sure the player has not his offering card anymore and that this is called before the game stops considering new turns.
+        logger.info("Getting one more move from BuildingType2");
         return true;
     }
 
