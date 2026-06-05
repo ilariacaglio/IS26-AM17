@@ -567,7 +567,7 @@ public class GameView {
 
     private void orderPersonalCards(){
         //update selected player
-        selectedPlayer = game.getPlayerFromList(selectedPlayer);
+        selectedPlayer = game.findPlayer(selectedPlayer);
 
         List<CharacterCard> orderedCards = new ArrayList<>(
                 selectedPlayer.getCharacterCards()

@@ -108,7 +108,11 @@ public class ClientModel {
         return isPickOCPhase;
     }
 
-    private synchronized void setPickOCPhase(boolean value) {
+    /**
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setPickOCPhase(boolean value) {
         isPickOCPhase = value;
     }
 
@@ -116,44 +120,20 @@ public class ClientModel {
         return Collections.unmodifiableCollection(orderedPlayers).stream().toList();
     }
 
+    /**
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
     private void setOrderedPlayers(Queue<Player> orderedPlayers){
         this.orderedPlayers.clear();
         this.orderedPlayers.addAll(orderedPlayers);
     }
 
     /**
-     * Updates data of a single player in the queue
-     * If the player is the local player updates UI
-     * @param player    the player to be updated in the queue
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
      */
-    private void updatePlayerDataInQueue(Player player){
-        synchronized (this) {
-            List<Player> players = new ArrayList<>(orderedPlayers);
-            players.replaceAll(p -> p.equals(player) ? player : p);
-            orderedPlayers.clear();
-            orderedPlayers.addAll(players);
-        }
-
-        // if the player is the local player, update UI
-        if (player.equals(userInterface.getLocalPlayer()))
-            userInterface.setLocalPlayer();
-    }
-
-    /**
-     * Replaces the player in the queue managing turn order with the value passed as parameter.
-     * @param player    the player to be set
-     */
-    public synchronized void setPlayerInQueue(Player player){
-        updatePlayerDataInQueue(player);
-        movePlayerInQueue(orderedPlayers);
-    }
-
-    /**
-     * Sets tribe upper and lower row
-     * @param upperRow  the new list to be set
-     * @param lowerRow  the new list to be set
-     */
-    public synchronized void setTribeCards(List<TribesCard> upperRow, List<TribesCard> lowerRow){
+    private void setTribeCards(List<TribesCard> upperRow, List<TribesCard> lowerRow){
         this.upperRow.clear();
         this.upperRow.addAll(upperRow);
         this.lowerRow.clear();
@@ -169,20 +149,21 @@ public class ClientModel {
     }
 
     /**
+     *
      * Removes all the cards in the param from upper and lower tribe rows
-     * @param tribeCards    the cards to be removed.
+     * @param tribeCards the cards to be removed.
+     * This is a Setter-like method of ClientModel, so it should only be called within synchronized blocks of changes.
      */
-    public synchronized void removeTribeCards(List<CharacterCard> tribeCards){
+    private void removeTribeCards(List<CharacterCard> tribeCards){
         upperRow.removeAll(tribeCards);
         lowerRow.removeAll(tribeCards);
     }
 
     /**
-     * Sets building upper and lower row
-     * @param upperBuildingRow  the new list to be set
-     * @param lowerBuildingRow  the new list to be set
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
      */
-    public synchronized void setBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
+    private void setBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         this.upperBuildingRow.clear();
         this.upperBuildingRow.addAll(upperBuildingRow);
         this.lowerBuildingRow.clear();
@@ -213,11 +194,12 @@ public class ClientModel {
     }
 
     /**
-     * Searches for the player into players list and returns player object
+     * TODO: review usages to cleanup sync
+     * Looks up for the given player from the players (queue).
      * @param player    the player to look for
-     * @return          the player object in player collection
+     * @return          given player or null if not found
      */
-    public synchronized Player getPlayerFromList(Player player)
+    public synchronized Player findPlayer(Player player)
     {
         return orderedPlayers.stream()
             .filter(p -> p.equals(player))
@@ -227,10 +209,11 @@ public class ClientModel {
     /**
      * Sets player to offering card.
      * If the player is the last to select, ends the offering card selection phase.
+     * SETTER METHOD IN CLIENTMODEL, USE WITH SYNCHRONIZED
      * @param offeringCard  offering card value
      * @param player        player to be set into offering card
      */
-    public synchronized void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
+    private void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
     {
         offeringCards.stream()
                 .filter(o -> o.equals(offeringCard))
@@ -243,7 +226,7 @@ public class ClientModel {
     }
 
     /**
-     * Removes player from currently assigned offering card.
+     * Removes a player from the currently assigned offering card.
      * @param player the player already present into the offering card field
      */
     private void removePlayerFromOfferingCard(Player player){
@@ -265,7 +248,7 @@ public class ClientModel {
         return Collections.unmodifiableList(offeringCards);
     }
 
-    public synchronized void setOfferingCards(List<OfferingCard> offeringCards){
+    private void setOfferingCards(List<OfferingCard> offeringCards){
         this.offeringCards = offeringCards;
     }
 
@@ -276,7 +259,7 @@ public class ClientModel {
     /**
      * Sets to null the player field of the offering card with letter A.
      */
-    public synchronized void setNullOfferingCardAPlayer() {
+    private void setNullOfferingCardAPlayer() {
         offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
                 .findFirst().ifPresent(card -> card.setPlayer(null));
     }
@@ -289,7 +272,7 @@ public class ClientModel {
         return Collections.unmodifiableList(ranking);
     }
 
-    public synchronized void setRanking (List<RankingEntry> ranking) {
+    private void setRanking (List<RankingEntry> ranking) {
         this.ranking.clear();
         this.ranking.addAll(ranking);
     }
@@ -399,28 +382,43 @@ public class ClientModel {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
 
         synchronized (this) {
-            // check if player has an offering card
+            // update player data TODO: check logic order (moved from if else) and improve
+            List<Player> players = new ArrayList<>(orderedPlayers);
+            players.replaceAll(p -> p.equals(player) ? player : p);
+            orderedPlayers.clear();
+            orderedPlayers.addAll(players);
+
+            movePlayerInQueue(orderedPlayers);
+            // todo: why is this needed, the new ordered players is not already ordered?
+            // todo: check in game: selectTribeCards method
+
+
+            // todo: consolidate logic with server (same method/communicate?)
+
+            // if a player is in a (normal) offering card...
             if (isPlayerInOfferingCard(player,offeringCards)) {
-                // update data and manage queue
-                setPlayerInQueue(player);
-                // cards selection based on "usual" offering cards
+
+                // this update was called for a usual card selection
                 removePlayerFromOfferingCard(player);
-                // if player has building two, book extra turn
+
+                // if the player had the building2, book an extra turn
                 if (player.hasBuilding2())
                     buildingTwoOfferingCard.setPlayer(player);
             }
-            else{
-                // if not, is buildingType2 move
+            // if this update was called but the player is not in a (normal) offering card
+            // it means this was a move made from the extra offering card (BuildingTwo)
+            else {
                 buildingTwoOfferingCard.setPlayer(null);
-                // update data without managing queue
-                updatePlayerDataInQueue(player);
+                // N.B. the queue is not updated here!
             }
 
             removeTribeCards(characterCards);
             removeBuildingCards(buildingCards);
-
         }
 
+        // if the player is the local player, update UI
+        if (player.equals(userInterface.getLocalPlayer()))
+            userInterface.setLocalPlayer();
         userInterface.updateInterfaceFromPickTribes();
     }
 
@@ -433,7 +431,7 @@ public class ClientModel {
         synchronized (this) {
             for(Player player : players) {
                 // update player PP and food in player queue
-                addPPandFood(getPlayerFromList(player), player);
+                addPPandFood(findPlayer(player), player);
             }
             setBuildingCards(upperBuildingRow, lowerBuildingRow);
             setTribeCards(upperRow, lowerRow);
