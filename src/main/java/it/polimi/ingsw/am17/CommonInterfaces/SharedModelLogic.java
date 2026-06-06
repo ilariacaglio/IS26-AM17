@@ -112,7 +112,7 @@ public class SharedModelLogic {
         // default check
         // if is pick offering card phase the player has to be at head of the queue
         // same in pick tribes without building type 2
-        return isPlayerTurn(playerToCheck, orderedPlayers);
+        return isPlayerHeadInQueue(playerToCheck, orderedPlayers);
     }
 
     // These overrides are to avoid to pass null or unmeaningful parameters values
@@ -124,7 +124,7 @@ public class SharedModelLogic {
      * Called from Game class in pickOfferingCard
      * @return true if it is players turn, false otherwise.
      */
-    public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers){
+    public static boolean isPlayerHeadInQueue(Player playerToCheck, Queue<Player> orderedPlayers){
         logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
         return playerToCheck.equals(orderedPlayers.peek());
     }
@@ -140,7 +140,7 @@ public class SharedModelLogic {
         if (noPlayerInOfferingCards(offeringCards) && !isBuilding2EffectUsed(offeringCards, building2OC))
             return playerToCheck.hasBuilding2();
 
-        return isPlayerTurn(playerToCheck, orderedPlayers);
+        return isPlayerHeadInQueue(playerToCheck, orderedPlayers);
     }
 
     /**
