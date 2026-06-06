@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
-import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
@@ -16,9 +15,7 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic.*;
-
-public class ClientModel {
+public class ClientModel implements ClientModelInterface {
 
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
     private final String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
@@ -139,7 +136,6 @@ public class ClientModel {
         this.lowerRow.addAll(lowerRow);
     }
 
-
     public synchronized List<BuildingCard> getUpperBuildingRow() {
         return Collections.unmodifiableList(upperBuildingRow);
     }
@@ -200,18 +196,8 @@ public class ClientModel {
     /* UTILITY METHODS */
 
     /**
-     * Updates PP and food of the old player with values from the new player
-     * @param oldP  the outdated value of the player
-     * @param newP  the new value of the player
-     */
-    private static void addPPandFood(Player oldP, Player newP) {
-        oldP.addPp(newP.getPp()- oldP.getPp());
-        oldP.addFood(newP.getFood() - oldP.getFood());
-    }
-
-    /**
-     * TODO: review usages to cleanup sync
      * Looks up for the given player from the players (queue).
+     * N.B. one of the few redundant synchronized
      * @param player    the player to look for
      * @return          given player or null if not found
      */
@@ -235,7 +221,7 @@ public class ClientModel {
                 .filter(o -> o.equals(offeringCard))
                 .findFirst()
                 .ifPresent(o -> o.setPlayer(player));
-        if(isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)) {
+        if(SharedModelLogic.isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)) {
             setPickOCPhase(false);
             setNullOfferingCardAPlayer();
         }
@@ -256,78 +242,65 @@ public class ClientModel {
      * @return true if it is the local player's turn, false otherwise.
      * TODO: review usage, useful to simplify on parameters?
      */
-    public synchronized boolean isPlayerTurn(){
+    public synchronized boolean isPlayerTurn() {
         return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
                 gameState, offeringCards, buildingTwoOfferingCard);
     }
 
     /**
-     * Resets all game rows, offering cards, ranking and player queue
-     */
-    private synchronized void resetGameAttributes() {
-        setOrderedPlayers(new LinkedList<>());
-        setOfferingCards(new ArrayList<>());
-        setTribeCards(new ArrayList<>(), new ArrayList<>());
-        setBuildingCards(new ArrayList<>(), new ArrayList<>());
-        setRanking(new ArrayList<>());
-    }
-
-    /**
      * Calls the SharedModelLogic validation for pickTribeCards action.
-     * todo: check sync
      * @param characterCards
      * @param buildingCards
      */
     public synchronized void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        validateTribesCardChoice(userInterface.getLocalPlayer(),
+        SharedModelLogic.validateTribesCardChoice(userInterface.getLocalPlayer(),
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     /**
      * Calls the SharedModelLogic validation for pickOfferingCard action.
-     * todo: check sync
      * @param offeringCardLetter
      */
     public synchronized void validatePickOfferingCard(Character offeringCardLetter){
-        validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
+        SharedModelLogic.validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
     }
 
     /* UPDATE METHODS */
-    // todo: rework UI calls
-    // todo: optionally make all updates one overloaded method
-    // todo: remove synchro from setters
-    // todo: improve validateo
+    // todo: remove setters private
 
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
      */
+    @Override
     public void updateGameId(UUID gameId) {
         synchronized (this) {
             setGameId(gameId);
             setGameState(GameState.LOBBY);
         }
 
-        userInterface.updateInterfaceFromIdChange();
+        userInterface.updateInterfaceFromGameIdChange();
     }
 
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
      */
+    @Override
     public void updateGameIdList(List<UUID> gamesIdList){
         synchronized (this) {
-            this.gamesIdList = new  ArrayList<>(gamesIdList); // TODO: no setter
+            this.gamesIdList = new  ArrayList<>(gamesIdList);
         }
 
-        userInterface.printGamesList();
+        userInterface.updateInterfaceFromGameIdListChange();
     }
 
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
      */
+    @Override
     public void updateGameState(GameState gameState) {
         synchronized (this) {
             setGameState(gameState);
@@ -340,49 +313,47 @@ public class ClientModel {
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
      */
+    @Override
     public void updatePlayerQueue(Queue<Player> playerQueue) {
         synchronized (this) {
             setOrderedPlayers(playerQueue);
         }
 
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromPlayerQueueChange();
     }
 
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
      */
+    @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
         synchronized (this) {
             setPlayerOfferingCard(offeringCard, player);
         }
 
-        userInterface.updateInterfaceFromPickOffering();
+        userInterface.updateInterfaceFromPlayerSelectOfferingCard();
     }
 
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
+     * TODO: check if can be put in shared logic
      */
+    @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
 
         synchronized (this) {
-            // update player data TODO: check logic order (moved from if else) and improve
+            // update player data (pp and food plus already the cards)
+            // cards in parameters are used later to remove them from rows
             List<Player> players = new ArrayList<>(orderedPlayers);
             players.replaceAll(p -> p.equals(player) ? player : p);
             orderedPlayers.clear();
             orderedPlayers.addAll(players);
 
-            movePlayerInQueue(orderedPlayers);
-            // todo: why is this needed, the new ordered players is not already ordered?
-            // todo: check in game: selectTribeCards method
-
-
-            // todo: consolidate logic with server (same method/communicate?)
-
             // if a player is in a (normal) offering card...
-            if (isPlayerInOfferingCard(player,offeringCards)) {
+            if (SharedModelLogic.isPlayerInOfferingCard(player,offeringCards)) {
 
                 // this update was called for a usual card selection
                 removePlayerFromOfferingCard(player);
@@ -390,6 +361,9 @@ public class ClientModel {
                 // if the player had the building2, book an extra turn
                 if (player.hasBuilding2())
                     buildingTwoOfferingCard.setPlayer(player);
+
+                // since the move is normal the queue should be updated
+                SharedModelLogic.movePlayerInQueue(orderedPlayers);
             }
             // if this update was called but the player is not in a (normal) offering card
             // it means this was a move made from the extra offering card (BuildingTwo)
@@ -405,22 +379,23 @@ public class ClientModel {
             lowerBuildingRow.removeAll(buildingCards);
         }
 
-        // if the player is the local player, update UI
-        if (player.equals(userInterface.getLocalPlayer()))
-            userInterface.setLocalPlayer();
-        userInterface.updateInterfaceFromPickTribes();
+        userInterface.updateInterfaceFromPlayerSelectTribeCards();
     }
 
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
+     * TODO: improve comments: here Players queue is stripped of cards (rightly so).
      */
+    @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                               List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         synchronized (this) {
-            for(Player player : players) {
+            for(Player passedPlayer : players) {
                 // update player PP and food in player queue
-                addPPandFood(findPlayer(player), player);
+                Player localPlayer = findPlayer(passedPlayer);
+                localPlayer.addPp(passedPlayer.getPp() - localPlayer.getPp());
+                localPlayer.addFood(passedPlayer.getFood() - localPlayer.getFood());
             }
             setBuildingCards(upperBuildingRow, lowerBuildingRow);
             setTribeCards(upperRow, lowerRow);
@@ -434,8 +409,9 @@ public class ClientModel {
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
      */
+    @Override
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
+                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) {
         synchronized (this) {
             setGameState(GameState.ERA1);
             setNumPlayers(players.size());
@@ -446,14 +422,14 @@ public class ClientModel {
             setPickOCPhase(true);
         }
 
-        userInterface.setLocalPlayer(); // todo: review
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromStartGame();
     }
 
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
      */
+    @Override
     public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
 
         // set game state to ended
@@ -467,8 +443,7 @@ public class ClientModel {
             setOrderedPlayers(orderedPlayers);
         }
 
-        userInterface.setLocalPlayer(); // todo: review
-        userInterface.drawInterface(null);
+        userInterface.updateInterfaceFromEndGame();
 
         // reset game state
         synchronized (this) {
@@ -481,14 +456,20 @@ public class ClientModel {
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
+     * @param disconnectedPlayer passed to the UI.
      */
-    public void updateForceEndGame(String disconnectedPlayer) {
+    @Override
+    public void updateForcedEndGame(String disconnectedPlayer) {
         synchronized (this) {
-            resetGameAttributes();
+            // Resets all game rows, offering cards, ranking and player queue
+            setOrderedPlayers(new LinkedList<>());
+            setOfferingCards(new ArrayList<>());
+            setTribeCards(new ArrayList<>(), new ArrayList<>());
+            setBuildingCards(new ArrayList<>(), new ArrayList<>());
+            setRanking(new ArrayList<>());
         }
 
-        userInterface.setLocalPlayer(); // todo: review
-        userInterface.drawInterface("The game has ended due to disconnection of player " + disconnectedPlayer);
+        userInterface.updateInterfaceFromForcedEndGame(disconnectedPlayer);
 
         // reset game state
         synchronized (this){
@@ -501,30 +482,16 @@ public class ClientModel {
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
-     * Updates model when an error occurred handling the users request
-     * @param exception the exception thrown
+     * @param exception of which the message is passed to the UI.
      */
+    @Override
     public void updateError(InvalidOperationException exception) {
         ErrorType type = exception.getErrorType();
-
-        switch (type) {
-            case DUPLICATE_COLOR:
-                userInterface.setAvailableColors(((ColorException) exception).getAvailableColors());
-                synchronized (this) {
-                    gameState = GameState.NONE;
-                }
-                break;
-            case DUPLICATE_NICKNAME:
-                synchronized (this) {
-                    gameState = GameState.NONE;
-                }
-                break;
-        }
 
         String messageToDisplay = (type == ErrorType.UNKNOWN)
                 ? exception.getMessage()
                 : type.getMessage();
 
-        userInterface.drawInterface(messageToDisplay);
+        userInterface.updateInterfaceFromErrorMessage();
     }
 }

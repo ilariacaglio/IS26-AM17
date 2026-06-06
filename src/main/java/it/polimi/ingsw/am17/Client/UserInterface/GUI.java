@@ -92,12 +92,12 @@ public class GUI implements UI {
             gameView.updateGameElements();
         });
     }
-    public void updateInterfaceFromPickTribes() {
+    public void updateInterfaceFromPlayerSelectTribeCards() {
         Platform.runLater(() -> {
             gameView.updateGameCardDecks();
         });
     }
-    public void updateInterfaceFromPickOffering() {
+    public void updateInterfaceFromPlayerSelectOfferingCard() {
         Platform.runLater(() -> {
             gameView.updateOfferingDeck();
         });

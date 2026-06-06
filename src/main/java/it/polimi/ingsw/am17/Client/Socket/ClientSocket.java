@@ -181,7 +181,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
     @Override
     public void updateForceEndGame(String disconnectedPlayer) {
-        model.updateForceEndGame(disconnectedPlayer);
+        model.updateForcedEndGame(disconnectedPlayer);
     }
 
     @Override

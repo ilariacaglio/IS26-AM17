@@ -218,25 +218,25 @@ public class CLI implements UI {
 
     @Override
     public void updateInterfaceFromIdChange() {
-        System.out.println("\nYou are connected to game: ".concat(readOnlyModel.getGameId().toString()));
         drawInterface(null);
+        System.out.println("\nYou are connected to game: ".concat(readOnlyModel.getGameId().toString()));
         showPrompt();
     }
 
     @Override
     public void updateInterfaceFromGameStateChange() {
-        System.out.println("\nNew game state".concat(readOnlyModel.getGameState().toString()));
         drawInterface(null);
+        System.out.println("\nNew game state".concat(readOnlyModel.getGameState().toString()));
         showPrompt();
     }
 
     @Override
-    public void updateInterfaceFromPickTribes(){
+    public void updateInterfaceFromPlayerSelectTribeCards(){
         drawInterface(null);
     }
 
     @Override
-    public void updateInterfaceFromPickOffering(){
+    public void updateInterfaceFromPlayerSelectOfferingCard(){
         drawInterface(null);
     }
 
