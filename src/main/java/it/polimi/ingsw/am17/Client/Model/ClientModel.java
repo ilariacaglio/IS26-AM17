@@ -268,7 +268,7 @@ public class ClientModel {
      */
     public boolean isPlayerTurn(){
         return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
-                gameState, offeringCards, buildingTwoOfferingCard);
+                offeringCards, buildingTwoOfferingCard);
     }
 
     public List<OfferingCard> getOfferingCards(){
@@ -476,14 +476,14 @@ public class ClientModel {
 
     public void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
-                gameState, offeringCards, buildingTwoOfferingCard);
+                offeringCards, buildingTwoOfferingCard);
         validateTribesCardChoice(userInterface.getLocalPlayer(),
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     public void validatePickOfferingCard(Character offeringCardLetter){
-        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase, gameState,
+        SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
                 offeringCards, buildingTwoOfferingCard);
         validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
     }
