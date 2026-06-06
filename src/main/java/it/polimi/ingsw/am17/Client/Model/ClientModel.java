@@ -264,12 +264,12 @@ public class ClientModel {
     /**
      * @return  true is it is local player turn, false otherwise
      */
-    public boolean isPlayerTurn(){
+    public synchronized boolean isPlayerTurn(Player localPlayer){
         // if the game hasn't started it is not the players turn
         if(!gameState.isGameStarted())
             return false;
 
-        return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
+        return SharedModelLogic.isPlayerTurn(localPlayer, orderedPlayers, isPickOCPhase,
                 offeringCards, buildingTwoOfferingCard);
     }
 

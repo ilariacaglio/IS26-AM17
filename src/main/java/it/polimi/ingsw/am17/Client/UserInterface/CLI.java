@@ -189,7 +189,7 @@ public class CLI implements UI {
                     drawLocalPlayer();
 
                     // if the game has begun notify the players turn
-                    if(readOnlyModel.isPlayerTurn())
+                    if(readOnlyModel.isPlayerTurn(localPlayer))
                         System.out.println("It's your turn!");
                 }
             }
@@ -662,7 +662,7 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(){
         try {
-            if (!readOnlyModel.isPlayerTurn())
+            if (!readOnlyModel.isPlayerTurn(localPlayer))
                 throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
 
             System.out.print("Insert card letter > ");
@@ -684,7 +684,7 @@ public class CLI implements UI {
      */
     private void pickTribeCards() {
         // check if it is the players turn
-        if (!readOnlyModel.isPlayerTurn()) {
+        if (!readOnlyModel.isPlayerTurn(localPlayer)) {
             printError(ErrorType.OUT_OF_TURN.getMessage());
             return;
         }
