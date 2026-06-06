@@ -164,32 +164,7 @@ public class GUI implements UI {
         }
     }
 
-    public VBox createWaitingOverlay() {
-        // create the container
-        VBox overlay = new VBox(10); // 10px spacing
-        overlay.setAlignment(Pos.CENTER);
 
-        // Modify Background: Semi-transparent black/grey
-        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
-
-        // Add 10 pixels of padding at the top
-        overlay.setPadding(new Insets(10, 0, 0, 0));
-
-        // Add loading circle
-        ProgressIndicator progress = new ProgressIndicator();
-        progress.setPrefSize(60, 60);
-        progress.setStyle("-fx-progress-color: white;");
-
-        //add text
-        Label text = new Label("Waiting for other players...");
-        text.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
-
-        overlay.getChildren().addAll(progress, text);
-
-        //hide
-        overlay.setVisible(false);
-        return overlay;
-    }
 
     @Override
     public void printGameId(UUID gameId) {

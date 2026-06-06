@@ -4,10 +4,7 @@ import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -37,7 +34,7 @@ public class PlayerCountSelectionView {
         options.setAlignment(Pos.CENTER);
 
         //create waiting overlay
-        VBox waitingOverlay = mainGui.createWaitingOverlay();
+        VBox waitingOverlay = createWaitingOverlay();
 
         // create button to choose from
         for (int i = MIN_PLAYER; i <= MAX_PLAYER; i++) {
@@ -68,6 +65,33 @@ public class PlayerCountSelectionView {
 
         });
         return btn;
+    }
+
+    public VBox createWaitingOverlay() {
+        // create the container
+        VBox overlay = new VBox(10); // 10px spacing
+        overlay.setAlignment(Pos.CENTER);
+
+        // Modify Background: Semi-transparent black/grey
+        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+
+        // Add 10 pixels of padding at the top
+        overlay.setPadding(new Insets(10, 0, 0, 0));
+
+        // Add loading circle
+        ProgressIndicator progress = new ProgressIndicator();
+        progress.setPrefSize(60, 60);
+        progress.setStyle("-fx-progress-color: white;");
+
+        //add text
+        Label text = new Label("Waiting for other players...");
+        text.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+
+        overlay.getChildren().addAll(progress, text);
+
+        //hide
+        overlay.setVisible(false);
+        return overlay;
     }
 
     // The main GUI will call this to put it in the Scene
