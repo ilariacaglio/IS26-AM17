@@ -52,21 +52,13 @@ public class ClientModel {
     }
 
     /**
-     * Updates PP and food of the old player with values from the new player
-     * @param oldP  the outdated value of the player
-     * @param newP  the new value of the player
-     */
-    private static void addPPandFood(Player oldP, Player newP) {
-        oldP.addPp(newP.getPp()- oldP.getPp());
-        oldP.addFood(newP.getFood() - oldP.getFood());
-    }
-
-    /**
      * Starts the user interface of the client
      */
     public void startInterface(){
         this.userInterface.start();
     }
+
+    /* GETTER AND SETTERS */
 
     public synchronized UUID getGameId() {
         return id;
@@ -129,6 +121,13 @@ public class ClientModel {
         this.orderedPlayers.addAll(orderedPlayers);
     }
 
+    public synchronized List<TribesCard> getUpperTribeRow(){
+        return Collections.unmodifiableList(upperRow);
+    }
+    public synchronized List<TribesCard> getLowerTribeRow(){
+        return Collections.unmodifiableList(lowerRow);
+    }
+
     /**
      * Setter method of ClientModel
      * This method is not synchronized! Should only be called within synchronized blocks of changes.
@@ -140,12 +139,12 @@ public class ClientModel {
         this.lowerRow.addAll(lowerRow);
     }
 
-    public synchronized List<TribesCard> getUpperTribeRow(){
-        return Collections.unmodifiableList(upperRow);
-    }
 
-    public synchronized List<TribesCard> getLowerTribeRow(){
-        return Collections.unmodifiableList(lowerRow);
+    public synchronized List<BuildingCard> getUpperBuildingRow() {
+        return Collections.unmodifiableList(upperBuildingRow);
+    }
+    public synchronized List<BuildingCard> getLowerBuildingRow() {
+        return Collections.unmodifiableList(lowerBuildingRow);
     }
 
     /**
@@ -159,68 +158,11 @@ public class ClientModel {
         if (lowerBuildingRow != null) this.lowerBuildingRow.addAll(lowerBuildingRow);
     }
 
-    public synchronized List<BuildingCard> getLowerBuildingRow(){
-        return Collections.unmodifiableList(lowerBuildingRow);
-    }
-
-    public synchronized List<BuildingCard> getUpperBuildingRow(){
-        return Collections.unmodifiableList(upperBuildingRow);
-    }
-
     public synchronized List<UUID> getGamesIdList(){
         return Collections.unmodifiableList(gamesIdList);
     }
 
-    /**
-     * TODO: review usages to cleanup sync
-     * Looks up for the given player from the players (queue).
-     * @param player    the player to look for
-     * @return          given player or null if not found
-     */
-    public synchronized Player findPlayer(Player player)
-    {
-        return orderedPlayers.stream()
-            .filter(p -> p.equals(player))
-            .findFirst().orElse(null);
-    }
-
-    /**
-     * Sets player to offering card.
-     * If the player is the last to select, ends the offering card selection phase.
-     * SETTER METHOD IN CLIENTMODEL, USE WITH SYNCHRONIZED
-     * @param offeringCard  offering card value
-     * @param player        player to be set into offering card
-     */
-    private void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
-    {
-        offeringCards.stream()
-                .filter(o -> o.equals(offeringCard))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(player));
-        if(isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)) {
-            setPickOCPhase(false);
-            setNullOfferingCardAPlayer();
-        }
-    }
-
-    /**
-     * Removes a player from the currently assigned offering card.
-     * @param player the player already present into the offering card field
-     */
-    private void removePlayerFromOfferingCard(Player player){
-        offeringCards.stream()
-                .filter(o -> o.getPlayer()!= null && o.getPlayer().equals(player))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(null));
-    }
-
-    /**
-     * @return  true is it is local player turn, false otherwise
-     */
-    public synchronized boolean isPlayerTurn(){
-        return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
-                gameState, offeringCards, buildingTwoOfferingCard);
-    }
+    // setter game id list
 
     public synchronized List<OfferingCard> getOfferingCards(){
         return Collections.unmodifiableList(offeringCards);
@@ -255,6 +197,70 @@ public class ClientModel {
         this.ranking.addAll(ranking);
     }
 
+    /* UTILITY METHODS */
+
+    /**
+     * Updates PP and food of the old player with values from the new player
+     * @param oldP  the outdated value of the player
+     * @param newP  the new value of the player
+     */
+    private static void addPPandFood(Player oldP, Player newP) {
+        oldP.addPp(newP.getPp()- oldP.getPp());
+        oldP.addFood(newP.getFood() - oldP.getFood());
+    }
+
+    /**
+     * TODO: review usages to cleanup sync
+     * Looks up for the given player from the players (queue).
+     * @param player    the player to look for
+     * @return          given player or null if not found
+     */
+    public synchronized Player findPlayer(Player player)
+    {
+        return orderedPlayers.stream()
+            .filter(p -> p.equals(player))
+            .findFirst().orElse(null);
+    }
+
+    /**
+     * Sets player to offering card.
+     * If the player is the last to select, ends the offering card selection phase.
+     * SETTER METHOD IN CLIENTMODEL, USE WITH SYNCHRONIZED TODO: cleanup, change name
+     * @param offeringCard  offering card value
+     * @param player        player to be set into offering card
+     */
+    private void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
+    {
+        offeringCards.stream()
+                .filter(o -> o.equals(offeringCard))
+                .findFirst()
+                .ifPresent(o -> o.setPlayer(player));
+        if(isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)) {
+            setPickOCPhase(false);
+            setNullOfferingCardAPlayer();
+        }
+    }
+
+    /**
+     * Removes a player from the currently assigned offering card.
+     * @param player the player already present into the offering card field
+     */
+    private void removePlayerFromOfferingCard(Player player){
+        offeringCards.stream()
+                .filter(o -> o.getPlayer()!= null && o.getPlayer().equals(player))
+                .findFirst()
+                .ifPresent(o -> o.setPlayer(null));
+    }
+
+    /**
+     * @return true if it is the local player's turn, false otherwise.
+     * TODO: review usage, useful to simplify on parameters?
+     */
+    public synchronized boolean isPlayerTurn(){
+        return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
+                gameState, offeringCards, buildingTwoOfferingCard);
+    }
+
     /**
      * Resets all game rows, offering cards, ranking and player queue
      */
@@ -268,6 +274,7 @@ public class ClientModel {
 
     /**
      * Calls the SharedModelLogic validation for pickTribeCards action.
+     * todo: check sync
      * @param characterCards
      * @param buildingCards
      */
@@ -279,6 +286,7 @@ public class ClientModel {
 
     /**
      * Calls the SharedModelLogic validation for pickOfferingCard action.
+     * todo: check sync
      * @param offeringCardLetter
      */
     public synchronized void validatePickOfferingCard(Character offeringCardLetter){
@@ -310,7 +318,7 @@ public class ClientModel {
      */
     public void updateGameIdList(List<UUID> gamesIdList){
         synchronized (this) {
-            this.gamesIdList = new  ArrayList<>(gamesIdList);
+            this.gamesIdList = new  ArrayList<>(gamesIdList); // TODO: no setter
         }
 
         userInterface.printGamesList();
