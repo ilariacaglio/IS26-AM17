@@ -145,7 +145,7 @@ public class GameView {
             try {
                 if (offeringSelected != null) {
                     try{
-                        game.validatePickOfferingCard(offeringSelected.getOrderLetter());
+                        game.validateOfferingCardTurnAction(offeringSelected.getOrderLetter());
                         mainGui.pickOfferingCard(offeringSelected);
                         offeringSelected = null;
                         buildingSelected = new ArrayList<>();
@@ -180,7 +180,7 @@ public class GameView {
                     }
 
                     try {
-                        game.validatePickTribeCards(tribesSelected, buildingSelected);
+                        game.validateTribeCardsTurnAction(tribesSelected, buildingSelected);
                         mainGui.pickTribeCards(tribesSelected, buildingSelected);
                         offeringSelected = null;
                         buildingSelected = new ArrayList<>();
