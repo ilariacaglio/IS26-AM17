@@ -476,14 +476,20 @@ public class ClientModel {
         gameState = GameState.NONE;
     }
 
-    public void validateTribeCardsTurnAction(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        SharedModelLogic.validateTribesCardTurnAction(userInterface.getLocalPlayer(), orderedPlayers,
+    /**
+     * Validates turn action when the user picks tribe cards
+     */
+    public synchronized void  validateTribeCardsTurnAction(Player localPlayer, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        SharedModelLogic.validateTribesCardTurnAction(localPlayer, orderedPlayers,
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
-    public void validateOfferingCardTurnAction(Character offeringCardLetter){
-        SharedModelLogic.validateOfferingCardTurnAction(offeringCardLetter, userInterface.getLocalPlayer(),
+    /**
+     * Validates turn action when the user picks offering cards
+     */
+    public synchronized void validateOfferingCardTurnAction(Player localPlayer, Character offeringCardLetter){
+        SharedModelLogic.validateOfferingCardTurnAction(offeringCardLetter, localPlayer,
                 offeringCards, orderedPlayers);
     }
 }
