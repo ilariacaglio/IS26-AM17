@@ -149,17 +149,6 @@ public class ClientModel {
     }
 
     /**
-     *
-     * Removes all the cards in the param from upper and lower tribe rows
-     * @param tribeCards the cards to be removed.
-     * This is a Setter-like method of ClientModel, so it should only be called within synchronized blocks of changes.
-     */
-    private void removeTribeCards(List<CharacterCard> tribeCards){
-        upperRow.removeAll(tribeCards);
-        lowerRow.removeAll(tribeCards);
-    }
-
-    /**
      * Setter method of ClientModel
      * This method is not synchronized! Should only be called within synchronized blocks of changes.
      */
@@ -177,17 +166,6 @@ public class ClientModel {
     public synchronized List<BuildingCard> getUpperBuildingRow(){
         return Collections.unmodifiableList(upperBuildingRow);
     }
-
-    /**
-     * Removes all the cards in the param from upper and lower building rows
-     * @param buildingCards    the cards to be removed.
-     */
-    public synchronized void removeBuildingCards(List<BuildingCard> buildingCards){
-        upperBuildingRow.removeAll(buildingCards);
-        lowerBuildingRow.removeAll(buildingCards);
-    }
-
-
 
     public synchronized List<UUID> getGamesIdList(){
         return Collections.unmodifiableList(gamesIdList);
@@ -412,8 +390,11 @@ public class ClientModel {
                 // N.B. the queue is not updated here!
             }
 
-            removeTribeCards(characterCards);
-            removeBuildingCards(buildingCards);
+            // remove selected cards from rows
+            upperRow.removeAll(characterCards);
+            lowerRow.removeAll(characterCards);
+            upperBuildingRow.removeAll(buildingCards);
+            lowerBuildingRow.removeAll(buildingCards);
         }
 
         // if the player is the local player, update UI
