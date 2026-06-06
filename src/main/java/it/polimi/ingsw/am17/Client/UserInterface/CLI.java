@@ -668,7 +668,7 @@ public class CLI implements UI {
             System.out.print("Insert card letter > ");
             Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
 
-            readOnlyModel.validateOfferingCardTurnAction(cardLetter);
+            readOnlyModel.validateOfferingCardTurnAction(localPlayer, cardLetter);
 
             // send request
             serverAdapter.pickOfferingCard(cardLetter).join();
@@ -846,7 +846,7 @@ public class CLI implements UI {
      */
     private boolean isMoveValid(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try{
-            readOnlyModel.validateTribeCardsTurnAction(characterCards, buildingCards);
+            readOnlyModel.validateTribeCardsTurnAction(localPlayer, characterCards, buildingCards);
             return true;
         } catch (InvalidOperationException e){
             printError(e.getErrorType().getMessage());
