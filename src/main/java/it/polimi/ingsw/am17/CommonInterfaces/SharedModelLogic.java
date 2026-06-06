@@ -109,7 +109,7 @@ public class SharedModelLogic {
      * This method is used to check turn in offering card choice
      * @return true if the given player is at the head of the queue, false otherwise.
      */
-    public static boolean isPlayerHeadInQueue(Player playerToCheck, Queue<Player> orderedPlayers){
+    private static boolean isPlayerHeadInQueue(Player playerToCheck, Queue<Player> orderedPlayers){
         logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
         return playerToCheck.equals(orderedPlayers.peek());
     }
