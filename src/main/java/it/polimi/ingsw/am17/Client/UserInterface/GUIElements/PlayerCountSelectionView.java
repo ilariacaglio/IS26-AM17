@@ -15,6 +15,7 @@ public class PlayerCountSelectionView {
     private GUI mainGui;
     private final int MIN_PLAYER = 2;
     private final int MAX_PLAYER = 5;
+    private boolean isWaiting = false;
 
     public PlayerCountSelectionView(GUI mainGui) {
         this.mainGui = mainGui;
@@ -53,16 +54,27 @@ public class PlayerCountSelectionView {
         btn.setPrefSize(60, 60);
         btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: 18px; -fx-font-weight: bold;");
 
-        //on click send message to server and show waiting overlay
         btn.setOnAction(e -> {
+            // Prevent spam clicks if they click the active button again
+            if (isWaiting) return;
+
             try {
+                isWaiting = true;
                 waitingOverlay.setVisible(true);
-                options.setDisable(true);//disable all buttons so player cant spam requests
+
+                // Loop through all buttons in the HBox
+                for (javafx.scene.Node node : options.getChildren()) {
+                    // If the node is a button, and it is NOT the one just clicked, disable it
+                    if (node instanceof Button && node != btn) {
+                        node.setDisable(true);
+                    }
+                }
+
                 mainGui.createGame(i);
             } catch (Exception ex) {
+                isWaiting = false;
                 throw new RuntimeException(ex);
             }
-
         });
         return btn;
     }
