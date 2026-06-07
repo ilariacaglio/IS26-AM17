@@ -16,6 +16,7 @@ public class PlayerCountSelectionView {
     private final int MIN_PLAYER = 2;
     private final int MAX_PLAYER = 5;
     private boolean isWaiting = false;
+    private Button backButton;
 
     public PlayerCountSelectionView(GUI mainGui) {
         this.mainGui = mainGui;
@@ -43,8 +44,11 @@ public class PlayerCountSelectionView {
             options.getChildren().add(btn);
         }
 
-        Button backButton = new Button("Back");
-        backButton.setOnAction(e -> mainGui.showConnectionInterface());
+        backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            if (isWaiting) return; // Prevent clicking Back if already waiting
+            mainGui.showConnectionInterface();
+        });
 
         root.getChildren().addAll(title, options, backButton, waitingOverlay);
     }
@@ -61,6 +65,8 @@ public class PlayerCountSelectionView {
             try {
                 isWaiting = true;
                 waitingOverlay.setVisible(true);
+
+                backButton.setDisable(true);
 
                 // Loop through all buttons in the HBox
                 for (javafx.scene.Node node : options.getChildren()) {
