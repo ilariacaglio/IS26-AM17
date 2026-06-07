@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
- * Manages multiple games with an eye to concurrency.
+ * Manages multiple games with an eye to concurrency. TODO: check
  * Receives requests from the client via a ServerSocket/RMI and forwards it to the model.
  */
 public class GamesController {

@@ -4,6 +4,7 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
@@ -15,8 +16,6 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
-
-import static it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic.getTurnFoodPoints;
 
 public class CLI implements UI {
     private final ServerAdapter serverAdapter;
@@ -123,16 +122,6 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the gameId on the terminal.
-     * @param gameId the id to be printed
-     */
-    @Override
-    public void printGameId(UUID gameId) {
-        System.out.println("\nYou are connected to game: ".concat(gameId.toString()));
-        showPrompt();
-    }
-
-    /**
      * Prints the games id list.
      */
     @Override
@@ -226,12 +215,26 @@ public class CLI implements UI {
     }
 
     @Override
-    public void updateInterfaceFromPickTribes(){
+    public void updateInterfaceFromIdChange() {
+        drawInterface(null);
+        System.out.println("\nYou are connected to game: ".concat(readOnlyModel.getGameId().toString()));
+        showPrompt();
+    }
+
+    @Override
+    public void updateInterfaceFromGameStateChange() {
+        drawInterface(null);
+        System.out.println("\nNew game state".concat(readOnlyModel.getGameState().toString()));
+        showPrompt();
+    }
+
+    @Override
+    public void updateInterfaceFromPlayerSelectTribeCards(){
         drawInterface(null);
     }
 
     @Override
-    public void updateInterfaceFromPickOffering(){
+    public void updateInterfaceFromPlayerSelectOfferingCard(){
         drawInterface(null);
     }
 

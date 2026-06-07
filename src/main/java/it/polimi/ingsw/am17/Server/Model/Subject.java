@@ -127,7 +127,7 @@ public abstract class Subject {
             notifyService.submit(() -> {
                 logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
                 try {
-                    client.notifyEndGame(ranking, newQueue);
+                    client.updateEndGame(ranking, newQueue);
 
                 } catch (Exception e) {
                     logger.severe("Failed to notify end game: " + e.getMessage());
@@ -142,7 +142,7 @@ public abstract class Subject {
             notifyService.submit(() -> {
                 logger.info("Calling notifyForceEndGame on client " + client.getClass().getSimpleName());
                 try {
-                    client.notifyForceEndGame(disconnectedPlayer);
+                    client.updateForceEndGame(disconnectedPlayer);
 
                 } catch (Exception e) {
                     logger.severe("Failed to notify end game: " + e.getMessage());
