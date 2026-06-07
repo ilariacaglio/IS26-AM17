@@ -106,7 +106,8 @@ public class SharedModelLogic {
     }
 
     /**
-     * This method is used to check turn in offering card choice
+     * This method is used to check if it is the player turn in
+     * the offering card choice phase by comparing it to the one at the head of the queue
      * @return true if the given player is at the head of the queue, false otherwise.
      */
     private static boolean isPlayerHeadInQueue(Player playerToCheck, Queue<Player> orderedPlayers){
@@ -124,7 +125,7 @@ public class SharedModelLogic {
     }
 
     /**
-     * Validates card selection for the player action "pickOfferingCard".
+     * Validates player action "pickOfferingCard".
      */
     public static void validateOfferingCardTurnAction(Character offeringCardLetter, Player player, List<OfferingCard> offeringCards, Queue<Player> orderedPlayers) {
         logger.info("Validating offering card choice");
@@ -155,7 +156,7 @@ public class SharedModelLogic {
     }
 
     /**
-     * Validates card selection for the player action "pickTribeCards".
+     * Validates player action "pickTribeCards".
      */
     public static void validateTribesCardTurnAction(Player player, Queue<Player> orderedPlayers,
                                                     List<OfferingCard> offeringCards, OfferingCard building2OC,
