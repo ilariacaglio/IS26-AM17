@@ -240,7 +240,6 @@ public class ClientModel implements ClientModelInterface {
 
     /**
      * @return true if it is the local player's turn, false otherwise.
-     * TODO: review usage, useful to simplify on parameters?
      */
     public synchronized boolean isPlayerTurn(Player localPlayer) {
         // if the game hasn't started it is not the players turn
@@ -253,8 +252,8 @@ public class ClientModel implements ClientModelInterface {
 
     /**
      * Calls the SharedModelLogic validation for pickTribeCards action.
-     * @param characterCards
-     * @param buildingCards
+     * @param characterCards    The list of the picked character cards.
+     * @param buildingCards     The list of the picked building cards.
      */
     public synchronized void  validateTribeCardsTurnAction(Player localPlayer, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         SharedModelLogic.validateTribesCardTurnAction(localPlayer, orderedPlayers,
@@ -264,7 +263,7 @@ public class ClientModel implements ClientModelInterface {
 
     /**
      * Calls the SharedModelLogic validation for pickOfferingCard action.
-     * @param offeringCardLetter
+     * @param offeringCardLetter    The letter of the picked offering card.
      */
     public synchronized void validateOfferingCardTurnAction(Player localPlayer, Character offeringCardLetter){
         SharedModelLogic.validateOfferingCardTurnAction(offeringCardLetter, localPlayer,
