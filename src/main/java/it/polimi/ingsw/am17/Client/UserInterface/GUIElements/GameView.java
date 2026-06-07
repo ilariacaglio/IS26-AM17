@@ -333,7 +333,7 @@ public class GameView {
                 .map(Player::getColor)
                 .toList();
 
-        turnCard.updateTurnOrder(currentTurnOrder);
+        turnCard.placeTotems(currentTurnOrder);
 
         // Update Offering Cards
         updateOfferingCards();

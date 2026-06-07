@@ -1,6 +1,5 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
-import javafx.scene.layout.Border;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
@@ -96,7 +95,11 @@ public class TurnCardGUI extends StackPane {
         }
     }
 
-    public void updateTurnOrder(List<it.polimi.ingsw.am17.Server.Model.Color> turnOrderColors) {
+    /**
+     * place the totems on the card
+     * @param turnOrderColors
+     */
+    public void placeTotems(List<it.polimi.ingsw.am17.Server.Model.Color> turnOrderColors) {
         this.turnOrderColors = turnOrderColors;
 
         // Clear all existing totems
@@ -117,6 +120,10 @@ public class TurnCardGUI extends StackPane {
         }
     }
 
+    /**
+     * remove a player totem from the card
+     * @param color
+     */
     public void removePlayerTotem(it.polimi.ingsw.am17.Server.Model.Color color){
         for (int i = 0; i < turnOrderColors.size() && i < totemSlots.length; i++) {
             if(turnOrderColors.get(i) == color)
