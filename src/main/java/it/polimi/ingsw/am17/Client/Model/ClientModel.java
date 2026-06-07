@@ -242,13 +242,13 @@ public class ClientModel implements ClientModelInterface {
      * @return true if it is the local player's turn, false otherwise.
      * TODO: review usage, useful to simplify on parameters?
      */
-    public synchronized boolean isPlayerTurn() {
+    public synchronized boolean isPlayerTurn(Player localPlayer) {
         // if the game hasn't started it is not the players turn
         if(!gameState.isGameStarted())
             return false;
 
-        return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
-                gameState, offeringCards, buildingTwoOfferingCard);
+        return SharedModelLogic.isPlayerTurn(localPlayer, orderedPlayers, isPickOCPhase,
+                offeringCards, buildingTwoOfferingCard);
     }
 
     /**

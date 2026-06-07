@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 public class SharedModelLogic {
     private static final Logger logger = Logger.getLogger(SharedModelLogic.class.getName());
+
     /**
      * Dequeues and enqueues the player to allow other players to play.
      */
