@@ -34,10 +34,12 @@ public class GlobalRankingView {
         root = new VBox(20);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.TOP_CENTER);
+        //background color
+        root.setStyle("-fx-background-color: #2c3e50;");
         //title
         Label globalRankingTitle = new Label("\n--- YOUR POSITION IN GLOBAL RANKING ---");
         globalRankingTitle.setStyle("""
-            -fx-text-fill: black;
+            -fx-text-fill: #ecf0f1;
             -fx-font-size: 30px;
             -fx-font-weight: bold;
         """);
