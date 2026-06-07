@@ -4,7 +4,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,7 +24,7 @@ public class CardGUI extends StackPane {
 
     public CardGUI(String imagePath, Color playerColor) {
         createGraphics(imagePath);
-        updateBorderFromPlayer(playerColor);
+        updateTotem(playerColor);
     }
 
     private void createGraphics(String imagePath) {
@@ -87,8 +86,7 @@ public class CardGUI extends StackPane {
         }
     }
 
-    // You might want to rename this to updatePlayerTotem() later!
-    public void updateBorderFromPlayer(Color playerColor){
+    public void updateTotem(Color playerColor){
         if (playerColor == null || playerColor.equals(Color.TRANSPARENT)) {
             totemView.setVisible(false);
             return;

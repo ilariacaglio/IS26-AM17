@@ -74,6 +74,10 @@ public class GUI implements UI {
         }
     }
 
+    /**
+     * Check gameState and either start the Game interface or update it
+     * @param errorMessagge
+     */
     @Override
     public void drawInterface(String errorMessagge) {
         //LEAVE UNTIL SYNCHRONIZATION PROBLEMS ARE SOLVED
@@ -108,51 +112,85 @@ public class GUI implements UI {
             //}
         });
     }
+
+    /**
+     * Update all graphics component modified from endTurn call
+     */
     public void updateInterfaceFromEndTurn(){
         Platform.runLater(() -> {
             gameView.updateGameElements();
         });
     }
+
+    /**
+     * Update all graphics component modified from pickTribes call
+     */
     public void updateInterfaceFromPickTribes() {
         Platform.runLater(() -> {
             gameView.updateGameCardDecks();
         });
     }
+
+    /**
+     * Update all graphics component modified from pickOffering call
+     */
     public void updateInterfaceFromPickOffering() {
         Platform.runLater(() -> {
             gameView.updateOfferingDeck();
         });
     }
 
+    /**
+     * set root to the interface for the global ranking
+     */
     public void showGlobalInterface(){
         GlobalRankingView globalRankingView = new GlobalRankingView(this, game, localPlayer);
         scene.setRoot(globalRankingView.getRoot());
     }
 
+    /**
+     * set root to the interface for local ranking
+     */
     public void showLocalInterface(){
         LocalRankingView localRankingView = new LocalRankingView(this, game);
         scene.setRoot(localRankingView.getRoot());
     }
 
+    /**
+     * set root to the interface for the game
+     */
     private void showGameInterface(){
         gameView = new GameView(this, game, localPlayer);
         scene.setRoot(gameView.getRoot());
     }
+
+    /**
+     * set root to the start interface
+     */
     public void showStartInterface(){
         StartView startView = new StartView(this, availableColors);
         scene.setRoot(startView.getRoot());
     }
 
+    /**
+     * set root to the interface to select the number of player when creating a game
+     */
     public void showPlayerCountSelection(){
         PlayerCountSelectionView playerCountSelectionView = new PlayerCountSelectionView(this);
         scene.setRoot(playerCountSelectionView.getRoot());
     }
 
+    /**
+     * set root to the interface to select whether you want to join or create a game
+     */
     public void showConnectionInterface() {
         ConnectionView connectionView = new ConnectionView(this);
         scene.setRoot(connectionView.getRoot());
     }
 
+    /**
+     * set root to the interface to join a game
+     */
     public void showJoinInterface() {
         joinView = new JoinView(this, game.getGamesIdList());
         scene.setRoot(joinView.getRoot());
@@ -174,6 +212,10 @@ public class GUI implements UI {
     public void printEra(){
 
     }
+
+    /**
+     * update all graphics in the game related to player queue
+     */
     @Override public void updateInterfacePlayerQueue(){
         if(this.gameView != null) {
             Platform.runLater(() -> {
@@ -181,6 +223,10 @@ public class GUI implements UI {
             });
         }
     }
+
+    /**
+     * update the game list in the join view
+     */
     @Override
     public void printGamesList(){
         // Check if the user is currently looking at the Join Screen
@@ -192,9 +238,17 @@ public class GUI implements UI {
         }
     }
 
+    /**
+     * create and save a local player
+     * @param player player you want to set as local player
+     */
     public void createLocalPlayer(Player player){
         localPlayer = player;
     }
+
+    /**
+     * ask the server for the game list
+     */
     public void getGameList(){
         try {
             server.getGamesList(client);
@@ -202,25 +256,57 @@ public class GUI implements UI {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * ask the server to join a game
+     * @param gameId id of the game you want to join
+     * @throws Exception
+     */
     public void joinGame(UUID gameId) throws Exception{
             server.joinGame(client, gameId,localPlayer);
     }
+
+    /**
+     * ask the server to create a game
+     * @param numPlayer number of player you want in the game
+     * @throws Exception
+     */
     public void createGame(int numPlayer) throws Exception{
             server.createGame(client, localPlayer, numPlayer);
     }
+
+    /**
+     * ask the server to pick an offering card
+     * @param card card you want to pick
+     * @throws Exception
+     */
     public void pickOfferingCard(OfferingCard card) throws Exception{
         server.pickOfferingCard(client, card.getOrderLetter());
     }
+
+    /**
+     * ask the server to pick tribes card
+     * @param characterCards character cards you want to pick
+     * @param buildingCards building cards you want to pick
+     * @throws Exception
+     */
     public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
         server.pickTribeCards(client, characterCards, buildingCards);
     }
 
-
+    /**
+     * update the model used by the gui
+     * @param model
+     */
     @Override
     public  void setModel(ClientModel model) {
         this.game = model;
     }
 
+    /**
+     * Set the color the player can choose when creating a character
+     * @param availableColors
+     */
     @Override
     public void setAvailableColors(List<Color> availableColors) {
         this.availableColors=availableColors;
@@ -233,13 +319,13 @@ public class GUI implements UI {
         });
     }
 
-    // tODO
+
     @Override
     public boolean isBuilding2EffectUsed() {
         return building2EffectUsed;
     }
 
-    // todo
+
     @Override
     public void setBuilding2EffectUsed(boolean building2EffectUsed) {
         this.building2EffectUsed = building2EffectUsed;
@@ -256,6 +342,10 @@ public class GUI implements UI {
                 .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
     }
 
+    /**
+     * return the local player
+     * @return localPlayer
+     */
     public Player getLocalPlayer() {
         return localPlayer;
     }

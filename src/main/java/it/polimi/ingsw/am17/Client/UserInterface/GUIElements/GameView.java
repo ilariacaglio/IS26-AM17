@@ -257,7 +257,7 @@ public class GameView {
             playerButton.setOnAction(e -> {
                 selectedPlayer = p;
                 createPlayerCardLabel();
-                orderPersonalCards();
+                updateSelectedPlayer();
             });
 
         }
@@ -277,7 +277,7 @@ public class GameView {
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
         //order personal cards
-        orderPersonalCards();
+        updateSelectedPlayer();
 
 
 
@@ -309,11 +309,17 @@ public class GameView {
                 playerResourcesBox, playerCardsContainer, spacer, playersButtonBox);
     }
 
+    /**
+     * update all graphics related to player queue
+     */
     public void updatePlayerQueue(){
         // Update turn overlay visibility
         turnOverlay.setVisible(game.isPlayerTurn());
     }
 
+    /**
+     * call all other updates
+     */
     public void updateGameElements() {
         // Update turn overlay visibility
         turnOverlay.setVisible(game.isPlayerTurn());
@@ -337,9 +343,12 @@ public class GameView {
 
         // Update Player stats (Points, Food, Name) and personal board
         createPlayerCardLabel();
-        orderPersonalCards();
+        updateSelectedPlayer();
     }
 
+    /**
+     * update upper and lower decks graphics by removing picked cards
+     */
     public void updateGameCardDecks() {
         // Update turn overlay visibility
         turnOverlay.setVisible(game.isPlayerTurn());
@@ -370,9 +379,12 @@ public class GameView {
 
         // Update Player stats (Points, Food, Name) and personal board
         createPlayerCardLabel();
-        orderPersonalCards();
+        updateSelectedPlayer();
     }
 
+    /**
+     * update offering deck's graphics
+     */
     public void updateOfferingDeck(){
         // Update turn overlay visibility
         turnOverlay.setVisible(game.isPlayerTurn());
@@ -385,16 +397,18 @@ public class GameView {
             CardGUI card = offeringCardGUI.get(i);
             Player p = game.getOfferingCards().get(i).getPlayer();
             if (p != null) {
-                card.updateBorderFromPlayer(p.getColor().getFxColor());
+                card.updateTotem(p.getColor().getFxColor());
                 turnCard.removePlayerTotem(p.getColor());
             } else {
                 // Optional: Reset to default border if no player owns it
-                card.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
+                card.updateTotem(javafx.scene.paint.Color.TRANSPARENT);
             }
         }
     }
 
-
+    /**
+     * update upper deck graphics
+     */
     private void updateUpperCards() {
         upperCardsBox.getChildren().clear(); // Remove old cards
         for(TribesCard card : game.getUpperTribeRow()){
@@ -411,6 +425,9 @@ public class GameView {
         }
     }
 
+    /**
+     * update lower deck graphics
+     */
     private void updateLowerCards(){
         lowerCardsBox.getChildren().clear();
         for(TribesCard card : game.getLowerTribeRow()){
@@ -427,31 +444,39 @@ public class GameView {
         }
     }
 
+
     private void updateOfferingCards(){
-        List<OfferingCard> offeringCardRow = new ArrayList<>(game.getOfferingCards());
+
+        //set all card to not selected
         for (CardGUI cardGUI : offeringCardGUI){
-            //cardGUI.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
             if(cardGUI.isSelected())
                 cardGUI.setVisualSelection(false);
         }
+
+        //update the totem on the cards
         for (int i = 0; i < offeringCardGUI.size(); i++) {
             CardGUI card = offeringCardGUI.get(i);
 
-            if (i < offeringCardRow.size()) {
-                OfferingCard serverCard = offeringCardRow.get(i);
+            if (i < game.getOfferingCards().size()) {
+                OfferingCard serverCard = game.getOfferingCards().get(i);
 
                 card.setUserData(serverCard);
 
                 if (serverCard.getPlayer() != null) {
-                    card.updateBorderFromPlayer(serverCard.getPlayer().getColor().getFxColor());
+                    card.updateTotem(serverCard.getPlayer().getColor().getFxColor());
                 } else {
-                    card.updateBorderFromPlayer(javafx.scene.paint.Color.TRANSPARENT);
+                    card.updateTotem(javafx.scene.paint.Color.TRANSPARENT);
                 }
             }
         }
 
     }
 
+    /**
+     * set the action from click on tribes card
+     * @param cardGUI
+     * @param card
+     */
     private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card) {
         if(card.getCardType().isCharacter()) {
             cardGUI.setOnMouseClicked(event -> {
@@ -472,6 +497,11 @@ public class GameView {
         }
     }
 
+    /**
+     * set the action from click on building card
+     * @param cardGUI
+     * @param card
+     */
     private void setOnMouseClickForBuilding(CardGUI cardGUI, BuildingCard card ) {
         cardGUI.setOnMouseClicked(event -> {
             if (!game.isPlayerTurn()) {
@@ -491,6 +521,11 @@ public class GameView {
         });
     }
 
+    /**
+     * set the action from click on offering card
+     * @param cardGUI
+     * @param card
+     */
     private void setOnMouseClickForOffering(CardGUI cardGUI, OfferingCard card) {
         cardGUI.setOnMouseClicked(event -> {
             if (!game.isPlayerTurn()) {
@@ -542,10 +577,7 @@ public class GameView {
     }
 
     public void offeringSelected(OfferingCard card) {
-        if(offeringSelected == card)
-            offeringSelected = null;
-        else
-            offeringSelected = card;
+        offeringSelected = card;
 
         for (CardGUI cardGUI : offeringCardGUI){
             if(cardGUI.isSelected())
@@ -553,7 +585,10 @@ public class GameView {
         }
     }
 
-    private void orderPersonalCards(){
+    /**
+     * update the graphics related to selected player
+     */
+    private void updateSelectedPlayer(){
         //update selected player
         selectedPlayer = game.getPlayerFromList(selectedPlayer);
 
