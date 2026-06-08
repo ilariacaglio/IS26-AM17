@@ -430,8 +430,13 @@ public class Game extends Subject {
         movePlayerInQueue(orderedPlayers);
 
         // when all player have an offering card recalculate queue
-        if (isEveryPlayerInOfferingCard(orderedPlayers, offeringCards))
+        if (isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)){
+            // the pick offering card phase is over
             recalculatePlayerQueue();
+            // if offering card 'A' was chosen, the player receives food bonus
+            handleOfferingCardWithLetterA();
+        }
+
 
         // notify changes
         notifyPlayerQueue(orderedPlayers);
@@ -476,15 +481,6 @@ public class Game extends Subject {
 
         logger.info("Player " + player.getNickname() + " wants to pick tribe cards from offering card " +  currentOffering.getOrderLetter() + ": " + characterCards + " and " + buildingCards);
 
-        // if a player has selected the offering card with letter A
-        if (currentOffering.getOrderLetter()=='A') {
-            logger.info("OfferingCard A was picked");
-            handleOfferingCardWithLetterA(currentOffering);
-            // recalculate next occupied offering card
-            currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
-            logger.info("OfferingCard A was resolved");
-        }
-
         // Check if it's player turn
         if (!isPlayerTurn(player, orderedPlayers, offeringCards, building2OfferingCard))
             throw new IllegalStateException(ErrorType.OUT_OF_TURN.toString());
@@ -521,15 +517,25 @@ public class Game extends Subject {
 
     /**
      * Adds food to player in the offering card with letter A, then sets player to null
-     * @param offeringCard reference to offering card with letter A
      */
-    private void handleOfferingCardWithLetterA(OfferingCard offeringCard) {
+    private void handleOfferingCardWithLetterA() {
         logger.info("Handling offering card with letter A.");
+        // get offering card with letter A from list
+        OfferingCard offeringCard = offeringCards.stream().filter(oc->oc.getOrderLetter().equals('A'))
+                .findFirst().orElse(null);
+
+        // for all the games with numPlayers < 5 the card is not found
+        if (offeringCard == null) return;
+
+        // if offering card wasn't selected return
+        if(offeringCard.getPlayer() == null) return;
 
         // give +3 food to the player
         offeringCard.getPlayer().addFood(3);
+
         // remove player from offering card
         offeringCard.setPlayer(null);
+
         // move the player to last position in queue
         movePlayerInQueue(orderedPlayers);
     }
