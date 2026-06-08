@@ -437,7 +437,6 @@ public class Game extends Subject {
             handleOfferingCardWithLetterA();
         }
 
-
         // notify changes
         notifyPlayerQueue(orderedPlayers);
         notifyPlayerSelectOfferingCard(player, offeringCard);
@@ -476,10 +475,7 @@ public class Game extends Subject {
                 .filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow(()->new InvalidOperationException(ErrorType.INVALID_PLAYER));
 
-        // Get leftmost occupied offering card.
-        OfferingCard currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
-
-        logger.info("Player " + player.getNickname() + " wants to pick tribe cards from offering card " +  currentOffering.getOrderLetter() + ": " + characterCards + " and " + buildingCards);
+        logger.info("Player " + player.getNickname() + " wants to pick tribe cards: " + characterCards + " and " + buildingCards);
 
         // Check if it's player turn
         if (!isPlayerTurn(player, orderedPlayers, offeringCards, building2OfferingCard))
