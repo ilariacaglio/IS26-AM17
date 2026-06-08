@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Model;
 import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
 import it.polimi.ingsw.am17.Server.Model.Decks.BuildingDeck;
 import it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -505,20 +506,7 @@ public class Game extends Subject {
         upperRow.removeAll(characterCards); // if not present, no worries
         lowerRow.removeAll(characterCards); // if not present, no worries
 
-        if (player.hasBuilding2()) {
-            // N.B.: there is a singular buildingType2 per game
-            logger.info("Adding player to buildingType2 offering card.");
-
-            // N.B.: if calling from building2OfferingCard, don't set the player again
-            if (building2OfferingCard.getPlayer() == null) building2OfferingCard.setPlayer(player);
-        }
-
-        currentOffering.setPlayer(null);
-
-        // if is building2 move, the queue should not be modified
-        if (!currentOffering.equals(building2OfferingCard)) {
-            movePlayerInQueue(orderedPlayers);
-        }
+        SharedModelLogic.handleOfferingCardsAndPlayersQueue(player, offeringCards, building2OfferingCard, orderedPlayers);
 
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
 

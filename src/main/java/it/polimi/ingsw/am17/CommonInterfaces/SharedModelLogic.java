@@ -258,4 +258,32 @@ public class SharedModelLogic {
             default -> throw new IllegalStateException("Wrong number of players");
         };
     }
+
+    /**
+     * Handles offering cards and players queue in both normal case and buildingTwo edge case
+     */
+    public static void handleOfferingCardsAndPlayersQueue(Player player, List<OfferingCard> offeringCards, OfferingCard buildingTwoOfferingCard, Queue<Player> orderedPlayers) {
+        // if a player is in a (normal) offering card...
+        if (isPlayerInOfferingCard(player,offeringCards)) {
+            // this update was called for a usual card selection
+            // remove player from its offering card
+            offeringCards.stream()
+                    .filter(o -> o.getPlayer()!= null && o.getPlayer().equals(player))
+                    .findFirst()
+                    .ifPresent(o -> o.setPlayer(null));
+
+            // if the player had the building2, book an extra turn
+            if (player.hasBuilding2() && !isBuilding2EffectUsed(offeringCards, buildingTwoOfferingCard)) {
+                buildingTwoOfferingCard.setPlayer(player);
+            }
+            // since the move is normal the queue should be updated
+            SharedModelLogic.movePlayerInQueue(orderedPlayers);
+        }
+        // if this update was called but the player is not in a (normal) offering card
+        // it means this was a move made from the extra offering card (BuildingTwo)
+        else {
+            buildingTwoOfferingCard.setPlayer(null);
+            // N.B. the queue is not updated here!
+        }
+    }
 }
