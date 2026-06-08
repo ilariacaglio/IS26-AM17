@@ -240,31 +240,36 @@ public class ClientModel implements ClientModelInterface {
 
     /**
      * @return true if it is the local player's turn, false otherwise.
-     * TODO: review usage, useful to simplify on parameters?
      */
-    public synchronized boolean isPlayerTurn() {
-        return SharedModelLogic.isPlayerTurn(userInterface.getLocalPlayer(), orderedPlayers, isPickOCPhase,
-                gameState, offeringCards, buildingTwoOfferingCard);
+    public synchronized boolean isPlayerTurn(Player localPlayer) {
+        // if the game hasn't started it is not the players turn
+        if(!gameState.isGameStarted())
+            return false;
+
+        return SharedModelLogic.isPlayerTurn(localPlayer, orderedPlayers, isPickOCPhase,
+                offeringCards, buildingTwoOfferingCard);
     }
 
     /**
      * Calls the SharedModelLogic validation for pickTribeCards action.
-     * @param characterCards
-     * @param buildingCards
+     * @param characterCards    The list of the picked character cards.
+     * @param buildingCards     The list of the picked building cards.
      */
-    public synchronized void validatePickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        SharedModelLogic.validateTribesCardChoice(userInterface.getLocalPlayer(),
+    public synchronized void  validateTribeCardsTurnAction(Player localPlayer, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        SharedModelLogic.validateTribesCardTurnAction(localPlayer, orderedPlayers,
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     /**
      * Calls the SharedModelLogic validation for pickOfferingCard action.
-     * @param offeringCardLetter
+     * @param offeringCardLetter    The letter of the picked offering card.
      */
-    public synchronized void validatePickOfferingCard(Character offeringCardLetter){
-        SharedModelLogic.validateOfferingCardChoice(offeringCardLetter, userInterface.getLocalPlayer(), offeringCards);
+    public synchronized void validateOfferingCardTurnAction(Player localPlayer, Character offeringCardLetter){
+        SharedModelLogic.validateOfferingCardTurnAction(offeringCardLetter, localPlayer,
+                offeringCards, orderedPlayers);
     }
+
 
     /* UPDATE METHODS */
     // todo: remove setters private
