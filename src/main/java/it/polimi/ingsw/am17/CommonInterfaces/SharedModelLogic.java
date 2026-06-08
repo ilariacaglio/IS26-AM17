@@ -131,7 +131,7 @@ public class SharedModelLogic {
     public static void validateOfferingCardTurnAction(Character offeringCardLetter, Player player, List<OfferingCard> offeringCards, Queue<Player> orderedPlayers) {
         logger.info("Validating offering card choice");
 
-        // check if is player turn
+        // check if is player turn (in this case is enough checking if the player is in the head of the queue)
         if (!isPlayerHeadInQueue(player, orderedPlayers))
             throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
 
