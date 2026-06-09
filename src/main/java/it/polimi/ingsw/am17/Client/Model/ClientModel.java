@@ -457,8 +457,9 @@ public class ClientModel implements ClientModelInterface {
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
-     * @param exception of which the message is passed to the UI.
+     * @param exception which is passed to the UI.
      */
+    // todo: set gamestate to none!!
     @Override
     public void updateError(InvalidOperationException exception) {
         userInterface.updateInterfaceFromErrorMessage(exception);
