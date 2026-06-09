@@ -461,6 +461,14 @@ public class ClientModel implements ClientModelInterface {
      */
     @Override
     public void updateError(InvalidOperationException exception) {
+        // change game state in case the error occurred while joining a game
+        ErrorType type = exception.getErrorType();
+        if (type == ErrorType.DUPLICATE_COLOR || type == ErrorType.DUPLICATE_NICKNAME) {
+            synchronized (this) {
+                gameState = GameState.NONE;
+            }
+        }
+
         userInterface.updateInterfaceFromErrorMessage(exception);
     }
 }
