@@ -154,6 +154,7 @@ public class CLI implements UI {
         }
     }
 
+
     @Override
     public void updateInterfaceFromPlayerSelectTribeCards(){
         drawInterface();
@@ -624,16 +625,26 @@ public class CLI implements UI {
      * Asks the user for a new nickname and sets it to player
      */
     private void changeNickname(){
-        String nickname = askNickname();
-        localPlayer.setNickname(nickname);
+        if(readOnlyModel.getGameState() == GameState.NONE){
+            String nickname = askNickname();
+            localPlayer.setNickname(nickname);
+        }
+        else {
+            drawInterface("Already in a game!", true);
+        }
     }
 
     /**
      * Lets player choose new color
      */
     private void changeColor() {
-        Color c = chooseColor();
-        localPlayer.setColor(c);
+        if(readOnlyModel.getGameState() == GameState.NONE){
+            Color c = chooseColor();
+            localPlayer.setColor(c);
+        }
+        else {
+            drawInterface("Already in a game!", true);
+        }
     }
 
     /**
@@ -699,6 +710,10 @@ public class CLI implements UI {
      * Sends server command to pick offering card
      */
     private void pickOfferingCard(){
+        if (!readOnlyModel.getGameState().isGameStarted()) {
+            drawInterface("The game hasn't started!", true);
+            return;
+        }
         try {
             System.out.print("Insert card letter > ");
             Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
@@ -718,6 +733,11 @@ public class CLI implements UI {
      * Gets the user selected cards and sends them to server
      */
     private void pickTribeCards() {
+        if (!readOnlyModel.getGameState().isGameStarted()) {
+            drawInterface("The game hasn't started!", true);
+            return;
+        }
+
         // get players offering card
         OfferingCard myOfferingCard = getPlayerOfferingCard();
 
