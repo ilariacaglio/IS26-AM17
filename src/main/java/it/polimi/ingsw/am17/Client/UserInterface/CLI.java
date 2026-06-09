@@ -116,11 +116,15 @@ public class CLI implements UI {
         }
     }
 
+    // todo: check show prompt usage globally
+
+    // todo: check show prompt usage
+    // todo: improve this print, the message is not displayed
     @Override
     public void updateInterfaceFromGameIdChange() {
         // print game id
         System.out.println("\nYou are connected to game: ".concat(readOnlyModel.getGameId().toString()));
-        showPrompt(); // todo: check show prompt usage
+        showPrompt();
         drawInterface();
     }
 
