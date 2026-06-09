@@ -145,7 +145,13 @@ public class CLI implements UI {
     @Override
     public void updateInterfaceFromPlayerQueueChange() {
         setLocalPlayer();
-        drawInterface();
+        if(readOnlyModel.getGameState().isInLobby()){
+            String message = "You are connected to game: ".concat(readOnlyModel.getGameId().toString());
+            drawInterface(message, false);
+        }
+        else {
+            drawInterface();
+        }
     }
 
     @Override
