@@ -127,7 +127,7 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the game interface when the open games list is recieved
+     * Prints the game interface when the open games list is received
      */
     @Override
     public void updateInterfaceFromGameIdListChange() {
