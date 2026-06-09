@@ -569,6 +569,7 @@ public class CLI implements UI {
      * Asks the user to type their nickname
      * @return the nickname to be set
      */
+    // todo: check print
     private String askNickname() {
         String nickname = "";
         while (nickname.isEmpty()) {
@@ -587,6 +588,7 @@ public class CLI implements UI {
      * lets the user select one of them
      * @return  the selected color
      */
+    // todo: check print
     private Color chooseColor() {
         // color selection
         while (true) {
@@ -617,7 +619,7 @@ public class CLI implements UI {
         try {
             serverAdapter.getGamesList().join();
         } catch (Exception e) {
-            System.err.println("CLI error: " + e.getCause().getMessage());
+            drawInterface("CLI error: " + e.getCause().getMessage(), true);
         }
     }
 
@@ -658,10 +660,10 @@ public class CLI implements UI {
                 System.out.println("Trying to create game...");
                 serverAdapter.createGame(localPlayer, numPlayers).join();
             } else {
-                System.out.print("Already in a game!");
+                drawInterface("Already in a game!", true);
             }
         }catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            drawInterface("CLI error: " + e.getMessage(), true);
         }
     }
 
@@ -681,7 +683,7 @@ public class CLI implements UI {
                     if (index >= 0 && index < readOnlyModel.getGamesIdList().size()) {
                         gameId = readOnlyModel.getGamesIdList().get(index);
                     } else {
-                        System.out.println("Index out of bounds.");
+                        drawInterface("Index out of bounds.", true);
                     }
                 }
                 //Otherwise, try to treat input as a UUID
@@ -689,7 +691,7 @@ public class CLI implements UI {
                     try {
                         gameId = UUID.fromString(input);
                     } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid format. Please enter a number or a valid UUID.");
+                        drawInterface("Invalid format. Please enter a number or a valid UUID.", true);
                     }
                 }
 
@@ -699,10 +701,10 @@ public class CLI implements UI {
                     serverAdapter.joinGame(gameId, localPlayer).join();
                 }
             } else {
-                System.out.println("Already in a game!");
+                drawInterface("Already in a game!", true);
             }
         } catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            drawInterface("CLI error: " + e.getMessage(), true);
         }
     }
 
@@ -752,7 +754,7 @@ public class CLI implements UI {
 
         // if card with letter A, no card can be chosen
         if(totalCards == 0) {
-            System.out.println("You can't pick any card!");
+            drawInterface("Yon can't pick any card!",true);
             return;
         }
 
@@ -762,7 +764,7 @@ public class CLI implements UI {
         List<GameCard> pickableCards = buildPickableCardsList(myOfferingCard);
 
         if (pickableCards.isEmpty()) {
-            System.out.println("You can't pick any card!");
+            drawInterface("Yon can't pick any card!",true);
             return;
         }
 
@@ -779,7 +781,7 @@ public class CLI implements UI {
             try {
                 serverAdapter.pickTribeCards(characterCards, buildingCards).join();
             } catch (Exception e) {
-                System.err.println("CLI error: " + e.getCause().getMessage());
+                drawInterface("CLI error: " + e.getCause().getMessage(), true);
             }
         }
     }
@@ -790,12 +792,12 @@ public class CLI implements UI {
     private void closeGame(){
         try {
             if (readOnlyModel.getGameId() == null) {
-                System.out.print("Not in a game");
+                drawInterface("Not in a game", true);
             } else {
                 serverAdapter.closeGame().join();
             }
         }catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            drawInterface("CLI error: " + e.getCause().getMessage(), true);
         }
     }
 
