@@ -96,8 +96,8 @@ public class SharedModelLogic {
         if (!isPickOCPhase){
             // if is pick tribe cards phase
             // if all the players have picked their cards check if localPlayer has buildingType2
-            if (!isBuilding2EffectUsed(offeringCards, building2OC))
-                return playerToCheck.hasBuilding2();
+            if (!isBuilding2EffectUsed(offeringCards, building2OC) && playerToCheck.hasBuilding2())
+                return true;
         }
 
         // default check
