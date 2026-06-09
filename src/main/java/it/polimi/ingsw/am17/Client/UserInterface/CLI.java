@@ -17,8 +17,6 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 
-import static it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic.getTurnFoodPoints;
-
 public class CLI implements UI {
     private final ServerAdapter serverAdapter;
     private ClientModel readOnlyModel;
@@ -40,7 +38,6 @@ public class CLI implements UI {
 
     // methods called by RMI-Socket clients
 
-    @Override
     public void setModel(ClientModel model) {
         this.readOnlyModel = model;
     }
@@ -49,7 +46,6 @@ public class CLI implements UI {
 
     // methods called by the model
 
-    @Override
     public void setAvailableColors(List<Color> availableColors) {
         this.availableColors=availableColors;
     }
@@ -123,10 +119,19 @@ public class CLI implements UI {
         }
     }
 
+    @Override
+    public void updateInterfaceFromGameIdChange() {
+
+    }
+
+    @Override
+    public void updateInterfaceFromGameIdListChange() {
+
+    }
+
     /**
      * Prints the games id list.
      */
-    @Override
     public void printGamesList(){
         System.out.println("\r\033[2KOpen games:");
         for(int i=0; i< readOnlyModel.getGamesIdList().size(); i++){
@@ -139,7 +144,7 @@ public class CLI implements UI {
      * Draws the game configuration.
      * @param errorMessage  the message to display
      */
-    @Override
+
     public synchronized void drawInterface(String errorMessage)
     {
         try{
@@ -180,7 +185,7 @@ public class CLI implements UI {
                     drawLocalPlayer();
 
                     // if the game has begun notify the players turn
-                    if(readOnlyModel.isPlayerTurn())
+                    if(readOnlyModel.isPlayerTurn(localPlayer))
                         System.out.println("It's your turn!");
                 }
             }
@@ -195,7 +200,7 @@ public class CLI implements UI {
         }
     }
 
-    @Override
+
     public void setDisplayEra(boolean displayEra) {
         this.displayEra = displayEra;
     }
@@ -204,7 +209,7 @@ public class CLI implements UI {
      * Updates localPlayer value when the object is updated into the queue by the server
      * Used to update food, pp and cards of the player
      */
-    @Override
+
     public void setLocalPlayer() {
         readOnlyModel.getOrderedPlayers().stream()
                 .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
@@ -212,22 +217,15 @@ public class CLI implements UI {
     }
 
     @Override
-    public Player getLocalPlayer() {
-        return localPlayer;
-    }
-
-    @Override
-    public void updateInterfaceFromIdChange() {
-        drawInterface(null);
-        System.out.println("\nYou are connected to game: ".concat(readOnlyModel.getGameId().toString()));
-        showPrompt();
-    }
-
-    @Override
     public void updateInterfaceFromGameStateChange() {
         drawInterface(null);
         System.out.println("\nNew game state".concat(readOnlyModel.getGameState().toString()));
         showPrompt();
+    }
+
+    @Override
+    public void updateInterfaceFromPlayerQueueChange() {
+
     }
 
     @Override
@@ -245,6 +243,25 @@ public class CLI implements UI {
         drawInterface(null);
     }
 
+    @Override
+    public void updateInterfaceFromStartGame() {
+
+    }
+
+    @Override
+    public void updateInterfaceFromEndGame() {
+
+    }
+
+    @Override
+    public void updateInterfaceFromForcedEndGame(String disconnectedPlayer) {
+
+    }
+
+    @Override
+    public void updateInterfaceFromErrorMessage() {
+
+    }
 
 
     // Methods called by the CLI used to print data
@@ -367,7 +384,7 @@ public class CLI implements UI {
                 .filter(player -> !playersInOfferingCard.contains(player))
                 .toList();
 
-        int[] turnFood = getTurnFoodPoints(readOnlyModel.getNumPlayers());
+        int[] turnFood = SharedModelLogic.getTurnFoodPoints(readOnlyModel.getNumPlayers());
 
         // calculate offset basing on game phase
         int offset = readOnlyModel.isPickOCPhase() ? turnFood.length - playersToPrint.size() : 0;
@@ -667,13 +684,10 @@ public class CLI implements UI {
      */
     private void pickOfferingCard(){
         try {
-            if (!readOnlyModel.isPlayerTurn())
-                throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
-
             System.out.print("Insert card letter > ");
             Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
 
-            readOnlyModel.validatePickOfferingCard(cardLetter);
+            readOnlyModel.validateOfferingCardTurnAction(localPlayer, cardLetter);
 
             // send request
             serverAdapter.pickOfferingCard(cardLetter).join();
@@ -688,12 +702,6 @@ public class CLI implements UI {
      * Gets the user selected cards and sends them to server
      */
     private void pickTribeCards() {
-        // check if it is the players turn
-        if (!readOnlyModel.isPlayerTurn()) {
-            printError(ErrorType.OUT_OF_TURN.getMessage());
-            return;
-        }
-
         // get players offering card
         OfferingCard myOfferingCard = getPlayerOfferingCard();
 
@@ -851,8 +859,7 @@ public class CLI implements UI {
      */
     private boolean isMoveValid(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try{
-            readOnlyModel.isPlayerTurn();
-            readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
+            readOnlyModel.validateTribeCardsTurnAction(localPlayer, characterCards, buildingCards);
             return true;
         } catch (InvalidOperationException e){
             printError(e.getErrorType().getMessage());

@@ -415,11 +415,7 @@ public class Game extends Subject {
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
 
-        //check if is player turn
-        if (!isPlayerTurn(player, orderedPlayers))
-            throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
-
-        validateOfferingCardChoice(offeringCardLetter, player, offeringCards);
+        validateOfferingCardTurnAction(offeringCardLetter, player, offeringCards, orderedPlayers);
 
         OfferingCard offeringCard = getOfferingCardFromLetter(offeringCardLetter, offeringCards);
 
@@ -477,13 +473,9 @@ public class Game extends Subject {
 
         logger.info("Player " + player.getNickname() + " wants to pick tribe cards: " + characterCards + " and " + buildingCards);
 
-        // Check if it's player turn
-        if (!isPlayerTurn(player, orderedPlayers, offeringCards, building2OfferingCard))
-            throw new IllegalStateException(ErrorType.OUT_OF_TURN.toString());
-
         // check if cards selection is legal based on the offeringCard
         try {
-            validateTribesCardChoice(player, offeringCards, building2OfferingCard,
+            validateTribesCardTurnAction(player, orderedPlayers, offeringCards, building2OfferingCard,
                     characterCards, buildingCards, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
         } catch (InvalidOperationException e) {
             logger.warning("CardChoice is not valid: " + e.getMessage());
