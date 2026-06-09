@@ -228,17 +228,6 @@ public class ClientModel implements ClientModelInterface {
     }
 
     /**
-     * Removes a player from the currently assigned offering card.
-     * @param player the player already present into the offering card field
-     */
-    private void removePlayerFromOfferingCard(Player player){
-        offeringCards.stream()
-                .filter(o -> o.getPlayer()!= null && o.getPlayer().equals(player))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(null));
-    }
-
-    /**
      * @return true if it is the local player's turn, false otherwise.
      */
     public synchronized boolean isPlayerTurn(Player localPlayer) {
@@ -343,7 +332,6 @@ public class ClientModel implements ClientModelInterface {
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
-     * TODO: check if can be put in shared logic
      */
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
@@ -357,25 +345,7 @@ public class ClientModel implements ClientModelInterface {
             orderedPlayers.clear();
             orderedPlayers.addAll(players);
 
-            // if a player is in a (normal) offering card...
-            if (SharedModelLogic.isPlayerInOfferingCard(player,offeringCards)) {
-
-                // this update was called for a usual card selection
-                removePlayerFromOfferingCard(player);
-
-                // if the player had the building2, book an extra turn
-                if (player.hasBuilding2())
-                    buildingTwoOfferingCard.setPlayer(player);
-
-                // since the move is normal the queue should be updated
-                SharedModelLogic.movePlayerInQueue(orderedPlayers);
-            }
-            // if this update was called but the player is not in a (normal) offering card
-            // it means this was a move made from the extra offering card (BuildingTwo)
-            else {
-                buildingTwoOfferingCard.setPlayer(null);
-                // N.B. the queue is not updated here!
-            }
+            SharedModelLogic.handleOfferingCardsAndPlayersQueue(player, offeringCards, buildingTwoOfferingCard,orderedPlayers);
 
             // remove selected cards from rows
             upperRow.removeAll(characterCards);
