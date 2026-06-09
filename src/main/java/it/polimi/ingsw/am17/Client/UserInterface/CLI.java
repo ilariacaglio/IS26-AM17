@@ -38,7 +38,7 @@ public class CLI implements UI {
 
 
     // methods called by RMI-Socket clients
-
+    @Override
     public void setModel(ClientModel model) {
         this.readOnlyModel = model;
     }
