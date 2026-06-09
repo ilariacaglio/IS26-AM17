@@ -117,13 +117,18 @@ public class CLI implements UI {
         }
     }
 
-
+    /**
+     * Prints the game interface when the player joins a new game
+     */
     @Override
     public void updateInterfaceFromGameIdChange() {
         String message = "You are connected to game: ".concat(readOnlyModel.getGameId().toString());
         drawInterface(message, false);
     }
 
+    /**
+     * Prints the game interface when the open games list is recieved
+     */
     @Override
     public void updateInterfaceFromGameIdListChange() {
         // print games list
@@ -134,6 +139,9 @@ public class CLI implements UI {
         showPrompt();
     }
 
+    /**
+     * Prints the game interface when the game state has changed
+     */
     @Override
     public void updateInterfaceFromGameStateChange() {
         String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
@@ -141,6 +149,10 @@ public class CLI implements UI {
         drawInterface(message, false);
     }
 
+    /**
+     * Prints the game interface when the players queue is updated.
+     * Updates the data of the local player
+     */
     @Override
     public void updateInterfaceFromPlayerQueueChange() {
         setLocalPlayer();
@@ -154,37 +166,59 @@ public class CLI implements UI {
     }
 
 
+    /**
+     * Prints the game interface when a tribes card selection update message is received
+     */
     @Override
     public void updateInterfaceFromPlayerSelectTribeCards(){
         drawInterface();
     }
 
+    /**
+     * Prints the game interface when an offering card selection update message is received
+     */
     @Override
     public void updateInterfaceFromPlayerSelectOfferingCard(){
         drawInterface();
     }
 
+    /**
+     * Prints the game interface when the game turn ends
+     */
     @Override
     public void updateInterfaceFromEndTurn(){
         drawInterface();
     }
 
+    /**
+     * Prints the game interface when game starts
+     */
     @Override
     public void updateInterfaceFromStartGame() {
         drawInterface();
     }
 
+    /**
+     * Prints the game interface when game ends regularly
+     */
     @Override
     public void updateInterfaceFromEndGame() {
         drawInterface();
     }
 
+    /**
+     * Prints the game interface when game ends due to a player action or connection error
+     */
     @Override
     public void updateInterfaceFromForcedEndGame(String disconnectedPlayer) {
         String errorMessage = "The game has ended due to disconnection of player " + disconnectedPlayer;
         drawInterface(errorMessage, true);
     }
 
+    /**
+     * Prints the game interface when a notification error is received.
+     * @param exception     the exception describing the error occurred.
+     */
     @Override
     public void updateInterfaceFromErrorMessage(InvalidOperationException exception) {
         ErrorType type = exception.getErrorType();
