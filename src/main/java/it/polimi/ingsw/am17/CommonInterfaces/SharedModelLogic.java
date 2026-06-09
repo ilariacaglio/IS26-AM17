@@ -260,7 +260,7 @@ public class SharedModelLogic {
     }
 
     /**
-     * Handles offering cards and players queue after an action is performed (both for normal case and buildingTwo edge case)
+     * Handles offering cards and players queue after a tribes card selection (both for normal case and buildingTwo edge case)
      * Moves the player in the queue and frees up the offering card (turn logic).
      */
     public static void handleOfferingCardsAndPlayersQueue(Player player, List<OfferingCard> offeringCards, OfferingCard buildingTwoOfferingCard, Queue<Player> orderedPlayers) {
