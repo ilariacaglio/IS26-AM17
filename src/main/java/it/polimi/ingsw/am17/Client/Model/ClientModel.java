@@ -497,6 +497,6 @@ public class ClientModel implements ClientModelInterface {
                 ? exception.getMessage()
                 : type.getMessage();
 
-        userInterface.updateInterfaceFromErrorMessage();
+        userInterface.updateInterfaceFromErrorMessage(messageToDisplay);
     }
 }

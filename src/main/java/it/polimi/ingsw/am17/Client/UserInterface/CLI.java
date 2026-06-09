@@ -2,7 +2,6 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.ServerAdapter;
-import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
 import it.polimi.ingsw.am17.Server.Model.Color;
@@ -46,7 +45,8 @@ public class CLI implements UI {
 
     // methods called by the model
 
-    public void setAvailableColors(List<Color> availableColors) {
+    // todo: move
+    private void setAvailableColors(List<Color> availableColors) {
         this.availableColors=availableColors;
     }
 
@@ -121,18 +121,15 @@ public class CLI implements UI {
 
     @Override
     public void updateInterfaceFromGameIdChange() {
-
+        // print game id
+        System.out.println("\nYou are connected to game: ".concat(readOnlyModel.getGameId().toString()));
+        showPrompt(); // todo: check show prompt usage
+        drawInterface(null);
     }
 
     @Override
     public void updateInterfaceFromGameIdListChange() {
-
-    }
-
-    /**
-     * Prints the games id list.
-     */
-    public void printGamesList(){
+        // print games list
         System.out.println("\r\033[2KOpen games:");
         for(int i=0; i< readOnlyModel.getGamesIdList().size(); i++){
             System.out.println(i + "\t" + readOnlyModel.getGamesIdList().get(i));
@@ -144,8 +141,8 @@ public class CLI implements UI {
      * Draws the game configuration.
      * @param errorMessage  the message to display
      */
-
-    public synchronized void drawInterface(String errorMessage)
+    // todo: move
+    private synchronized void drawInterface(String errorMessage)
     {
         try{
             //clear console
@@ -200,8 +197,8 @@ public class CLI implements UI {
         }
     }
 
-
-    public void setDisplayEra(boolean displayEra) {
+    // todo: move
+    private void setDisplayEra(boolean displayEra) {
         this.displayEra = displayEra;
     }
 
@@ -209,8 +206,8 @@ public class CLI implements UI {
      * Updates localPlayer value when the object is updated into the queue by the server
      * Used to update food, pp and cards of the player
      */
-
-    public void setLocalPlayer() {
+    // todo: move
+    private void setLocalPlayer() {
         readOnlyModel.getOrderedPlayers().stream()
                 .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
                 .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
@@ -218,14 +215,14 @@ public class CLI implements UI {
 
     @Override
     public void updateInterfaceFromGameStateChange() {
+        setDisplayEra(true);
         drawInterface(null);
-        System.out.println("\nNew game state".concat(readOnlyModel.getGameState().toString()));
-        showPrompt();
     }
 
     @Override
     public void updateInterfaceFromPlayerQueueChange() {
-
+        setLocalPlayer();
+        drawInterface(null);
     }
 
     @Override
@@ -245,22 +242,22 @@ public class CLI implements UI {
 
     @Override
     public void updateInterfaceFromStartGame() {
-
+        drawInterface(null);
     }
 
     @Override
     public void updateInterfaceFromEndGame() {
-
+        drawInterface(null);
     }
 
     @Override
     public void updateInterfaceFromForcedEndGame(String disconnectedPlayer) {
-
+        drawInterface("The game has ended due to disconnection of player " + disconnectedPlayer);
     }
 
     @Override
-    public void updateInterfaceFromErrorMessage() {
-
+    public void updateInterfaceFromErrorMessage(String messageToDisplay) {
+        drawInterface(messageToDisplay);
     }
 
 
