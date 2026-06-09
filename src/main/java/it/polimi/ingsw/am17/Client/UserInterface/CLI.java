@@ -586,7 +586,6 @@ public class CLI implements UI {
      * lets the user select one of them
      * @return  the selected color
      */
-    // todo: check print
     private Color chooseColor() {
         // color selection
         while (true) {
