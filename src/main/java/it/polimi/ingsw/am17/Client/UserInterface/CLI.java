@@ -117,7 +117,6 @@ public class CLI implements UI {
         }
     }
 
-    // todo: check show prompt usage globally
 
     @Override
     public void updateInterfaceFromGameIdChange() {
@@ -569,7 +568,6 @@ public class CLI implements UI {
      * Asks the user to type their nickname
      * @return the nickname to be set
      */
-    // todo: check print
     private String askNickname() {
         String nickname = "";
         while (nickname.isEmpty()) {
@@ -577,7 +575,7 @@ public class CLI implements UI {
             nickname = scanner.nextLine().trim();
             if(nickname.length() >10 ) {
                 nickname = "";
-                System.out.print("Your nickname has more than 10 characters!\n");
+                System.out.print(ANSI_RED + "Your nickname has more than 10 characters!\n" + ANSI_RESET);
             }
         }
         return nickname;
@@ -604,10 +602,10 @@ public class CLI implements UI {
                 if (choice >= 0 && choice < availableColors.size()) {
                     return availableColors.get(choice);
                 } else {
-                    System.out.println("Invalid number. Please choose between 1 and " + availableColors.size());
+                    System.out.println(ANSI_RED + "Invalid number. Please choose between 1 and " + availableColors.size() + ANSI_RESET);
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid number, not text.");
+                System.out.println(ANSI_RED + "Please enter a valid number, not text." + ANSI_RESET);
             }
         }
     }
