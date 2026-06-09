@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+
 public interface UI {
     void start();
 
@@ -15,5 +17,5 @@ public interface UI {
     void updateInterfaceFromStartGame();
     void updateInterfaceFromEndGame();
     void updateInterfaceFromForcedEndGame(String disconnectedPlayer);
-    void updateInterfaceFromErrorMessage();
+    void updateInterfaceFromErrorMessage(InvalidOperationException exception);
 }

@@ -461,12 +461,6 @@ public class ClientModel implements ClientModelInterface {
      */
     @Override
     public void updateError(InvalidOperationException exception) {
-        ErrorType type = exception.getErrorType();
-
-        String messageToDisplay = (type == ErrorType.UNKNOWN)
-                ? exception.getMessage()
-                : type.getMessage();
-
-        userInterface.updateInterfaceFromErrorMessage(messageToDisplay);
+        userInterface.updateInterfaceFromErrorMessage(exception);
     }
 }
