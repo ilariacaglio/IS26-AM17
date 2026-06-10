@@ -1,9 +1,8 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.Client.UserInterface.GUIElements.*;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -26,8 +25,7 @@ public class GUI implements UI {
     private final double START_WINDOW_WIDTH = 400;
     private final double START_WINDOW_HEIGHT = 300;
 
-    private VirtualServer server;
-    private VirtualView client;
+    private final ServerAdapter serverAdapter;
     private ClientModel game;
     private Player localPlayer;
     private boolean building2EffectUsed;
@@ -41,9 +39,8 @@ public class GUI implements UI {
 
     List<Color> availableColors;
 
-    public GUI(VirtualServer server, VirtualView view) {
-        this.server = server;
-        client = view;
+    public GUI(ServerAdapter serverAdapter) {
+        this.serverAdapter = serverAdapter;
     }
     JoinView joinView;
 
@@ -209,7 +206,7 @@ public class GUI implements UI {
 
     }
     @Override
-    public void printEra(){
+    public void setDisplayEra(boolean displayEra) {
 
     }
 
@@ -227,6 +224,7 @@ public class GUI implements UI {
     /**
      * update the game list in the join view
      */
+
     @Override
     public void printGamesList(){
         // Check if the user is currently looking at the Join Screen
@@ -251,7 +249,7 @@ public class GUI implements UI {
      */
     public void getGameList(){
         try {
-            server.getGamesList(client);
+            serverAdapter.getGamesList().join();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -263,7 +261,7 @@ public class GUI implements UI {
      * @throws Exception
      */
     public void joinGame(UUID gameId) throws Exception{
-            server.joinGame(client, gameId,localPlayer);
+        serverAdapter.joinGame(gameId,localPlayer).join();
     }
 
     /**
@@ -272,7 +270,7 @@ public class GUI implements UI {
      * @throws Exception
      */
     public void createGame(int numPlayer) throws Exception{
-            server.createGame(client, localPlayer, numPlayer);
+        serverAdapter.createGame(localPlayer, numPlayer).join();
     }
 
     /**
@@ -281,7 +279,7 @@ public class GUI implements UI {
      * @throws Exception
      */
     public void pickOfferingCard(OfferingCard card) throws Exception{
-        server.pickOfferingCard(client, card.getOrderLetter());
+        serverAdapter.pickOfferingCard(card.getOrderLetter()).join();
     }
 
     /**
@@ -291,7 +289,7 @@ public class GUI implements UI {
      * @throws Exception
      */
     public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
-        server.pickTribeCards(client, characterCards, buildingCards);
+        serverAdapter.pickTribeCards(characterCards, buildingCards).join();
     }
 
     /**
@@ -319,19 +317,6 @@ public class GUI implements UI {
         });
     }
 
-
-    @Override
-    public boolean isBuilding2EffectUsed() {
-        return building2EffectUsed;
-    }
-
-
-    @Override
-    public void setBuilding2EffectUsed(boolean building2EffectUsed) {
-        this.building2EffectUsed = building2EffectUsed;
-    }
-
-
     /**
      * Updates localPlayer value when the object is updated into the queue by the server
      * Used to update food, pp and cards of the player
@@ -342,10 +327,6 @@ public class GUI implements UI {
                 .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
     }
 
-    /**
-     * return the local player
-     * @return localPlayer
-     */
     public Player getLocalPlayer() {
         return localPlayer;
     }

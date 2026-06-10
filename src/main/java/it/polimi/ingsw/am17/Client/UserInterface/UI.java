@@ -14,12 +14,10 @@ public interface UI {
     void updateInterfacePlayerQueue();
     void drawInterface(String errorMessage);
     void printGameId(UUID gameId);
-    void printEra();
+    void setDisplayEra(boolean displayEra);
     void printGamesList();
     void setLocalPlayer();
     Player getLocalPlayer();
     void setModel(ClientModel model);
     void setAvailableColors(List<Color> availableColors);
-    boolean isBuilding2EffectUsed();
-    void setBuilding2EffectUsed(boolean building2EffectUsed);
 }

@@ -96,15 +96,15 @@ public class CardGUI extends StackPane {
         String totemImagePath = "";
 
         if (playerColor.equals(Color.RED)) {
-            totemImagePath = "/images/totem/totem_red.png";
+            totemImagePath = "/Images/totem/totem_red.png";
         } else if (playerColor.equals(Color.BLUE)) {
-            totemImagePath = "/images/totem/totem_blue.png";
+            totemImagePath = "/Images/totem/totem_blue.png";
         } else if (playerColor.equals(Color.BLACK)) {
-            totemImagePath = "/images/totem/totem_black.png";
+            totemImagePath = "/Images/totem/totem_black.png";
         } else if (playerColor.equals(Color.YELLOW)) { // Assuming yellow is a player color
-            totemImagePath = "/images/totem/totem_yellow.png";
+            totemImagePath = "/Images/totem/totem_yellow.png";
         } else if (playerColor.equals(Color.WHITE)) {
-            totemImagePath = "/images/totem/totem_white.png";
+            totemImagePath = "/Images/totem/totem_white.png";
         }
 
         // Load the image and show it

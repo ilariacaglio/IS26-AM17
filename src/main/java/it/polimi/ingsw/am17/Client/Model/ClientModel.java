@@ -97,8 +97,7 @@ public class ClientModel {
      */
     public void setGameState(GameState gameState){
         this.gameState = gameState;
-        // UI communication
-        userInterface.printEra();
+        userInterface.setDisplayEra(true);
     }
 
     public GameState getGameState(){
@@ -353,7 +352,6 @@ public class ClientModel {
         setTribeCards(upperRow, lowerRow);
         setPickOCPhase(true);
 
-        userInterface.setBuilding2EffectUsed(false);
         userInterface.updateInterfaceFromEndTurn();
     }
 
@@ -386,22 +384,21 @@ public class ClientModel {
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
 
-
         // check if player has an offering card
         if (isPlayerInOfferingCard(player,offeringCards)) {
             // update data and manage queue
             setPlayerInQueue(player);
             // cards selection based on "usual" offering cards
             removePlayerFromOfferingCard(player);
+            // if player has building two, book extra turn
+            if (player.hasBuilding2())
+                buildingTwoOfferingCard.setPlayer(player);
         }
         else{
             // if not, is buildingType2 move
+            buildingTwoOfferingCard.setPlayer(null);
             // update data without managing queue
             updatePlayerDataInQueue(player);
-            if (player.equals(userInterface.getLocalPlayer()) &&
-                    !userInterface.isBuilding2EffectUsed()) {
-                        userInterface.setBuilding2EffectUsed(true);
-            }
         }
 
         removeTribeCards(characterCards);
@@ -443,29 +440,36 @@ public class ClientModel {
     }
 
     /**
-     * Updates model when game ends
-     * @param disconnectedPlayer    if not null specifies the disconnected player
-     * @param ranking               if not null, the global ranking
-     * @param orderedPlayers        if not null, the local ranking
+     * Updates model when the game ends.
+     * @param ranking to show in the UI.
+     * @param orderedPlayers to show in the UI.
      */
-    public void updateEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
-        String message = null;
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         // set game state to ended
         gameState = GameState.ENDED;
-        if (disconnectedPlayer == null){
-            // game ended by the server
-            // set global ranking
-            setRanking(ranking);
-            // set local ranking
-            setOrderedPlayers(orderedPlayers);
-        }
-        else {
-            // game ended by player disconnection
-            resetGameAttributes();
-            message = "The game has ended due to disconnection of player " + disconnectedPlayer;
-        }
-        userInterface.drawInterface(message);
+
+        // set global ranking
+        setRanking(ranking);
+
+        // set local ranking
+        setOrderedPlayers(orderedPlayers);
+
+        userInterface.drawInterface(null);
         logger.info("Game closed.");
+
+        // reset game state
+        gameState = GameState.NONE;
+    }
+
+    /**
+     * Updates model when the game forcibly ends (by player disconnection).
+     * @param disconnectedPlayer the disconnected player to show in the UI.
+     */
+    public void updateForceEndGame(String disconnectedPlayer) {
+        resetGameAttributes();
+        userInterface.drawInterface("The game has ended due to disconnection of player " + disconnectedPlayer);
+        logger.info("Game closed.");
+
         // reset game state
         gameState = GameState.NONE;
     }
