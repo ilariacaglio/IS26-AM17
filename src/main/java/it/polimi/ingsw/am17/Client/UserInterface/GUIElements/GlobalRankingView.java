@@ -109,10 +109,9 @@ public class GlobalRankingView {
             -fx-font-weight: bold;
             -fx-padding: 10px 20px;
         """);
-        //close game
+        //go back to start page
         end.setOnAction(e -> {
-            Platform.exit();
-            System.exit(0);
+            mainGui.showStartInterface();
         });
 
         root.getChildren().addAll(globalRankingTitle, globalRankingArea, end);
