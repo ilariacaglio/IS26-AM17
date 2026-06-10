@@ -27,62 +27,69 @@ public class LocalRankingView {
         this.game = game;
         buildUI();
     }
-
+    //generates the interface for the final ranking after the end of the game
     private void buildUI() {
         root = new VBox(20);
         root.setPadding(new Insets(30));
-        root.setAlignment(Pos.TOP_CENTER);
+        root.setAlignment(Pos.CENTER);
+        //background color
+        root.setStyle("-fx-background-color: #2c3e50;");
         //title
         Label rankingTitle = new Label("--- FINAL GAME RANKING ---");
         rankingTitle.setStyle("""
-            -fx-text-fill: black;
+            -fx-text-fill: #ecf0f1;
             -fx-font-size: 30px;
             -fx-font-weight: bold;
         """);
         //ranking area
-        TextArea localRankingArea = new TextArea();
-
-        localRankingArea.setEditable(false);
-        localRankingArea.setWrapText(true);
-
+        VBox localRankingArea = new VBox(10);
+        localRankingArea.setAlignment(Pos.CENTER);
+        localRankingArea.setMaxWidth(400);
+        localRankingArea.setPadding(new Insets(20));
         localRankingArea.setStyle("""
-            -fx-font-size: 18px;
-            -fx-control-inner-background: #f4f4f4;
-            -fx-font-family: 'Consolas';
+            -fx-background-color: #ecf0f1;
+            -fx-background-radius: 10px;
+            -fx-border-color: #bdc3c7;
+            -fx-border-radius: 10px;
+            -fx-border-width: 2px;
         """);
 
-        //fill ranking
+        //get players final order
         List<Player> sortedPlayers = game.getOrderedPlayers().stream()
                 .sorted(Comparator.comparingInt(Player::getPp).reversed())
                 .toList();
 
-        StringBuilder rankingText = new StringBuilder();
 
         int rank = 1;
 
         for (Player player : sortedPlayers) {
 
-            rankingText.append(rank)
-                    .append("° place: ")
-                    .append(player.getNickname())
-                    .append(" - Points: ")
-                    .append(player.getPp())
-                    .append("\n");
+            Label playerLabel = new Label(rank + "° place: " + player.getNickname() +
+                    " - Points: " + player.getPp());
+
+            playerLabel.setStyle("""
+                -fx-font-size: 24px;
+                -fx-font-family: 'Consolas';
+                -fx-text-fill: #2c3e50;
+            """);
+            //center text within the label
+            playerLabel.setMaxWidth(Double.MAX_VALUE);
+            playerLabel.setAlignment(Pos.CENTER);
+
+            localRankingArea.getChildren().add(playerLabel);
 
             rank++;
         }
-
-        localRankingArea.setText(rankingText.toString());
 
         VBox.setVgrow(localRankingArea, Priority.ALWAYS);
 
         //button to global ranking interface
         Button goToGlobalRanking = new Button("GO TO GLOBAL RANKING");
         goToGlobalRanking.setStyle("""
-        -fx-font-size: 18px;
-        -fx-font-weight: bold;
-        -fx-padding: 10px 20px;
-    """);
+            -fx-font-size: 18px;
+            -fx-font-weight: bold;
+            -fx-padding: 10px 20px;
+        """);
 
         goToGlobalRanking.setOnAction(e -> {
             mainGui.showGlobalInterface();
