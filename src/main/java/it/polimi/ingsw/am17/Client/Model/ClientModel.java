@@ -230,8 +230,8 @@ public class ClientModel {
     public Player getPlayerFromList(Player player)
     {
         return orderedPlayers.stream()
-            .filter(p -> p.equals(player))
-            .findFirst().orElse(null);
+                .filter(p -> p.equals(player))
+                .findFirst().orElse(null);
     }
 
     /**
@@ -307,7 +307,7 @@ public class ClientModel {
     public void updatePlayerQueue(Queue<Player> playerQueue) {
         setOrderedPlayers(playerQueue);
         // UI communication
-        userInterface.updateInterfacePlayerQueue();
+        userInterface.drawInterface(null);
     }
 
     /**
@@ -343,7 +343,7 @@ public class ClientModel {
      * @param lowerBuildingRow      the lower building row value to be set.
      */
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                     List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+                              List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         for(Player player : players) {
             // update player PP and food in player queue
             updatePlayerValue(getPlayerFromList(player), player);

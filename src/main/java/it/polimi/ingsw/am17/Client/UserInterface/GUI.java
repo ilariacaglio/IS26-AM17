@@ -210,16 +210,6 @@ public class GUI implements UI {
 
     }
 
-    /**
-     * update all graphics in the game related to player queue
-     */
-    @Override public void updateInterfacePlayerQueue(){
-        if(this.gameView != null) {
-            Platform.runLater(() -> {
-                gameView.updatePlayerQueue();
-            });
-        }
-    }
 
     /**
      * update the game list in the join view
