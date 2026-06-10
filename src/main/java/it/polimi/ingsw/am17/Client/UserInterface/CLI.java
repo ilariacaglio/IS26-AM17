@@ -20,11 +20,11 @@ import java.util.*;
 
 public class CLI implements UI {
     private final ServerAdapter serverAdapter;
+    private final Scanner scanner;
     private ClientModel readOnlyModel;
     private Player localPlayer;
-    boolean displayEra;
-    List<Color> availableColors;
-    Scanner scanner;
+    private boolean displayEra;
+    private List<Color> availableColors;
 
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_RED = "\u001B[31m";
