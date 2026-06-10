@@ -22,6 +22,7 @@ public class CLI implements UI {
     private final ServerAdapter serverAdapter;
     private ClientModel readOnlyModel;
     private Player localPlayer;
+    boolean displayEra;
     List<Color> availableColors;
     Scanner scanner;
 
@@ -32,6 +33,7 @@ public class CLI implements UI {
     public CLI (ServerAdapter serverAdapter) {
         this.serverAdapter = serverAdapter;
         this.scanner = new Scanner(System.in);
+        displayEra = false;
         resetColors();
     }
 
@@ -140,13 +142,11 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the game interface when the game state has changed
+     * Notifies the CLI that when drawInterface is called it should print the new era message
      */
     @Override
     public void updateInterfaceFromGameStateChange() {
-        String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
-        String message = "Era "+ eraToDisplay + " has begun!";
-        drawInterface(message, false);
+        displayEra = true;
     }
 
     /**
@@ -165,7 +165,6 @@ public class CLI implements UI {
         }
     }
 
-
     /**
      * Prints the game interface when a tribes card selection update message is received
      */
@@ -183,11 +182,19 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the game interface when the game turn ends
+     * Prints the game interface when the game turn ends.
+     * Prints message when new era starts
      */
     @Override
     public void updateInterfaceFromEndTurn(){
-        drawInterface();
+        if (displayEra) {
+            String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
+            String message = "Era "+ eraToDisplay + " has begun!";
+            drawInterface(message, false);
+            displayEra = false;
+        } else {
+            drawInterface();
+        }
     }
 
     /**
