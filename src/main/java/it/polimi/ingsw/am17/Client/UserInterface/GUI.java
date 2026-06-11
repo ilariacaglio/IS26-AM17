@@ -3,15 +3,15 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.Client.UserInterface.GUIElements.*;
+import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
-import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -26,7 +26,7 @@ public class GUI implements UI {
     private final double START_WINDOW_HEIGHT = 300;
 
     private final ServerAdapter serverAdapter;
-    private ClientModel game;
+    private ClientModel readOnlyModel;
     private Player localPlayer;
     private boolean building2EffectUsed;
 
@@ -73,40 +73,16 @@ public class GUI implements UI {
 
     /**
      * Check gameState and either start the Game interface or update it
-     * @param errorMessagge
      */
     @Override
-    public void drawInterface(String errorMessagge) {
+    public void updateInterfaceFromStartGame() {
         //LEAVE UNTIL SYNCHRONIZATION PROBLEMS ARE SOLVED
         Platform.runLater(() -> {
-            if (game == null) {
-                System.out.println("DEBUG: Il modello 'game' è NULL!");
-                return;
+            if (!isGameInterfaceInitialized) {
+                showGameInterface();
+                isGameInterfaceInitialized = true;
             }
-            GameState gameState = game.getGameState();
-            if (gameState == null) {
-                System.out.println("DEBUG: Il gameState è NULL!");
-                return;
-            }
-
-            System.out.println("DEBUG: drawInterface chiamato. Started: " + gameState.isGameStarted() + " | Ended: " + gameState.isGameEnded());
-        //Platform.runLater(() -> {
-
-            if(gameState.isGameStarted()) {
-                if (!gameState.isGameEnded()) {
-                    if (!isGameInterfaceInitialized) {
-                        showGameInterface();
-                        isGameInterfaceInitialized = true;
-                    }
-                    gameView.updateGameElements();
-                }
-            }
-            if(gameState.isGameEnded()){
-                System.out.println("DEBUG: Tento di mostrare showLocalInterface()...");
-                showLocalInterface();
-            }
-
-            //}
+            gameView.updateGameElements();
         });
     }
 
@@ -127,6 +103,14 @@ public class GUI implements UI {
             gameView.updateGameCardDecks();
         });
     }
+    /**
+     * Update all graphics component modified from playerQueue call
+     */
+    public void updateInterfaceFromPlayerQueueChange(){
+        Platform.runLater(() -> {
+            gameView.updatePlayerQueue();
+        });
+    }
 
     /**
      * Update all graphics component modified from pickOffering call
@@ -137,11 +121,23 @@ public class GUI implements UI {
         });
     }
 
+    @Override
+    public void updateInterfaceFromGameStateChange(){
+        Platform.runLater(()-> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("New Era");
+            alert.setHeaderText(null);
+            String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
+            alert.setContentText("Era "+ eraToDisplay + " has begun!");
+            alert.showAndWait();
+        });
+    }
+
     /**
      * set root to the interface for the global ranking
      */
     public void showGlobalInterface(){
-        GlobalRankingView globalRankingView = new GlobalRankingView(this, game, localPlayer);
+        GlobalRankingView globalRankingView = new GlobalRankingView(this, readOnlyModel, localPlayer);
         scene.setRoot(globalRankingView.getRoot());
     }
 
@@ -149,7 +145,7 @@ public class GUI implements UI {
      * set root to the interface for local ranking
      */
     public void showLocalInterface(){
-        LocalRankingView localRankingView = new LocalRankingView(this, game);
+        LocalRankingView localRankingView = new LocalRankingView(this, readOnlyModel);
         scene.setRoot(localRankingView.getRoot());
     }
 
@@ -157,7 +153,7 @@ public class GUI implements UI {
      * set root to the interface for the game
      */
     private void showGameInterface(){
-        gameView = new GameView(this, game, localPlayer);
+        gameView = new GameView(this, readOnlyModel, localPlayer);
         scene.setRoot(gameView.getRoot());
     }
 
@@ -189,7 +185,7 @@ public class GUI implements UI {
      * set root to the interface to join a game
      */
     public void showJoinInterface() {
-        joinView = new JoinView(this, game.getGamesIdList());
+        joinView = new JoinView(this, readOnlyModel.getGamesIdList());
         scene.setRoot(joinView.getRoot());
         try {
             //ask server for gameList
@@ -200,28 +196,17 @@ public class GUI implements UI {
     }
 
 
-
-    @Override
-    public void printGameId(UUID gameId) {
-
-    }
-    @Override
-    public void setDisplayEra(boolean displayEra) {
-
-    }
-
-
     /**
      * update the game list in the join view
      */
 
     @Override
-    public void printGamesList(){
+    public void updateInterfaceFromGameIdListChange(){
         // Check if the user is currently looking at the Join Screen
         if (joinView != null && scene.getRoot() == joinView.getRoot()) {
 
             // Pass the new list
-            joinView.updateGameList(game.getGamesIdList());
+            joinView.updateGameList(readOnlyModel.getGamesIdList());
 
         }
     }
@@ -288,14 +273,13 @@ public class GUI implements UI {
      */
     @Override
     public  void setModel(ClientModel model) {
-        this.game = model;
+        this.readOnlyModel = model;
     }
 
     /**
      * Set the color the player can choose when creating a character
      * @param availableColors
      */
-    @Override
     public void setAvailableColors(List<Color> availableColors) {
         this.availableColors=availableColors;
         Platform.runLater(()-> {
@@ -307,17 +291,77 @@ public class GUI implements UI {
         });
     }
 
+    /**
+     * When game is ended show the ranking of the game
+     */
     @Override
-    public void updateInterfaceFromIdChange() {
+    public void updateInterfaceFromEndGame(){
+        Platform.runLater(this::showLocalInterface);
+    }
+
+    @Override
+    public void updateInterfaceFromForcedEndGame(String disconnectedPlayer){
+        Platform.runLater(()-> {
+            //alert the player that another player has disconnected
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Player has disconnected");
+            alert.setHeaderText(null);
+            alert.setContentText(disconnectedPlayer + " has disconnected from the game");
+            alert.showAndWait();
+
+            showStartInterface();
+        });
+    }
+
+    /**
+     * Alert the player when a notification error is received.
+     * @param exception     the exception describing the error occurred.
+     */
+    @Override
+    public void updateInterfaceFromErrorMessage(InvalidOperationException exception){
+        ErrorType type = exception.getErrorType();
+        if (type == ErrorType.DUPLICATE_COLOR) {
+            availableColors = ((ColorException) exception).getAvailableColors();
+            setAvailableColors(availableColors);
+        }else {
+
+            String messageToDisplay = (type == ErrorType.UNKNOWN)
+                    ? exception.getMessage()
+                    : type.getMessage();
+
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText(messageToDisplay);
+                alert.showAndWait();
+            });
+
+
+        }
+    }
+
+    /**
+     * Since you connected to the game show game interface
+     */
+    @Override
+    public void updateInterfaceFromGameIdChange() {
+        Platform.runLater(() -> {
+            if(!isGameInterfaceInitialized) {
+                showGameInterface();
+                isGameInterfaceInitialized = true;
+            }
+        });
 
     }
+
 
     /**
      * Updates localPlayer value when the object is updated into the queue by the server
      * Used to update food, pp and cards of the player
      */
     public void setLocalPlayer() {
-        game.getOrderedPlayers().stream()
+        readOnlyModel.getOrderedPlayers().stream()
                 .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
                 .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
     }

@@ -314,7 +314,7 @@ public class GameView {
      */
     public void updatePlayerQueue(){
         // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn());
+        turnOverlay.setVisible(game.isPlayerTurn(localPlayer));
     }
 
     /**
@@ -387,7 +387,7 @@ public class GameView {
      */
     public void updateOfferingDeck(){
         // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn());
+        turnOverlay.setVisible(game.isPlayerTurn(localPlayer));
 
         for (CardGUI cardGUI : offeringCardGUI){
             if(cardGUI.isSelected())
@@ -613,7 +613,7 @@ public class GameView {
     }
 
     private void createPlayerCardLabel(){
-        selectedPlayer = game.getPlayerFromList(selectedPlayer);
+        selectedPlayer = game.findPlayer(selectedPlayer);
         Label name = new Label("Name: " + selectedPlayer.getNickname());
         name.setStyle("""
             -fx-text-fill: white;
