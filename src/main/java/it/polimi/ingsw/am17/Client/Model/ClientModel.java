@@ -204,8 +204,8 @@ public class ClientModel implements ClientModelInterface {
     public synchronized Player findPlayer(Player player)
     {
         return orderedPlayers.stream()
-            .filter(p -> p.equals(player))
-            .findFirst().orElse(null);
+                .filter(p -> p.equals(player))
+                .findFirst().orElse(null);
     }
 
     /**

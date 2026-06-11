@@ -4,7 +4,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,11 +24,11 @@ public class CardGUI extends StackPane {
 
     public CardGUI(String imagePath, Color playerColor) {
         createGraphics(imagePath);
-        updateBorderFromPlayer(playerColor);
+        updateTotem(playerColor);
     }
 
     private void createGraphics(String imagePath) {
-        // 1. The Selection Border (Base Layer)
+
         border = new Rectangle(100, 140);
         border.setArcWidth(15);
         border.setArcHeight(15);
@@ -38,7 +37,6 @@ public class CardGUI extends StackPane {
         border.setStrokeWidth(1);
         this.getChildren().add(border);
 
-        // 2. The Card Image (Middle Layer)
         if (imagePath != null) {
             Image img = new Image(getClass().getResourceAsStream(imagePath));
             ImageView view = new ImageView(img);
@@ -70,7 +68,7 @@ public class CardGUI extends StackPane {
 
         // Position the totem at the top center, slightly overhanging the edge
         StackPane.setAlignment(totemView, Pos.TOP_CENTER);
-        StackPane.setMargin(totemView, new Insets(-15, 0, 0, 0));
+        StackPane.setMargin(totemView, new Insets(0, 0, 0, 0));
 
         this.getChildren().add(totemView);
     }
@@ -88,8 +86,7 @@ public class CardGUI extends StackPane {
         }
     }
 
-    // You might want to rename this to updatePlayerTotem() later!
-    public void updateBorderFromPlayer(Color playerColor){
+    public void updateTotem(Color playerColor){
         if (playerColor == null || playerColor.equals(Color.TRANSPARENT)) {
             totemView.setVisible(false);
             return;
