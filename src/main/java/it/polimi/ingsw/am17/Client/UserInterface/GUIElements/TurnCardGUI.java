@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am17.Client.UserInterface;
+package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -27,24 +27,30 @@ public class TurnCardGUI extends StackPane {
         this.getChildren().add(border);
 
         if (imagePath != null) {
-            Image img = new Image(getClass().getResourceAsStream(imagePath));
-            ImageView view = new ImageView(img);
-            view.setFitWidth(CARD_WIDTH);
-            view.setFitHeight(CARD_HEIGHT);
-            view.setPreserveRatio(true);
-            view.setSmooth(true);
+            // Safely check if the stream exists
+            java.io.InputStream imageStream = getClass().getResourceAsStream(imagePath);
 
-            this.setPrefSize(CARD_WIDTH, CARD_HEIGHT);
-            this.setMinSize(CARD_WIDTH, CARD_HEIGHT);
-            this.setMaxSize(CARD_WIDTH, CARD_HEIGHT);
+            if (imageStream != null) {
+                Image img = new Image(imageStream);
+                ImageView view = new ImageView(img);
+                view.setFitWidth(CARD_WIDTH);
+                view.setFitHeight(CARD_HEIGHT);
+                view.setPreserveRatio(true);
+                view.setSmooth(true);
 
-            Rectangle clip = new Rectangle(90, 130);
-            clip.setArcWidth(12);
-            clip.setArcHeight(12);
-            view.setClip(clip);
-            this.getChildren().add(view);
+                this.setPrefSize(CARD_WIDTH, CARD_HEIGHT);
+                this.setMinSize(CARD_WIDTH, CARD_HEIGHT);
+                this.setMaxSize(CARD_WIDTH, CARD_HEIGHT);
+
+                Rectangle clip = new Rectangle(90, 130);
+                clip.setArcWidth(12);
+                clip.setArcHeight(12);
+                view.setClip(clip);
+                this.getChildren().add(view);
+            } else {
+                System.err.println("Warning: TurnCard image not found at path -> " + imagePath);
+            }
         }
-
         // Initialize the array to match the player count
         totemSlots = new ImageView[numSlots];
 
@@ -112,9 +118,16 @@ public class TurnCardGUI extends StackPane {
             for (int i = 0; i < turnOrderColors.size() && i < totemSlots.length; i++) {
                 String path = getTotemImagePath(turnOrderColors.get(i));
                 if (!path.isEmpty()) {
-                    Image img = new Image(getClass().getResourceAsStream(path));
-                    totemSlots[i].setImage(img);
-                    totemSlots[i].setVisible(true);
+                    java.io.InputStream totemStream = getClass().getResourceAsStream(path);
+
+                    if (totemStream != null) {
+                        Image img = new Image(totemStream);
+                        totemSlots[i].setImage(img);
+                        totemSlots[i].setVisible(true);
+                    } else {
+                        System.err.println("Warning: Turn order totem image not found at path -> " + path);
+                        totemSlots[i].setVisible(false);
+                    }
                 }
             }
         }

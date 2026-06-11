@@ -37,8 +37,10 @@ public class CardGUI extends StackPane {
         border.setStrokeWidth(1);
         this.getChildren().add(border);
 
-        if (imagePath != null) {
-            Image img = new Image(getClass().getResourceAsStream(imagePath));
+        java.io.InputStream imageStream = getClass().getResourceAsStream(imagePath);
+
+        if (imageStream != null) {
+            Image img = new Image(imageStream);
             ImageView view = new ImageView(img);
             view.setFitWidth(CARD_WIDTH);
             view.setFitHeight(CARD_HEIGHT);
@@ -54,9 +56,10 @@ public class CardGUI extends StackPane {
             clip.setArcHeight(12);
             view.setClip(clip);
             this.getChildren().add(view);
+        } else {
+            System.err.println("Warning: Card image not found at path -> " + imagePath);
         }
 
-        // 3. The Player Totem (Top Layer - using a PNG!)
         totemView = new ImageView();
 
         // Adjust these sizes to fit your specific PNG
@@ -107,11 +110,18 @@ public class CardGUI extends StackPane {
             totemImagePath = "/Images/totem/totem_white.png";
         }
 
-        // Load the image and show it
+        // Load the image safely
         if (!totemImagePath.isEmpty()) {
-            Image totemImg = new Image(getClass().getResourceAsStream(totemImagePath));
-            totemView.setImage(totemImg);
-            totemView.setVisible(true);
+            java.io.InputStream totemStream = getClass().getResourceAsStream(totemImagePath);
+
+            if (totemStream != null) {
+                Image totemImg = new Image(totemStream);
+                totemView.setImage(totemImg);
+                totemView.setVisible(true);
+            } else {
+                System.err.println("Warning: Totem image not found at path -> " + totemImagePath);
+                totemView.setVisible(false); // Keep it hidden if missing
+            }
         }
     }
 
