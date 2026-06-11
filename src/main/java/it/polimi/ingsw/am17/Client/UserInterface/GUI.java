@@ -347,10 +347,11 @@ public class GUI implements UI {
     @Override
     public void updateInterfaceFromGameIdChange() {
         Platform.runLater(() -> {
-            if(!isGameInterfaceInitialized) {
-                showGameInterface();
-                isGameInterfaceInitialized = true;
-            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Connected");
+            alert.setHeaderText(null);
+            alert.setContentText("You have been connected to a game");
+            alert.showAndWait();
         });
 
     }
