@@ -231,6 +231,8 @@ public class ClientModel implements ClientModelInterface {
      * @return true if it is the local player's turn, false otherwise.
      */
     public synchronized boolean isPlayerTurn(Player localPlayer) {
+        //make sure local player is updated
+        localPlayer = findPlayer(localPlayer);
         // if the game hasn't started it is not the players turn
         if(!gameState.isGameStarted())
             return false;
@@ -245,6 +247,9 @@ public class ClientModel implements ClientModelInterface {
      * @param buildingCards     The list of the picked building cards.
      */
     public synchronized void  validateTribeCardsTurnAction(Player localPlayer, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        //make sure local player is updated
+        localPlayer = findPlayer(localPlayer);
+
         SharedModelLogic.validateTribesCardTurnAction(localPlayer, orderedPlayers,
                 offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
                 upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
