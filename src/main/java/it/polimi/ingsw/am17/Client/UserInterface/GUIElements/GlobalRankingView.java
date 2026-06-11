@@ -105,18 +105,18 @@ public class GlobalRankingView {
 
 
         //button to global ranking interface
-        Button end = new Button("END");
-        end.setStyle("""
+        Button goBackButton = new Button("GO BACK");
+        goBackButton.setStyle("""
             -fx-font-size: 18px;
             -fx-font-weight: bold;
             -fx-padding: 10px 20px;
         """);
         //go back to start page
-        end.setOnAction(e -> {
+        goBackButton.setOnAction(e -> {
             mainGui.showStartInterface();
         });
 
-        root.getChildren().addAll(globalRankingTitle, globalRankingArea, end);
+        root.getChildren().addAll(globalRankingTitle, globalRankingArea, goBackButton);
     }
 
     // The main GUI will call this to put it in the Scene
