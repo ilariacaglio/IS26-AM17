@@ -457,16 +457,18 @@ public class ClientModel implements ClientModelInterface {
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
-     * @param exception of which the message is passed to the UI.
+     * @param exception which is passed to the UI.
      */
     @Override
     public void updateError(InvalidOperationException exception) {
+        // change game state in case the error occurred while joining a game
         ErrorType type = exception.getErrorType();
+        if (type == ErrorType.DUPLICATE_COLOR || type == ErrorType.DUPLICATE_NICKNAME) {
+            synchronized (this) {
+                gameState = GameState.NONE;
+            }
+        }
 
-        String messageToDisplay = (type == ErrorType.UNKNOWN)
-                ? exception.getMessage()
-                : type.getMessage();
-
-        userInterface.updateInterfaceFromErrorMessage();
+        userInterface.updateInterfaceFromErrorMessage(exception);
     }
 }
