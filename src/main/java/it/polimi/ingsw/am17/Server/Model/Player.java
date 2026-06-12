@@ -412,7 +412,7 @@ public class Player implements Serializable {
 
        //additional stars given by BuildingType9
        for(BuildingCard c: this.buildingCards){
-           starBonus += c.GiveBonusStarInRitualEvent(this.characterCards);//BuildingType9
+           starBonus += c.GiveBonusStarInRitualEvent();//BuildingType9
        }
        //count number of star icons
        int stars = this.characterCards.stream()

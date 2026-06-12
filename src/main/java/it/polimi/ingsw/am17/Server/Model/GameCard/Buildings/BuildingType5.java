@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.GameState;
 import static it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType.ARTIST;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Get one food during PaintingEvent for each artist
@@ -20,9 +21,13 @@ public class BuildingType5 extends BuildingCard {
         super(era, foodCost, bonusPoints);
     }
 
+    private static final Logger logger = Logger.getLogger(BuildingType5.class.getName());
+
     @Override
     public int AddFoodPerArtistInPaintingEvent(List<CharacterCard> playerCharacterCards) {
-        return (int) playerCharacterCards.stream().filter(card -> card.getCardType() == ARTIST).count();
+        int numArtists =  (int) playerCharacterCards.stream().filter(card -> card.getCardType() == ARTIST).count();
+        logger.info("Getting +" + numArtists + " extra food from BuildingType5");
+        return numArtists;
     }
 
     @Override

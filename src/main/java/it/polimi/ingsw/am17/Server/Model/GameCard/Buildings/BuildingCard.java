@@ -37,7 +37,7 @@ public class BuildingCard extends GameCard implements Serializable {
     public int AddFoodPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; }
     public int AddFoodPerArtistInPaintingEvent(List<CharacterCard> characterCards) { return 0; }
     public int AddPointPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; }
-    public int GiveBonusStarInRitualEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: returns true if a
+    public int GiveBonusStarInRitualEvent() { return 0; } // EventEffect: returns true if a
 
     /**
      * @return true if a player should not lose points from ritual events.
