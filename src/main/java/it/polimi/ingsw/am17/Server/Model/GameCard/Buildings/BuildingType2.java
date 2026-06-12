@@ -17,7 +17,6 @@ public class BuildingType2 extends BuildingCard {
 
     @Override
     public boolean hasOneMoreMove() {
-//        // TODO: make sure the player has not his offering card anymore and that this is called before the game stops considering new turns.
         return true;
     }
 
