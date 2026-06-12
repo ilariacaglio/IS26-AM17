@@ -107,9 +107,11 @@ public class GUI implements UI {
      * Update all graphics component modified from playerQueue call
      */
     public void updateInterfaceFromPlayerQueueChange(){
-        Platform.runLater(() -> {
-            gameView.updatePlayerQueue();
-        });
+        if(gameView != null) {
+            Platform.runLater(() -> {
+                gameView.updatePlayerQueue();
+            });
+        }
     }
 
     /**
