@@ -18,6 +18,6 @@ public interface UI {
     void updateInterfaceFromEndTurn();
     void updateInterfaceFromStartGame();
     void updateInterfaceFromEndGame();
-    void updateInterfaceFromForcedEndGame(String disconnectedPlayer);
+    void updateInterfaceFromForcedEndGame(String disconnectedReason);
     void updateInterfaceFromErrorMessage(InvalidOperationException exception);
 }

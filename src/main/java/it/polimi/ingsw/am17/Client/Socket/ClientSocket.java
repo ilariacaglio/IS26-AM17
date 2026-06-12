@@ -139,7 +139,7 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
         logger.severe("Server disconnected, shutting down.");
         heartbeater.shutdown();
         heartwatcher.shutdown();
-        model.updateForcedEndGame("");
+        model.updateForcedEndGame("Server " + server.getClass() );
         System.exit(1);
     }
 
@@ -181,7 +181,7 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
 
     @Override
     public void updateForceEndGame(String disconnectedPlayer) {
-        model.updateForcedEndGame(disconnectedPlayer);
+        model.updateForcedEndGame("Player " + disconnectedPlayer);
     }
 
     @Override

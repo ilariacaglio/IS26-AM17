@@ -302,13 +302,13 @@ public class GUI implements UI {
     }
 
     @Override
-    public void updateInterfaceFromForcedEndGame(String disconnectedPlayer){
+    public void updateInterfaceFromForcedEndGame(String disconnectedReason){
         Platform.runLater(()-> {
             //alert the player that another player has disconnected
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Player has disconnected");
+            alert.setTitle("Disconnection!");
             alert.setHeaderText(null);
-            alert.setContentText(disconnectedPlayer + " has disconnected from the game");
+            alert.setContentText(disconnectedReason + " has disconnected from the game");
             alert.showAndWait();
 
             showStartInterface();

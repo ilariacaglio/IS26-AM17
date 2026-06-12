@@ -436,10 +436,10 @@ public class ClientModel implements ClientModelInterface {
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
-     * @param disconnectedPlayer passed to the UI.
+     * @param disconnectedElement passed to the UI.
      */
     @Override
-    public void updateForcedEndGame(String disconnectedPlayer) {
+    public void updateForcedEndGame(String disconnectedElement) {
         synchronized (this) {
             // Resets all game rows, offering cards, ranking and player queue
             setOrderedPlayers(new LinkedList<>());
@@ -449,7 +449,7 @@ public class ClientModel implements ClientModelInterface {
             setRanking(new ArrayList<>());
         }
 
-        userInterface.updateInterfaceFromForcedEndGame(disconnectedPlayer);
+        userInterface.updateInterfaceFromForcedEndGame(disconnectedElement);
 
         // reset game state
         synchronized (this){
