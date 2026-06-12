@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * Manages multiple games with an eye to concurrency. TODO: check
  * Receives requests from the client via a ServerSocket/RMI and forwards it to the model.
  */
-public class GamesController {
+public class GamesController implements ControllerInterface {
     private final ConcurrentHashMap<UUID,Game> games;
     private final ConcurrentHashMap<VirtualView, UUID> gameMapping;
     private final ConcurrentHashMap<VirtualView, String> playerMapping; // string field is for nickname
@@ -138,6 +138,7 @@ public class GamesController {
      * @param player player creating the game.
      * @param numPlayers number of players for the game.
      */
+    @Override
     public void createGame(VirtualView client, Player player, int numPlayers) {
         logger.info("Client " + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
@@ -169,6 +170,7 @@ public class GamesController {
      * @param gameId of the game to join.
      * @param player to add to the game.
      */
+    @Override
     public void joinGame(VirtualView client, UUID gameId, Player player) {
         logger.info("Client " + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
 
@@ -210,6 +212,7 @@ public class GamesController {
      * Closes a game (also when a player disconnects [unexpectedly]).
      * @param client client generating the request.
      */
+    @Override
     public void closeGame(VirtualView client) {
         try {
             // get uuid of the game from the client (mapping)
@@ -259,6 +262,7 @@ public class GamesController {
      * @param client                the client who made the request
      * @param offeringCardLetter    letter of the offering card to be selected
      */
+    @Override
     public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
         try {
             // search for client nickname
@@ -292,6 +296,7 @@ public class GamesController {
      * @param characterCards    selected by the player
      * @param buildingCards     selected by the player
      */
+    @Override
     public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try {
             // search for client nickname
@@ -321,6 +326,7 @@ public class GamesController {
      * Sends an update to the client with the list of open games.
      * @param client to send the update.
      */
+    @Override
     public void getGamesList(VirtualView client) {
         logger.info("Client " + client.getClass().getSimpleName() + " requested the games list.");
         try {

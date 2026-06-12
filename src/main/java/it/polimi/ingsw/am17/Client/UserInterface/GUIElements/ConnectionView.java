@@ -25,6 +25,7 @@ public class ConnectionView {
         root = new VBox(25); // Increased spacing between elements
         root.setAlignment(Pos.CENTER); // Centered menu
         root.setPadding(new Insets(50));
+
         //create Buttons
         Button createGameButton = new Button("CREATE GAME");
         Button  joinGameButton = new Button("JOIN GAME");
@@ -43,12 +44,11 @@ public class ConnectionView {
         // Use a VBox for the buttons so they stack vertically (standard for game menus)
         VBox buttonContainer = new VBox(15, createGameButton, joinGameButton, backButton, exitButton);
         buttonContainer.setAlignment(Pos.CENTER);
-        //createGameButton opens drawInterface only for testing purposes
+
         createGameButton.setOnAction(e -> {
             mainGui.showPlayerCountSelection();
         });
         joinGameButton.setOnAction(e -> {
-            // Cambia la radice della scena con l'interfaccia per l'ID
             mainGui.showJoinInterface();
         });
         backButton.setOnAction(e ->{

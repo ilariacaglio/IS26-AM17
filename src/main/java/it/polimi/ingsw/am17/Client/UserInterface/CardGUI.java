@@ -4,7 +4,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,11 +24,11 @@ public class CardGUI extends StackPane {
 
     public CardGUI(String imagePath, Color playerColor) {
         createGraphics(imagePath);
-        updateBorderFromPlayer(playerColor);
+        updateTotem(playerColor);
     }
 
     private void createGraphics(String imagePath) {
-        // 1. The Selection Border (Base Layer)
+
         border = new Rectangle(100, 140);
         border.setArcWidth(15);
         border.setArcHeight(15);
@@ -38,9 +37,10 @@ public class CardGUI extends StackPane {
         border.setStrokeWidth(1);
         this.getChildren().add(border);
 
-        // 2. The Card Image (Middle Layer)
-        if (imagePath != null) {
-            Image img = new Image(getClass().getResourceAsStream(imagePath));
+        java.io.InputStream imageStream = getClass().getResourceAsStream(imagePath);
+
+        if (imageStream != null) {
+            Image img = new Image(imageStream);
             ImageView view = new ImageView(img);
             view.setFitWidth(CARD_WIDTH);
             view.setFitHeight(CARD_HEIGHT);
@@ -56,9 +56,10 @@ public class CardGUI extends StackPane {
             clip.setArcHeight(12);
             view.setClip(clip);
             this.getChildren().add(view);
+        } else {
+            System.err.println("Warning: Card image not found at path -> " + imagePath);
         }
 
-        // 3. The Player Totem (Top Layer - using a PNG!)
         totemView = new ImageView();
 
         // Adjust these sizes to fit your specific PNG
@@ -70,7 +71,7 @@ public class CardGUI extends StackPane {
 
         // Position the totem at the top center, slightly overhanging the edge
         StackPane.setAlignment(totemView, Pos.TOP_CENTER);
-        StackPane.setMargin(totemView, new Insets(-15, 0, 0, 0));
+        StackPane.setMargin(totemView, new Insets(0, 0, 0, 0));
 
         this.getChildren().add(totemView);
     }
@@ -88,8 +89,7 @@ public class CardGUI extends StackPane {
         }
     }
 
-    // You might want to rename this to updatePlayerTotem() later!
-    public void updateBorderFromPlayer(Color playerColor){
+    public void updateTotem(Color playerColor){
         if (playerColor == null || playerColor.equals(Color.TRANSPARENT)) {
             totemView.setVisible(false);
             return;
@@ -110,11 +110,18 @@ public class CardGUI extends StackPane {
             totemImagePath = "/Images/totem/totem_white.png";
         }
 
-        // Load the image and show it
+        // Load the image safely
         if (!totemImagePath.isEmpty()) {
-            Image totemImg = new Image(getClass().getResourceAsStream(totemImagePath));
-            totemView.setImage(totemImg);
-            totemView.setVisible(true);
+            java.io.InputStream totemStream = getClass().getResourceAsStream(totemImagePath);
+
+            if (totemStream != null) {
+                Image totemImg = new Image(totemStream);
+                totemView.setImage(totemImg);
+                totemView.setVisible(true);
+            } else {
+                System.err.println("Warning: Totem image not found at path -> " + totemImagePath);
+                totemView.setVisible(false); // Keep it hidden if missing
+            }
         }
     }
 

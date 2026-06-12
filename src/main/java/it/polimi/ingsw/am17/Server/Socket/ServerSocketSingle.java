@@ -4,7 +4,7 @@ import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
-import it.polimi.ingsw.am17.Server.Controller.GamesController;
+import it.polimi.ingsw.am17.Server.Controller.ControllerInterface;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
@@ -35,7 +35,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
     int failedHeartbeats = 0;
 
     private final Socket socket;
-    private final GamesController controller;
+    private final ControllerInterface controller;
     private final VirtualView client;
     private final ObjectMapper mapper;
 
@@ -45,7 +45,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
      * @param controller the controller.
      * @param client virtual view to forward inside the requests.
      */
-    public ServerSocketSingle(Socket socket, GamesController controller, VirtualView client) {
+    public ServerSocketSingle(Socket socket, ControllerInterface controller, VirtualView client) {
         this.socket = socket;
         this.controller = controller;
         this.client = client;

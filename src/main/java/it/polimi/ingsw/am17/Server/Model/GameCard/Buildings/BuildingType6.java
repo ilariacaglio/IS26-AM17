@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class BuildingType6 extends BuildingCard {
     private static final GameState era = GameState.ERA2;
-    private static final int foodCost = 5;
+    private static final int foodCost = 6;
     private static final int bonusPoints = 4;
     public BuildingType6() {
         super(era, foodCost, bonusPoints);
@@ -31,7 +31,7 @@ public class BuildingType6 extends BuildingCard {
                 .map(card -> (Builder) card)
                 .toList();
 
-        // return the sum of bonus points ONCE (as they should be counted once already)
+        // return the sum of bonus points ONCE (to get double points, count another time once)
         int bonusPoints = builders.stream().mapToInt(Builder::getPointBonus).sum();;
         logger.info("Doubling points from Builders: +" + bonusPoints + "PP");
         return bonusPoints;

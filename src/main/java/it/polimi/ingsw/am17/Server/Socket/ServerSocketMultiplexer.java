@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am17.Server.Socket;
 
-import it.polimi.ingsw.am17.Server.Controller.GamesController;
+import it.polimi.ingsw.am17.Server.Controller.ControllerInterface;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,7 +18,7 @@ public class ServerSocketMultiplexer {
      * @param controller passed to each ServerSocketSingle.
      * @param port port to bind the ServerSocket to.
      */
-    public ServerSocketMultiplexer(GamesController controller, int port) {
+    public ServerSocketMultiplexer(ControllerInterface controller, int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("Socket multiplexer started on port " + port);
 

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am17.Server.RMI;
 
-import it.polimi.ingsw.am17.Server.Controller.GamesController;
+import it.polimi.ingsw.am17.Server.Controller.ControllerInterface;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
@@ -26,7 +26,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
 
     private final ConcurrentHashMap<VirtualView, AtomicLong> lastHeartbeats = new ConcurrentHashMap<>();
 
-    final GamesController controller;
+    final ControllerInterface controller;
 
     /**
      * Create and start an RMI server.
@@ -34,7 +34,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @param port port to bind the server to
      * @throws RemoteException if the RMI registry cannot be created.
      */
-    public ServerRMI(GamesController controller, int port, String serverName) throws RemoteException {
+    public ServerRMI(ControllerInterface controller, int port, String serverName) throws RemoteException {
         super(); // needed for UnicastRemoteObject
 
         this.controller = controller;

@@ -281,10 +281,6 @@ public class CLI implements UI {
         //clear console
         System.out.print("\033[H\033[2J\033[3J");
         System.out.flush();
-        // TODO: remove this loop for real terminal execution
-        for (int i = 0; i < 50; i++) {
-            System.out.println();
-        }
     }
 
     /**

@@ -301,7 +301,7 @@ public class Player implements Serializable {
         // if the player has building type 11 has an additional food point
         int food = 0;
         for(BuildingCard card : buildingCards){
-            food+= card.GetFoodBonusFromTurnOrder();
+            food+= card.GetMoreFoodFromTurnOrderCard();
         }
         return food;
     }

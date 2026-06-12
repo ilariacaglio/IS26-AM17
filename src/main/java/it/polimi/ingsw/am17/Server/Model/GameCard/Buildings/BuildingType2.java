@@ -11,8 +11,8 @@ import java.util.logging.Logger;
  */
 public class BuildingType2 extends BuildingCard {
     private static final GameState era = GameState.ERA3;
-    private static final int foodCost = 10;
-    private static final int bonusPoints = 0;
+    private static final int foodCost = 9;
+    private static final int bonusPoints = 3;
     public BuildingType2() {
         super(era, foodCost, bonusPoints);
     }

@@ -81,11 +81,6 @@ public class Game extends Subject {
         return gameState.isGameStarted();
     }
 
-    public boolean isEnded() {
-        logger.info("State of the Game: " + gameState.isGameEnded());
-        return gameState.isGameEnded();
-    }
-
     /**
      * Adds a player to the game.
      *
