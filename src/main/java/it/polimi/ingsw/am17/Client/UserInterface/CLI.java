@@ -828,7 +828,7 @@ public class CLI implements UI {
             if (readOnlyModel.getGameId() == null) {
                 drawInterface("Not in a game", true);
             } else {
-                serverAdapter.closeGame().join();
+                serverAdapter.closeGame();
             }
         }catch (Exception e) {
             drawInterface("CLI error: " + e.getCause().getMessage(), true);
