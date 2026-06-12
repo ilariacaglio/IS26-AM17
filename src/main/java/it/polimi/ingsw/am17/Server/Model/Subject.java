@@ -8,6 +8,9 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -16,8 +19,9 @@ import java.util.stream.Collectors;
  */
 public abstract class Subject {
     private final static Logger logger = Logger.getLogger(Subject.class.getName());
-
-    private final List<VirtualView> clients = new ArrayList<>();
+    // thread-safe list of clients
+    private final List<VirtualView> clients = new CopyOnWriteArrayList<>();
+    private final ExecutorService notifyService = Executors.newCachedThreadPool();
 
     /**
      * Attach a client to the subject (start observing).
@@ -44,47 +48,115 @@ public abstract class Subject {
      */
     void notifyGameState(GameState era) {
         for (VirtualView client : clients) {
-            try {
-                client.updateGameState(era);
-            } catch (Exception e) {
-                logger.severe("Failed to notify game state: " + e.getMessage());
-            }
+            notifyService.submit(() -> {
+                try {
+                    client.updateGameState(era);
+                } catch (Exception e) {
+                    logger.severe("Failed to notify game state: " + e.getMessage());
+                }
+            });
         }
     }
 
     void notifyPlayerQueue(Queue<Player> orderedPlayer) {
         for (VirtualView client : clients) {
-            try {
-                client.updatePlayerQueue(orderedPlayer);
-            } catch (Exception e) {
-                logger.severe("Failed to notify player queue" + e.getMessage());
-            }
+            notifyService.submit(() -> {
+                try {
+                    client.updatePlayerQueue(orderedPlayer);
+                } catch (Exception e) {
+                    logger.severe("Failed to notify player queue" + e.getMessage());
+                }
+            });
         }
     }
 
     void notifyPlayerSelectOfferingCard(Player player, OfferingCard offeringCard){
         for (VirtualView client : clients) {
-            try {
-                client.updatePlayerSelectOfferingCard(player, offeringCard);
-            } catch (Exception e) {
-                logger.severe("Failed to notify offering card selection: " + e.getMessage());
-            }
+            notifyService.submit(() -> {
+                try {
+                    client.updatePlayerSelectOfferingCard(player, offeringCard);
+                } catch (Exception e) {
+                    logger.severe("Failed to notify offering card selection: " + e.getMessage());
+                }
+            });
         }
     }
 
     void notifyPlayerSelectTribesCard(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
         for (VirtualView client : clients) {
-            try {
-                client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
-            } catch (Exception e) {
-                logger.severe("Failed to notify tribes card selection: " + e.getMessage());
-            }
+            notifyService.submit(() -> {
+                try {
+                    client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
+                } catch (Exception e) {
+                    logger.severe("Failed to notify tribes card selection: " + e.getMessage());
+                }
+            });
         }
     }
 
     void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
-        Queue<Player> newQueue = players.stream()
+        Queue<Player> newQueue = buildQueueWithoutPlayerCards(players);
+        for (VirtualView client : clients) {
+            notifyService.submit(() -> {
+                try {
+                    client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+                } catch (Exception e) {
+                    logger.severe("Failed to notify end turn: " + e.getMessage());
+                }
+            });
+        }
+    }
+
+    void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                       List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
+        for (VirtualView client : clients) {
+            notifyService.submit(() -> {
+                try {
+                    client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
+                } catch (Exception e) {
+                    logger.severe("Failed to notify game start: " + e.getMessage());
+                }
+            });
+        }
+    }
+
+    void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
+        Queue<Player> newQueue = buildQueueWithoutPlayerCards(orderedPlayers);
+        for (VirtualView client : clients) {
+            notifyService.submit(() -> {
+                logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
+                try {
+                    client.updateEndGame(ranking, newQueue);
+
+                } catch (Exception e) {
+                    logger.severe("Failed to notify end game: " + e.getMessage());
+                }
+            });
+        }
+        clients.clear();
+    }
+
+    void notifyForceEndGame(String disconnectedPlayer) {
+        for (VirtualView client : clients) {
+            notifyService.submit(() -> {
+                logger.info("Calling notifyForceEndGame on client " + client.getClass().getSimpleName());
+                try {
+                    client.updateForceEndGame(disconnectedPlayer);
+
+                } catch (Exception e) {
+                    logger.severe("Failed to notify end game: " + e.getMessage());
+                }
+            });
+        }
+        clients.clear();
+    }
+
+    /**
+     * @return the given queue without the cards field in player object
+     */
+    private LinkedList<Player> buildQueueWithoutPlayerCards(Queue<Player> orderedPlayers) {
+        return orderedPlayers.stream()
                 .map(p -> {
                     // Creates a defensive copy of the player, intentionally omitting their cards
                     Player copy = new Player(p.getNickname(), p.getColor());
@@ -93,35 +165,5 @@ public abstract class Subject {
                     return copy;
                 })
                 .collect(Collectors.toCollection(LinkedList::new));
-        for (VirtualView client : clients) {
-            try {
-                client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
-            } catch (Exception e) {
-                logger.severe("Failed to notify end turn: " + e.getMessage());
-            }
-        }
-    }
-
-    void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                       List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
-        for (VirtualView client : clients) {
-            try {
-                client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
-            } catch (Exception e) {
-                logger.severe("Failed to notify game start: " + e.getMessage());
-            }
-        }
-    }
-
-    void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
-        for (VirtualView client : clients) {
-            logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
-            try {
-                client.notifyEndGame(disconnectedPlayer, ranking, orderedPlayers);
-                clients.remove(client);
-            } catch (Exception e) {
-                logger.severe("Failed to notify end game: " + e.getMessage());
-            }
-        }
     }
 }

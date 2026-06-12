@@ -2,6 +2,8 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
 import it.polimi.ingsw.am17.Server.Model.GameState;
 
+import java.util.logging.Logger;
+
 /**
  * Do not lose points from RitualEvent
  * Event effect

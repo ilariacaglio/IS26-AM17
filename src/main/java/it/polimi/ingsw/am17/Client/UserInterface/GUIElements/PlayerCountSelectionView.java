@@ -4,10 +4,7 @@ import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -18,6 +15,8 @@ public class PlayerCountSelectionView {
     private GUI mainGui;
     private final int MIN_PLAYER = 2;
     private final int MAX_PLAYER = 5;
+    private boolean isWaiting = false;
+    private Button backButton;
 
     public PlayerCountSelectionView(GUI mainGui) {
         this.mainGui = mainGui;
@@ -37,7 +36,7 @@ public class PlayerCountSelectionView {
         options.setAlignment(Pos.CENTER);
 
         //create waiting overlay
-        VBox waitingOverlay = mainGui.createWaitingOverlay();
+        VBox waitingOverlay = createWaitingOverlay();
 
         // create button to choose from
         for (int i = MIN_PLAYER; i <= MAX_PLAYER; i++) {
@@ -45,8 +44,11 @@ public class PlayerCountSelectionView {
             options.getChildren().add(btn);
         }
 
-        Button backButton = new Button("Back");
-        backButton.setOnAction(e -> mainGui.showConnectionInterface());
+        backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            if (isWaiting) return; // Prevent clicking Back if already waiting
+            mainGui.showConnectionInterface();
+        });
 
         root.getChildren().addAll(title, options, backButton, waitingOverlay);
     }
@@ -56,18 +58,58 @@ public class PlayerCountSelectionView {
         btn.setPrefSize(60, 60);
         btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: 18px; -fx-font-weight: bold;");
 
-        //on click send message to server and show waiting overlay
         btn.setOnAction(e -> {
+            // Prevent spam clicks if they click the active button again
+            if (isWaiting) return;
+
             try {
+                isWaiting = true;
                 waitingOverlay.setVisible(true);
-                options.setDisable(true);//disable all buttons so player cant spam requests
+
+                backButton.setDisable(true);
+
+                // Loop through all buttons in the HBox
+                for (javafx.scene.Node node : options.getChildren()) {
+                    // If the node is a button, and it is NOT the one just clicked, disable it
+                    if (node instanceof Button && node != btn) {
+                        node.setDisable(true);
+                    }
+                }
+
                 mainGui.createGame(i);
             } catch (Exception ex) {
+                isWaiting = false;
                 throw new RuntimeException(ex);
             }
-
         });
         return btn;
+    }
+
+    public VBox createWaitingOverlay() {
+        // create the container
+        VBox overlay = new VBox(10); // 10px spacing
+        overlay.setAlignment(Pos.CENTER);
+
+        // Modify Background: Semi-transparent black/grey
+        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+
+        // Add 10 pixels of padding at the top
+        overlay.setPadding(new Insets(10, 0, 0, 0));
+
+        // Add loading circle
+        ProgressIndicator progress = new ProgressIndicator();
+        progress.setPrefSize(60, 60);
+        progress.setStyle("-fx-progress-color: white;");
+
+        //add text
+        Label text = new Label("Waiting for other players...");
+        text.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+
+        overlay.getChildren().addAll(progress, text);
+
+        //hide
+        overlay.setVisible(false);
+        return overlay;
     }
 
     // The main GUI will call this to put it in the Scene

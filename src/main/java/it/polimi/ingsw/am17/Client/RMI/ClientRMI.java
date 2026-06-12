@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Client.RMI;
 
+import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
@@ -20,16 +21,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 /**
  * Sets up the RMI connection with the server.
  * Receives requests from the server to update the ClientModel.
  */
-public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
+public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, ServerAdapter {
     private final static Logger logger = Logger.getLogger(ClientRMI.class.getName());
 
     ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
@@ -37,15 +36,17 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
     ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
     long lastHeartbeatReceived = System.currentTimeMillis();
 
+    ExecutorService uiStarter = Executors.newSingleThreadExecutor();
 
     private final ClientModel model;
+    private final VirtualServerRMI server;
 
     public ClientRMI(String ip, int port, String serverName, boolean graphic) throws RemoteException, NotBoundException {
         super();  // needed for UnicastRemoteObject
 
         // Set up the RMI registry
         Registry registry = LocateRegistry.getRegistry(ip, port);
-        VirtualServerRMI server = (VirtualServerRMI) registry.lookup(serverName);
+        server = (VirtualServerRMI) registry.lookup(serverName);
         server.connect(this);
         logger.info("RMI Client connected to server " + serverName);
 
@@ -76,16 +77,17 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
             }
         }, 10, 5, TimeUnit.SECONDS);
 
+        // model and ui init
         UI userInterface;
         if(graphic){
-            userInterface = new GUI(server, this);
+            userInterface = new GUI(this);
         }
         else {
-            userInterface = new CLI(server,this);
+            userInterface = new CLI(this);
         }
         this.model = new ClientModel(userInterface);
         userInterface.setModel(model);
-        this.model.startInterface(); // N.B. not threaded?
+        uiStarter.execute(this.model::startInterface);
     }
 
     /**
@@ -106,7 +108,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
     @Override
     public void updateGameState(GameState gameState) throws RemoteException {
         // call model to update era
-        model.setGameState(gameState);
+        model.updateGameState(gameState);
     }
 
     /**
@@ -134,7 +136,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
      */
     @Override
     public void updateGameId(UUID gameId) throws RemoteException {
-        model.setGameId(gameId);
+        model.updateGameId(gameId);
     }
 
     /**
@@ -143,7 +145,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
      */
     @Override
     public void updateGamesIdList(List<UUID> gameIdsList) throws RemoteException {
-        model.setGameIdList(gameIdsList);
+        model.updateGameIdList(gameIdsList);
     }
 
     /**
@@ -184,8 +186,13 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
     }
 
     @Override
-    public void notifyEndGame(String disconnectedPlayer, List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
-        model.updateEndGame(disconnectedPlayer, ranking,orderedPlayers);
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
+        model.updateEndGame(ranking, orderedPlayers);
+    }
+
+    @Override
+    public void updateForceEndGame(String disconnectedPlayer) throws RemoteException {
+        model.updateForcedEndGame(disconnectedPlayer);
     }
 
     /**
@@ -194,7 +201,72 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI {
      */
     @Override
     public void updateError(InvalidOperationException exception) throws RemoteException {
-        model.updateNotifyError(exception);
+        model.updateError(exception);
     }
 
+    @Override
+    public CompletableFuture<Void> getGamesList() {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.getGamesList(this);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> createGame(Player player, int numPlayers) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.createGame(this, player, numPlayers);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> closeGame() {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.closeGame(this);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> joinGame(UUID gameId, Player player) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+               server.joinGame(this, gameId, player);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> pickOfferingCard(Character offeringCardLetter) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                server.pickOfferingCard(this, offeringCardLetter);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+               server.pickTribeCards(this, characterCards, buildingCards);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
 }
