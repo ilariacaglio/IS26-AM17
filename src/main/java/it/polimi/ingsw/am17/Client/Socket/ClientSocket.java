@@ -205,68 +205,56 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
     }
 
     @Override
-    public CompletableFuture<Void> getGamesList() {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                server.getGamesList(this);
-            } catch (Exception e) {
-                System.out.println("Network error: " + e.getMessage());
-            }
-        });
+    public void getGamesList() {
+        try {
+            server.getGamesList(this);
+        } catch (Exception e) {
+            System.out.println("Network error: " + e.getMessage());
+        }
     }
 
     @Override
-    public CompletableFuture<Void> createGame(Player player, int numPlayers) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                server.createGame(this, player, numPlayers);
-            } catch (Exception e) {
-                System.out.println("Network error: " + e.getMessage());
-            }
-        });
+    public void createGame(Player player, int numPlayers) {
+        try {
+            server.createGame(this, player, numPlayers);
+        } catch (Exception e) {
+            System.out.println("Network error: " + e.getMessage());
+        }
     }
 
     @Override
-    public CompletableFuture<Void> closeGame() {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                server.closeGame(this);
-            } catch (Exception e) {
-                System.out.println("Network error: " + e.getMessage());
-            }
-        });
+    public void closeGame() {
+        try {
+            server.closeGame(this);
+        } catch (Exception e) {
+            System.out.println("Network error: " + e.getMessage());
+        }
     }
 
     @Override
-    public CompletableFuture<Void> joinGame(UUID gameId, Player player) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                server.joinGame(this, gameId, player);
-            } catch (Exception e) {
-                System.out.println("Network error: " + e.getMessage());
-            }
-        });
+    public void joinGame(UUID gameId, Player player) {
+        try {
+            server.joinGame(this, gameId, player);
+        } catch (Exception e) {
+            System.out.println("Network error: " + e.getMessage());
+        }
     }
 
     @Override
-    public CompletableFuture<Void> pickOfferingCard(Character offeringCardLetter) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                server.pickOfferingCard(this, offeringCardLetter);
-            } catch (Exception e) {
-                System.out.println("Network error: " + e.getMessage());
-            }
-        });
+    public void pickOfferingCard(Character offeringCardLetter) {
+        try {
+            server.pickOfferingCard(this, offeringCardLetter);
+        } catch (Exception e) {
+            System.out.println("Network error: " + e.getMessage());
+        }
     }
 
     @Override
-    public CompletableFuture<Void> pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-               server.pickTribeCards(this, characterCards, buildingCards);
-            } catch (Exception e) {
-                System.out.println("Network error: " + e.getMessage());
-            }
-        });
+    public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        try {
+            server.pickTribeCards(this, characterCards, buildingCards);
+        } catch (Exception e) {
+            System.out.println("Network error: " + e.getMessage());
+        }
     }
 }
