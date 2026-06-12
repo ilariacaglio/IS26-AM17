@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 public class ClientRMIWrapper implements VirtualClient {
     private final VirtualClient client;
-    private final ExecutorService remoteRMICallsExecutor = Executors.newCachedThreadPool();
+    private static final ExecutorService remoteRMICallsExecutor = Executors.newCachedThreadPool();
     private static final Logger logger = Logger.getLogger(ClientRMIWrapper .class.getName());
 
     public ClientRMIWrapper(VirtualClient client){
