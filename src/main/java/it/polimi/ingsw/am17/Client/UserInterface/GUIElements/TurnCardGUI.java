@@ -92,11 +92,11 @@ public class TurnCardGUI extends StackPane {
     private String getTotemImagePath(it.polimi.ingsw.am17.Server.Model.Color color) {
         if (color == null) return "";
         switch (color) {
-            case RED: return "/images/totem/totem_red.png";
-            case BLUE: return "/images/totem/totem_blue.png";
-            case BLACK: return "/images/totem/totem_black.png";
-            case YELLOW: return "/images/totem/totem_yellow.png";
-            case WHITE: return "/images/totem/totem_white.png";
+            case RED: return "/Images/totem/totem_red.png";
+            case BLUE: return "/Images/totem/totem_blue.png";
+            case BLACK: return "/Images/totem/totem_black.png";
+            case YELLOW: return "/Images/totem/totem_yellow.png";
+            case WHITE: return "/Images/totem/totem_white.png";
             default: return "";
         }
     }
