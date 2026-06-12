@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17;
 
+import it.polimi.ingsw.am17.Server.Controller.ControllerInterface;
 import it.polimi.ingsw.am17.Server.Controller.GamesController;
 import it.polimi.ingsw.am17.Server.RMI.ServerRMI;
 import it.polimi.ingsw.am17.Server.Socket.ServerSocketMultiplexer;
@@ -58,7 +59,7 @@ public class ServerLauncher {
         }
 
         // create the main controller
-        GamesController controller = new GamesController();
+        ControllerInterface controller = new GamesController();
 
         // Start an RMI server in its own thread
         new Thread(() -> {
