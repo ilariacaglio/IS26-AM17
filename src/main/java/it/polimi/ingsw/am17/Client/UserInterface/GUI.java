@@ -226,7 +226,7 @@ public class GUI implements UI {
      */
     public void getGameList(){
         try {
-            serverAdapter.getGamesList().join();
+            serverAdapter.getGamesList();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -238,7 +238,7 @@ public class GUI implements UI {
      * @throws Exception
      */
     public void joinGame(UUID gameId) throws Exception{
-        serverAdapter.joinGame(gameId,localPlayer).join();
+        serverAdapter.joinGame(gameId,localPlayer);
     }
 
     /**
@@ -247,7 +247,7 @@ public class GUI implements UI {
      * @throws Exception
      */
     public void createGame(int numPlayer) throws Exception{
-        serverAdapter.createGame(localPlayer, numPlayer).join();
+        serverAdapter.createGame(localPlayer, numPlayer);
     }
 
     /**
@@ -256,7 +256,7 @@ public class GUI implements UI {
      * @throws Exception
      */
     public void pickOfferingCard(OfferingCard card) throws Exception{
-        serverAdapter.pickOfferingCard(card.getOrderLetter()).join();
+        serverAdapter.pickOfferingCard(card.getOrderLetter());
     }
 
     /**
@@ -266,7 +266,7 @@ public class GUI implements UI {
      * @throws Exception
      */
     public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
-        serverAdapter.pickTribeCards(characterCards, buildingCards).join();
+        serverAdapter.pickTribeCards(characterCards, buildingCards);
     }
 
     /**
