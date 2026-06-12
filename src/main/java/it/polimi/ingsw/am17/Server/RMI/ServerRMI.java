@@ -114,8 +114,8 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
         logger.warning("Removing RMI Client" + client.getClass().getSimpleName());
         lastHeartbeats.remove(client);
         controller.closeGame(client);
-        heartbeater.shutdown();
-        heartwatcher.shutdown();
+        heartbeater.shutdownNow();
+        heartwatcher.shutdownNow();
     }
 
     /**

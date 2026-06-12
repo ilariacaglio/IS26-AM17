@@ -128,8 +128,8 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
      * Handle client disconnection. (Closes the socket.)
      */
     private synchronized void onClientDisconnection() {
-        heartbeater.shutdown();
-        heartwatcher.shutdown();
+        heartbeater.shutdownNow();
+        heartwatcher.shutdownNow();
 
         try {
             socket.close();

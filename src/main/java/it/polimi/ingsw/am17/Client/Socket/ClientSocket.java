@@ -135,8 +135,8 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
 
     private void onServerDisconnection() {
         logger.severe("Server disconnected, shutting down.");
-        heartbeater.shutdown();
-        heartwatcher.shutdown();
+        heartbeater.shutdownNow();
+        heartwatcher.shutdownNow();
         model.updateForcedEndGame("Server " + server.getClass() );
         System.exit(1);
     }
