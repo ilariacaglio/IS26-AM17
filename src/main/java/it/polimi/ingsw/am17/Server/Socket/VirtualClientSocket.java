@@ -111,6 +111,7 @@ public class VirtualClientSocket implements VirtualClient {
     public void updateForceEndGame(String disconnectedPlayer) throws Exception {
         Message message = new Message(MessageType.END_GAME_FORCED);
         message.setDisconnectedPlayerNickname(disconnectedPlayer);
+        message.send(socket);
     }
 
 }
