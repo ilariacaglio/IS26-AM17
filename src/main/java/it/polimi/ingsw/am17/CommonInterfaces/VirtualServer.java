@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface VirtualServer {
-    void getGamesList(VirtualView client) throws Exception;
-    void createGame(VirtualView client, Player player, int numPlayers)  throws Exception;
-    void closeGame(VirtualView client) throws Exception;
-    void joinGame(VirtualView client, UUID gameId, Player player)  throws Exception;
-    void pickOfferingCard(VirtualView client, Character offeringCardLetter)  throws Exception;
-    void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception;
+    void getGamesList(VirtualClient client) throws Exception;
+    void createGame(VirtualClient client, Player player, int numPlayers)  throws Exception;
+    void closeGame(VirtualClient client) throws Exception;
+    void joinGame(VirtualClient client, UUID gameId, Player player)  throws Exception;
+    void pickOfferingCard(VirtualClient client, Character offeringCardLetter)  throws Exception;
+    void pickTribeCards(VirtualClient client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception;
 }

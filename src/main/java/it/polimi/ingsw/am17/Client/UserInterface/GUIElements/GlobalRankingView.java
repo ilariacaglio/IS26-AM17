@@ -34,10 +34,12 @@ public class GlobalRankingView {
         root = new VBox(20);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.TOP_CENTER);
+        //background color
+        root.setStyle("-fx-background-color: #2c3e50;");
         //title
         Label globalRankingTitle = new Label("\n--- YOUR POSITION IN GLOBAL RANKING ---");
         globalRankingTitle.setStyle("""
-            -fx-text-fill: black;
+            -fx-text-fill: #ecf0f1;
             -fx-font-size: 30px;
             -fx-font-weight: bold;
         """);
@@ -103,19 +105,18 @@ public class GlobalRankingView {
 
 
         //button to global ranking interface
-        Button end = new Button("END");
-        end.setStyle("""
+        Button goBackButton = new Button("GO BACK");
+        goBackButton.setStyle("""
             -fx-font-size: 18px;
             -fx-font-weight: bold;
             -fx-padding: 10px 20px;
         """);
-        //close game
-        end.setOnAction(e -> {
-            Platform.exit();
-            System.exit(0);
+        //go back to start page
+        goBackButton.setOnAction(e -> {
+            mainGui.showStartInterface();
         });
 
-        root.getChildren().addAll(globalRankingTitle, globalRankingArea, end);
+        root.getChildren().addAll(globalRankingTitle, globalRankingArea, goBackButton);
     }
 
     // The main GUI will call this to put it in the Scene

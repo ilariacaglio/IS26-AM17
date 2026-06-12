@@ -14,6 +14,7 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
@@ -170,15 +171,21 @@ public class Message implements Serializable {
 
     private String disconnectedPlayerNickname;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @JsonCreator
     public Message(@JsonProperty("type") MessageType type) {
         this.type = type;
     }
 
-    // TODO: comments, synchronize?
-    public void send(Socket socket) throws Exception {
+    /**
+     * Sends a serialized message object.
+     * This method is synchronized because if it's called concurrently,
+     * the socket output stream might get overlapped. (right?)
+     * @param socket socket to send the message to.
+     * @throws IOException possible exception from socket.getOutputStrem
+     */
+    synchronized public void send(Socket socket) throws IOException {
 //        logger.setLevel(Level.FINE);
         logger.fine("Parsing message:" + this);
         if(type != MessageType.HEARTBEAT) logger.info("Sending message:" + mapper.writeValueAsString(this));

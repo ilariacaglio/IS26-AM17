@@ -1,6 +1,5 @@
 package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
@@ -17,8 +16,8 @@ public class BuildingType14 extends BuildingCard {
     private static final Logger logger = Logger.getLogger(BuildingType14.class.getName());
 
     private static final GameState era = GameState.ERA1;
-    private static final int foodCost = 6;
-    private static final int bonusPoints = 4;
+    private static final int foodCost = 4;
+    private static final int bonusPoints = 3;
     private final Integer numberOfCharacter = (int) Arrays.stream(CardType.values())
             .filter(type -> !type.name().endsWith("_EVENT"))
             .count();

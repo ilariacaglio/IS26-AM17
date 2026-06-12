@@ -6,20 +6,20 @@ import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
- * Manages multiple games with an eye to concurrency.
+ * Manages multiple games with an eye to concurrency. TODO: check
  * Receives requests from the client via a ServerSocket/RMI and forwards it to the model.
  */
-public class GamesController {
+public class GamesController implements ControllerInterface {
     private final ConcurrentHashMap<UUID,Game> games;
-    private final ConcurrentHashMap<VirtualView, UUID> gameMapping;
-    private final ConcurrentHashMap<VirtualView, String> playerMapping; // string field is for nickname
+    private final ConcurrentHashMap<VirtualClient, UUID> gameMapping;
+    private final ConcurrentHashMap<VirtualClient, String> playerMapping; // string field is for nickname
 
     private final static Logger logger = Logger.getLogger(GamesController.class.getName());
 
@@ -71,7 +71,7 @@ public class GamesController {
      * @param client to be registered
      * @param gameId of the game
      */
-    private void signUpAsObserver(VirtualView client, UUID gameId) {
+    private void signUpAsObserver(VirtualClient client, UUID gameId) {
         Game game = getGameFromId(gameId);
 
         // add client to game mapping
@@ -87,7 +87,7 @@ public class GamesController {
      * @param client to be removed
      * @param gameId of the game
      */
-    private void removeClientAsObserver(VirtualView client, UUID gameId) {
+    private void removeClientAsObserver(VirtualClient client, UUID gameId) {
         Game game = getGameFromId(gameId);
         synchronized (game){
             game.detach(client);
@@ -100,7 +100,7 @@ public class GamesController {
      * @param client       the client to be notified
      * @param exception    the exception thrown
      */
-    private void notifyErrorToClient(VirtualView client, InvalidOperationException exception) {
+    private void notifyErrorToClient(VirtualClient client, InvalidOperationException exception) {
         try {
             client.updateError(exception);
         }
@@ -115,7 +115,7 @@ public class GamesController {
      * @param gameId                the id of the game to be joined
      * @param observerAdded         if true, the client was added to the list as on observer of the game
      */
-    private void rollbackObserverAdded(VirtualView client, UUID gameId, boolean observerAdded) {
+    private void rollbackObserverAdded(VirtualClient client, UUID gameId, boolean observerAdded) {
         // N.B. we need to sign up the client before joining the player
         // so that it's notified from the addPlayer, if something goes wrong,
         // we remove it here.
@@ -138,7 +138,8 @@ public class GamesController {
      * @param player player creating the game.
      * @param numPlayers number of players for the game.
      */
-    public void createGame(VirtualView client, Player player, int numPlayers) {
+    @Override
+    public void createGame(VirtualClient client, Player player, int numPlayers) {
         logger.info("Client " + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
         try {
@@ -169,7 +170,8 @@ public class GamesController {
      * @param gameId of the game to join.
      * @param player to add to the game.
      */
-    public void joinGame(VirtualView client, UUID gameId, Player player) {
+    @Override
+    public void joinGame(VirtualClient client, UUID gameId, Player player) {
         logger.info("Client " + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
 
         // sign if client is added as an observer
@@ -210,7 +212,8 @@ public class GamesController {
      * Closes a game (also when a player disconnects [unexpectedly]).
      * @param client client generating the request.
      */
-    public void closeGame(VirtualView client) {
+    @Override
+    public void closeGame(VirtualClient client) {
         try {
             // get uuid of the game from the client (mapping)
             UUID uuid = gameMapping.get(client);
@@ -259,7 +262,8 @@ public class GamesController {
      * @param client                the client who made the request
      * @param offeringCardLetter    letter of the offering card to be selected
      */
-    public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
+    @Override
+    public void pickOfferingCard(VirtualClient client, Character offeringCardLetter) {
         try {
             // search for client nickname
             String nickname = playerMapping.get(client);
@@ -292,7 +296,8 @@ public class GamesController {
      * @param characterCards    selected by the player
      * @param buildingCards     selected by the player
      */
-    public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    @Override
+    public void pickTribeCards(VirtualClient client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try {
             // search for client nickname
             String nickname = playerMapping.get(client);
@@ -321,7 +326,8 @@ public class GamesController {
      * Sends an update to the client with the list of open games.
      * @param client to send the update.
      */
-    public void getGamesList(VirtualView client) {
+    @Override
+    public void getGamesList(VirtualClient client) {
         logger.info("Client " + client.getClass().getSimpleName() + " requested the games list.");
         try {
             // send the list of open games to the client

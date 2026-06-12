@@ -4,7 +4,6 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
-import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import java.util.logging.Logger;
 
 public class SharedModelLogic {
     private static final Logger logger = Logger.getLogger(SharedModelLogic.class.getName());
+
     /**
      * Dequeues and enqueues the player to allow other players to play.
      */
@@ -89,58 +89,31 @@ public class SharedModelLogic {
 
     /**
      * Checks if it is the turn of the given player.
-     * Called from ClientModel class
      * @return true if it is players turn, false otherwise.
      */
     public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers,
-                                       boolean isPickOCPhase, GameState gameState,
-                                       List<OfferingCard> offeringCards, OfferingCard building2OC) {
-
-        // if the game hasn't started it is not the players turn
-        if(!gameState.isGameStarted())
-            return false;
-
-        // game started
-
+                                       boolean isPickOCPhase, List<OfferingCard> offeringCards, OfferingCard building2OC) {
         if (!isPickOCPhase){
             // if is pick tribe cards phase
             // if all the players have picked their cards check if localPlayer has buildingType2
-            if (noPlayerInOfferingCards(offeringCards) && !isBuilding2EffectUsed(offeringCards, building2OC))
-                return playerToCheck.hasBuilding2();
+            if (!isBuilding2EffectUsed(offeringCards, building2OC) && playerToCheck.hasBuilding2())
+                return true;
         }
 
         // default check
         // if is pick offering card phase the player has to be at head of the queue
         // same in pick tribes without building type 2
-        return isPlayerTurn(playerToCheck, orderedPlayers);
+        return isPlayerHeadInQueue(playerToCheck, orderedPlayers);
     }
 
-    // These overrides are to avoid to pass null or unmeaningful parameters values
-    // to avoid redundant checks
-    // (e.g. the era check when method is called from class game, we know for sure the game has started)
-
     /**
-     * Checks if it is the turn of the given player.
-     * Called from Game class in pickOfferingCard
-     * @return true if it is players turn, false otherwise.
+     * This method is used to check if it is the player turn in
+     * the offering card choice phase by comparing it to the one at the head of the queue
+     * @return true if the given player is at the head of the queue, false otherwise.
      */
-    public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers){
+    private static boolean isPlayerHeadInQueue(Player playerToCheck, Queue<Player> orderedPlayers){
         logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
         return playerToCheck.equals(orderedPlayers.peek());
-    }
-
-    /**
-     * Checks if it is the turn of the given player.
-     * Called from Game class in pickTribeCards
-     * @return true if it is players turn, false otherwise.
-     */
-    public static boolean isPlayerTurn(Player playerToCheck, Queue<Player> orderedPlayers,
-                                       List<OfferingCard> offeringCards, OfferingCard building2OC){
-
-        if (noPlayerInOfferingCards(offeringCards) && !isBuilding2EffectUsed(offeringCards, building2OC))
-            return playerToCheck.hasBuilding2();
-
-        return isPlayerTurn(playerToCheck, orderedPlayers);
     }
 
     /**
@@ -153,10 +126,14 @@ public class SharedModelLogic {
     }
 
     /**
-     * Validates card selection for the player action "pickOfferingCard".
+     * Validates player action "pickOfferingCard".
      */
-    public static void validateOfferingCardChoice(Character offeringCardLetter, Player player, List<OfferingCard> offeringCards) {
+    public static void validateOfferingCardTurnAction(Character offeringCardLetter, Player player, List<OfferingCard> offeringCards, Queue<Player> orderedPlayers) {
         logger.info("Validating offering card choice");
+
+        // check if is player turn (in this case is enough checking if the player is in the head of the queue)
+        if (!isPlayerHeadInQueue(player, orderedPlayers))
+            throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
 
         // check if letter is null
         if(offeringCardLetter == null)
@@ -180,13 +157,18 @@ public class SharedModelLogic {
     }
 
     /**
-     * Validates card selection for the player action "pickTribeCards".
+     * Validates player action "pickTribeCards".
      */
-    public static void validateTribesCardChoice(Player player, List<OfferingCard> offeringCards,
-                                                OfferingCard building2OC, List<CharacterCard> characterCards,
-                                                List<BuildingCard> buildingCards, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+    public static void validateTribesCardTurnAction(Player player, Queue<Player> orderedPlayers,
+                                                    List<OfferingCard> offeringCards, OfferingCard building2OC,
+                                                    List<CharacterCard> characterCards, List<BuildingCard> buildingCards,
+                                                    List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                                                    List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         logger.info("Validating tribes card choice");
+
+        // check if it is player turn
+        if(!isPlayerTurn(player, orderedPlayers, false, offeringCards, building2OC))
+            throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
 
         // get next occupied offering card
         OfferingCard currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OC);
@@ -257,5 +239,35 @@ public class SharedModelLogic {
             case 5 -> new int[]{3, 1, 0, 0, -1};
             default -> throw new IllegalStateException("Wrong number of players");
         };
+    }
+
+    /**
+     * Handles offering cards and players queue after a tribes card selection (both for normal case and buildingTwo edge case)
+     * Moves the player in the queue and frees up the offering card (turn logic).
+     */
+    public static void handleOfferingCardsAndPlayersQueue(Player player, List<OfferingCard> offeringCards, OfferingCard buildingTwoOfferingCard, Queue<Player> orderedPlayers) {
+        // if a player is in a (normal) offering card...
+        if (isPlayerInOfferingCard(player,offeringCards)) {
+            // this update was called for a usual card selection
+            // remove player from its offering card
+            offeringCards.stream()
+                    .filter(o -> o.getPlayer()!= null && o.getPlayer().equals(player))
+                    .findFirst()
+                    .ifPresent(o -> o.setPlayer(null));
+
+            // if the player had the building2, book an extra turn
+            if (player.hasBuilding2()) {
+                buildingTwoOfferingCard.setPlayer(player);
+            }
+            // since the move is normal the queue should be updated
+            SharedModelLogic.movePlayerInQueue(orderedPlayers);
+        }
+        // if this update was called but the player is not in a (normal) offering card
+        // it means this was a move made from the extra offering card (BuildingTwo)
+        else {
+            buildingTwoOfferingCard.setPlayer(null);
+            // N.B. the queue is not updated here!
+            // this is because in the real game the player is already on the turn order card
+        }
     }
 }

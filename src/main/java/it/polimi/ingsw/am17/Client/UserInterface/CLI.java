@@ -2,8 +2,10 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.ServerAdapter;
+import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
@@ -16,22 +18,22 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 
-import static it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic.getTurnFoodPoints;
-
 public class CLI implements UI {
     private final ServerAdapter serverAdapter;
+    private final Scanner scanner;
     private ClientModel readOnlyModel;
     private Player localPlayer;
     private boolean displayEra;
-    List<Color> availableColors;
-    Scanner scanner;
+    private List<Color> availableColors;
 
+    private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_RESET = "\u001B[0m";
 
     public CLI (ServerAdapter serverAdapter) {
         this.serverAdapter = serverAdapter;
         this.scanner = new Scanner(System.in);
+        displayEra = false;
         resetColors();
     }
 
@@ -47,11 +49,6 @@ public class CLI implements UI {
 
 
     // methods called by the model
-
-    @Override
-    public void setAvailableColors(List<Color> availableColors) {
-        this.availableColors=availableColors;
-    }
 
     /**
      * Starts the cli and collects user commands
@@ -123,20 +120,20 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints the gameId on the terminal.
-     * @param gameId the id to be printed
+     * Prints the game interface when the player joins a new game
      */
     @Override
-    public void printGameId(UUID gameId) {
-        System.out.println("\nYou are connected to game: ".concat(gameId.toString()));
-        showPrompt();
+    public void updateInterfaceFromGameIdChange() {
+        String message = "You are connected to game: ".concat(readOnlyModel.getGameId().toString());
+        drawInterface(message, false);
     }
 
     /**
-     * Prints the games id list.
+     * Prints the game interface when the open games list is received
      */
     @Override
-    public void printGamesList(){
+    public void updateInterfaceFromGameIdListChange() {
+        // print games list
         System.out.println("\r\033[2KOpen games:");
         for(int i=0; i< readOnlyModel.getGamesIdList().size(); i++){
             System.out.println(i + "\t" + readOnlyModel.getGamesIdList().get(i));
@@ -145,104 +142,188 @@ public class CLI implements UI {
     }
 
     /**
-     * Draws the game configuration.
-     * @param errorMessage  the message to display
+     * Notifies the CLI that when drawInterface is called it should print the new era message
      */
     @Override
-    public synchronized void drawInterface(String errorMessage)
-    {
-        try{
-            //clear console
-            System.out.print("\033[H\033[2J\033[3J");
-            System.out.flush();
-            // TODO: remove this loop for real terminal execution
-            for (int i = 0; i < 50; i++) {
-                System.out.println();
-            }
+    public void updateInterfaceFromGameStateChange() {
+        displayEra = true;
+    }
 
-            printError(errorMessage);
+    /**
+     * Prints the game interface when the players queue is updated.
+     * Updates the data of the local player
+     */
+    @Override
+    public void updateInterfaceFromPlayerQueueChange() {
+        setLocalPlayer();
+        if(readOnlyModel.getGameState().isInLobby()){
+            String message = "You are connected to game: ".concat(readOnlyModel.getGameId().toString());
+            drawInterface(message, false);
+        }
+        else {
+            drawInterface();
+        }
+    }
 
-            printEra();
+    /**
+     * Prints the game interface when a tribes card selection update message is received
+     */
+    @Override
+    public void updateInterfaceFromPlayerSelectTribeCards(){
+        drawInterface();
+    }
 
-            // get game state to display the correct items
-            GameState gameState = readOnlyModel.getGameState();
+    /**
+     * Prints the game interface when an offering card selection update message is received
+     */
+    @Override
+    public void updateInterfaceFromPlayerSelectOfferingCard(){
+        drawInterface();
+    }
 
-            if (gameState.isInLobbyOrStarted()) {
-                // print players list
-                printPlayers();
-                if(gameState.isInLobby()){
-                    System.out.println("Waiting for more players to join...");
-                }
-                else {
-                    printTurnOrder();
+    /**
+     * Prints the game interface when the game turn ends.
+     * Prints message when new era starts
+     */
+    @Override
+    public void updateInterfaceFromEndTurn(){
+        if (displayEra) {
+            String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
+            String message = "Era "+ eraToDisplay + " has begun!";
+            drawInterface(message, false);
+            displayEra = false;
+        } else {
+            drawInterface();
+        }
+    }
 
-                    //draw upper row
-                    drawRow(true);
+    /**
+     * Prints the game interface when game starts
+     */
+    @Override
+    public void updateInterfaceFromStartGame() {
+        drawInterface();
+    }
 
-                    //draw offering card
-                    drawOfferingCards();
+    /**
+     * Prints the game interface when game ends regularly
+     */
+    @Override
+    public void updateInterfaceFromEndGame() {
+        drawInterface();
+    }
 
-                    //draw lower row
-                    drawRow(false);
+    /**
+     * Prints the game interface when game ends due to a player action or connection error
+     */
+    @Override
+    public void updateInterfaceFromForcedEndGame(String disconnectedReason) {
+        String errorMessage = "The game has ended due to disconnection of " + disconnectedReason;
+        drawInterface(errorMessage, true);
+    }
 
-                    // print the cards of the player
-                    drawLocalPlayer();
+    /**
+     * Prints the game interface when a notification error is received.
+     * @param exception     the exception describing the error occurred.
+     */
+    @Override
+    public void updateInterfaceFromErrorMessage(InvalidOperationException exception) {
+        ErrorType type = exception.getErrorType();
+        if (type == ErrorType.DUPLICATE_COLOR)
+            availableColors = ((ColorException)exception).getAvailableColors();
 
-                    // if the game has begun notify the players turn
-                    if(readOnlyModel.isPlayerTurn())
-                        System.out.println("It's your turn!");
-                }
-            }
-            else if (gameState.isGameEnded()) {
-                resetColors();
-                drawLocalRanking();
-                drawGlobalRanking();
-            }
-            showPrompt();
+        String messageToDisplay = (type == ErrorType.UNKNOWN)
+                ? exception.getMessage()
+                : type.getMessage();
+
+        drawInterface(messageToDisplay, true);
+    }
+
+
+    // Methods called by the CLI used to print data
+
+    /**
+     * Draws the CLI interface.
+     *
+     * @param message the message to display
+     * @param isError if true the message to display is an error, false otherwise
+     */
+    private synchronized void drawInterface(String message, boolean isError){
+        try {
+            clearConsole();
+            if(isError)
+                printError(message);
+            else
+                printMessage(message);
+            drawGameView();
         } catch (Exception e) {
             System.err.println("CLI error: " + e.getMessage());
         }
     }
 
-    @Override
-    public void setDisplayEra(boolean displayEra) {
-        this.displayEra = displayEra;
+    /**
+     * Draws the CLI interface.
+     */
+    private synchronized void drawInterface(){
+        try {
+            clearConsole();
+            drawGameView();
+        } catch (Exception e) {
+            System.err.println("CLI error: " + e.getMessage());
+        }
     }
 
     /**
-     * Updates localPlayer value when the object is updated into the queue by the server
-     * Used to update food, pp and cards of the player
+     * Clears the console.
+     * This is called before printing the game interface
      */
-    @Override
-    public void setLocalPlayer() {
-        readOnlyModel.getOrderedPlayers().stream()
-                .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
-                .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
+    private void clearConsole(){
+        //clear console
+        System.out.print("\033[H\033[2J\033[3J");
+        System.out.flush();
     }
 
-    @Override
-    public Player getLocalPlayer() {
-        return localPlayer;
+    /**
+     * Draws the game configuration.
+     */
+    private void drawGameView()
+    {
+        // get game state to display the correct items
+        GameState gameState = readOnlyModel.getGameState();
+
+        if (gameState.isInLobbyOrStarted()) {
+            // print players list
+            printPlayers();
+            if(gameState.isInLobby()){
+                System.out.println("Waiting for more players to join...");
+            }
+            else {
+                printTurnOrder();
+
+                //draw upper row
+                drawRow(true);
+
+                //draw offering card
+                drawOfferingCards();
+
+                //draw lower row
+                drawRow(false);
+
+                // print the cards of the player
+                drawLocalPlayer();
+
+                // if the game has begun notify the players turn
+                if(readOnlyModel.isPlayerTurn(localPlayer))
+                    System.out.println("It's your turn!");
+            }
+        }
+        else if (gameState.isGameEnded()) {
+            resetColors();
+            drawLocalRanking();
+            drawGlobalRanking();
+        }
+        showPrompt();
     }
-
-    @Override
-    public void updateInterfaceFromPickTribes(){
-        drawInterface(null);
-    }
-
-    @Override
-    public void updateInterfaceFromPickOffering(){
-        drawInterface(null);
-    }
-
-    @Override
-    public void updateInterfaceFromEndTurn(){
-        drawInterface(null);
-    }
-
-
-
-    // Methods called by the CLI used to print data
 
     /**
      * Prints the commands list
@@ -290,9 +371,14 @@ public class CLI implements UI {
      * @param errorMessage  the error generated by the server
      */
     private void printError(String errorMessage) {
-        if(errorMessage != null && !errorMessage.isBlank()) {
-            System.out.println(ANSI_RED + errorMessage + ANSI_RESET);
-        }
+        System.out.println(ANSI_RED + errorMessage + ANSI_RESET);
+    }
+
+    /**
+     * Prints additional message when the game is drawn
+     */
+    private void printMessage(String message) {
+        System.out.println(ANSI_GREEN + message + ANSI_RESET);
     }
 
     /**
@@ -362,7 +448,7 @@ public class CLI implements UI {
                 .filter(player -> !playersInOfferingCard.contains(player))
                 .toList();
 
-        int[] turnFood = getTurnFoodPoints(readOnlyModel.getNumPlayers());
+        int[] turnFood = SharedModelLogic.getTurnFoodPoints(readOnlyModel.getNumPlayers());
 
         // calculate offset basing on game phase
         int offset = readOnlyModel.isPickOCPhase() ? turnFood.length - playersToPrint.size() : 0;
@@ -457,17 +543,6 @@ public class CLI implements UI {
     }
 
     /**
-     * Prints message on the terminal to notify the user that the new era has begun.
-     */
-    private void printEra(){
-        if(displayEra){
-            String eraToDisplay = readOnlyModel.getGameState().toString().replace("era", "");
-            System.out.println("Era "+ eraToDisplay + " has begun!");
-            setDisplayEra(false);
-        }
-    }
-
-    /**
      * Draws the tribe and building row
      * @param upper if true prints the upper row, if false prints the lower row
      */
@@ -537,7 +612,7 @@ public class CLI implements UI {
             nickname = scanner.nextLine().trim();
             if(nickname.length() >10 ) {
                 nickname = "";
-                System.out.print("Your nickname has more than 10 characters!\n");
+                System.out.print(ANSI_RED + "Your nickname has more than 10 characters!\n" + ANSI_RESET);
             }
         }
         return nickname;
@@ -563,10 +638,10 @@ public class CLI implements UI {
                 if (choice >= 0 && choice < availableColors.size()) {
                     return availableColors.get(choice);
                 } else {
-                    System.out.println("Invalid number. Please choose between 1 and " + availableColors.size());
+                    System.out.println(ANSI_RED + "Invalid number. Please choose between 1 and " + availableColors.size() + ANSI_RESET);
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid number, not text.");
+                System.out.println(ANSI_RED + "Please enter a valid number, not text." + ANSI_RESET);
             }
         }
     }
@@ -576,9 +651,9 @@ public class CLI implements UI {
      */
     private void getGamesList(){
         try {
-            serverAdapter.getGamesList().join();
+            serverAdapter.getGamesList();
         } catch (Exception e) {
-            System.err.println("CLI error: " + e.getCause().getMessage());
+            drawInterface("CLI error: " + e.getCause().getMessage(), true);
         }
     }
 
@@ -586,16 +661,26 @@ public class CLI implements UI {
      * Asks the user for a new nickname and sets it to player
      */
     private void changeNickname(){
-        String nickname = askNickname();
-        localPlayer.setNickname(nickname);
+        if(readOnlyModel.getGameState() == GameState.NONE){
+            String nickname = askNickname();
+            localPlayer.setNickname(nickname);
+        }
+        else {
+            drawInterface("Already in a game!", true);
+        }
     }
 
     /**
      * Lets player choose new color
      */
     private void changeColor() {
-        Color c = chooseColor();
-        localPlayer.setColor(c);
+        if(readOnlyModel.getGameState() == GameState.NONE){
+            Color c = chooseColor();
+            localPlayer.setColor(c);
+        }
+        else {
+            drawInterface("Already in a game!", true);
+        }
     }
 
     /**
@@ -607,12 +692,12 @@ public class CLI implements UI {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
-                serverAdapter.createGame(localPlayer, numPlayers).join();
+                serverAdapter.createGame(localPlayer, numPlayers);
             } else {
-                System.out.print("Already in a game!");
+                drawInterface("Already in a game!", true);
             }
         }catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            drawInterface("CLI error: " + e.getMessage(), true);
         }
     }
 
@@ -632,7 +717,7 @@ public class CLI implements UI {
                     if (index >= 0 && index < readOnlyModel.getGamesIdList().size()) {
                         gameId = readOnlyModel.getGamesIdList().get(index);
                     } else {
-                        System.out.println("Index out of bounds.");
+                        drawInterface("Index out of bounds.", true);
                     }
                 }
                 //Otherwise, try to treat input as a UUID
@@ -640,20 +725,20 @@ public class CLI implements UI {
                     try {
                         gameId = UUID.fromString(input);
                     } catch (IllegalArgumentException e) {
-                        System.out.println("Invalid format. Please enter a number or a valid UUID.");
+                        drawInterface("Invalid format. Please enter a number or a valid UUID.", true);
                     }
                 }
 
                 //If we successfully got a gameId, proceed
                 if (gameId != null) {
                     System.out.println("Trying to connect...");
-                    serverAdapter.joinGame(gameId, localPlayer).join();
+                    serverAdapter.joinGame(gameId, localPlayer);
                 }
             } else {
-                System.out.println("Already in a game!");
+                drawInterface("Already in a game!", true);
             }
         } catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            drawInterface("CLI error: " + e.getMessage(), true);
         }
     }
 
@@ -661,21 +746,22 @@ public class CLI implements UI {
      * Sends server command to pick offering card
      */
     private void pickOfferingCard(){
+        if (!readOnlyModel.getGameState().isGameStarted()) {
+            drawInterface("The game hasn't started!", true);
+            return;
+        }
         try {
-            if (!readOnlyModel.isPlayerTurn())
-                throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
-
             System.out.print("Insert card letter > ");
             Character cardLetter = scanner.nextLine().trim().toUpperCase().charAt(0);
 
-            readOnlyModel.validatePickOfferingCard(cardLetter);
+            readOnlyModel.validateOfferingCardTurnAction(localPlayer, cardLetter);
 
             // send request
-            serverAdapter.pickOfferingCard(cardLetter).join();
+            serverAdapter.pickOfferingCard(cardLetter);
         } catch (InvalidOperationException e) {
-            drawInterface(e.getErrorType().getMessage());
+            drawInterface(e.getErrorType().getMessage(), true);
         } catch (Exception e) {
-            drawInterface(e.getMessage());
+            drawInterface(e.getMessage(), true);
         }
     }
 
@@ -683,9 +769,8 @@ public class CLI implements UI {
      * Gets the user selected cards and sends them to server
      */
     private void pickTribeCards() {
-        // check if it is the players turn
-        if (!readOnlyModel.isPlayerTurn()) {
-            printError(ErrorType.OUT_OF_TURN.getMessage());
+        if (!readOnlyModel.getGameState().isGameStarted()) {
+            drawInterface("The game hasn't started!", true);
             return;
         }
 
@@ -694,7 +779,7 @@ public class CLI implements UI {
 
         if (myOfferingCard == null) {
             // if not found, return
-            drawInterface("No offering card selected.");
+            drawInterface("No offering card selected.", true);
             return;
         }
 
@@ -703,7 +788,7 @@ public class CLI implements UI {
 
         // if card with letter A, no card can be chosen
         if(totalCards == 0) {
-            System.out.println("You can't pick any card!");
+            drawInterface("Yon can't pick any card!",true);
             return;
         }
 
@@ -713,7 +798,7 @@ public class CLI implements UI {
         List<GameCard> pickableCards = buildPickableCardsList(myOfferingCard);
 
         if (pickableCards.isEmpty()) {
-            System.out.println("You can't pick any card!");
+            drawInterface("Yon can't pick any card!",true);
             return;
         }
 
@@ -728,9 +813,9 @@ public class CLI implements UI {
         if(isMoveValid(characterCards, buildingCards)) {
             // call server method
             try {
-                serverAdapter.pickTribeCards(characterCards, buildingCards).join();
+                serverAdapter.pickTribeCards(characterCards, buildingCards);
             } catch (Exception e) {
-                System.err.println("CLI error: " + e.getCause().getMessage());
+                drawInterface("CLI error: " + e.getCause().getMessage(), true);
             }
         }
     }
@@ -741,12 +826,12 @@ public class CLI implements UI {
     private void closeGame(){
         try {
             if (readOnlyModel.getGameId() == null) {
-                System.out.print("Not in a game");
+                drawInterface("Not in a game", true);
             } else {
-                serverAdapter.closeGame().join();
+                serverAdapter.closeGame();
             }
         }catch (Exception e) {
-            System.err.println("CLI error: " + e.getMessage());
+            drawInterface("CLI error: " + e.getCause().getMessage(), true);
         }
     }
 
@@ -758,7 +843,7 @@ public class CLI implements UI {
      * Resets available color list to all colors
      */
     private void resetColors(){
-        setAvailableColors(Arrays.stream(Color.values()).toList());
+        availableColors = Arrays.stream(Color.values()).toList();
     }
 
     /**
@@ -846,7 +931,7 @@ public class CLI implements UI {
      */
     private boolean isMoveValid(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try{
-            readOnlyModel.validatePickTribeCards(characterCards, buildingCards);
+            readOnlyModel.validateTribeCardsTurnAction(localPlayer, characterCards, buildingCards);
             return true;
         } catch (InvalidOperationException e){
             printError(e.getErrorType().getMessage());
@@ -891,5 +976,15 @@ public class CLI implements UI {
                 buildingCards.add((BuildingCard) pickedCard);
         }
         return buildingCards;
+    }
+
+    /**
+     * Updates localPlayer value when the object is updated into the queue by the server
+     * Used to update food, pp and cards of the player
+     */
+    private void setLocalPlayer() {
+        readOnlyModel.getOrderedPlayers().stream()
+                .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
+                .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
     }
 }

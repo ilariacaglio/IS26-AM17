@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Server.Model;
 import it.polimi.ingsw.am17.CommonInterfaces.ColorException;
 import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
 import it.polimi.ingsw.am17.Server.Model.Decks.BuildingDeck;
 import it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -78,11 +79,6 @@ public class Game extends Subject {
     public boolean isStarted() {
         logger.info("Checking if game is started.");
         return gameState.isGameStarted();
-    }
-
-    public boolean isEnded() {
-        logger.info("State of the Game: " + gameState.isGameEnded());
-        return gameState.isGameEnded();
     }
 
     /**
@@ -414,11 +410,7 @@ public class Game extends Subject {
 
         logger.info("Player " + nickname + " wants offering card " + offeringCardLetter);
 
-        //check if is player turn
-        if (!isPlayerTurn(player, orderedPlayers))
-            throw new InvalidOperationException(ErrorType.OUT_OF_TURN);
-
-        validateOfferingCardChoice(offeringCardLetter, player, offeringCards);
+        validateOfferingCardTurnAction(offeringCardLetter, player, offeringCards, orderedPlayers);
 
         OfferingCard offeringCard = getOfferingCardFromLetter(offeringCardLetter, offeringCards);
 
@@ -429,8 +421,12 @@ public class Game extends Subject {
         movePlayerInQueue(orderedPlayers);
 
         // when all player have an offering card recalculate queue
-        if (isEveryPlayerInOfferingCard(orderedPlayers, offeringCards))
+        if (isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)){
+            // the pick offering card phase is over
             recalculatePlayerQueue();
+            // if offering card 'A' was chosen, the player receives food bonus
+            handleOfferingCardWithLetterA();
+        }
 
         // notify changes
         notifyPlayerQueue(orderedPlayers);
@@ -470,27 +466,11 @@ public class Game extends Subject {
                 .filter(p->nickname.equals(p.getNickname()))
                 .findFirst().orElseThrow(()->new InvalidOperationException(ErrorType.INVALID_PLAYER));
 
-        // Get leftmost occupied offering card.
-        OfferingCard currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
-
-        logger.info("Player " + player.getNickname() + " wants to pick tribe cards from offering card " +  currentOffering.getOrderLetter() + ": " + characterCards + " and " + buildingCards);
-
-        // if a player has selected the offering card with letter A
-        if (currentOffering.getOrderLetter()=='A') {
-            logger.info("OfferingCard A was picked");
-            handleOfferingCardWithLetterA(currentOffering);
-            // recalculate next occupied offering card
-            currentOffering = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
-            logger.info("OfferingCard A was resolved");
-        }
-
-        // Check if it's player turn
-        if (!isPlayerTurn(player, orderedPlayers, offeringCards, building2OfferingCard))
-            throw new IllegalStateException(ErrorType.OUT_OF_TURN.toString());
+        logger.info("Player " + player.getNickname() + " wants to pick tribe cards: " + characterCards + " and " + buildingCards);
 
         // check if cards selection is legal based on the offeringCard
         try {
-            validateTribesCardChoice(player, offeringCards, building2OfferingCard,
+            validateTribesCardTurnAction(player, orderedPlayers, offeringCards, building2OfferingCard,
                     characterCards, buildingCards, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
         } catch (InvalidOperationException e) {
             logger.warning("CardChoice is not valid: " + e.getMessage());
@@ -505,20 +485,7 @@ public class Game extends Subject {
         upperRow.removeAll(characterCards); // if not present, no worries
         lowerRow.removeAll(characterCards); // if not present, no worries
 
-        if (player.hasBuilding2()) {
-            // N.B.: there is a singular buildingType2 per game
-            logger.info("Adding player to buildingType2 offering card.");
-
-            // N.B.: if calling from building2OfferingCard, don't set the player again
-            if (building2OfferingCard.getPlayer() == null) building2OfferingCard.setPlayer(player);
-        }
-
-        currentOffering.setPlayer(null);
-
-        // if is building2 move, the queue should not be modified
-        if (!currentOffering.equals(building2OfferingCard)) {
-            movePlayerInQueue(orderedPlayers);
-        }
+        SharedModelLogic.handleOfferingCardsAndPlayersQueue(player, offeringCards, building2OfferingCard, orderedPlayers);
 
         OfferingCard nextOfferingCard = getNextOccupiedOfferingCard(offeringCards, building2OfferingCard);
 
@@ -533,15 +500,25 @@ public class Game extends Subject {
 
     /**
      * Adds food to player in the offering card with letter A, then sets player to null
-     * @param offeringCard reference to offering card with letter A
      */
-    private void handleOfferingCardWithLetterA(OfferingCard offeringCard) {
+    private void handleOfferingCardWithLetterA() {
         logger.info("Handling offering card with letter A.");
+        // get offering card with letter A from list
+        OfferingCard offeringCard = offeringCards.stream().filter(oc->oc.getOrderLetter().equals('A'))
+                .findFirst().orElse(null);
+
+        // for all the games with numPlayers < 5 the card is not found
+        if (offeringCard == null) return;
+
+        // if offering card wasn't selected return
+        if(offeringCard.getPlayer() == null) return;
 
         // give +3 food to the player
         offeringCard.getPlayer().addFood(3);
+
         // remove player from offering card
         offeringCard.setPlayer(null);
+
         // move the player to last position in queue
         movePlayerInQueue(orderedPlayers);
     }
