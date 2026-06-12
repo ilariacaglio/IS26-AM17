@@ -217,8 +217,8 @@ public class CLI implements UI {
      * Prints the game interface when game ends due to a player action or connection error
      */
     @Override
-    public void updateInterfaceFromForcedEndGame(String disconnectedPlayer) {
-        String errorMessage = "The game has ended due to disconnection of player " + disconnectedPlayer;
+    public void updateInterfaceFromForcedEndGame(String disconnectedReason) {
+        String errorMessage = "The game has ended due to disconnection of " + disconnectedReason;
         drawInterface(errorMessage, true);
     }
 

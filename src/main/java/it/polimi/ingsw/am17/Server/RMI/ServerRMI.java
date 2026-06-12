@@ -1,11 +1,11 @@
 package it.polimi.ingsw.am17.Server.RMI;
 
-import it.polimi.ingsw.am17.Server.Controller.GamesController;
+import it.polimi.ingsw.am17.Server.Controller.ControllerInterface;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -24,9 +24,9 @@ import java.util.logging.Logger;
 public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
     private final Logger logger = Logger.getLogger(ServerRMI.class.getName());
 
-    private final ConcurrentHashMap<VirtualView, AtomicLong> lastHeartbeats = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<VirtualClient, AtomicLong> lastHeartbeats = new ConcurrentHashMap<>();
 
-    final GamesController controller;
+    final ControllerInterface controller;
 
     /**
      * Create and start an RMI server.
@@ -34,7 +34,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @param port port to bind the server to
      * @throws RemoteException if the RMI registry cannot be created.
      */
-    public ServerRMI(GamesController controller, int port, String serverName) throws RemoteException {
+    public ServerRMI(ControllerInterface controller, int port, String serverName) throws RemoteException {
         super(); // needed for UnicastRemoteObject
 
         this.controller = controller;
@@ -51,7 +51,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void connect(VirtualViewRMI client) throws RemoteException {
+    public void connect(VirtualClientRMI client) throws RemoteException {
         logger.info("RMI Client connected " + client.getClass().getSimpleName());
 
         ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
@@ -76,7 +76,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void ping(VirtualViewRMI client) throws RemoteException {
+    public void ping(VirtualClientRMI client) throws RemoteException {
         logger.fine("Received ping");
         AtomicLong ts = lastHeartbeats.get(client);
         if (ts != null) ts.set(System.currentTimeMillis());
@@ -89,7 +89,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @param heartbeater to stop
      * @return Runnable to pass the executor.
      */
-    private Runnable pinger(VirtualViewRMI client, ScheduledExecutorService heartbeater, ScheduledExecutorService heartwatcher) {
+    private Runnable pinger(VirtualClientRMI client, ScheduledExecutorService heartbeater, ScheduledExecutorService heartwatcher) {
         AtomicInteger failedHeartbeats = new AtomicInteger();
 
         return () -> {
@@ -110,7 +110,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
         };
     }
 
-    private void onClientDisconnection(VirtualViewRMI client, ScheduledExecutorService heartbeater, ScheduledExecutorService heartwatcher) {
+    private void onClientDisconnection(VirtualClientRMI client, ScheduledExecutorService heartbeater, ScheduledExecutorService heartwatcher) {
         logger.warning("Removing RMI Client" + client.getClass().getSimpleName());
         lastHeartbeats.remove(client);
         controller.closeGame(client);
@@ -123,7 +123,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void getGamesList(VirtualView client) throws RemoteException {
+    public void getGamesList(VirtualClient client) throws RemoteException {
         controller.getGamesList(client);
     }
 
@@ -132,7 +132,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void createGame(VirtualView client, Player player, int numPlayers) throws RemoteException {
+    public void createGame(VirtualClient client, Player player, int numPlayers) throws RemoteException {
         controller.createGame(client, player, numPlayers);
     }
 
@@ -141,7 +141,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void closeGame(VirtualView client) throws RemoteException {
+    public void closeGame(VirtualClient client) throws RemoteException {
         controller.closeGame(client);
     }
 
@@ -150,7 +150,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void joinGame(VirtualView client, UUID gameId, Player player) throws RemoteException {
+    public void joinGame(VirtualClient client, UUID gameId, Player player) throws RemoteException {
         controller.joinGame(client, gameId, player);
     }
 
@@ -159,7 +159,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void pickOfferingCard(VirtualView client, Character offeringCardLetter) throws RemoteException {
+    public void pickOfferingCard(VirtualClient client, Character offeringCardLetter) throws RemoteException {
         controller.pickOfferingCard(client, offeringCardLetter);
     }
 
@@ -168,7 +168,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      * @throws RemoteException remotely called!
      */
     @Override
-    public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
+    public void pickTribeCards(VirtualClient client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
         controller.pickTribeCards(client, characterCards, buildingCards);
     }
 }

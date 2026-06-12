@@ -7,14 +7,14 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
 
-public interface VirtualViewRMI extends Remote, VirtualView {
+public interface VirtualClientRMI extends Remote, VirtualClient {
     // methods called by the network
     void ping() throws RemoteException;
 

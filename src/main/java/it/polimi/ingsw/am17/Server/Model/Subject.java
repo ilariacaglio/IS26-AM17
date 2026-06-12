@@ -4,7 +4,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
@@ -20,14 +20,14 @@ import java.util.stream.Collectors;
 public abstract class Subject {
     private final static Logger logger = Logger.getLogger(Subject.class.getName());
     // thread-safe list of clients
-    private final List<VirtualView> clients = new CopyOnWriteArrayList<>();
+    private final List<VirtualClient> clients = new CopyOnWriteArrayList<>();
     private final ExecutorService notifyService = Executors.newCachedThreadPool();
 
     /**
      * Attach a client to the subject (start observing).
      * @param client to be attached
      */
-    public void attach(VirtualView client) {
+    public void attach(VirtualClient client) {
         clients.add(client);
         logger.info("Added client " + client.getClass().getSimpleName() + " as observer.");
     }
@@ -36,7 +36,7 @@ public abstract class Subject {
      * Detach a client to the subject (stop observing).
      * @param client to be detached
      */
-    public void detach(VirtualView client) {
+    public void detach(VirtualClient client) {
         clients.remove(client);
         logger.info("Removed client " + client.getClass().getSimpleName() + " from observers.");
 
@@ -47,7 +47,7 @@ public abstract class Subject {
      * @param era   the era that has started
      */
     void notifyGameState(GameState era) {
-        for (VirtualView client : clients) {
+        for (VirtualClient client : clients) {
             notifyService.submit(() -> {
                 try {
                     client.updateGameState(era);
@@ -59,7 +59,7 @@ public abstract class Subject {
     }
 
     void notifyPlayerQueue(Queue<Player> orderedPlayer) {
-        for (VirtualView client : clients) {
+        for (VirtualClient client : clients) {
             notifyService.submit(() -> {
                 try {
                     client.updatePlayerQueue(orderedPlayer);
@@ -71,7 +71,7 @@ public abstract class Subject {
     }
 
     void notifyPlayerSelectOfferingCard(Player player, OfferingCard offeringCard){
-        for (VirtualView client : clients) {
+        for (VirtualClient client : clients) {
             notifyService.submit(() -> {
                 try {
                     client.updatePlayerSelectOfferingCard(player, offeringCard);
@@ -83,7 +83,7 @@ public abstract class Subject {
     }
 
     void notifyPlayerSelectTribesCard(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
-        for (VirtualView client : clients) {
+        for (VirtualClient client : clients) {
             notifyService.submit(() -> {
                 try {
                     client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
@@ -97,7 +97,7 @@ public abstract class Subject {
     void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         Queue<Player> newQueue = buildQueueWithoutPlayerCards(players);
-        for (VirtualView client : clients) {
+        for (VirtualClient client : clients) {
             notifyService.submit(() -> {
                 try {
                     client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
@@ -110,7 +110,7 @@ public abstract class Subject {
 
     void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
-        for (VirtualView client : clients) {
+        for (VirtualClient client : clients) {
             notifyService.submit(() -> {
                 try {
                     client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
@@ -123,7 +123,7 @@ public abstract class Subject {
 
     void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         Queue<Player> newQueue = buildQueueWithoutPlayerCards(orderedPlayers);
-        for (VirtualView client : clients) {
+        for (VirtualClient client : clients) {
             notifyService.submit(() -> {
                 logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
                 try {
@@ -138,7 +138,7 @@ public abstract class Subject {
     }
 
     void notifyForceEndGame(String disconnectedPlayer) {
-        for (VirtualView client : clients) {
+        for (VirtualClient client : clients) {
             notifyService.submit(() -> {
                 logger.info("Calling notifyForceEndGame on client " + client.getClass().getSimpleName());
                 try {

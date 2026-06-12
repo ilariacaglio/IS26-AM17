@@ -6,17 +6,16 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * This is the interface exposed by the network layer and called by the ui
  * We chose an interface and not a utility class to highlight the concept of abstraction
  */
 public interface ServerAdapter {
-    CompletableFuture<Void> getGamesList();
-    CompletableFuture<Void> createGame(Player player, int numPlayers);
-    CompletableFuture<Void> closeGame();
-    CompletableFuture<Void> joinGame(UUID gameId, Player player);
-    CompletableFuture<Void> pickOfferingCard(Character offeringCardLetter);
-    CompletableFuture<Void> pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards);
+    void getGamesList();
+    void createGame(Player player, int numPlayers);
+    void closeGame();
+    void joinGame(UUID gameId, Player player);
+    void pickOfferingCard(Character offeringCardLetter);
+    void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards);
 }

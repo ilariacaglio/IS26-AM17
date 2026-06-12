@@ -4,8 +4,8 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.VirtualServer;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
-import it.polimi.ingsw.am17.Server.RMI.VirtualViewRMI;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
+import it.polimi.ingsw.am17.Server.RMI.VirtualClientRMI;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -13,20 +13,20 @@ import java.util.List;
 import java.util.UUID;
 
 public interface VirtualServerRMI extends Remote, VirtualServer {
-    void connect(VirtualViewRMI client) throws RemoteException;
-    void ping(VirtualViewRMI client) throws RemoteException;
+    void connect(VirtualClientRMI client) throws RemoteException;
+    void ping(VirtualClientRMI client) throws RemoteException;
 
     // controller methods
     @Override
-    void getGamesList(VirtualView client) throws RemoteException;
+    void getGamesList(VirtualClient client) throws RemoteException;
     @Override
-    void createGame(VirtualView client, Player player, int numPlayers)  throws RemoteException;
+    void createGame(VirtualClient client, Player player, int numPlayers)  throws RemoteException;
     @Override
-    void closeGame(VirtualView client)  throws RemoteException;
+    void closeGame(VirtualClient client)  throws RemoteException;
     @Override
-    void joinGame(VirtualView client,UUID gameId, Player player)  throws RemoteException;
+    void joinGame(VirtualClient client, UUID gameId, Player player)  throws RemoteException;
     @Override
-    void pickOfferingCard(VirtualView client, Character offeringCardLetter)  throws RemoteException;
+    void pickOfferingCard(VirtualClient client, Character offeringCardLetter)  throws RemoteException;
     @Override
-    void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException;
+    void pickTribeCards(VirtualClient client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException;
 }

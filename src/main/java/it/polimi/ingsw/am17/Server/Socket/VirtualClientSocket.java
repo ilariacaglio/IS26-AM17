@@ -2,7 +2,7 @@ package it.polimi.ingsw.am17.Server.Socket;
 
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
@@ -18,10 +18,10 @@ import java.util.*;
 /**
  * Forwards requests from the controller to a single client.
  */
-public class VirtualViewSocket implements VirtualView {
+public class VirtualClientSocket implements VirtualClient {
     private final Socket socket;
 
-    public VirtualViewSocket(Socket socket) {
+    public VirtualClientSocket(Socket socket) {
         this.socket = socket;
     }
 
