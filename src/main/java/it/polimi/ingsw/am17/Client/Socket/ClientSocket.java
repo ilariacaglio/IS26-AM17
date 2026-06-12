@@ -56,8 +56,8 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
         server = new VirtualServerSocket(socket);
 
         // handle incoming messages in a new thread
-        new Thread(() -> {
-
+        ExecutorService messageReceiver = Executors.newSingleThreadExecutor();
+        messageReceiver.execute(() -> {
             // read socket input stream
             try (BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()))) {
                 String line;
@@ -93,7 +93,7 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
             } catch (Exception e) {
                 System.err.println("Disconnected from server: " + e.getMessage());
             }
-        }).start();
+        });
 
         // create a heartbeat thread to ping the new client
         heartbeater.scheduleAtFixedRate(() -> {
