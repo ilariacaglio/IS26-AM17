@@ -26,8 +26,8 @@ public class ServerSocketMultiplexer {
                 Socket socket = serverSocket.accept();
                 logger.info("New client connected: " + socket.getRemoteSocketAddress());
 
-                // create a VirtualView associated with the client (socket) to send updates
-                VirtualViewSocket client = new VirtualViewSocket(socket);
+                // create a VirtualClient associated with the client (socket) to send updates
+                VirtualClientSocket client = new VirtualClientSocket(socket);
 
                 // create _ServerSocket associated with the client to receive requests
                 ServerSocketSingle server = new ServerSocketSingle(socket, controller, client);

@@ -6,7 +6,7 @@ import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,8 +18,8 @@ import java.util.logging.Logger;
  */
 public class GamesController implements ControllerInterface {
     private final ConcurrentHashMap<UUID,Game> games;
-    private final ConcurrentHashMap<VirtualView, UUID> gameMapping;
-    private final ConcurrentHashMap<VirtualView, String> playerMapping; // string field is for nickname
+    private final ConcurrentHashMap<VirtualClient, UUID> gameMapping;
+    private final ConcurrentHashMap<VirtualClient, String> playerMapping; // string field is for nickname
 
     private final static Logger logger = Logger.getLogger(GamesController.class.getName());
 
@@ -71,7 +71,7 @@ public class GamesController implements ControllerInterface {
      * @param client to be registered
      * @param gameId of the game
      */
-    private void signUpAsObserver(VirtualView client, UUID gameId) {
+    private void signUpAsObserver(VirtualClient client, UUID gameId) {
         Game game = getGameFromId(gameId);
 
         // add client to game mapping
@@ -87,7 +87,7 @@ public class GamesController implements ControllerInterface {
      * @param client to be removed
      * @param gameId of the game
      */
-    private void removeClientAsObserver(VirtualView client, UUID gameId) {
+    private void removeClientAsObserver(VirtualClient client, UUID gameId) {
         Game game = getGameFromId(gameId);
         synchronized (game){
             game.detach(client);
@@ -100,7 +100,7 @@ public class GamesController implements ControllerInterface {
      * @param client       the client to be notified
      * @param exception    the exception thrown
      */
-    private void notifyErrorToClient(VirtualView client, InvalidOperationException exception) {
+    private void notifyErrorToClient(VirtualClient client, InvalidOperationException exception) {
         try {
             client.updateError(exception);
         }
@@ -115,7 +115,7 @@ public class GamesController implements ControllerInterface {
      * @param gameId                the id of the game to be joined
      * @param observerAdded         if true, the client was added to the list as on observer of the game
      */
-    private void rollbackObserverAdded(VirtualView client, UUID gameId, boolean observerAdded) {
+    private void rollbackObserverAdded(VirtualClient client, UUID gameId, boolean observerAdded) {
         // N.B. we need to sign up the client before joining the player
         // so that it's notified from the addPlayer, if something goes wrong,
         // we remove it here.
@@ -139,7 +139,7 @@ public class GamesController implements ControllerInterface {
      * @param numPlayers number of players for the game.
      */
     @Override
-    public void createGame(VirtualView client, Player player, int numPlayers) {
+    public void createGame(VirtualClient client, Player player, int numPlayers) {
         logger.info("Client " + client.getClass().getSimpleName() + " wants to create a new game with " + numPlayers + " players.");
 
         try {
@@ -171,7 +171,7 @@ public class GamesController implements ControllerInterface {
      * @param player to add to the game.
      */
     @Override
-    public void joinGame(VirtualView client, UUID gameId, Player player) {
+    public void joinGame(VirtualClient client, UUID gameId, Player player) {
         logger.info("Client " + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
 
         // sign if client is added as an observer
@@ -213,7 +213,7 @@ public class GamesController implements ControllerInterface {
      * @param client client generating the request.
      */
     @Override
-    public void closeGame(VirtualView client) {
+    public void closeGame(VirtualClient client) {
         try {
             // get uuid of the game from the client (mapping)
             UUID uuid = gameMapping.get(client);
@@ -263,7 +263,7 @@ public class GamesController implements ControllerInterface {
      * @param offeringCardLetter    letter of the offering card to be selected
      */
     @Override
-    public void pickOfferingCard(VirtualView client, Character offeringCardLetter) {
+    public void pickOfferingCard(VirtualClient client, Character offeringCardLetter) {
         try {
             // search for client nickname
             String nickname = playerMapping.get(client);
@@ -297,7 +297,7 @@ public class GamesController implements ControllerInterface {
      * @param buildingCards     selected by the player
      */
     @Override
-    public void pickTribeCards(VirtualView client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+    public void pickTribeCards(VirtualClient client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try {
             // search for client nickname
             String nickname = playerMapping.get(client);
@@ -327,7 +327,7 @@ public class GamesController implements ControllerInterface {
      * @param client to send the update.
      */
     @Override
-    public void getGamesList(VirtualView client) {
+    public void getGamesList(VirtualClient client) {
         logger.info("Client " + client.getClass().getSimpleName() + " requested the games list.");
         try {
             // send the list of open games to the client

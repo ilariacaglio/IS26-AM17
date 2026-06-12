@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Represents a client in the observer pattern (observer).
  */
-public interface VirtualView {
+public interface VirtualClient {
     // lobby methods
     void updateGameId(UUID gameId) throws Exception;
     void updateGamesIdList(List<UUID> gamesIdList) throws Exception;

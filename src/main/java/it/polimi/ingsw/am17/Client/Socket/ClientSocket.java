@@ -8,7 +8,7 @@ import it.polimi.ingsw.am17.Client.UserInterface.UI;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.CommonInterfaces.Message;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
-import it.polimi.ingsw.am17.CommonInterfaces.VirtualView;
+import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * Sets up the socket connection with the server.
  * Receives requests from the server to update the ClientModel.
  */
-public class ClientSocket implements VirtualView, ServerAdapter {
+public class ClientSocket implements VirtualClient, ServerAdapter {
     private final Logger logger = Logger.getLogger(ClientSocket.class.getName());
 
     ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
@@ -139,7 +139,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
         logger.severe("Server disconnected, shutting down.");
         heartbeater.shutdown();
         heartwatcher.shutdown();
-//        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
+        model.updateForcedEndGame("");
         System.exit(1);
     }
 

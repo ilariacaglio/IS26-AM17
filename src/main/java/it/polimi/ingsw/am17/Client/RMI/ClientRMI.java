@@ -12,7 +12,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.RMI.VirtualViewRMI;
+import it.polimi.ingsw.am17.Server.RMI.VirtualClientRMI;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.NotBoundException;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * Sets up the RMI connection with the server.
  * Receives requests from the server to update the ClientModel.
  */
-public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, ServerAdapter {
+public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, ServerAdapter {
     private final static Logger logger = Logger.getLogger(ClientRMI.class.getName());
 
     ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
