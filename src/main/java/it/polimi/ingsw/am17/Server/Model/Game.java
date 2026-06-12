@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-public class Game extends Subject implements ModelInterface {
+public class Game extends Subject {
     private final UUID id;
     private final int numPlayers;
     private GameState gameState;
@@ -86,7 +86,6 @@ public class Game extends Subject implements ModelInterface {
      *
      * @param p player to add to the game
      */
-    @Override
     public void addPlayer(Player p) {
         logger.info("Adding player " + p.getNickname() + " to game with id " + id);
 
@@ -123,7 +122,6 @@ public class Game extends Subject implements ModelInterface {
      * Removes a player from the game AND ENDS THE GAME (re-join not implemented).
      * @param nickname  the nickname of the player that closes the game
      */
-    @Override
     public void forceEndGame(String nickname) {
         logger.severe("Forcibly closing game with id: " + id);
         this.gameState = GameState.ENDED;
@@ -357,8 +355,7 @@ public class Game extends Subject implements ModelInterface {
     /**
      * Ends the game.
      */
-    @Override
-    public void endGame() {
+    private void endGame() {
         logger.info("Ending game.");
 
         //put era to -1 to signal game has ended
@@ -399,7 +396,6 @@ public class Game extends Subject implements ModelInterface {
      * @param nickname              nickname of the player
      * @param offeringCardLetter    offering card picked
      */
-    @Override
     public void selectOfferingCard(String nickname, Character offeringCardLetter) {
         logger.info("Request forwarded to selectOfferingCard method in model");
         // check if letter is null
@@ -463,7 +459,6 @@ public class Game extends Subject implements ModelInterface {
      * @param characterCards    the character cards picked by the player
      * @param buildingCards     the building cards picked by the player
      */
-    @Override
     public void pickTribeCards(String nickname, List<CharacterCard> characterCards, List<BuildingCard> buildingCards)  {
         logger.info("Picking tribeCards. ");
         // get player from nickname
@@ -528,7 +523,6 @@ public class Game extends Subject implements ModelInterface {
         movePlayerInQueue(orderedPlayers);
     }
 
-    @Override
     public UUID getId() {
         return id;
     }
