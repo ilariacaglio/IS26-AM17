@@ -38,8 +38,6 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
     int failedHeartbeats;
     long lastHeartbeatReceived = System.currentTimeMillis();
 
-    ExecutorService uiStarter = Executors.newSingleThreadExecutor();
-
     VirtualServerSocket server;
     ClientModel model;
     Socket socket;
@@ -132,7 +130,7 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
 
         model = new ClientModel(userInterface);
         userInterface.setModel(model);
-        uiStarter.execute(this.model::startInterface);
+        this.model.startInterface();
     }
 
     private void onServerDisconnection() {
