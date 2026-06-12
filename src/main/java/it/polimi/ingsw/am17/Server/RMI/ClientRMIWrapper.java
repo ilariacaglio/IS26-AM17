@@ -12,6 +12,7 @@ import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -146,5 +147,34 @@ public class ClientRMIWrapper implements VirtualClient {
                 logger.severe("RMI: Failed to notify error: " + e.getMessage());
             }
         });
+    }
+
+    @Override
+    public int hashCode() {
+        return this.client.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        // 1. Self-check (are they the exact same object in memory?)
+        if (this == o) return true;
+
+        // 2. Null check
+        if (o == null) return false;
+
+        // 3. Compare the underlying client!
+        // If 'o' is another wrapper, compare their inner clients.
+        if (o instanceof ClientRMIWrapper) {
+            ClientRMIWrapper otherWrapper = (ClientRMIWrapper) o;
+            return Objects.equals(this.client, otherWrapper.client);
+        }
+
+        // 4. (Optional) If 'o' is the raw client itself, compare directly.
+        // This allows observers.remove(rawClient) to successfully remove the wrapper.
+        if (o instanceof VirtualClient) {
+            return Objects.equals(this.client, o);
+        }
+
+        return false;
     }
 }
