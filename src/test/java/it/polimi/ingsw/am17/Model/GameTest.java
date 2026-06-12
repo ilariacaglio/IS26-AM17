@@ -301,7 +301,7 @@ public class GameTest {
             setFirstPlayerToOffering(0);
             //the wrong player tries to select cards
             Player wrongPlayer = pickWrongPlayer();
-            assertThrows(IllegalStateException.class,
+            assertThrows(InvalidOperationException.class,
                     () -> game.pickTribeCards(wrongPlayer.getNickname(), Collections.emptyList(), Collections.emptyList()));
         }
 

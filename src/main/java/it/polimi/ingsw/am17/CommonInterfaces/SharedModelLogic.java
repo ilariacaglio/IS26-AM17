@@ -256,7 +256,7 @@ public class SharedModelLogic {
                     .ifPresent(o -> o.setPlayer(null));
 
             // if the player had the building2, book an extra turn
-            if (player.hasBuilding2() && !isBuilding2EffectUsed(offeringCards, buildingTwoOfferingCard)) {
+            if (player.hasBuilding2()) {
                 buildingTwoOfferingCard.setPlayer(player);
             }
             // since the move is normal the queue should be updated
@@ -267,6 +267,7 @@ public class SharedModelLogic {
         else {
             buildingTwoOfferingCard.setPlayer(null);
             // N.B. the queue is not updated here!
+            // this is because in the real game the player is already on the turn order card
         }
     }
 }
