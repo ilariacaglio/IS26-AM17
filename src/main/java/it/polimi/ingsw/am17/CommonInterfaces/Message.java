@@ -171,7 +171,7 @@ public class Message implements Serializable {
 
     private String disconnectedPlayerNickname;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @JsonCreator
     public Message(@JsonProperty("type") MessageType type) {
