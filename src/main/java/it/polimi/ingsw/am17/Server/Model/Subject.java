@@ -19,9 +19,7 @@ import java.util.stream.Collectors;
  */
 public abstract class Subject {
     private final static Logger logger = Logger.getLogger(Subject.class.getName());
-    // thread-safe list of clients
-    private final List<VirtualClient> clients = new CopyOnWriteArrayList<>();
-    private final ExecutorService notifyService = Executors.newCachedThreadPool();
+    private final List<VirtualClient> clients = new ArrayList<>();
 
     /**
      * Attach a client to the subject (start observing).
@@ -48,49 +46,41 @@ public abstract class Subject {
      */
     void notifyGameState(GameState era) {
         for (VirtualClient client : clients) {
-            notifyService.submit(() -> {
                 try {
                     client.updateGameState(era);
                 } catch (Exception e) {
                     logger.severe("Failed to notify game state: " + e.getMessage());
                 }
-            });
         }
     }
 
     void notifyPlayerQueue(Queue<Player> orderedPlayer) {
         for (VirtualClient client : clients) {
-            notifyService.submit(() -> {
                 try {
                     client.updatePlayerQueue(orderedPlayer);
                 } catch (Exception e) {
                     logger.severe("Failed to notify player queue" + e.getMessage());
                 }
-            });
         }
     }
 
     void notifyPlayerSelectOfferingCard(Player player, OfferingCard offeringCard){
         for (VirtualClient client : clients) {
-            notifyService.submit(() -> {
                 try {
                     client.updatePlayerSelectOfferingCard(player, offeringCard);
                 } catch (Exception e) {
                     logger.severe("Failed to notify offering card selection: " + e.getMessage());
                 }
-            });
         }
     }
 
     void notifyPlayerSelectTribesCard(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
         for (VirtualClient client : clients) {
-            notifyService.submit(() -> {
                 try {
                     client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
                 } catch (Exception e) {
                     logger.severe("Failed to notify tribes card selection: " + e.getMessage());
                 }
-            });
         }
     }
 
@@ -98,33 +88,28 @@ public abstract class Subject {
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         Queue<Player> newQueue = buildQueueWithoutPlayerCards(players);
         for (VirtualClient client : clients) {
-            notifyService.submit(() -> {
                 try {
                     client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
                 } catch (Exception e) {
                     logger.severe("Failed to notify end turn: " + e.getMessage());
                 }
-            });
         }
     }
 
     void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
         for (VirtualClient client : clients) {
-            notifyService.submit(() -> {
                 try {
                     client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
                 } catch (Exception e) {
                     logger.severe("Failed to notify game start: " + e.getMessage());
                 }
-            });
         }
     }
 
     void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         Queue<Player> newQueue = buildQueueWithoutPlayerCards(orderedPlayers);
         for (VirtualClient client : clients) {
-            notifyService.submit(() -> {
                 logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
                 try {
                     client.updateEndGame(ranking, newQueue);
@@ -132,14 +117,12 @@ public abstract class Subject {
                 } catch (Exception e) {
                     logger.severe("Failed to notify end game: " + e.getMessage());
                 }
-            });
         }
         clients.clear();
     }
 
     void notifyForceEndGame(String disconnectedPlayer) {
         for (VirtualClient client : clients) {
-            notifyService.submit(() -> {
                 logger.info("Calling notifyForceEndGame on client " + client.getClass().getSimpleName());
                 try {
                     client.updateForceEndGame(disconnectedPlayer);
@@ -147,7 +130,6 @@ public abstract class Subject {
                 } catch (Exception e) {
                     logger.severe("Failed to notify end game: " + e.getMessage());
                 }
-            });
         }
         clients.clear();
     }

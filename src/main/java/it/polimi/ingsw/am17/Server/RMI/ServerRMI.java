@@ -124,7 +124,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void getGamesList(VirtualClient client) throws RemoteException {
-        controller.getGamesList(client);
+        controller.getGamesList(new ClientRMIWrapper(client));
     }
 
     /**
@@ -133,7 +133,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void createGame(VirtualClient client, Player player, int numPlayers) throws RemoteException {
-        controller.createGame(client, player, numPlayers);
+        controller.createGame(new ClientRMIWrapper(client), player, numPlayers);
     }
 
     /**
@@ -142,7 +142,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void closeGame(VirtualClient client) throws RemoteException {
-        controller.closeGame(client);
+        controller.closeGame(new ClientRMIWrapper(client));
     }
 
     /**
@@ -151,7 +151,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void joinGame(VirtualClient client, UUID gameId, Player player) throws RemoteException {
-        controller.joinGame(client, gameId, player);
+        controller.joinGame(new ClientRMIWrapper(client), gameId, player);
     }
 
     /**
@@ -160,7 +160,7 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void pickOfferingCard(VirtualClient client, Character offeringCardLetter) throws RemoteException {
-        controller.pickOfferingCard(client, offeringCardLetter);
+        controller.pickOfferingCard(new ClientRMIWrapper(client), offeringCardLetter);
     }
 
     /**
@@ -169,6 +169,6 @@ public class ServerRMI extends UnicastRemoteObject implements VirtualServerRMI {
      */
     @Override
     public void pickTribeCards(VirtualClient client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws RemoteException {
-        controller.pickTribeCards(client, characterCards, buildingCards);
+        controller.pickTribeCards(new ClientRMIWrapper(client), characterCards, buildingCards);
     }
 }

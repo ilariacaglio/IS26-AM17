@@ -651,7 +651,7 @@ public class CLI implements UI {
      */
     private void getGamesList(){
         try {
-            serverAdapter.getGamesList().join();
+            serverAdapter.getGamesList();
         } catch (Exception e) {
             drawInterface("CLI error: " + e.getCause().getMessage(), true);
         }
@@ -692,7 +692,7 @@ public class CLI implements UI {
                 System.out.print("How many players? (2 to 5) > ");
                 int numPlayers = Integer.parseInt(scanner.nextLine());
                 System.out.println("Trying to create game...");
-                serverAdapter.createGame(localPlayer, numPlayers).join();
+                serverAdapter.createGame(localPlayer, numPlayers);
             } else {
                 drawInterface("Already in a game!", true);
             }
@@ -732,7 +732,7 @@ public class CLI implements UI {
                 //If we successfully got a gameId, proceed
                 if (gameId != null) {
                     System.out.println("Trying to connect...");
-                    serverAdapter.joinGame(gameId, localPlayer).join();
+                    serverAdapter.joinGame(gameId, localPlayer);
                 }
             } else {
                 drawInterface("Already in a game!", true);
@@ -757,7 +757,7 @@ public class CLI implements UI {
             readOnlyModel.validateOfferingCardTurnAction(localPlayer, cardLetter);
 
             // send request
-            serverAdapter.pickOfferingCard(cardLetter).join();
+            serverAdapter.pickOfferingCard(cardLetter);
         } catch (InvalidOperationException e) {
             drawInterface(e.getErrorType().getMessage(), true);
         } catch (Exception e) {
@@ -813,7 +813,7 @@ public class CLI implements UI {
         if(isMoveValid(characterCards, buildingCards)) {
             // call server method
             try {
-                serverAdapter.pickTribeCards(characterCards, buildingCards).join();
+                serverAdapter.pickTribeCards(characterCards, buildingCards);
             } catch (Exception e) {
                 drawInterface("CLI error: " + e.getCause().getMessage(), true);
             }
@@ -828,7 +828,7 @@ public class CLI implements UI {
             if (readOnlyModel.getGameId() == null) {
                 drawInterface("Not in a game", true);
             } else {
-                serverAdapter.closeGame().join();
+                serverAdapter.closeGame();
             }
         }catch (Exception e) {
             drawInterface("CLI error: " + e.getCause().getMessage(), true);
