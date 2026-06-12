@@ -9,7 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameState;
  */
 public class BuildingType2 extends BuildingCard {
     private static final GameState era = GameState.ERA3;
-    private static final int foodCost = 10;
+    private static final int foodCost = 9;
     private static final int bonusPoints = 0;
     public BuildingType2() {
         super(era, foodCost, bonusPoints);
