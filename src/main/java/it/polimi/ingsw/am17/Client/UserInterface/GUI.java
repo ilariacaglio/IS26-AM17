@@ -211,6 +211,9 @@ public class GUI implements UI {
             joinView.updateGameList(readOnlyModel.getGamesIdList());
 
         }
+        else {
+            System.out.println();
+        }
     }
 
     /**
