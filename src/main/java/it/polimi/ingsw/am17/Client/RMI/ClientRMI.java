@@ -36,8 +36,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
     ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
     long lastHeartbeatReceived = System.currentTimeMillis();
 
-    ExecutorService uiStarter = Executors.newSingleThreadExecutor();
-
+    private final ExecutorService remoteRMICallService = Executors.newCachedThreadPool();
     private final ClientModel model;
     private final VirtualServerRMI server;
 
@@ -87,7 +86,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
         }
         this.model = new ClientModel(userInterface);
         userInterface.setModel(model);
-        uiStarter.execute(this.model::startInterface);
+        this.model.startInterface();
     }
 
     /**
@@ -205,8 +204,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
     }
 
     @Override
-    public CompletableFuture<Void> getGamesList() {
-        return CompletableFuture.runAsync(() -> {
+    public void getGamesList() {
+        remoteRMICallService.submit(()->{
             try {
                 server.getGamesList(this);
             } catch (Exception e) {
@@ -216,8 +215,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
     }
 
     @Override
-    public CompletableFuture<Void> createGame(Player player, int numPlayers) {
-        return CompletableFuture.runAsync(() -> {
+    public void createGame(Player player, int numPlayers) {
+        remoteRMICallService.submit(()->{
             try {
                 server.createGame(this, player, numPlayers);
             } catch (Exception e) {
@@ -227,8 +226,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
     }
 
     @Override
-    public CompletableFuture<Void> closeGame() {
-        return CompletableFuture.runAsync(() -> {
+    public void closeGame() {
+        remoteRMICallService.submit(()->{
             try {
                 server.closeGame(this);
             } catch (Exception e) {
@@ -238,10 +237,10 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
     }
 
     @Override
-    public CompletableFuture<Void> joinGame(UUID gameId, Player player) {
-        return CompletableFuture.runAsync(() -> {
+    public void joinGame(UUID gameId, Player player) {
+        remoteRMICallService.submit(()->{
             try {
-               server.joinGame(this, gameId, player);
+                server.joinGame(this, gameId, player);
             } catch (Exception e) {
                 System.out.println("Network error: " + e.getMessage());
             }
@@ -249,8 +248,8 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
     }
 
     @Override
-    public CompletableFuture<Void> pickOfferingCard(Character offeringCardLetter) {
-        return CompletableFuture.runAsync(() -> {
+    public void pickOfferingCard(Character offeringCardLetter) {
+        remoteRMICallService.submit(()->{
             try {
                 server.pickOfferingCard(this, offeringCardLetter);
             } catch (Exception e) {
@@ -260,10 +259,10 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
     }
 
     @Override
-    public CompletableFuture<Void> pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
-        return CompletableFuture.runAsync(() -> {
+    public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        remoteRMICallService.submit(()->{
             try {
-               server.pickTribeCards(this, characterCards, buildingCards);
+                server.pickTribeCards(this, characterCards, buildingCards);
             } catch (Exception e) {
                 System.out.println("Network error: " + e.getMessage());
             }
