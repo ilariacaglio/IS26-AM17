@@ -86,7 +86,7 @@ public class GameView {
 
         turnOverlay.getChildren().add(turnText);
         turnOverlay.setVisible(false);
-        if(game.isPlayerTurn()){
+        if(game.isPlayerTurn(localPlayer)){
             turnOverlay.setVisible(true);
         }
 
@@ -145,7 +145,7 @@ public class GameView {
             try {
                 if (offeringSelected != null) {
                     try{
-                        game.validatePickOfferingCard(offeringSelected.getOrderLetter());
+                        game.validateOfferingCardTurnAction(localPlayer, offeringSelected.getOrderLetter());
                         mainGui.pickOfferingCard(offeringSelected);
                         offeringSelected = null;
                         buildingSelected = new ArrayList<>();
@@ -180,7 +180,7 @@ public class GameView {
                     }
 
                     try {
-                        game.validatePickTribeCards(tribesSelected, buildingSelected);
+                        game.validateTribeCardsTurnAction(localPlayer, tribesSelected, buildingSelected);
                         mainGui.pickTribeCards(tribesSelected, buildingSelected);
                         offeringSelected = null;
                         buildingSelected = new ArrayList<>();
@@ -336,7 +336,7 @@ public class GameView {
 
     public void updateGameElements() {
         // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn());
+        turnOverlay.setVisible(game.isPlayerTurn(localPlayer));
 
 
         // Update Upper Cards
@@ -355,7 +355,7 @@ public class GameView {
 
     public void updateGameCardDecks() {
         // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn());
+        turnOverlay.setVisible(game.isPlayerTurn(localPlayer));
 
         // Update Upper Cards
         upperCardsBox.getChildren().removeIf(node -> {
@@ -467,7 +467,7 @@ public class GameView {
     private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card) {
         if(card.getCardType().isCharacter()) {
             cardGUI.setOnMouseClicked(event -> {
-                if (!game.isPlayerTurn()) {
+                if (!game.isPlayerTurn(localPlayer)) {
                     showWaitTurnAlert();
                     return;
                 }
@@ -486,7 +486,7 @@ public class GameView {
 
     private void setOnMouseClickForBuilding(CardGUI cardGUI, BuildingCard card ) {
         cardGUI.setOnMouseClicked(event -> {
-            if (!game.isPlayerTurn()) {
+            if (!game.isPlayerTurn(localPlayer)) {
                 showWaitTurnAlert(); // The main GUI handles the alert, not the card!
                 return;
             }
@@ -505,7 +505,7 @@ public class GameView {
 
     private void setOnMouseClickForOffering(CardGUI cardGUI, OfferingCard card) {
         cardGUI.setOnMouseClicked(event -> {
-            if (!game.isPlayerTurn()) {
+            if (!game.isPlayerTurn(localPlayer)) {
                 showWaitTurnAlert(); // The main GUI handles the alert, not the card!
                 return;
             }
@@ -567,7 +567,7 @@ public class GameView {
 
     private void orderPersonalCards(){
         //update selected player
-        selectedPlayer = game.getPlayerFromList(selectedPlayer);
+        selectedPlayer = game.findPlayer(selectedPlayer);
 
         List<CharacterCard> orderedCards = new ArrayList<>(
                 selectedPlayer.getCharacterCards()

@@ -92,12 +92,12 @@ public class GUI implements UI {
             gameView.updateGameElements();
         });
     }
-    public void updateInterfaceFromPickTribes() {
+    public void updateInterfaceFromPlayerSelectTribeCards() {
         Platform.runLater(() -> {
             gameView.updateGameCardDecks();
         });
     }
-    public void updateInterfaceFromPickOffering() {
+    public void updateInterfaceFromPlayerSelectOfferingCard() {
         Platform.runLater(() -> {
             gameView.updateOfferingDeck();
         });
@@ -171,11 +171,6 @@ public class GUI implements UI {
     }
 
     @Override
-    public void printGameId(UUID gameId) {
-
-    }
-
-    @Override
     public void setDisplayEra(boolean displayEra) {
 
     }
@@ -230,6 +225,11 @@ public class GUI implements UI {
             alert.setContentText("A player has already chosen your color");
             alert.showAndWait();
         });
+    }
+
+    @Override
+    public void updateInterfaceFromIdChange() {
+
     }
 
     /**

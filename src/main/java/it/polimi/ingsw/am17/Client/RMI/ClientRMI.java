@@ -108,7 +108,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
     @Override
     public void updateGameState(GameState gameState) throws RemoteException {
         // call model to update era
-        model.setGameState(gameState);
+        model.updateGameState(gameState);
     }
 
     /**
@@ -136,7 +136,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
      */
     @Override
     public void updateGameId(UUID gameId) throws RemoteException {
-        model.setGameId(gameId);
+        model.updateGameId(gameId);
     }
 
     /**
@@ -145,7 +145,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
      */
     @Override
     public void updateGamesIdList(List<UUID> gameIdsList) throws RemoteException {
-        model.setGameIdList(gameIdsList);
+        model.updateGameIdList(gameIdsList);
     }
 
     /**
@@ -186,13 +186,13 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
     }
 
     @Override
-    public void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
         model.updateEndGame(ranking, orderedPlayers);
     }
 
     @Override
-    public void notifyForceEndGame(String disconnectedPlayer) throws RemoteException {
-        model.updateForceEndGame(disconnectedPlayer);
+    public void updateForceEndGame(String disconnectedPlayer) throws RemoteException {
+        model.updateForcedEndGame(disconnectedPlayer);
     }
 
     /**
@@ -201,7 +201,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, Se
      */
     @Override
     public void updateError(InvalidOperationException exception) throws RemoteException {
-        model.updateNotifyError(exception);
+        model.updateError(exception);
     }
 
     @Override

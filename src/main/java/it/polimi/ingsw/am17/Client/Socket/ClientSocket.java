@@ -21,7 +21,6 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.*;
@@ -84,8 +83,8 @@ public class ClientSocket implements VirtualView, ServerAdapter {
                                 updateEndTurn(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow());
                         case UPDATE_START_GAME ->
                                 updateStartGame(message.getOrderedPlayer(), message.getUpperRow(), message.getLowerRow(), message.getUpperBuildingRow(), message.getLowerBuildingRow(), message.getOfferingCards());
-                        case END_GAME -> notifyEndGame(message.getRanking(), message.getOrderedPlayer());
-                        case END_GAME_FORCED -> notifyForceEndGame(message.getDisconnectedPlayerNickname());
+                        case END_GAME -> updateEndGame(message.getRanking(), message.getOrderedPlayer());
+                        case END_GAME_FORCED -> updateForceEndGame(message.getDisconnectedPlayerNickname());
                         case HEARTBEAT -> recordHeartbeat();
                         case UPDATE_ERROR -> updateError(message.getException());
                         default -> System.err.println("Unknown message type: " + message.getType());
@@ -151,7 +150,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
     @Override
     public void updateGameState(GameState gameState) {
-        model.setGameState(gameState);
+        model.updateGameState(gameState);
     }
 
     @Override
@@ -161,12 +160,12 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
     @Override
     public void updateGameId(UUID gameId) {
-       model.setGameId(gameId);
+       model.updateGameId(gameId);
     }
 
     @Override
     public void updateGamesIdList(List<UUID> gameIdsList) {
-        model.setGameIdList(gameIdsList);
+        model.updateGameIdList(gameIdsList);
     }
 
     @Override
@@ -176,13 +175,13 @@ public class ClientSocket implements VirtualView, ServerAdapter {
     }
 
     @Override
-    public void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         model.updateEndGame(ranking, orderedPlayers);
     }
 
     @Override
-    public void notifyForceEndGame(String disconnectedPlayer) {
-        model.updateForceEndGame(disconnectedPlayer);
+    public void updateForceEndGame(String disconnectedPlayer) {
+        model.updateForcedEndGame(disconnectedPlayer);
     }
 
     @Override
@@ -202,7 +201,7 @@ public class ClientSocket implements VirtualView, ServerAdapter {
 
     @Override
     public void updateError(InvalidOperationException exception) {
-        model.updateNotifyError(exception);
+        model.updateError(exception);
     }
 
     @Override
