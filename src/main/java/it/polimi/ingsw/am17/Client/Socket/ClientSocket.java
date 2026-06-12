@@ -102,7 +102,7 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
             } catch (Exception e) {
                 logger.warning("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + " with error: " + e.getMessage());
                 failedHeartbeats++;
-                if (failedHeartbeats > 3) {
+                if (failedHeartbeats > 7) {
                     logger.severe("Too many failed heartbeats, server considered dead.");
                     onServerDisconnection();
                 }
@@ -114,7 +114,7 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
             long now = System.currentTimeMillis();
             long diff = now - lastHeartbeatReceived;
 
-            if (diff > 5000) {
+            if (diff > 10000) {
                 logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
                 onServerDisconnection();
             }

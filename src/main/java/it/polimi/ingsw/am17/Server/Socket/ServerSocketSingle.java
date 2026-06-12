@@ -60,7 +60,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
             } catch (Exception e) {
                 logger.severe("Failed sending heartbeat to socket: " + socket.getRemoteSocketAddress() + " with error: " + e.getMessage());
                 failedHeartbeats++;
-                if (failedHeartbeats > 3) {
+                if (failedHeartbeats > 7) {
                     logger.severe("Too many failed heartbeats, client considered dead.");
                     onClientDisconnection();
                 }
@@ -72,7 +72,7 @@ public class ServerSocketSingle implements Runnable, VirtualServer {
             long now = System.currentTimeMillis();
             long diff = now - lastHeartbeatReceived;
 
-            if (diff > 5000) {
+            if (diff > 10000) {
                 logger.severe("No heartbeat received in " + diff + "ms, client considered dead.");
                 onClientDisconnection();
             }
