@@ -17,6 +17,7 @@ public class ServerLauncher {
     /**
      * Launches a server.
      * Use --serverName to specify the server name for RMI.
+     * Use --host to specify the host.
      * Use --portRMI to specify the port for RMI.
      * Use --portSocket to specify the port for Socket.
      * Use --debug to raise logging level. TODO
@@ -30,6 +31,14 @@ public class ServerLauncher {
         }
         else {
             serverName = "MesosRMIServer";
+        }
+
+        String host;
+        if (argsList.contains("--host")) {
+            host = argsList.get(argsList.indexOf("--host") + 1);
+        }
+        else {
+            host = "127.0.0.1";
         }
 
         int portRMI;
@@ -54,6 +63,7 @@ public class ServerLauncher {
         // Start an RMI server in its own thread
         new Thread(() -> {
             try {
+                System.setProperty("java.rmi.server.hostname", host);
                 new ServerRMI(controller, portRMI, serverName);
             } catch (Exception e) {
                 logger.severe("RMI server failed to start: " + e.getMessage());
