@@ -337,6 +337,9 @@ public class ClientModel implements ClientModelInterface {
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
+     * @param player player with the cards picked already inside
+     * @param characterCards list of character cards picked by player
+     * @param buildingCards list of building cards picked by player
      */
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {

@@ -24,6 +24,12 @@ public interface ClientModelInterface {
     void updateGameState(GameState gameState);
     void updatePlayerQueue(Queue<Player> playerQueue);
     void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard);
+
+    /**
+     *@param player player with the cards picked already inside
+     *@param characterCards list of character cards picked by player
+     *@param buildingCards list of building cards picked by player
+     */
     void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards);
     void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow);
