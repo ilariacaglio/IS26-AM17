@@ -18,9 +18,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -91,13 +93,26 @@ public class GameView {
             turnOverlay.setVisible(true);
         }
 
-        String bgUrl = getClass().getResource("/images/background_game.png").toExternalForm();
-        root.setStyle(
-                "-fx-background-image: url('" + bgUrl + "');" +
-                        "-fx-background-size: cover;" +
-                        "-fx-background-position: center center;" +
-                        "-fx-background-repeat: no-repeat;"
+        // 1. Safely load the URL and check if it exists
+        URL imageUrl = getClass().getResource("/Images/background_game.png");
+        if (imageUrl == null) {
+            throw new RuntimeException("Could not find image at /images/background_game.png inside resources!");
+        }
+
+// 2. Create the Image object
+        Image image = new Image(imageUrl.toExternalForm());
+
+// 3. Define the background settings (Equivalent to your CSS)
+        BackgroundImage bgImage = new BackgroundImage(
+                image,
+                BackgroundRepeat.NO_REPEAT, // -fx-background-repeat: no-repeat
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,  // -fx-background-position: center center
+                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true) // -fx-background-size: cover
         );
+
+// 4. Apply it to your root Pane
+        root.setBackground(new Background(bgImage));
 
         Label localPlayerName = new Label("Local Player: " + localPlayer.getNickname());
         localPlayerName.setStyle("""
