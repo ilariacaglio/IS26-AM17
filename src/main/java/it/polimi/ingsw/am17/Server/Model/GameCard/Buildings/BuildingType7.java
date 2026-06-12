@@ -19,6 +19,9 @@ public class BuildingType7 extends BuildingCard {
         super(era, foodCost, bonusPoints);
     }
 
+
+    // N.B.: counts two times! Can I share that calculation? No because different methods...
+
     @Override
     public int AddFoodPerHunterInHuntingEvent(List<CharacterCard> playerCharacterCards) {
         return (int) playerCharacterCards.stream().filter(characterCard -> characterCard.getCardType() == CardType.HUNTER).count();
@@ -28,8 +31,6 @@ public class BuildingType7 extends BuildingCard {
     public int AddPointPerHunterInHuntingEvent(List<CharacterCard> playerCharacterCards) {
         return (int) playerCharacterCards.stream().filter(characterCard -> characterCard.getCardType() == CardType.HUNTER).count();
     }
-
-    // NOTE: counts two times! Can I share that calculation? No because different methods...
 
     @Override
     public String toString() {

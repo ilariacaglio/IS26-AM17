@@ -17,8 +17,8 @@ public class BuildingType14 extends BuildingCard {
     private static final Logger logger = Logger.getLogger(BuildingType14.class.getName());
 
     private static final GameState era = GameState.ERA1;
-    private static final int foodCost = 6;
-    private static final int bonusPoints = 4;
+    private static final int foodCost = 4;
+    private static final int bonusPoints = 3;
     private final Integer numberOfCharacter = (int) Arrays.stream(CardType.values())
             .filter(type -> !type.name().endsWith("_EVENT"))
             .count();
