@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.*;
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "errorType",
-        visible = true
+        visible = true,
+        defaultImpl = InvalidOperationException.class
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ColorException.class, name = "DUPLICATE_COLOR")
