@@ -3,7 +3,6 @@ package it.polimi.ingsw.am17.Server.Model.GameCard;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import tools.jackson.databind.node.StringNode;
 
 import java.io.Serializable;
 import java.util.Objects;

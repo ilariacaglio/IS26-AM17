@@ -514,7 +514,8 @@ public class Game extends Subject {
         if(offeringCard.getPlayer() == null) return;
 
         // give +3 food to the player
-        offeringCard.getPlayer().addFood(3);
+        int foodBonus = offeringCard.getFoodBonus();
+        offeringCard.getPlayer().addFood(foodBonus);
 
         // remove player from offering card
         offeringCard.setPlayer(null);
