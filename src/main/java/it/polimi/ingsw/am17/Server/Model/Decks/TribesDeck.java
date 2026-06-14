@@ -67,6 +67,9 @@ public class TribesDeck {
         return tribeCards;
     }
 
+    /**
+     * Shuffles era 1 cards inside the deck
+     */
     private void ShuffleEra1(){
         int index = IntStream.range(0, tribeCards.size())
                 .map(i -> tribeCards.size() - 1 - i)
@@ -78,6 +81,9 @@ public class TribesDeck {
         }
     }
 
+    /**
+     * Shuffles era 2 cards inside the deck
+     */
     private void ShuffleEra2(){
         int startIndex = IntStream.range(0, tribeCards.size())
                 .filter(i -> tribeCards.get(i).getEra() == GameState.ERA2)
@@ -93,6 +99,9 @@ public class TribesDeck {
         }
     }
 
+    /**
+     * Shuffles era 3 cards inside the deck
+     */
     private void ShuffleEra3(){
         int index = IntStream.range(0, tribeCards.size())
                 .filter(i -> tribeCards.get(i).getEra() == GameState.ERA3)
