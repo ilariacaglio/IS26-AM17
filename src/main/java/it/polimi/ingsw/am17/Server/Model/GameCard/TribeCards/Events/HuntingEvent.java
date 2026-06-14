@@ -15,6 +15,7 @@ public class HuntingEvent extends EventCard {
     private static final Logger logger = Logger.getLogger(HuntingEvent.class.getName());
     private final Integer pointEarned;
 
+    /// used for serialization/desetialization
     public Integer getPointEarned() {
         return pointEarned;
     }

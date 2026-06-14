@@ -16,10 +16,12 @@ public class RitualEvent extends EventCard {
     private final Integer pointMax;
     private final Integer pointMin;
 
+    /// used for serialization/desetialization
     public Integer getPointMax() {
         return pointMax;
     }
 
+    /// used for serialization/desetialization
     public Integer getPointMin() {
         return pointMin;
     }

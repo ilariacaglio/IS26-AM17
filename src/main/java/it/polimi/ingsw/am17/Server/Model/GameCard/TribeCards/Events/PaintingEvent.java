@@ -17,14 +17,17 @@ public class PaintingEvent extends EventCard {
     private final Integer pointsMax;
     private final Integer numMax;
 
+    /// used for serialization/desetialization
     public Integer getNumMax() {
         return numMax;
     }
 
+    /// used for serialization/desetialization
     public Integer getPointsLow() {
         return pointsLow;
     }
 
+    /// used for serialization/desetialization
     public Integer getPointsMax() {
         return pointsMax;
     }
