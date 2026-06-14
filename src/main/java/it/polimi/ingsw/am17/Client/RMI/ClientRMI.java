@@ -96,7 +96,7 @@ public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, 
         logger.severe("Server disconnected, shutting down.");
         heartbeater.shutdownNow();
         heartwatcher.shutdownNow();
-//        model.updateGameEndedByUser(); // TODO: improve communication to UI of disconnection.
+        model.updateForcedEndGame("Server " + server.getClass() );
         System.exit(1);
     }
 
