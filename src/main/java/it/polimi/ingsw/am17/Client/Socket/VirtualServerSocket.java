@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Forwards requests from the client to the server
+ * Forwards requests from the client to the server by building a message object
  */
 public class VirtualServerSocket implements VirtualServer {
     Socket socket;
