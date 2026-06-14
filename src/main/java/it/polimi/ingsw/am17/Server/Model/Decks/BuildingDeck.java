@@ -25,6 +25,9 @@ public class BuildingDeck {
         buildEra3Deck(numPlayers);
     }
 
+    /**
+     * Builds era 1 building deck basing on given numPlayers
+     */
     private void buildEra1Deck(int numPlayers){
         List<BuildingCard> temp = new ArrayList<>();
         //singleton building cards
@@ -45,6 +48,9 @@ public class BuildingDeck {
         }
     }
 
+    /**
+     * Builds era 2 building deck basing on given numPlayers
+     */
     private void buildEra2Deck(int numPlayers){
         List<BuildingCard> temp = new ArrayList<>();
         //singleton building cards
@@ -67,6 +73,9 @@ public class BuildingDeck {
         }
     }
 
+    /**
+     * Builds era 3 building deck basing on given numPlayers
+     */
     private void buildEra3Deck(int numPlayers){
         List<BuildingCard> temp = new ArrayList<>();
         //singleton building cards
@@ -88,14 +97,23 @@ public class BuildingDeck {
         }
     }
 
+    /**
+     * @return the list of building cards of era 1
+     */
     public List<BuildingCard> drawAllEra1(){
         return Collections.unmodifiableList(buildingCardsEra1);
     }
 
+    /**
+     * @return the list of building cards of era 2
+     */
     public List<BuildingCard> drawAllEra2(){
         return Collections.unmodifiableList(buildingCardsEra2);
     }
 
+    /**
+     * @return the list of building cards of era 3
+     */
     public List<BuildingCard> drawAllEra3(){
         return Collections.unmodifiableList(buildingCardsEra3);
     }
