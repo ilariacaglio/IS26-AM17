@@ -3,6 +3,9 @@ package it.polimi.ingsw.am17.Client.UserInterface;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 
+/**
+ * Interface exposed by the CLI/GUI and used by ClientModel
+ */
 public interface UI {
     void start();
     void setModel(ClientModel model);
