@@ -158,8 +158,6 @@ public class ClientModel implements ClientModelInterface {
         return Collections.unmodifiableList(gamesIdList);
     }
 
-    // setter game id list
-
     public synchronized List<OfferingCard> getOfferingCards(){
         return Collections.unmodifiableList(offeringCards);
     }
@@ -193,6 +191,17 @@ public class ClientModel implements ClientModelInterface {
         this.ranking.addAll(ranking);
     }
 
+    /**
+     * Sets player to offering card.
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setPlayerInOfferingCard(OfferingCard offeringCard, Player player){
+        offeringCards.stream()
+                .filter(o -> o.equals(offeringCard))
+                .findFirst()
+                .ifPresent(o -> o.setPlayer(player));
+    }
+
     /* UTILITY METHODS */
 
     /**
@@ -211,16 +220,14 @@ public class ClientModel implements ClientModelInterface {
     /**
      * Sets player to offering card.
      * If the player is the last to select, ends the offering card selection phase.
-     * SETTER METHOD IN CLIENTMODEL, USE WITH SYNCHRONIZED TODO: cleanup, change name
+     * Here, if the offering card with letter A has a player it is set to null to emulate its turn action (not allowed to pick tribe cards)
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
      * @param offeringCard  offering card value
      * @param player        player to be set into offering card
      */
-    private void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
+    private void handleOfferingCardSelection(OfferingCard offeringCard, Player player)
     {
-        offeringCards.stream()
-                .filter(o -> o.equals(offeringCard))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(player));
+        setPlayerInOfferingCard(offeringCard, player);
         if(SharedModelLogic.isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)) {
             setPickOCPhase(false);
             setNullOfferingCardAPlayer();
@@ -266,7 +273,6 @@ public class ClientModel implements ClientModelInterface {
 
 
     /* UPDATE METHODS */
-    // todo: remove setters private
 
     /**
      * Update method: changes the local state on a synchronized block
@@ -328,7 +334,7 @@ public class ClientModel implements ClientModelInterface {
     @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
         synchronized (this) {
-            setPlayerOfferingCard(offeringCard, player);
+            handleOfferingCardSelection(offeringCard, player);
         }
 
         userInterface.updateInterfaceFromPlayerSelectOfferingCard();
@@ -368,12 +374,13 @@ public class ClientModel implements ClientModelInterface {
     /**
      * Update method: changes the local state on a synchronized block
      * and sends an updateInterface to the UI.
-     * TODO: improve comments: here Players queue is stripped of cards (rightly so).
      */
     @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                               List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
         synchronized (this) {
+            // here players is the players queue stripped of cards
+            // because at the end of the turn only PP and food values change.
             for(Player passedPlayer : players) {
                 // update player PP and food in player queue
                 Player localPlayer = findPlayer(passedPlayer);
