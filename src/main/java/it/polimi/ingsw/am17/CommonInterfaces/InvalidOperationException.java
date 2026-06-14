@@ -1,9 +1,16 @@
 package it.polimi.ingsw.am17.CommonInterfaces;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "errorType",
+        visible = true
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ColorException.class, name = "DUPLICATE_COLOR")
+})
 @JsonIgnoreProperties({"stackTrace", "cause", "localizedMessage", "suppressed"})
 public class InvalidOperationException extends RuntimeException {
     private final ErrorType errorType;
