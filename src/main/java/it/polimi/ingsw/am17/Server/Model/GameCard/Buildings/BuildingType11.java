@@ -2,8 +2,6 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.Buildings;
 
 import it.polimi.ingsw.am17.Server.Model.GameState;
 
-import java.util.logging.Logger;
-
 /**
  * Get +1 food when getting (not losing) food from turn order (also last round).
  * Card effect

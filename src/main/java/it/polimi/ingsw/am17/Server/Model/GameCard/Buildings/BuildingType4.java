@@ -20,7 +20,7 @@ public class BuildingType4 extends BuildingCard {
     private static final int foodCost = 5;
     private static final int bonusPoints = 6;
 
-    private static final Logger logger = Logger.getLogger(BuildingType1.class.getName());
+    private static final Logger logger = Logger.getLogger(BuildingType4.class.getName());
 
     public BuildingType4() {
         super(era, foodCost, bonusPoints);
