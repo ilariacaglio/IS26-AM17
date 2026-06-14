@@ -9,7 +9,6 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.CommonInterfaces.MessageType;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +20,7 @@ public class VirtualServerSocket implements VirtualServer {
     Socket socket;
     ObjectMapper mapper;
 
-    public VirtualServerSocket(Socket socket) throws IOException {
+    public VirtualServerSocket(Socket socket) {
         this.socket = socket;
         mapper = new ObjectMapper();
     }
