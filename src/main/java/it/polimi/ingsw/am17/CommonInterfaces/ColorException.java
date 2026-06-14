@@ -7,6 +7,10 @@ import it.polimi.ingsw.am17.Server.Model.Color;
 
 import java.util.List;
 
+/**
+ * Exception thrown when a player tries to join a game and the color he has is already chosen
+ * It is a subtype because it contains the list of the available colors of that game
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ColorException extends InvalidOperationException {
     private final List<Color> availableColors;
