@@ -2,6 +2,9 @@ package it.polimi.ingsw.am17.CommonInterfaces;
 
 import com.fasterxml.jackson.annotation.*;
 
+/**
+ * Custom exception used to notify the error occurred to caller method or to client
+ */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
