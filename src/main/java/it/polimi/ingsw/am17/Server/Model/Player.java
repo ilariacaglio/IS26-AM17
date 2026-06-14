@@ -244,8 +244,8 @@ public class Player implements Serializable {
 
     /**
      * Add cards to player (from playerAction)
-     * @param characterCards
-     * @param buildingCards
+     * @param characterCards    the character cards picked by the player
+     * @param buildingCards     the building cards picked by the player
      */
     public void addCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
 
