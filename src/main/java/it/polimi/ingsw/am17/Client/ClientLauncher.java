@@ -32,9 +32,12 @@ public class ClientLauncher {
 
         // logging configuration
         Logger rootLogger = Logger.getLogger("");
+
         // set default level higher than INFO to disable log printing
+        // we used INFO level to print the majority of messages
         Level targetLevel = debug ? Level.ALL : Level.WARNING;
         rootLogger.setLevel(targetLevel);
+
         // set console handler logging level
         for (Handler handler : rootLogger.getHandlers()) {
             if (handler instanceof ConsoleHandler) {
