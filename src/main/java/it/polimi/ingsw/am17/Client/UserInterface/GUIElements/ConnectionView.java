@@ -1,20 +1,20 @@
 package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
-import it.polimi.ingsw.am17.Server.Model.Color;
-import it.polimi.ingsw.am17.Server.Model.Player;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * Displays the interface when the user is asked to create or join a game
+ */
 public class ConnectionView {
     private VBox root;
-    private GUI mainGui;
+    private final GUI mainGui;
 
     public ConnectionView(GUI mainGui) {
         this.mainGui = mainGui;
@@ -45,17 +45,11 @@ public class ConnectionView {
         VBox buttonContainer = new VBox(15, createGameButton, joinGameButton, backButton, exitButton);
         buttonContainer.setAlignment(Pos.CENTER);
 
-        createGameButton.setOnAction(e -> {
-            mainGui.showPlayerCountSelection();
-        });
-        joinGameButton.setOnAction(e -> {
-            mainGui.showJoinInterface();
-        });
-        backButton.setOnAction(e ->{
-            mainGui.showStartInterface();
-        });
+        createGameButton.setOnAction(_ -> mainGui.showPlayerCountSelection());
+        joinGameButton.setOnAction(_ -> mainGui.showJoinInterface());
+        backButton.setOnAction( _ -> mainGui.showStartInterface());
 
-        exitButton.setOnAction(e -> {
+        exitButton.setOnAction(_ -> {
             Platform.exit();//close window
             System.exit(0);
         });
