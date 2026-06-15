@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Class used to represent an entry of the list given by the getRanking methods query on the database
+ */
 public record RankingEntry(
         UUID gameId,
         LocalDate date,
