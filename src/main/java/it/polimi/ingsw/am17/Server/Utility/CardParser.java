@@ -15,6 +15,9 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class that parses data from resources json files
+ */
 public class CardParser {
     private static final ObjectMapper mapper = new ObjectMapper();
     public static List<OfferingCard> loadOfferingCards(int numPlayers){
@@ -31,7 +34,7 @@ public class CardParser {
 
     public static List<BuildingType3M> buildingCard3MParser(){
         try {
-            return mapper.readValue(CardParser.class.getResourceAsStream("/buildingType3M.json"), new TypeReference<List<BuildingType3M>>() {});
+            return mapper.readValue(CardParser.class.getResourceAsStream("/buildingType3M.json"), new TypeReference<>() {});
         } catch(Exception ex) {
             throw new RuntimeException("Error while loading building 3M cards", ex);
         }
