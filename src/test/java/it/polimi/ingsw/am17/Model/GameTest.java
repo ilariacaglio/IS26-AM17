@@ -95,6 +95,10 @@ public class GameTest {
 
     @Nested
     class GameStarted{
+        /**
+         * Sets each player into an offering card.
+         * The first player gets the first offering card and so on
+         */
         private void setOfferingCardToPlayers(){
             // get players list
             List<Player> players = game.getPlayersList();
@@ -108,16 +112,25 @@ public class GameTest {
             }
         }
 
+        /**
+         * Sets the current player into the offering card specified with index parameter
+         */
         private void setFirstPlayerToOffering(int index){
             game.getOfferingCards().get(index).setPlayer(game.getCurrentPlayer());
         }
 
+        /**
+         * @return  a player different from the one that has the right to do a turn action
+         */
         private Player pickWrongPlayer(){
             return game.getPlayersList().stream()
                     .filter(p -> !p.equals(game.getCurrentPlayer()))
                     .toList().getFirst();
         }
 
+        /**
+         * @return the offering card with the lowest letter that has a player
+         */
         private OfferingCard getCurrentOfferingCard(){
             return game.getOfferingCards().stream()
                     .filter(card -> card.getPlayer() != null)
@@ -125,6 +138,9 @@ public class GameTest {
                     .orElse(null);
         }
 
+        /**
+         * @return the specified amount of character cards that are in the lower row
+         */
         private List<CharacterCard> extractLowerCharacters(int amount) {
             return game.getLowerRow().stream()
                     .filter(c -> c.getCardType().isCharacter())
@@ -133,6 +149,9 @@ public class GameTest {
                     .toList();
         }
 
+        /**
+         * @return the specified amount of character cards that are in the upper row
+         */
         private List<CharacterCard> extractUpperCharacters(int amount) {
             return game.getUpperRow().stream()
                     .filter(c -> c.getCardType().isCharacter())
@@ -141,12 +160,18 @@ public class GameTest {
                     .toList();
         }
 
+        /**
+         * @return the specified amount of building cards that are in the upper row
+         */
         private List<BuildingCard> extractUpperBuildings(int amount) {
             return game.getUpperBuildingRow().stream()
                     .limit(amount)
                     .toList();
         }
 
+        /**
+         * @return the specified amount of building cards that are in the lower row
+         */
         private List<BuildingCard> extractLowerBuildings(int amount) {
             return game.getLowerBuildingRow().stream()
                     .limit(amount)
@@ -168,6 +193,9 @@ public class GameTest {
             assertThrows(InvalidOperationException.class, () -> game.addPlayer(new Player("player4", Color.BLUE)));
         }
 
+        /**
+         * This test checks the shift of the cards when round ends
+         */
         @Test
         void testEndRound_Normal() {
             List<TribesCard> oldUpperRow = new ArrayList<>(game.getUpperRow());
@@ -179,6 +207,9 @@ public class GameTest {
             assertEquals(7, game.getUpperRow().size());
         }
 
+        /**
+         * This test checks the shift of the building cards when era 2 starts
+         */
         @Test
         void testEndRound_ChangeEra_2() {
             // play 2 rounds
@@ -198,6 +229,9 @@ public class GameTest {
             assertFalse(game.getUpperBuildingRow().isEmpty());
         }
 
+        /**
+         * This test checks the shift of the building cards when era 3 starts
+         */
         @Test
         void testEndRound_ChangeEra_3() {
             //play turns
@@ -297,7 +331,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_PlayerError() {
+        void testTribeCardsSelection_PlayerError() {
             setFirstPlayerToOffering(0);
             //the wrong player tries to select cards
             Player wrongPlayer = pickWrongPlayer();
@@ -306,7 +340,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_ValidateErrorCharacterLower() {
+        void testTribeCardsSelection_ValidateErrorCharacterLower() {
             //the first player picks the offering card with index 0: 1 card from lower row
             setFirstPlayerToOffering(0);
             // the player selects some upper cards instead of lower ones
@@ -317,7 +351,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_ValidateErrorCharacterUpper() {
+        void testTribeCardsSelection_ValidateErrorCharacterUpper() {
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             //the first player picks the offering card with index 1: 1 card from upper row
@@ -333,7 +367,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_ValidateErrorBuildingLower() {
+        void testTribeCardsSelection_ValidateErrorBuildingLower() {
             // play 3 turns to populate lower building row
             for (int i=0; i<3; i++){
                 game.endRound();
@@ -348,7 +382,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_ValidateErrorBuildingUpper() {
+        void testTribeCardsSelection_ValidateErrorBuildingUpper() {
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             // the player picks offering card with index 1: 1 card from upper row
             setFirstPlayerToOffering(1);
@@ -363,7 +397,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_ValidateErrorNumber(){
+        void testTribeCardsSelection_ValidateErrorNumber(){
             // offering card with index 3: 1 card from upper row and 1 card from building row
             setFirstPlayerToOffering(3);
             List<BuildingCard> buildingList = new ArrayList<>();
@@ -379,7 +413,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_CardNotFound(){
+        void testTribeCardsSelection_CardNotFound(){
             // offering card 0: 1 card from lower row
             setFirstPlayerToOffering(0);
             List<CharacterCard> characterList = new ArrayList<>();
@@ -389,7 +423,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_FoodError(){
+        void testTribeCardsSelection_FoodError(){
             // the player selects offering card with index 1: 1 card from the upper row
             setFirstPlayerToOffering(1);
             List<BuildingCard> buildingList = new ArrayList<>();
@@ -407,7 +441,7 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_Normal(){
+        void testTribeCardsSelection_Normal(){
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             // the player selects offering card with index 0: 1 card from the lower row
@@ -424,7 +458,7 @@ public class GameTest {
 
         // turn simulation without building type 2 card
         @Test
-        void testPlayerAction_NormalTurn(){
+        void testMultipleTribeCardsSelection_NormalTurn(){
             setOfferingCardToPlayers();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
@@ -470,7 +504,7 @@ public class GameTest {
 
         // turn simulation with building type 2 card
         @Test
-        void testPlayerAction_BuildingType2Turn(){
+        void testMultipleTribeCardsSelection_BuildingType2Turn(){
             setOfferingCardToPlayers();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
