@@ -3,31 +3,34 @@ package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Draws the interface that displays the local ranking at the end of the game
+ */
 public class LocalRankingView {
     private VBox root;
-    private GUI mainGui;
-    private ClientModel game;
+    private final GUI mainGui;
+    private final ClientModel game;
 
     public LocalRankingView(GUI mainGui, ClientModel game) {
         this.mainGui = mainGui;
         this.game = game;
         buildUI();
     }
-    //generates the interface for the final ranking after the end of the game
+
+    /**
+     * Generates the interface for the final ranking after the end of the game
+     */
     private void buildUI() {
         root = new VBox(20);
         root.setPadding(new Insets(30));
@@ -91,9 +94,7 @@ public class LocalRankingView {
             -fx-padding: 10px 20px;
         """);
 
-        goToGlobalRanking.setOnAction(e -> {
-            mainGui.showGlobalInterface();
-        });
+        goToGlobalRanking.setOnAction(_ -> mainGui.showGlobalInterface());
 
         root.getChildren().addAll(rankingTitle,localRankingArea, goToGlobalRanking);
     }
