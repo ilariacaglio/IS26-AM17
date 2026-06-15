@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class ClientModel implements ClientModelInterface {
 
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
-    private final String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
+    private static final String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
     private final UI userInterface;
     private final Queue<Player> orderedPlayers;
     private final List<TribesCard> upperRow;
