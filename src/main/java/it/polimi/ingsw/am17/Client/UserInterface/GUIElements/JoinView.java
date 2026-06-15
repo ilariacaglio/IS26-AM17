@@ -4,25 +4,26 @@ import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Draws the interface displayed when the user wants to join a game from the id list
+ */
 public class JoinView {
     private VBox root;
-    private GUI mainGui;
-    private List<UUID> listofGames;
+    private final GUI mainGui;
+    private final List<UUID> listOfGames;
     ListView<UUID> gameList;
 
-    public JoinView(GUI mainGui, List<UUID> listofGames) {
+    public JoinView(GUI mainGui, List<UUID> listOfGames) {
         this.mainGui = mainGui;
-        this.listofGames = listofGames;
+        this.listOfGames = listOfGames;
         buildUI();
     }
 
@@ -35,31 +36,31 @@ public class JoinView {
         Label title = new Label("CHOOSE A GAME");
         title.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
 
-        // Campo per l'ID
+        // Field to type GameID
         TextField idField = new TextField();
         idField.setPromptText("INSERT GAME ID");
         idField.setPrefWidth(400);
         idField.setStyle("-fx-font-size: 16px; -fx-alignment: center;");
 
-        // Bottone per unirsi
+        // Join button
         Button joinBtn = new Button("JOIN");
         joinBtn.setPrefWidth(400);
         joinBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
 
-        joinBtn.setOnAction(e -> {
+        joinBtn.setOnAction(_ -> {
             String gameID = idField.getText().trim();
             if (!gameID.isEmpty()) {
                 try {
                     mainGui.joinGame(UUID.fromString(gameID));
                 } catch (Exception ex) {
                     idField.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
-                    System.err.println("Errore nel join: " + ex.getMessage());
+                    System.err.println("Error in join: " + ex.getMessage());
                 }
             }
         });
 
         Button backBtn = new Button("BACK");
-        backBtn.setOnAction(e -> mainGui.showConnectionInterface());
+        backBtn.setOnAction(_ -> mainGui.showConnectionInterface());
 
         // Create a ListView instead of a TextArea
         gameList = new ListView<>();
@@ -67,7 +68,7 @@ public class JoinView {
         gameList.setPrefHeight(120);
 
         // Listen for user clicks natively
-        gameList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        gameList.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 // Automatically populate the text field when an item is clicked
                 idField.setText(newValue.toString());
@@ -78,7 +79,7 @@ public class JoinView {
         HBox idGame = new HBox(10);
         idGame.getChildren().addAll(idField, joinBtn);
 
-        updateGameList(listofGames);
+        updateGameList(listOfGames);
         root.getChildren().addAll(title, gameList, idField, joinBtn, backBtn);
 
     }
@@ -88,6 +89,9 @@ public class JoinView {
         return root;
     }
 
+    /**
+     * Updates the game id list with the list passed as parameter
+     */
     public void updateGameList(List<UUID> list) {
         Platform.runLater(() -> {
             gameList.getItems().clear(); // Clear old items
