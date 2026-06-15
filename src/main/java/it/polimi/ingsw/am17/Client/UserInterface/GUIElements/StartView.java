@@ -57,6 +57,12 @@ public class StartView {
         grid.add(colorPicker, 1, 1);
 
         //button to save nickname and color and go to next screen
+        Button startButton = getStartButton(nicknameField, colorPicker);
+
+        root.getChildren().addAll(title, grid, startButton);
+    }
+
+    private Button getStartButton(TextField nicknameField, ComboBox<Color> colorPicker) {
         Button startButton = new Button("START ADVENTURE");
         startButton.setPrefWidth(200);
 
@@ -76,8 +82,7 @@ public class StartView {
             // Tell the main GUI to switch screens
             mainGui.showConnectionInterface();
         });
-
-        root.getChildren().addAll(title, grid, startButton);
+        return startButton;
     }
 
     // The main GUI will call this to put it in the Scene

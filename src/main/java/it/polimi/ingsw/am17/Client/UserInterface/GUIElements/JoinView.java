@@ -43,21 +43,7 @@ public class JoinView {
         idField.setStyle("-fx-font-size: 16px; -fx-alignment: center;");
 
         // Join button
-        Button joinBtn = new Button("JOIN");
-        joinBtn.setPrefWidth(400);
-        joinBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
-
-        joinBtn.setOnAction(_ -> {
-            String gameID = idField.getText().trim();
-            if (!gameID.isEmpty()) {
-                try {
-                    mainGui.joinGame(UUID.fromString(gameID));
-                } catch (Exception ex) {
-                    idField.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
-                    System.err.println("Error in join: " + ex.getMessage());
-                }
-            }
-        });
+        Button joinBtn = getJoinBtn(idField);
 
         Button backBtn = new Button("BACK");
         backBtn.setOnAction(_ -> mainGui.showConnectionInterface());
@@ -82,6 +68,25 @@ public class JoinView {
         updateGameList(listOfGames);
         root.getChildren().addAll(title, gameList, idField, joinBtn, backBtn);
 
+    }
+
+    private Button getJoinBtn(TextField idField) {
+        Button joinBtn = new Button("JOIN");
+        joinBtn.setPrefWidth(400);
+        joinBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        joinBtn.setOnAction(_ -> {
+            String gameID = idField.getText().trim();
+            if (!gameID.isEmpty()) {
+                try {
+                    mainGui.joinGame(UUID.fromString(gameID));
+                } catch (Exception ex) {
+                    idField.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+                    System.err.println("Error in join: " + ex.getMessage());
+                }
+            }
+        });
+        return joinBtn;
     }
 
     // The main GUI will call this to put it in the Scene

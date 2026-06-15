@@ -6,6 +6,7 @@ import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -366,26 +367,28 @@ public class GameView {
 
         // Update Upper Cards
         upperCardsBox.getChildren().removeIf(node -> {
-            Object cardData = node.getUserData();
+            GameCard cardData = (GameCard) node.getUserData();
 
             // Check if the card still exists in the game model
-            boolean stillInTribeRow = readOnlyModel.getUpperTribeRow().contains(cardData);
-            boolean stillInBuildingRow = readOnlyModel.getUpperBuildingRow().contains(cardData);
-
-            // If it is NOT in the tribe row AND NOT in the building row, remove it (return true)
-            return !stillInTribeRow && !stillInBuildingRow;
+            // If it is NOT in the tribe row or NOT in the building row, remove it (return true)
+            if (cardData.getIsBuilding()) {
+                return !readOnlyModel.getUpperBuildingRow().contains((BuildingCard) cardData);
+            } else {
+                return !readOnlyModel.getUpperTribeRow().contains((CharacterCard) cardData);
+            }
         });
 
         // Update Lower Cards
         lowerCardsBox.getChildren().removeIf(node -> {
-            Object cardData = node.getUserData();
+            GameCard cardData = (GameCard) node.getUserData();
 
             // Check if the card still exists in the game model
-            boolean stillInTribeRow = readOnlyModel.getLowerTribeRow().contains(cardData);
-            boolean stillInBuildingRow = readOnlyModel.getLowerBuildingRow().contains(cardData);
-
-            // If it is NOT in the tribe row AND NOT in the building row, remove it
-            return !stillInTribeRow && !stillInBuildingRow;
+            // If it is NOT in the tribe row or NOT in the building row, remove it (return true)
+            if (cardData.getIsBuilding()) {
+                return !readOnlyModel.getLowerBuildingRow().contains((BuildingCard) cardData);
+            } else {
+                return !readOnlyModel.getLowerTribeRow().contains((CharacterCard) cardData);
+            }
         });
 
         // Update Player stats (Points, Food, Name) and personal board

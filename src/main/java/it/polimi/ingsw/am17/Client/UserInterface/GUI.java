@@ -35,7 +35,6 @@ public class GUI implements UI {
     private ClientModel readOnlyModel;
     private Player localPlayer;
 
-    private VBox root;
     public Scene scene;
 
     private GameView gameView;
