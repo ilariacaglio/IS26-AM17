@@ -16,7 +16,7 @@ import java.net.Socket;
 import java.util.*;
 
 /**
- * Forwards requests from the controller to a single client.
+ * Forwards requests from the server to a single client.
  */
 public class VirtualClientSocket implements VirtualClient {
     private final Socket socket;
