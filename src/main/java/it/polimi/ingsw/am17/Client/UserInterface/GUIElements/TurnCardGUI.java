@@ -8,15 +8,19 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 
+/**
+ * Represents the turn order card inside the game view
+ */
 public class TurnCardGUI extends StackPane {
 
-    private ImageView[] totemSlots; //saves the totem images
+    private final ImageView[] totemSlots; //saves the totem images
     List<it.polimi.ingsw.am17.Server.Model.Color> turnOrderColors;
 
     private final int CARD_WIDTH = 90;
     private final int CARD_HEIGHT = 130;
 
     public TurnCardGUI(String imagePath, int numSlots) {
+        // init of the turn card and totem array
 
         Rectangle border = new Rectangle(100, 140);
         border.setArcWidth(15);
@@ -75,42 +79,38 @@ public class TurnCardGUI extends StackPane {
      * Define the exact vertical (Y) locations for the white boxes.
      */
     private double[] calculateOffsetsFor(int numSlots) {
-        switch (numSlots) {
-            case 2:
-                return new double[] { -40, -20 };
-            case 3:
-                return new double[] { -40, -20, 0 };
-            case 4:
-                return new double[] { -40, -20, 0, 20 };
-            case 5:
-                return new double[] { -50, -30, -10, 10, 30 };
-            default:
-                return new double[numSlots];
-        }
-    }
-
-    private String getTotemImagePath(it.polimi.ingsw.am17.Server.Model.Color color) {
-        if (color == null) return "";
-        switch (color) {
-            case RED: return "/Images/totem/totem_red.png";
-            case BLUE: return "/Images/totem/totem_blue.png";
-            case BLACK: return "/Images/totem/totem_black.png";
-            case YELLOW: return "/Images/totem/totem_yellow.png";
-            case WHITE: return "/Images/totem/totem_white.png";
-            default: return "";
-        }
+        return switch (numSlots) {
+            case 2 -> new double[]{-40, -20};
+            case 3 -> new double[]{-40, -20, 0};
+            case 4 -> new double[]{-40, -20, 0, 20};
+            case 5 -> new double[]{-50, -30, -10, 10, 30};
+            default -> new double[numSlots];
+        };
     }
 
     /**
-     * place the totems on the card
-     * @param turnOrderColors
+     * @return  the totem image path for the color passed as parameter.
+     */
+    private String getTotemImagePath(it.polimi.ingsw.am17.Server.Model.Color color) {
+        if (color == null) return "";
+        return switch (color) {
+            case RED -> "/Images/totem/totem_red.png";
+            case BLUE -> "/Images/totem/totem_blue.png";
+            case BLACK -> "/Images/totem/totem_black.png";
+            case YELLOW -> "/Images/totem/totem_yellow.png";
+            case WHITE -> "/Images/totem/totem_white.png";
+        };
+    }
+
+    /**
+     * Places all the totems on the card.
      */
     public void placeTotems(List<it.polimi.ingsw.am17.Server.Model.Color> turnOrderColors) {
         this.turnOrderColors = turnOrderColors;
 
         // Clear all existing totems
-        for (int i = 0; i < totemSlots.length; i++) {
-            totemSlots[i].setVisible(false);
+        for (ImageView totemSlot : totemSlots) {
+            totemSlot.setVisible(false);
         }
 
         // Fill boxes
@@ -134,8 +134,8 @@ public class TurnCardGUI extends StackPane {
     }
 
     /**
-     * remove a player totem from the card
-     * @param color
+     * Removes a totem from the card.
+     * @param color     the color of the totem to remove
      */
     public void removePlayerTotem(it.polimi.ingsw.am17.Server.Model.Color color){
         for (int i = 0; i < turnOrderColors.size() && i < totemSlots.length; i++) {
