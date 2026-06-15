@@ -14,20 +14,21 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BuildingType4Test extends BuildingCardTest {
     BuildingType4 building;
     Random r = new Random();
-    @BeforeEach
+
     /**
      * Generate a BuildingType4 with random value and stores the value of pointsFromEachCharacter
      */
+    @BeforeEach
     void setup()
     {
         building = new BuildingType4();
     }
 
-    @Test
     /**
      * Run test of FinalPoints with different list of card generated randomly
      * and check the return value is correct
      */
+    @Test
     void TestGetAdditionalFinalPoints()
     {
         for (int i = 0; i < 20; i++) {

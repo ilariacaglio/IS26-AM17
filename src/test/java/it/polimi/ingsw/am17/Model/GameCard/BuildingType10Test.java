@@ -17,12 +17,10 @@ class BuildingType10Test {
     @BeforeEach
     void setUp() {
         buildingType10 = new BuildingType10();
-
-
     }
 
     @Test
-    void TestFoodBonusInventor3() {
+    void TestFoodBonusInventor_TwoInventorsWithSameIcon() {
         List<CharacterCard> cards = new ArrayList<>();
 
         CharacterCard A = new Inventor(GameState.ERA2, 2, InventorIconType.CANOE,null);
@@ -35,7 +33,7 @@ class BuildingType10Test {
     }
 
     @Test
-    void TestFoodBonusInventor0() {
+    void TestFoodBonusInventor_NoFoodBonus() {
         List<CharacterCard> cards = new ArrayList<>();
 
         CharacterCard A = new Inventor(GameState.ERA2, 2,InventorIconType.IDOL, null);
@@ -49,7 +47,7 @@ class BuildingType10Test {
     }
 
     @Test
-    void TestFoodBonus0() {
+    void TestFoodBonus_InventorAndArtist() {
         List<CharacterCard> cards = new ArrayList<>();
 
         CharacterCard A = new Inventor(GameState.ERA2, 2,InventorIconType.CANOE, null);
