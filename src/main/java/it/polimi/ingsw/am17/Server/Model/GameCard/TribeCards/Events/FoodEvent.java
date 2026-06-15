@@ -15,7 +15,7 @@ public class FoodEvent extends EventCard{
     private static final Logger logger = Logger.getLogger(FoodEvent.class.getName());
     private final Integer pointLost;
 
-    /// used for serialization/desetialization
+    /// needed for jackson
     public Integer getPointLost() {
         return pointLost;
     }
