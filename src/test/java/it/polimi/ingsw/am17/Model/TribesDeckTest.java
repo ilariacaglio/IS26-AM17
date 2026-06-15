@@ -16,7 +16,7 @@ class TribesDeckTest {
 
     //doesn't Draw(), throws exception, end of deck
     @Test
-    void shouldNotDrawTribesCard(){
+    void shouldNotDrawTribesCard_whenOutOfCards(){
         tribesDeck = new TribesDeck(3);
         List<TribesCard> deck = tribesDeck.getTribeCards();
 
