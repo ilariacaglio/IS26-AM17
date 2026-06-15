@@ -16,8 +16,8 @@ public class TurnCardGUI extends StackPane {
     private final ImageView[] totemSlots; //saves the totem images
     List<it.polimi.ingsw.am17.Server.Model.Color> turnOrderColors;
 
-    private final int CARD_WIDTH = 90;
-    private final int CARD_HEIGHT = 130;
+    private static final int CARD_WIDTH = 90;
+    private static final int CARD_HEIGHT = 130;
 
     public TurnCardGUI(String imagePath, int numSlots) {
         // init of the turn card and totem array
