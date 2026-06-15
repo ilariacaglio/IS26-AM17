@@ -9,6 +9,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.StrokeType;
 
+/**
+ * Represents a game card inside the game view
+ */
 public class CardGUI extends StackPane {
 
     private Rectangle border;
@@ -27,6 +30,13 @@ public class CardGUI extends StackPane {
         updateTotem(playerColor);
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    /**
+     * Creates the structure of the card by drawing a rectangle and adding the image (passed as parameter) to it.
+     */
     private void createGraphics(String imagePath) {
 
         border = new Rectangle(100, 140);
@@ -76,6 +86,9 @@ public class CardGUI extends StackPane {
         this.getChildren().add(totemView);
     }
 
+    /**
+     *  Changes card appearance when it is selected/unselected.
+     */
     public void setVisualSelection(boolean selected) {
         this.isSelected = selected;
         if (isSelected) {
@@ -89,26 +102,18 @@ public class CardGUI extends StackPane {
         }
     }
 
+    /**
+     * Handles totem visibility on a card
+     */
     public void updateTotem(Color playerColor){
+        // by default the totem should be invisible
         if (playerColor == null || playerColor.equals(Color.TRANSPARENT)) {
             totemView.setVisible(false);
             return;
         }
 
         // Figure out which image to load based on the JavaFX color
-        String totemImagePath = "";
-
-        if (playerColor.equals(Color.RED)) {
-            totemImagePath = "/Images/totem/totem_red.png";
-        } else if (playerColor.equals(Color.BLUE)) {
-            totemImagePath = "/Images/totem/totem_blue.png";
-        } else if (playerColor.equals(Color.BLACK)) {
-            totemImagePath = "/Images/totem/totem_black.png";
-        } else if (playerColor.equals(Color.YELLOW)) { // Assuming yellow is a player color
-            totemImagePath = "/Images/totem/totem_yellow.png";
-        } else if (playerColor.equals(Color.WHITE)) {
-            totemImagePath = "/Images/totem/totem_white.png";
-        }
+        String totemImagePath = getTotemImagePath(playerColor);
 
         // Load the image safely
         if (!totemImagePath.isEmpty()) {
@@ -125,7 +130,24 @@ public class CardGUI extends StackPane {
         }
     }
 
-    public boolean isSelected() {
-        return isSelected;
+    /**
+     * @param playerColor   the color chosen by the player in the game
+     * @return              the path of the totem image basing on the players color
+     */
+    private static String getTotemImagePath(Color playerColor) {
+        String totemImagePath = "";
+
+        if (playerColor.equals(Color.RED)) {
+            totemImagePath = "/Images/totem/totem_red.png";
+        } else if (playerColor.equals(Color.BLUE)) {
+            totemImagePath = "/Images/totem/totem_blue.png";
+        } else if (playerColor.equals(Color.BLACK)) {
+            totemImagePath = "/Images/totem/totem_black.png";
+        } else if (playerColor.equals(Color.YELLOW)) { // Assuming yellow is a player color
+            totemImagePath = "/Images/totem/totem_yellow.png";
+        } else if (playerColor.equals(Color.WHITE)) {
+            totemImagePath = "/Images/totem/totem_white.png";
+        }
+        return totemImagePath;
     }
 }
