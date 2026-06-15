@@ -20,6 +20,12 @@ import javafx.stage.Stage;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Starts and manages the JavaFX thread, the application's main stage and
+ * scene changes between different screens (e.g. startup, lobby, game board ...).
+ * Updates graphical components when a changed is notified by the model.
+ * Forwards player actions to the network level using serverAdapter interface.
+ */
 public class GUI implements UI {
 
     private final double START_WINDOW_WIDTH = 400;
