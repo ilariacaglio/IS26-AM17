@@ -54,20 +54,85 @@ public class GameView {
         buildUI();
     }
 
-    // todo: this method is 250 lines long, split!!
     private void buildUI() {
-        //set fullscreen size
-        // TODO: this doesn't always work
-        Stage stage = (Stage) mainGui.scene.getWindow();
-        stage.setMaximized(true);
-
+        setupWindow();
         root = new VBox(10);
 
+        setUpBackground();
+        createTurnOverlay();
+
+        HBox localPlayerNameBox = createLocalPlayerBox();
+
+        // Upper cards
+        upperCardsBox = new HBox(10);
+        upperCardsBox.setAlignment(Pos.CENTER);
+
+        HBox offeringCardBox = createOfferingCardBox();
+
+        // Lower cards
+        lowerCardsBox = new HBox(10);
+        lowerCardsBox.setAlignment(Pos.CENTER);
+
+        HBox sendButtonBox = createSendButtonBox();
+
+        // Player sections
+        VBox playersButtonBox = createOtherPlayersBox();
+        VBox playerCardsContainer = createPersonalCardsBox();
+
+        // Player resources
+        playerResourcesBox = new HBox(10);
+        createPlayerCardLabel();
+
+        // Create a blank region to act as a spring/spacer
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        // Add everything to root
+        root.getChildren().addAll(
+                turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox,
+                lowerCardsBox, sendButtonBox, playerResourcesBox,
+                playerCardsContainer, spacer, playersButtonBox
+        );
+    }
+
+    /**
+     * Expands window to full screen size
+     */
+    private void setupWindow() {
+        Stage stage = (Stage) mainGui.scene.getWindow();
+        stage.setMaximized(true);
+    }
+
+    /**
+     * Sets up the interface background
+     */
+    private void setUpBackground() {
+        URL imageUrl = getClass().getResource("/Images/background_game.png");
+        if (imageUrl == null) {
+            throw new RuntimeException("Could not find image at /images/background_game.png inside resources!");
+        }
+
+        Image image = new Image(imageUrl.toExternalForm());
+
+        BackgroundImage bgImage = new BackgroundImage(
+                image,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+        );
+
+        root.setBackground(new Background(bgImage));
+    }
+
+    /**
+     * Creates turn overlay for the interface
+     */
+    private void createTurnOverlay(){
         turnOverlay = new VBox();
         turnOverlay.setAlignment(Pos.CENTER);
 
         Label turnText = new Label("IT'S YOUR TURN!");
-
         turnText.setStyle("""
             -fx-background-color: rgba(0, 0, 0, 0.75);
             -fx-background-radius: 15px;
@@ -88,126 +153,58 @@ public class GameView {
         turnText.setEffect(textShadow);
 
         turnOverlay.getChildren().add(turnText);
-        turnOverlay.setVisible(false);
-        if(readOnlyModel.isPlayerTurn(localPlayer)){
-            turnOverlay.setVisible(true);
-        }
+        turnOverlay.setVisible(readOnlyModel.isPlayerTurn(localPlayer));
+    }
 
-        // 1. Safely load the URL and check if it exists
-        URL imageUrl = getClass().getResource("/Images/background_game.png");
-        if (imageUrl == null) {
-            throw new RuntimeException("Could not find image at /images/background_game.png inside resources!");
-        }
-
-        // 2. Create the Image object
-        Image image = new Image(imageUrl.toExternalForm());
-
-        // 3. Define the background settings
-        BackgroundImage bgImage = new BackgroundImage(
-                image,
-                BackgroundRepeat.NO_REPEAT, // -fx-background-repeat: no-repeat
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER,  // -fx-background-position: center
-                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true) // -fx-background-size: cover
-        );
-
-        // 4. Apply it to your root Pane
-        root.setBackground(new Background(bgImage));
-
+    /**
+     * Creates the local player name label box
+     */
+    private HBox createLocalPlayerBox() {
         Label localPlayerName = new Label("Local Player: " + localPlayer.getNickname());
         localPlayerName.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
         """);
-        HBox localPlayerNameBox =  new HBox(10);
-        localPlayerNameBox.getChildren().addAll(localPlayerName);
+        HBox localPlayerNameBox = new HBox(10);
+        localPlayerNameBox.getChildren().add(localPlayerName);
+        return localPlayerNameBox;
+    }
 
-        //create cards like buttons so player can select them
-        //upperCards
+    /**
+     * Creates box for turn order card and offering cards
+     */
+    private HBox createOfferingCardBox() {
+        HBox offeringBox = new HBox(20);
+        offeringBox.setAlignment(Pos.CENTER);
 
-        //tribes cards first
-        upperCardsBox =new HBox(10);
-
-        //put turnCard and offeringCard in the same HBox
-        HBox offeringCardBox = new HBox(20);
-        //turnCard first
+        // Turn Card first
         turnCard = new TurnCardGUI(readOnlyModel.getTURN_CARD_IMAGE_PATH(), readOnlyModel.getNumPlayers());
-        offeringCardBox.getChildren().add(turnCard);
+        offeringBox.getChildren().add(turnCard);
 
-        //offeringCards second
-        for(OfferingCard card : readOnlyModel.getOfferingCards()){
+        // Offering Cards second
+        for (OfferingCard card : readOnlyModel.getOfferingCards()) {
             CardGUI offeringCard;
-            if(card.getPlayer() == null) {
+            if (card.getPlayer() == null) {
                 offeringCard = new CardGUI(card.getImagePath());
-                offeringCard.setUserData(card);
             } else {
                 offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
-                offeringCard.setUserData(card);
             }
+            offeringCard.setUserData(card);
             setOnMouseClickForOffering(offeringCard, card);
             offeringCardGUI.add(offeringCard);
-            offeringCardBox.getChildren().add(offeringCard);
+            offeringBox.getChildren().add(offeringCard);
         }
+        return offeringBox;
+    }
 
-        //lowerCards
-        //tribe cards first
-        lowerCardsBox =  new HBox(10);
-
-        //send button
+    /**
+     * Creates the Send button and its container
+     */
+    private HBox createSendButtonBox() {
         Button sendButton = new Button("SEND");
-        sendButton.setOnAction(_ ->
-        {
-            try {
-                if (offeringSelected != null) {
-                    try{
-                        readOnlyModel.validateOfferingCardTurnAction(localPlayer, offeringSelected.getOrderLetter());
-                        mainGui.pickOfferingCard(offeringSelected);
-                        offeringSelected = null;
-                        buildingSelected = new ArrayList<>();
-                        tribesSelected =  new ArrayList<>();
-                    } catch (InvalidOperationException invalidOperationException) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
-                        alert.showAndWait();
-                    } catch (Exception ex) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(ex.getMessage());
-                        alert.showAndWait();
-                    }
-
-                } else {
-                    try {
-                        readOnlyModel.validateTribeCardsTurnAction(localPlayer, tribesSelected, buildingSelected);
-                        mainGui.pickTribeCards(tribesSelected, buildingSelected);
-                        offeringSelected = null;
-                        buildingSelected = new ArrayList<>();
-                        tribesSelected =  new ArrayList<>();
-                    } catch (InvalidOperationException invalidOperationException) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
-                        alert.showAndWait();
-                    } catch (Exception ex) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(ex.getMessage());
-                        alert.showAndWait();
-                    }
-
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        });
         sendButton.setStyle("""
-            -fx-background-color: #5c2c16;\s
+            -fx-background-color: #5c2c16;
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-background-radius: 5px;
@@ -215,70 +212,102 @@ public class GameView {
             -fx-font-size: 16px;
             -fx-padding: 10px 20px;
             """);
+
+        sendButton.setOnAction(_ -> handleSendAction());
+
         HBox sendButtonBox = new HBox();
         sendButtonBox.getChildren().add(sendButton);
         sendButtonBox.setAlignment(Pos.CENTER);
+        return sendButtonBox;
+    }
 
-        //other players card buttons
-        HBox playersCardsBox =  new HBox(10);
+    /**
+     * Handles the logic for the Send button cleanly
+     */
+    private void handleSendAction() {
+        try {
+            if (offeringSelected != null) {
+                readOnlyModel.validateOfferingCardTurnAction(localPlayer, offeringSelected.getOrderLetter());
+                mainGui.pickOfferingCard(offeringSelected);
+            } else {
+                readOnlyModel.validateTribeCardsTurnAction(localPlayer, tribesSelected, buildingSelected);
+                mainGui.pickTribeCards(tribesSelected, buildingSelected);
+            }
+
+            // Reset state on success
+            offeringSelected = null;
+            buildingSelected = new ArrayList<>();
+            tribesSelected = new ArrayList<>();
+
+        } catch (InvalidOperationException ex) {
+            showErrorAlert(ex.getErrorType().getMessage());
+        } catch (Exception ex) {
+            showErrorAlert(ex.getMessage());
+        }
+    }
+
+    /**
+     * Helper to show error alerts
+     */
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Error in selection");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * Creates the box containing other players' buttons and their cards
+     */
+    private VBox createOtherPlayersBox() {
+        HBox playersCardsBox = new HBox(10);
+        playersCardsBox.setAlignment(Pos.CENTER);
+
         HBox showCardsBox = new HBox(10);
+
         ScrollPane otherScrollPane = new ScrollPane(showCardsBox);
-        //final Player[] openedPlayer = {null};
+        otherScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        otherScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        otherScrollPane.setFitToHeight(true);
+        otherScrollPane.setPannable(true);
+        otherScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
         for(Player p : readOnlyModel.getOrderedPlayers()){
-            Button playerButton = new Button(p.getNickname() );
-            //set nickname color
-            Color nicknameColor = p.getColor();
-            String colorName = nicknameColor.name().toLowerCase(); // e.g., "red", "blue"
+            Button playerButton = new Button(p.getNickname());
+            String colorName = p.getColor().name().toLowerCase();
 
             playerButton.setStyle("""
-    /* Smooth metallic gradient background */
-    -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%%, #c3cfe2 100%%);
-    
-    /* Rounded pill-like edges */
-    -fx-background-radius: 25;
-    
-    /* Comfortable padding to shape the button */
-    -fx-padding: 12px 30px;
-    
-    /* Soft drop shadow for 3D depth */
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
-    
-    /* Dynamic color insertion */
-    -fx-text-fill: %s;
-    
-    /* Modern, clean typography */
-    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    -fx-font-weight: bold;
-    -fx-font-size: 18px;
-    
-    /* Change cursor to pointer on hover */
-    -fx-cursor: hand;
-""".formatted(colorName));
-            //add area for other players' cards
-
-            otherScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-            otherScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            otherScrollPane.setFitToHeight(true);
-            otherScrollPane.setPannable(true);
-            otherScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+                -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%%, #c3cfe2 100%%);
+                -fx-background-radius: 25;
+                -fx-padding: 12px 30px;
+                -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
+                -fx-text-fill: %s;
+                -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+                -fx-font-weight: bold;
+                -fx-font-size: 18px;
+                -fx-cursor: hand;
+            """.formatted(colorName));
 
             playersCardsBox.getChildren().add(playerButton);
             StackPane.setAlignment(playersCardsBox, Pos.BOTTOM_CENTER);
+
             playerButton.setOnAction(_ -> {
                 selectedPlayer = p;
                 createPlayerCardLabel();
                 updateSelectedPlayer();
             });
-
         }
 
-        VBox playersButtonBox = new VBox(10,  playersCardsBox, otherScrollPane);
+        return new VBox(10, playersCardsBox, otherScrollPane);
+    }
 
-        //player cards
+    /**
+     * Creates the box containing the personal cards of the selected player
+     */
+    private VBox createPersonalCardsBox() {
+        playerCardsBox = new HBox(10);
 
-        playerCardsBox =  new HBox(10);
-
-        //add area for personal cards
         ScrollPane scrollPane = new ScrollPane(playerCardsBox);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -286,37 +315,9 @@ public class GameView {
         scrollPane.setPannable(true);
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        //order personal cards
         updateSelectedPlayer();
 
-
-
-        VBox playerCardsContainer = new VBox(10, scrollPane);
-
-        //player name, food and pp
-        playerResourcesBox =  new HBox(10);
-        createPlayerCardLabel();
-
-
-        //add components to root
-        // Center the upper cards
-        upperCardsBox.setAlignment(Pos.CENTER);
-
-        // Center the offering cards
-        offeringCardBox.setAlignment(Pos.CENTER);
-
-        // Center the lower cards
-        lowerCardsBox.setAlignment(Pos.CENTER);
-
-        // Center the player buttons
-        playersCardsBox.setAlignment(Pos.CENTER);
-
-        // Create a blank region to act as a spring/spacer
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        root.getChildren().addAll(turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox, lowerCardsBox, sendButtonBox,
-                playerResourcesBox, playerCardsContainer, spacer, playersButtonBox);
+        return new VBox(10, scrollPane);
     }
 
     /**
