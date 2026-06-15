@@ -18,8 +18,8 @@ public class CardGUI extends StackPane {
     private ImageView totemView; // Changed from Polygon to ImageView
     private boolean isSelected = false;
 
-    private final int CARD_WIDTH = 90;
-    private final int CARD_HEIGHT = 130;
+    private static final int CARD_WIDTH = 90;
+    private static final int CARD_HEIGHT = 130;
 
     public CardGUI(String imagePath) {
         createGraphics(imagePath);
