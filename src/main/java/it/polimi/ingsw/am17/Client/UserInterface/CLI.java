@@ -108,7 +108,7 @@ public class CLI implements UI {
                         running = false;
                         break;
                     default:
-                        System.out.print("Command not recognized. Please type 'help' to view the list of available commands");
+                        System.out.println("Command not recognized. Please type 'help' to view the list of available commands");
                 }
             }
             // exit

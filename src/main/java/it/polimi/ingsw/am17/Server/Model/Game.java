@@ -67,6 +67,9 @@ public class Game extends Subject {
         turnFoodPoints = getTurnFoodPoints(numPlayers);
     }
 
+    /**
+     * Validates numPlayers value passed as parameter
+     */
     private void checkNumPlayers(int numPlayers) {
         logger.info("Checking number of players: " + numPlayers);
 
@@ -153,6 +156,9 @@ public class Game extends Subject {
         }
     }
 
+    /**
+     * Moves building cards from the upper row to the lower row
+     */
     private void moveDownBuildingCards() {
         logger.info("Moving down building cards.");
 
@@ -232,6 +238,7 @@ public class Game extends Subject {
 
         notifyStartGame(orderedPlayers, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
+
     /**
      * Sets up the second era.
      */
@@ -271,7 +278,7 @@ public class Game extends Subject {
         int i = 0;
         for (Player p : orderedPlayers) {
             //check if turnFood > 0
-            if (turnFoodPoints[i] < 0) {
+            if (turnFoodPoints[i] <= 0) {
                 //if not, check if player can pay the food (food price is not higher than 1)
                 if (p.getFood() < 1) {
                     p.addPp(-2);
@@ -437,6 +444,7 @@ public class Game extends Subject {
 
     /**
      * Replaces player queue with new order from offering cards
+     * This method is called every round when all the players have an offering card
      */
     private void recalculatePlayerQueue() {
         logger.info("Recalculate player queue");
@@ -514,7 +522,8 @@ public class Game extends Subject {
         if(offeringCard.getPlayer() == null) return;
 
         // give +3 food to the player
-        offeringCard.getPlayer().addFood(3);
+        int foodBonus = offeringCard.getFoodBonus();
+        offeringCard.getPlayer().addFood(foodBonus);
 
         // remove player from offering card
         offeringCard.setPlayer(null);

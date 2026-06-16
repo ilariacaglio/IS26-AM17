@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class CharacterCard extends TribesCard {
-    private Integer minPlayers;
+    private final Integer minPlayers;
 
     public Integer getMinPlayers() {
         return minPlayers;
@@ -39,11 +39,4 @@ public class CharacterCard extends TribesCard {
     public int hashCode() {
         return Objects.hashCode(minPlayers);
     }
-
-    @Override
-    public String getImagePath(){
-        return "";
-    }
-
-
 }

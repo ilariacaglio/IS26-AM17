@@ -8,13 +8,14 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.UUID;
-
+/**
+ * Draws the interface that allows the user to select the number of players before creating a new game
+ */
 public class PlayerCountSelectionView {
     private VBox root;
-    private GUI mainGui;
-    private final int MIN_PLAYER = 2;
-    private final int MAX_PLAYER = 5;
+    private final GUI mainGui;
+    private static final int MIN_PLAYER = 2;
+    private static final int MAX_PLAYER = 5;
     private boolean isWaiting = false;
     private Button backButton;
 
@@ -45,7 +46,7 @@ public class PlayerCountSelectionView {
         }
 
         backButton = new Button("Back");
-        backButton.setOnAction(e -> {
+        backButton.setOnAction(_ -> {
             if (isWaiting) return; // Prevent clicking Back if already waiting
             mainGui.showConnectionInterface();
         });
@@ -53,12 +54,15 @@ public class PlayerCountSelectionView {
         root.getChildren().addAll(title, options, backButton, waitingOverlay);
     }
 
+    /**
+     * @return the button with the specified number as text
+     */
     private Button createChoiceButton(int i, VBox waitingOverlay, HBox options) {
         Button btn = new Button(String.valueOf(i));
         btn.setPrefSize(60, 60);
         btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: 18px; -fx-font-weight: bold;");
 
-        btn.setOnAction(e -> {
+        btn.setOnAction(_ -> {
             // Prevent spam clicks if they click the active button again
             if (isWaiting) return;
 
@@ -85,6 +89,9 @@ public class PlayerCountSelectionView {
         return btn;
     }
 
+    /**
+     * @return  the waiting overlay, displayed when the game is in lobby state
+     */
     public VBox createWaitingOverlay() {
         // create the container
         VBox overlay = new VBox(10); // 10px spacing

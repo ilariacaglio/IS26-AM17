@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /**
  * This is the interface exposed by the network layer and called by the ui
- * We chose an interface and not a utility class to highlight the concept of abstraction
+ * We chose an interface and not a utility class to highlight abstraction
  */
 public interface ServerAdapter {
     void getGamesList();

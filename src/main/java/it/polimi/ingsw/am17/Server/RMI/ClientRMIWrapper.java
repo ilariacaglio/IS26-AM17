@@ -156,21 +156,17 @@ public class ClientRMIWrapper implements VirtualClient {
 
     @Override
     public boolean equals(Object o) {
-        // 1. Self-check (are they the exact same object in memory?)
+        // Self-check
         if (this == o) return true;
 
-        // 2. Null check
+        // Null check
         if (o == null) return false;
 
-        // 3. Compare the underlying client!
-        // If 'o' is another wrapper, compare their inner clients.
-        if (o instanceof ClientRMIWrapper) {
+        if (this.getClass() == o.getClass()) {
             ClientRMIWrapper otherWrapper = (ClientRMIWrapper) o;
             return Objects.equals(this.client, otherWrapper.client);
         }
 
-        // 4. (Optional) If 'o' is the raw client itself, compare directly.
-        // This allows observers.remove(rawClient) to successfully remove the wrapper.
         if (o instanceof VirtualClient) {
             return Objects.equals(this.client, o);
         }

@@ -8,7 +8,7 @@ import java.util.Queue;
 import java.util.UUID;
 
 public abstract class EventCard extends TribesCard {
-    private Boolean Final;
+    private final Boolean Final;
 
     public EventCard(Boolean Final, GameState era, CardType cardType, UUID id) {
         this.Final = Final;
@@ -18,6 +18,4 @@ public abstract class EventCard extends TribesCard {
     public void computeScore(Queue<Player> list){}
 
     public Boolean isFinal() {return Final;}
-
-
 }

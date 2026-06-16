@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 
 /**
  * Handles one socket incoming connection by forwarding requests to the controller.
- * TODO: check if implements VirtualServer is correct (extend VirtualServerSocket?)
  */
 public class ServerSocketSingle implements Runnable, VirtualServer {
     private static final Logger logger = Logger.getLogger(ServerSocketSingle.class.getName());

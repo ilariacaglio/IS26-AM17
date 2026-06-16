@@ -12,10 +12,13 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
+/**
+ * Draws the starting view of the GUI, which allows the user to enter a nickname and select a color
+ */
 public class StartView {
     private VBox root;
-    private GUI mainGui;
-    private List<Color> availableColors;
+    private final GUI mainGui;
+    private final List<Color> availableColors;
 
     public StartView(GUI mainGui, List<Color> availableColors) {
         this.mainGui = mainGui;
@@ -54,10 +57,16 @@ public class StartView {
         grid.add(colorPicker, 1, 1);
 
         //button to save nickname and color and go to next screen
+        Button startButton = getStartButton(nicknameField, colorPicker);
+
+        root.getChildren().addAll(title, grid, startButton);
+    }
+
+    private Button getStartButton(TextField nicknameField, ComboBox<Color> colorPicker) {
         Button startButton = new Button("START ADVENTURE");
         startButton.setPrefWidth(200);
 
-        startButton.setOnAction(e -> {
+        startButton.setOnAction(_ -> {
             String name = nicknameField.getText();
             Color color = colorPicker.getValue();
 
@@ -73,8 +82,7 @@ public class StartView {
             // Tell the main GUI to switch screens
             mainGui.showConnectionInterface();
         });
-
-        root.getChildren().addAll(title, grid, startButton);
+        return startButton;
     }
 
     // The main GUI will call this to put it in the Scene

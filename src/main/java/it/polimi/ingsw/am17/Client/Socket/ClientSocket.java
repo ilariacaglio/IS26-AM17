@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 /**
  * Sets up the socket connection with the server.
  * Receives requests from the server to update the ClientModel.
+ * Sends requests to the server when the user does an action (e.g. picks cards).
  */
 public class ClientSocket implements VirtualClient, ServerAdapter {
     private final Logger logger = Logger.getLogger(ClientSocket.class.getName());

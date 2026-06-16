@@ -27,9 +27,9 @@ class BuildingDeckTest {
         buildingDeck = new BuildingDeck(3);
         List<BuildingCard> buildingCardsEra1 = buildingDeck.drawAllEra1();
 
-        for(int i=0; i<buildingCardsEra1.size(); i++) {
-            GameState currentEra = buildingCardsEra1.get(i).getEra();
-            assertEquals(GameState.ERA1,currentEra);
+        for (BuildingCard buildingCard : buildingCardsEra1) {
+            GameState currentEra = buildingCard.getEra();
+            assertEquals(GameState.ERA1, currentEra);
         }
     }
 
@@ -39,9 +39,9 @@ class BuildingDeckTest {
         buildingDeck = new BuildingDeck(3);
         List<BuildingCard> buildingCardsEra2 = buildingDeck.drawAllEra2();
 
-        for(int i=0; i<buildingCardsEra2.size(); i++) {
-            GameState currentEra = buildingCardsEra2.get(i).getEra();
-            assertEquals(GameState.ERA2,currentEra);
+        for (BuildingCard buildingCard : buildingCardsEra2) {
+            GameState currentEra = buildingCard.getEra();
+            assertEquals(GameState.ERA2, currentEra);
         }
     }
 
@@ -51,9 +51,9 @@ class BuildingDeckTest {
         buildingDeck = new BuildingDeck(3);
         List<BuildingCard> buildingCardsEra3 = buildingDeck.drawAllEra3();
 
-        for(int i=0; i<buildingCardsEra3.size(); i++) {
-            GameState currentEra = buildingCardsEra3.get(i).getEra();
-            assertEquals(GameState.ERA3,currentEra);
+        for (BuildingCard buildingCard : buildingCardsEra3) {
+            GameState currentEra = buildingCard.getEra();
+            assertEquals(GameState.ERA3, currentEra);
         }
     }
 
@@ -123,7 +123,7 @@ class BuildingDeckTest {
 
     //buildingCardsEra1 is unmodifiableList
     @Test
-    void shouldThrowExceptionListBuildingCardsEra1() {
+    void shouldBeUnmodifiableListEra1() {
         buildingDeck = new BuildingDeck(2);
         List<BuildingCard> buildingCardsEra1 = buildingDeck.drawAllEra1();
         assertThrows(UnsupportedOperationException.class, () ->buildingCardsEra1.add(null) );
@@ -131,7 +131,7 @@ class BuildingDeckTest {
 
     //buildingCardsEra2 is unmodifiableList
     @Test
-    void shouldThrowExceptionListBuildingCardsEra2() {
+    void shouldBeUnmodifiableListEra2() {
         buildingDeck = new BuildingDeck(2);
         List<BuildingCard> buildingCardsEra2 = buildingDeck.drawAllEra2();
         assertThrows(UnsupportedOperationException.class, () ->buildingCardsEra2.add(null) );
@@ -139,7 +139,7 @@ class BuildingDeckTest {
 
     //buildingCardsEra3 is unmodifiableList
     @Test
-    void shouldThrowExceptionListBuildingCardsEra3() {
+    void shouldBeUnmodifiableListEra3() {
         buildingDeck = new BuildingDeck(2);
         List<BuildingCard> buildingCardsEra3 = buildingDeck.drawAllEra3();
         assertThrows(UnsupportedOperationException.class, () ->buildingCardsEra3.add(null) );

@@ -7,6 +7,9 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Interface that specifies the requests that can be made from a client to the server
+ */
 public interface VirtualServer {
     void getGamesList(VirtualClient client) throws Exception;
     void createGame(VirtualClient client, Player player, int numPlayers)  throws Exception;

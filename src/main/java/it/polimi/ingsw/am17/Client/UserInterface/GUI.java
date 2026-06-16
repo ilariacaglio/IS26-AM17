@@ -20,42 +20,56 @@ import javafx.stage.Stage;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Starts and manages the JavaFX thread, the application's main stage and
+ * scene changes between different screens (e.g. startup, lobby, game board ...).
+ * Updates graphical components when a change is notified by the model.
+ * Forwards player actions to the network level using the serverAdapter interface.
+ */
 public class GUI implements UI {
-
-    private final double START_WINDOW_WIDTH = 400;
-    private final double START_WINDOW_HEIGHT = 300;
-
     private final ServerAdapter serverAdapter;
     private ClientModel readOnlyModel;
     private Player localPlayer;
-    private boolean building2EffectUsed;
 
-    private VBox root;
     public Scene scene;
 
     private GameView gameView;
+    private JoinView joinView;
 
     private boolean isGameInterfaceInitialized = false;
 
-    List<Color> availableColors;
+    private List<Color> availableColors;
 
     public GUI(ServerAdapter serverAdapter) {
         this.serverAdapter = serverAdapter;
     }
-    JoinView joinView;
+
+    // method called by the Client RMI/Socket to link model to the UI
+
+    /**
+     * Set the model reference for the GUI
+     */
+    @Override
+    public  void setModel(ClientModel model) {
+        this.readOnlyModel = model;
+    }
+
+    // methods called by the model to start/update the interface
 
     /**
      * Start the JavaFx Application
      */
+    @Override
     public void start() {
         Runnable startFX = () -> {
             Stage stage = new Stage();
 
             StartView startView = new StartView(this, null);
-            scene = new Scene(startView.getRoot(), START_WINDOW_WIDTH, START_WINDOW_HEIGHT);
+            scene = new Scene(startView.getRoot());
             stage.setScene(scene);
             stage.setTitle("MESOS");//window name
-            stage.setOnCloseRequest(e -> {
+            stage.setMaximized(true);
+            stage.setOnCloseRequest(_ -> {
                 Platform.exit();
                 System.exit(0);
             });
@@ -76,7 +90,6 @@ public class GUI implements UI {
      */
     @Override
     public void updateInterfaceFromStartGame() {
-        //LEAVE UNTIL SYNCHRONIZATION PROBLEMS ARE SOLVED
         Platform.runLater(() -> {
             if (!isGameInterfaceInitialized) {
                 showGameInterface();
@@ -87,42 +100,8 @@ public class GUI implements UI {
     }
 
     /**
-     * Update all graphics component modified from endTurn call
+     * Display an alert when a new era has started
      */
-    public void updateInterfaceFromEndTurn(){
-        Platform.runLater(() -> {
-            gameView.updateGameElements();
-        });
-    }
-
-    /**
-     * Update all graphics component modified from pickTribes call
-     */
-    public void updateInterfaceFromPlayerSelectTribeCards() {
-        Platform.runLater(() -> {
-            gameView.updateGameCardDecks();
-        });
-    }
-    /**
-     * Update all graphics component modified from playerQueue call
-     */
-    public void updateInterfaceFromPlayerQueueChange(){
-        if(gameView != null) {
-            Platform.runLater(() -> {
-                gameView.updatePlayerQueue();
-            });
-        }
-    }
-
-    /**
-     * Update all graphics component modified from pickOffering call
-     */
-    public void updateInterfaceFromPlayerSelectOfferingCard() {
-        Platform.runLater(() -> {
-            gameView.updateOfferingDeck();
-        });
-    }
-
     @Override
     public void updateInterfaceFromGameStateChange(){
         Platform.runLater(()-> {
@@ -136,72 +115,8 @@ public class GUI implements UI {
     }
 
     /**
-     * set root to the interface for the global ranking
-     */
-    public void showGlobalInterface(){
-        GlobalRankingView globalRankingView = new GlobalRankingView(this, readOnlyModel, localPlayer);
-        scene.setRoot(globalRankingView.getRoot());
-    }
-
-    /**
-     * set root to the interface for local ranking
-     */
-    public void showLocalInterface(){
-        LocalRankingView localRankingView = new LocalRankingView(this, readOnlyModel);
-        scene.setRoot(localRankingView.getRoot());
-    }
-
-    /**
-     * set root to the interface for the game
-     */
-    private void showGameInterface(){
-        gameView = new GameView(this, readOnlyModel, localPlayer);
-        scene.setRoot(gameView.getRoot());
-    }
-
-    /**
-     * set root to the start interface
-     */
-    public void showStartInterface(){
-        StartView startView = new StartView(this, availableColors);
-        scene.setRoot(startView.getRoot());
-    }
-
-    /**
-     * set root to the interface to select the number of player when creating a game
-     */
-    public void showPlayerCountSelection(){
-        PlayerCountSelectionView playerCountSelectionView = new PlayerCountSelectionView(this);
-        scene.setRoot(playerCountSelectionView.getRoot());
-    }
-
-    /**
-     * set root to the interface to select whether you want to join or create a game
-     */
-    public void showConnectionInterface() {
-        ConnectionView connectionView = new ConnectionView(this);
-        scene.setRoot(connectionView.getRoot());
-    }
-
-    /**
-     * set root to the interface to join a game
-     */
-    public void showJoinInterface() {
-        joinView = new JoinView(this, readOnlyModel.getGamesIdList());
-        scene.setRoot(joinView.getRoot());
-        try {
-            //ask server for gameList
-            getGameList();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    /**
      * update the game list in the join view
      */
-
     @Override
     public void updateInterfaceFromGameIdListChange(){
         // Check if the user is currently looking at the Join Screen
@@ -214,86 +129,6 @@ public class GUI implements UI {
     }
 
     /**
-     * create and save a local player
-     * @param player player you want to set as local player
-     */
-    public void createLocalPlayer(Player player){
-        localPlayer = player;
-    }
-
-    /**
-     * ask the server for the game list
-     */
-    public void getGameList(){
-        try {
-            serverAdapter.getGamesList();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * ask the server to join a game
-     * @param gameId id of the game you want to join
-     * @throws Exception
-     */
-    public void joinGame(UUID gameId) throws Exception{
-        serverAdapter.joinGame(gameId,localPlayer);
-    }
-
-    /**
-     * ask the server to create a game
-     * @param numPlayer number of player you want in the game
-     * @throws Exception
-     */
-    public void createGame(int numPlayer) throws Exception{
-        serverAdapter.createGame(localPlayer, numPlayer);
-    }
-
-    /**
-     * ask the server to pick an offering card
-     * @param card card you want to pick
-     * @throws Exception
-     */
-    public void pickOfferingCard(OfferingCard card) throws Exception{
-        serverAdapter.pickOfferingCard(card.getOrderLetter());
-    }
-
-    /**
-     * ask the server to pick tribes card
-     * @param characterCards character cards you want to pick
-     * @param buildingCards building cards you want to pick
-     * @throws Exception
-     */
-    public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception{
-        serverAdapter.pickTribeCards(characterCards, buildingCards);
-    }
-
-    /**
-     * update the model used by the gui
-     * @param model
-     */
-    @Override
-    public  void setModel(ClientModel model) {
-        this.readOnlyModel = model;
-    }
-
-    /**
-     * Set the color the player can choose when creating a character
-     * @param availableColors
-     */
-    public void setAvailableColors(List<Color> availableColors) {
-        this.availableColors=availableColors;
-        Platform.runLater(()-> {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Duplicate Color");
-            alert.setHeaderText(null);
-            alert.setContentText("A player has already chosen your color");
-            alert.showAndWait();
-        });
-    }
-
-    /**
      * When game is ended show the ranking of the game
      */
     @Override
@@ -301,6 +136,9 @@ public class GUI implements UI {
         Platform.runLater(this::showLocalInterface);
     }
 
+    /**
+     * Shows an alert when the game ends due to the disconnection of a player or from the server
+     */
     @Override
     public void updateInterfaceFromForcedEndGame(String disconnectedReason){
         Platform.runLater(()-> {
@@ -308,7 +146,7 @@ public class GUI implements UI {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Disconnection!");
             alert.setHeaderText(null);
-            alert.setContentText(disconnectedReason + " has disconnected from the game");
+            alert.setContentText("The game has ended due to disconnection of " + disconnectedReason);
             alert.showAndWait();
 
             showStartInterface();
@@ -316,7 +154,7 @@ public class GUI implements UI {
     }
 
     /**
-     * Alert the player when a notification error is received.
+     * Alerts the player when a notification error is received.
      * @param exception     the exception describing the error occurred.
      */
     @Override
@@ -355,21 +193,175 @@ public class GUI implements UI {
             alert.setContentText("You have been connected to a game");
             alert.showAndWait();
         });
-
     }
-
 
     /**
-     * Updates localPlayer value when the object is updated into the queue by the server
-     * Used to update food, pp and cards of the player
+     * Update all graphics component modified from endTurn call
      */
-    public void setLocalPlayer() {
-        readOnlyModel.getOrderedPlayers().stream()
-                .filter(p -> p.getNickname().equals(localPlayer.getNickname()))
-                .findFirst().ifPresent(foundPlayer -> localPlayer = foundPlayer);
+    @Override
+    public void updateInterfaceFromEndTurn(){
+        Platform.runLater(() -> gameView.updateGameElements());
     }
 
-    public Player getLocalPlayer() {
-        return localPlayer;
+    /**
+     * Update all graphics component modified from pickTribes call
+     */
+    @Override
+    public void updateInterfaceFromPlayerSelectTribeCards() {
+        Platform.runLater(() -> gameView.updateGameCardDecks());
+    }
+
+    /**
+     * Update all graphics component modified from playerQueue call
+     */
+    @Override
+    public void updateInterfaceFromPlayerQueueChange(){
+        if(gameView != null) {
+            Platform.runLater(() -> gameView.updatePlayerQueue());
+        }
+    }
+
+    /**
+     * Update all graphics component modified from pickOffering call
+     */
+    @Override
+    public void updateInterfaceFromPlayerSelectOfferingCard() {
+        Platform.runLater(() -> gameView.updateOfferingDeck());
+    }
+
+
+    // methods used to display game views
+
+    /**
+     * set root to the interface for the global ranking
+     */
+    public void showGlobalInterface(){
+        GlobalRankingView globalRankingView = new GlobalRankingView(this, readOnlyModel, localPlayer);
+        scene.setRoot(globalRankingView.getRoot());
+    }
+
+    /**
+     * set root to the start interface
+     */
+    public void showStartInterface(){
+        StartView startView = new StartView(this, availableColors);
+        scene.setRoot(startView.getRoot());
+    }
+
+    /**
+     * set root to the interface to select the number of players when creating a game
+     */
+    public void showPlayerCountSelection(){
+        PlayerCountSelectionView playerCountSelectionView = new PlayerCountSelectionView(this);
+        scene.setRoot(playerCountSelectionView.getRoot());
+    }
+
+    /**
+     * set root to the interface to select whether you want to join or create a game
+     */
+    public void showConnectionInterface() {
+        ConnectionView connectionView = new ConnectionView(this);
+        scene.setRoot(connectionView.getRoot());
+    }
+
+    /**
+     * set root to the interface to join a game
+     */
+    public void showJoinInterface() {
+        joinView = new JoinView(this, readOnlyModel.getGamesIdList());
+        scene.setRoot(joinView.getRoot());
+        try {
+            //ask server for gameList
+            getGameList();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * set root to the interface for local ranking
+     */
+    private void showLocalInterface(){
+        LocalRankingView localRankingView = new LocalRankingView(this, readOnlyModel);
+        scene.setRoot(localRankingView.getRoot());
+    }
+
+    /**
+     * set root to the interface for the game
+     */
+    private void showGameInterface(){
+        gameView = new GameView(this, readOnlyModel, localPlayer);
+        scene.setRoot(gameView.getRoot());
+    }
+
+    // utility methods
+
+    /**
+     * create and save a local player
+     * @param player player to be set as the local player
+     */
+    public void createLocalPlayer(Player player){
+        localPlayer = player;
+    }
+
+    /**
+     * Sets the color the user can choose when creating a player
+     * @param availableColors the available colors list received from the server
+     */
+    private void setAvailableColors(List<Color> availableColors) {
+        this.availableColors=availableColors;
+        Platform.runLater(()-> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Duplicate Color");
+            alert.setHeaderText(null);
+            alert.setContentText("A player has already chosen your color");
+            alert.showAndWait();
+        });
+    }
+
+    // methods that send requests to the server
+
+    /**
+     * ask the server for the game list
+     */
+    private void getGameList(){
+        try {
+            serverAdapter.getGamesList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * ask the server to join a game
+     * @param gameId id of the game you want to join
+     */
+    public void joinGame(UUID gameId) throws Exception {
+        serverAdapter.joinGame(gameId,localPlayer);
+    }
+
+    /**
+     * ask the server to create a game
+     * @param numPlayer number of players you want in the game
+     */
+    public void createGame(int numPlayer) throws Exception {
+        serverAdapter.createGame(localPlayer, numPlayer);
+    }
+
+    /**
+     * ask the server to pick an offering card
+     * @param card card you want to pick
+     */
+    public void pickOfferingCard(OfferingCard card) throws Exception {
+        serverAdapter.pickOfferingCard(card.getOrderLetter());
+    }
+
+    /**
+     * ask the server to pick tribe cards
+     * @param characterCards character cards you want to pick
+     * @param buildingCards building cards you want to pick
+     */
+    public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) throws Exception {
+        serverAdapter.pickTribeCards(characterCards, buildingCards);
     }
 }

@@ -8,6 +8,10 @@ import it.polimi.ingsw.am17.Server.Model.Player;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Interface exposed by the controller to the network layer.
+ * Used by ServerRMI and ServerSocket
+ */
 public interface ControllerInterface {
     void createGame(VirtualClient client, Player player, int numPlayers);
     void joinGame(VirtualClient client, UUID gameId, Player player);

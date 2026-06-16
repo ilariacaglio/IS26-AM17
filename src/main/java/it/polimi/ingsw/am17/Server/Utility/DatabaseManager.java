@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * Utility class that sends query to hosted (remote) postgreSQL database
+ */
 public class DatabaseManager {
 
     // Loading file .env and connection data

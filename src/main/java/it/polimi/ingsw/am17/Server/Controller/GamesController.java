@@ -89,6 +89,7 @@ public class GamesController implements ControllerInterface {
      */
     private void removeClientAsObserver(VirtualClient client, UUID gameId) {
         Game game = getGameFromId(gameId);
+        gameMapping.remove(client);
         synchronized (game){
             game.detach(client);
         }
@@ -190,6 +191,10 @@ public class GamesController implements ControllerInterface {
 
             // Add player to the game
             synchronized (game) {
+                // check that the game exists before adding the player
+                if (!games.containsKey(gameId)) {
+                    throw new InvalidOperationException(ErrorType.INVALID_GAME);
+                }
                 game.addPlayer(player);
             }
 
@@ -232,13 +237,16 @@ public class GamesController implements ControllerInterface {
             removeClientAsObserver(client, uuid);
 
             // remove clients and game from maps
-            gameMapping.entrySet().removeIf(entry -> {
+            List<VirtualClient> clientsToRemove = new ArrayList<>();
+            for (Map.Entry<VirtualClient, UUID> entry : gameMapping.entrySet()) {
                 if (entry.getValue().equals(uuid)) {
-                    playerMapping.remove(entry.getKey());
-                    return true;
+                    clientsToRemove.add(entry.getKey());
                 }
-                return false;
-            });
+            }
+            for (VirtualClient c : clientsToRemove) {
+                gameMapping.remove(c);
+                playerMapping.remove(c);
+            }
 
             // remove game from id map
             removeGameFromId(uuid);

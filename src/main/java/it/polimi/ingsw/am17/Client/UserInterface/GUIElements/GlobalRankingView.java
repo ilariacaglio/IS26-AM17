@@ -4,7 +4,6 @@ import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -14,14 +13,16 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Draws the interface to display the global ranking at the end of the game
+ */
 public class GlobalRankingView {
     private VBox root;
-    private GUI mainGui;
-    private ClientModel game;
-    private Player localPlayer;
+    private final GUI mainGui;
+    private final ClientModel game;
+    private final Player localPlayer;
 
     public GlobalRankingView(GUI mainGui, ClientModel game, Player localPlayer) {
         this.mainGui = mainGui;
@@ -80,7 +81,7 @@ public class GlobalRankingView {
                 globalRankingText.append("Player data not found!\n\n");
             }
 
-            // classifica globale completa
+            // complete global ranking
             globalRankingText.append("--- GLOBAL RANKING ---\n");
             globalRankingText.append("N.\tNICKNAME\t\tSCORE\n");
 
@@ -112,9 +113,7 @@ public class GlobalRankingView {
             -fx-padding: 10px 20px;
         """);
         //go back to start page
-        goBackButton.setOnAction(e -> {
-            mainGui.showStartInterface();
-        });
+        goBackButton.setOnAction(_ -> mainGui.showStartInterface());
 
         root.getChildren().addAll(globalRankingTitle, globalRankingArea, goBackButton);
     }

@@ -3,10 +3,10 @@ package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
 import it.polimi.ingsw.am17.Client.UserInterface.CardGUI;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
-import it.polimi.ingsw.am17.Client.UserInterface.GUIElements.TurnCardGUI;
 import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
+import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
@@ -27,47 +27,104 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Draws the interface displayed when game is started.
+ */
 public class GameView {
     private VBox root;
     private final GUI mainGui;
     private VBox turnOverlay;
     private HBox upperCardsBox;
     private HBox lowerCardsBox;
-    private final ClientModel game;
-    private final Player localPlayer;
+    private HBox playerCardsBox;
+    private HBox playerResourcesBox;
     private final List<CardGUI> offeringCardGUI = new ArrayList<>();
     private TurnCardGUI turnCard;
+    private final ClientModel readOnlyModel;
+    private final Player localPlayer;
+    private Player selectedPlayer;
     private List<CharacterCard> tribesSelected = new ArrayList<>();
     private List<BuildingCard> buildingSelected = new ArrayList<>();
     private OfferingCard offeringSelected = null;
-    private Player selectedPlayer;
-    private HBox playerCardsBox;
-    private HBox playerResourcesBox;
-    private Label name;
-    private Label food;
-    private Label points;
 
-
-    public GameView(GUI mainGui, ClientModel game, Player localPlayer) {
+    public GameView(GUI mainGui, ClientModel readOnlyModel, Player localPlayer) {
         this.mainGui = mainGui;
-        this.game = game;
+        this.readOnlyModel = readOnlyModel;
         this.localPlayer = localPlayer;
         this.selectedPlayer = localPlayer;
         buildUI();
     }
 
     private void buildUI() {
-        //set fullscreen size
-        Stage stage = (Stage) mainGui.scene.getWindow();
-        stage.setMaximized(true);
-
         root = new VBox(10);
 
+        setUpBackground();
+        createTurnOverlay();
+
+        HBox localPlayerNameBox = createLocalPlayerBox();
+
+        // Upper cards
+        upperCardsBox = new HBox(10);
+        upperCardsBox.setAlignment(Pos.CENTER);
+
+        HBox offeringCardBox = createOfferingCardBox();
+
+        // Lower cards
+        lowerCardsBox = new HBox(10);
+        lowerCardsBox.setAlignment(Pos.CENTER);
+
+        HBox sendButtonBox = createSendButtonBox();
+
+        // Player sections
+        VBox playersButtonBox = createOtherPlayersBox();
+        VBox playerCardsContainer = createPersonalCardsBox();
+
+        // Player resources
+        playerResourcesBox = new HBox(10);
+        createPlayerCardLabel();
+
+        // Create a blank region to act as a spring/spacer
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        // Add everything to root
+        root.getChildren().addAll(
+                turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox,
+                lowerCardsBox, sendButtonBox, playerResourcesBox,
+                playerCardsContainer, spacer, playersButtonBox
+        );
+    }
+
+    /**
+     * Sets up the interface background
+     */
+    private void setUpBackground() {
+        URL imageUrl = getClass().getResource("/Images/background_game.png");
+        if (imageUrl == null) {
+            throw new RuntimeException("Could not find image at /images/background_game.png inside resources!");
+        }
+
+        Image image = new Image(imageUrl.toExternalForm());
+
+        BackgroundImage bgImage = new BackgroundImage(
+                image,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+        );
+
+        root.setBackground(new Background(bgImage));
+    }
+
+    /**
+     * Creates turn overlay for the interface
+     */
+    private void createTurnOverlay(){
         turnOverlay = new VBox();
         turnOverlay.setAlignment(Pos.CENTER);
 
         Label turnText = new Label("IT'S YOUR TURN!");
-
         turnText.setStyle("""
             -fx-background-color: rgba(0, 0, 0, 0.75);
             -fx-background-radius: 15px;
@@ -88,131 +145,58 @@ public class GameView {
         turnText.setEffect(textShadow);
 
         turnOverlay.getChildren().add(turnText);
-        turnOverlay.setVisible(false);
-        if(game.isPlayerTurn(localPlayer)){
-            turnOverlay.setVisible(true);
-        }
+        turnOverlay.setVisible(readOnlyModel.isPlayerTurn(localPlayer));
+    }
 
-        // 1. Safely load the URL and check if it exists
-        URL imageUrl = getClass().getResource("/Images/background_game.png");
-        if (imageUrl == null) {
-            throw new RuntimeException("Could not find image at /images/background_game.png inside resources!");
-        }
-
-// 2. Create the Image object
-        Image image = new Image(imageUrl.toExternalForm());
-
-// 3. Define the background settings (Equivalent to your CSS)
-        BackgroundImage bgImage = new BackgroundImage(
-                image,
-                BackgroundRepeat.NO_REPEAT, // -fx-background-repeat: no-repeat
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER,  // -fx-background-position: center center
-                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true) // -fx-background-size: cover
-        );
-
-// 4. Apply it to your root Pane
-        root.setBackground(new Background(bgImage));
-
+    /**
+     * Creates the local player name label box
+     */
+    private HBox createLocalPlayerBox() {
         Label localPlayerName = new Label("Local Player: " + localPlayer.getNickname());
         localPlayerName.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
         """);
-        HBox localPlayerNameBox =  new HBox(10);
-        localPlayerNameBox.getChildren().addAll(localPlayerName);
+        HBox localPlayerNameBox = new HBox(10);
+        localPlayerNameBox.getChildren().add(localPlayerName);
+        return localPlayerNameBox;
+    }
 
-        //create cards like buttons so player can select them
-        //upperCards
+    /**
+     * Creates box for turn order card and offering cards
+     */
+    private HBox createOfferingCardBox() {
+        HBox offeringBox = new HBox(20);
+        offeringBox.setAlignment(Pos.CENTER);
 
-        //tribes cards first
-        upperCardsBox =new HBox(10);
+        // Turn Card first
+        turnCard = new TurnCardGUI(readOnlyModel.getTURN_CARD_IMAGE_PATH(), readOnlyModel.getNumPlayers());
+        offeringBox.getChildren().add(turnCard);
 
-        //put turnCard and offeringCard in the same HBox
-        HBox offeringCardBox = new HBox(20);
-        //turnCard first
-        turnCard = new TurnCardGUI(game.getTURN_CARD_IMAGE_PATH(), game.getNumPlayers());
-        offeringCardBox.getChildren().add(turnCard);
-
-        //offeringCards second
-        for(OfferingCard card : game.getOfferingCards()){
+        // Offering Cards second
+        for (OfferingCard card : readOnlyModel.getOfferingCards()) {
             CardGUI offeringCard;
-            if(card.getPlayer() == null) {
+            if (card.getPlayer() == null) {
                 offeringCard = new CardGUI(card.getImagePath());
-                offeringCard.setUserData(card);
             } else {
                 offeringCard = new CardGUI(card.getImagePath(), card.getPlayer().getColor().getFxColor());
-                offeringCard.setUserData(card);
             }
+            offeringCard.setUserData(card);
             setOnMouseClickForOffering(offeringCard, card);
             offeringCardGUI.add(offeringCard);
-            offeringCardBox.getChildren().add(offeringCard);
+            offeringBox.getChildren().add(offeringCard);
         }
+        return offeringBox;
+    }
 
-        //lowerCards
-        //tribe cards first
-        lowerCardsBox =  new HBox(10);
-
-        //send button
+    /**
+     * Creates the Send button and its container
+     */
+    private HBox createSendButtonBox() {
         Button sendButton = new Button("SEND");
-        sendButton.setOnAction(e ->
-        {
-            try {
-                if (offeringSelected != null) {
-                    try{
-                        game.validateOfferingCardTurnAction(localPlayer, offeringSelected.getOrderLetter());
-                        mainGui.pickOfferingCard(offeringSelected);
-                        offeringSelected = null;
-                        buildingSelected = new ArrayList<>();
-                        tribesSelected =  new ArrayList<>();
-                    } catch (InvalidOperationException invalidOperationException) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
-                        alert.showAndWait();
-                    } catch (Exception ex) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(ex.getMessage());
-                        alert.showAndWait();
-                    }
-
-                } else {
-                    // get players offering card
-                    OfferingCard myOfferingCard = game.getOfferingCards().stream()
-                            .filter(c->c.getPlayer()!= null && c.getPlayer().equals(localPlayer))
-                            .findFirst().orElse(null);
-
-                    try {
-                        game.validateTribeCardsTurnAction(localPlayer, tribesSelected, buildingSelected);
-                        mainGui.pickTribeCards(tribesSelected, buildingSelected);
-                        offeringSelected = null;
-                        buildingSelected = new ArrayList<>();
-                        tribesSelected =  new ArrayList<>();
-                    } catch (InvalidOperationException invalidOperationException) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(invalidOperationException.getErrorType().getMessage());
-                        alert.showAndWait();
-                    } catch (Exception ex) {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Error in selection");
-                        alert.setHeaderText(null);
-                        alert.setContentText(ex.getMessage());
-                        alert.showAndWait();
-                    }
-
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        });
         sendButton.setStyle("""
-            -fx-background-color: #5c2c16;\s
+            -fx-background-color: #5c2c16;
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-background-radius: 5px;
@@ -220,70 +204,102 @@ public class GameView {
             -fx-font-size: 16px;
             -fx-padding: 10px 20px;
             """);
+
+        sendButton.setOnAction(_ -> handleSendAction());
+
         HBox sendButtonBox = new HBox();
         sendButtonBox.getChildren().add(sendButton);
         sendButtonBox.setAlignment(Pos.CENTER);
+        return sendButtonBox;
+    }
 
-        //other players card buttons
-        HBox playersCardsBox =  new HBox(10);
+    /**
+     * Handles the logic for the Send button cleanly
+     */
+    private void handleSendAction() {
+        try {
+            if (offeringSelected != null) {
+                readOnlyModel.validateOfferingCardTurnAction(localPlayer, offeringSelected.getOrderLetter());
+                mainGui.pickOfferingCard(offeringSelected);
+            } else {
+                readOnlyModel.validateTribeCardsTurnAction(localPlayer, tribesSelected, buildingSelected);
+                mainGui.pickTribeCards(tribesSelected, buildingSelected);
+            }
+
+            // Reset state on success
+            offeringSelected = null;
+            buildingSelected = new ArrayList<>();
+            tribesSelected = new ArrayList<>();
+
+        } catch (InvalidOperationException ex) {
+            showErrorAlert(ex.getErrorType().getMessage());
+        } catch (Exception ex) {
+            showErrorAlert(ex.getMessage());
+        }
+    }
+
+    /**
+     * Helper to show error alerts
+     */
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Error in selection");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * Creates the box containing other players' buttons and their cards
+     */
+    private VBox createOtherPlayersBox() {
+        HBox playersCardsBox = new HBox(10);
+        playersCardsBox.setAlignment(Pos.CENTER);
+
         HBox showCardsBox = new HBox(10);
+
         ScrollPane otherScrollPane = new ScrollPane(showCardsBox);
-        //final Player[] openedPlayer = {null};
-        for(Player p : game.getOrderedPlayers()){
-            Button playerButton = new Button(p.getNickname() );
-            //set nickname color
-            Color nicknameColor = p.getColor();
-            String colorName = nicknameColor.name().toLowerCase(); // e.g., "red", "blue"
+        otherScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        otherScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        otherScrollPane.setFitToHeight(true);
+        otherScrollPane.setPannable(true);
+        otherScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        for(Player p : readOnlyModel.getOrderedPlayers()){
+            Button playerButton = new Button(p.getNickname());
+            String colorName = p.getColor().name().toLowerCase();
 
             playerButton.setStyle("""
-    /* Smooth metallic gradient background */
-    -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%%, #c3cfe2 100%%);
-    
-    /* Rounded pill-like edges */
-    -fx-background-radius: 25;
-    
-    /* Comfortable padding to shape the button */
-    -fx-padding: 12px 30px;
-    
-    /* Soft drop shadow for 3D depth */
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
-    
-    /* Dynamic color insertion */
-    -fx-text-fill: %s;
-    
-    /* Modern, clean typography */
-    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    -fx-font-weight: bold;
-    -fx-font-size: 18px;
-    
-    /* Change cursor to pointer on hover */
-    -fx-cursor: hand;
-""".formatted(colorName));
-            //add area for other players' cards
-
-            otherScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-            otherScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            otherScrollPane.setFitToHeight(true);
-            otherScrollPane.setPannable(true);
-            otherScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+                -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%%, #c3cfe2 100%%);
+                -fx-background-radius: 25;
+                -fx-padding: 12px 30px;
+                -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
+                -fx-text-fill: %s;
+                -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+                -fx-font-weight: bold;
+                -fx-font-size: 18px;
+                -fx-cursor: hand;
+            """.formatted(colorName));
 
             playersCardsBox.getChildren().add(playerButton);
             StackPane.setAlignment(playersCardsBox, Pos.BOTTOM_CENTER);
-            playerButton.setOnAction(e -> {
+
+            playerButton.setOnAction(_ -> {
                 selectedPlayer = p;
                 createPlayerCardLabel();
                 updateSelectedPlayer();
             });
-
         }
 
-        VBox playersButtonBox = new VBox(10,  playersCardsBox, otherScrollPane);
+        return new VBox(10, playersCardsBox, otherScrollPane);
+    }
 
-        //player cards
+    /**
+     * Creates the box containing the personal cards of the selected player
+     */
+    private VBox createPersonalCardsBox() {
+        playerCardsBox = new HBox(10);
 
-        playerCardsBox =  new HBox(10);
-
-        //add area for personal cards
         ScrollPane scrollPane = new ScrollPane(playerCardsBox);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -291,37 +307,9 @@ public class GameView {
         scrollPane.setPannable(true);
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        //order personal cards
         updateSelectedPlayer();
 
-
-
-        VBox playerCardsContainer = new VBox(10, scrollPane);
-
-        //player name, food and pp
-        playerResourcesBox =  new HBox(10);
-        createPlayerCardLabel();
-
-
-        //add components to root
-        // Center the upper cards
-        upperCardsBox.setAlignment(Pos.CENTER);
-
-        // Center the offering cards
-        offeringCardBox.setAlignment(Pos.CENTER);
-
-        // Center the lower cards
-        lowerCardsBox.setAlignment(Pos.CENTER);
-
-        // Center the player buttons
-        playersCardsBox.setAlignment(Pos.CENTER);
-
-        // Create a blank region to act as a spring/spacer
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        root.getChildren().addAll(turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox, lowerCardsBox, sendButtonBox,
-                playerResourcesBox, playerCardsContainer, spacer, playersButtonBox);
+        return new VBox(10, scrollPane);
     }
 
     /**
@@ -329,7 +317,7 @@ public class GameView {
      */
     public void updatePlayerQueue(){
         // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn(localPlayer));
+        turnOverlay.setVisible(readOnlyModel.isPlayerTurn(localPlayer));
     }
 
     /**
@@ -337,14 +325,14 @@ public class GameView {
      */
     public void updateGameElements() {
         // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn(localPlayer));
+        turnOverlay.setVisible(readOnlyModel.isPlayerTurn(localPlayer));
 
 
         // Update Upper Cards
         updateUpperCards();
 
         //UpdateTurnCards
-        List<Color> currentTurnOrder = game.getOrderedPlayers().stream()
+        List<Color> currentTurnOrder = readOnlyModel.getOrderedPlayers().stream()
                 .map(Player::getColor)
                 .toList();
 
@@ -366,30 +354,32 @@ public class GameView {
      */
     public void updateGameCardDecks() {
         // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn(localPlayer));
+        turnOverlay.setVisible(readOnlyModel.isPlayerTurn(localPlayer));
 
         // Update Upper Cards
         upperCardsBox.getChildren().removeIf(node -> {
-            Object cardData = node.getUserData();
+            GameCard cardData = (GameCard) node.getUserData();
 
             // Check if the card still exists in the game model
-            boolean stillInTribeRow = game.getUpperTribeRow().contains(cardData);
-            boolean stillInBuildingRow = game.getUpperBuildingRow().contains(cardData);
-
-            // If it is NOT in the tribe row AND NOT in the building row, remove it (return true)
-            return !stillInTribeRow && !stillInBuildingRow;
+            // If it is NOT in the tribe row or NOT in the building row, remove it (return true)
+            if (cardData.getIsBuilding()) {
+                return !readOnlyModel.getUpperBuildingRow().contains((BuildingCard) cardData);
+            } else {
+                return !readOnlyModel.getUpperTribeRow().contains((CharacterCard) cardData);
+            }
         });
 
         // Update Lower Cards
         lowerCardsBox.getChildren().removeIf(node -> {
-            Object cardData = node.getUserData();
+            GameCard cardData = (GameCard) node.getUserData();
 
             // Check if the card still exists in the game model
-            boolean stillInTribeRow = game.getLowerTribeRow().contains(cardData);
-            boolean stillInBuildingRow = game.getLowerBuildingRow().contains(cardData);
-
-            // If it is NOT in the tribe row AND NOT in the building row, remove it
-            return !stillInTribeRow && !stillInBuildingRow;
+            // If it is NOT in the tribe row or NOT in the building row, remove it (return true)
+            if (cardData.getIsBuilding()) {
+                return !readOnlyModel.getLowerBuildingRow().contains((BuildingCard) cardData);
+            } else {
+                return !readOnlyModel.getLowerTribeRow().contains((CharacterCard) cardData);
+            }
         });
 
         // Update Player stats (Points, Food, Name) and personal board
@@ -402,7 +392,7 @@ public class GameView {
      */
     public void updateOfferingDeck(){
         // Update turn overlay visibility
-        turnOverlay.setVisible(game.isPlayerTurn(localPlayer));
+        turnOverlay.setVisible(readOnlyModel.isPlayerTurn(localPlayer));
 
         for (CardGUI cardGUI : offeringCardGUI){
             if(cardGUI.isSelected())
@@ -410,7 +400,7 @@ public class GameView {
         }
         for(int i=0; i<offeringCardGUI.size(); i++){
             CardGUI card = offeringCardGUI.get(i);
-            Player p = game.getOfferingCards().get(i).getPlayer();
+            Player p = readOnlyModel.getOfferingCards().get(i).getPlayer();
             if (p != null) {
                 card.updateTotem(p.getColor().getFxColor());
                 turnCard.removePlayerTotem(p.getColor());
@@ -426,13 +416,13 @@ public class GameView {
      */
     private void updateUpperCards() {
         upperCardsBox.getChildren().clear(); // Remove old cards
-        for(TribesCard card : game.getUpperTribeRow()){
+        for(TribesCard card : readOnlyModel.getUpperTribeRow()){
             CardGUI upperCard = new CardGUI(card.getImagePath());
             upperCard.setUserData(card);
             setOnMouseClickForTribes(upperCard, card);
             upperCardsBox.getChildren().add(upperCard);
         }
-        for(BuildingCard card : game.getUpperBuildingRow()){
+        for(BuildingCard card : readOnlyModel.getUpperBuildingRow()){
             CardGUI upperCard = new CardGUI(card.getImagePath());
             upperCard.setUserData(card);
             setOnMouseClickForBuilding(upperCard, card);
@@ -445,13 +435,13 @@ public class GameView {
      */
     private void updateLowerCards(){
         lowerCardsBox.getChildren().clear();
-        for(TribesCard card : game.getLowerTribeRow()){
+        for(TribesCard card : readOnlyModel.getLowerTribeRow()){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
             lowerCard.setUserData(card);
             setOnMouseClickForTribes(lowerCard, card);
             lowerCardsBox.getChildren().add(lowerCard);
         }
-        for(BuildingCard card : game.getLowerBuildingRow()){
+        for(BuildingCard card : readOnlyModel.getLowerBuildingRow()){
             CardGUI lowerCard = new CardGUI(card.getImagePath());
             lowerCard.setUserData(card);
             setOnMouseClickForBuilding(lowerCard, card);
@@ -460,6 +450,9 @@ public class GameView {
     }
 
 
+    /**
+     * Resets offering card colored border and updates totem placement
+     */
     private void updateOfferingCards(){
 
         //set all card to not selected
@@ -472,8 +465,8 @@ public class GameView {
         for (int i = 0; i < offeringCardGUI.size(); i++) {
             CardGUI card = offeringCardGUI.get(i);
 
-            if (i < game.getOfferingCards().size()) {
-                OfferingCard serverCard = game.getOfferingCards().get(i);
+            if (i < readOnlyModel.getOfferingCards().size()) {
+                OfferingCard serverCard = readOnlyModel.getOfferingCards().get(i);
 
                 card.setUserData(serverCard);
 
@@ -489,18 +482,16 @@ public class GameView {
 
     /**
      * set the action from click on tribes card
-     * @param cardGUI
-     * @param card
      */
     private void setOnMouseClickForTribes(CardGUI cardGUI, TribesCard card) {
         if(card.getCardType().isCharacter()) {
-            cardGUI.setOnMouseClicked(event -> {
-                if (!game.isPlayerTurn(localPlayer)) {
+            cardGUI.setOnMouseClicked(_ -> {
+                if (!readOnlyModel.isPlayerTurn(localPlayer)) {
                     showWaitTurnAlert();
                     return;
                 }
 
-                if (game.isPickOCPhase()) {
+                if (readOnlyModel.isPickOCPhase()) {
                     return; // Not selectable right now
                 }
 
@@ -514,17 +505,15 @@ public class GameView {
 
     /**
      * set the action from click on building card
-     * @param cardGUI
-     * @param card
      */
     private void setOnMouseClickForBuilding(CardGUI cardGUI, BuildingCard card ) {
-        cardGUI.setOnMouseClicked(event -> {
-            if (!game.isPlayerTurn(localPlayer)) {
+        cardGUI.setOnMouseClicked(_ -> {
+            if (!readOnlyModel.isPlayerTurn(localPlayer)) {
                 showWaitTurnAlert(); // The main GUI handles the alert, not the card!
                 return;
             }
 
-            if (game.isPickOCPhase()) {
+            if (readOnlyModel.isPickOCPhase()) {
                 return; // Not selectable right now
             }
 
@@ -538,21 +527,19 @@ public class GameView {
 
     /**
      * set the action from click on offering card
-     * @param cardGUI
-     * @param card
      */
     private void setOnMouseClickForOffering(CardGUI cardGUI, OfferingCard card) {
-        cardGUI.setOnMouseClicked(event -> {
-            if (!game.isPlayerTurn(localPlayer)) {
+        cardGUI.setOnMouseClicked(_ -> {
+            if (!readOnlyModel.isPlayerTurn(localPlayer)) {
                 showWaitTurnAlert(); // The main GUI handles the alert, not the card!
                 return;
             }
 
-            if (!game.isPickOCPhase()) {
+            if (!readOnlyModel.isPickOCPhase()) {
                 return; // Not selectable right now
             }
 
-            OfferingCard thisCard = game.getOfferingCards().stream()
+            OfferingCard thisCard = readOnlyModel.getOfferingCards().stream()
                     .filter(c -> c.equals(card)) // Put your condition inside filter()
                     .findFirst()
                     .orElse(null);
@@ -568,6 +555,9 @@ public class GameView {
         });
     }
 
+    /**
+     * Displays an alert when the user plays out of its turn
+     */
     private void showWaitTurnAlert(){
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Wait Your Turn");
@@ -577,6 +567,9 @@ public class GameView {
 
     }
 
+    /**
+     * Handles tribes card selection by adding or removing the card to it
+     */
     public void tribesSelected(CharacterCard card) {
         if(tribesSelected.contains(card))
             tribesSelected.remove(card);
@@ -584,6 +577,9 @@ public class GameView {
             tribesSelected.add(card);
     }
 
+    /**
+     * Handles building card selection by adding or removing the card to it
+     */
     public void buildingSelected(BuildingCard card) {
         if(buildingSelected.contains(card))
             buildingSelected.remove(card);
@@ -591,6 +587,9 @@ public class GameView {
             buildingSelected.add(card);
     }
 
+    /**
+     * Handles offering card selection
+     */
     public void offeringSelected(OfferingCard card) {
         offeringSelected = card;
 
@@ -605,7 +604,7 @@ public class GameView {
      */
     private void updateSelectedPlayer(){
         //update selected player
-        selectedPlayer = game.findPlayer(selectedPlayer);
+        selectedPlayer = readOnlyModel.findPlayer(selectedPlayer);
 
         List<CharacterCard> orderedCards = new ArrayList<>(
                 selectedPlayer.getCharacterCards()
@@ -627,8 +626,11 @@ public class GameView {
         }
     }
 
+    /**
+     * Displays the selected players data (excluding cards)
+     */
     private void createPlayerCardLabel(){
-        selectedPlayer = game.findPlayer(selectedPlayer);
+        selectedPlayer = readOnlyModel.findPlayer(selectedPlayer);
         Label name = new Label("Name: " + selectedPlayer.getNickname());
         name.setStyle("""
             -fx-text-fill: white;

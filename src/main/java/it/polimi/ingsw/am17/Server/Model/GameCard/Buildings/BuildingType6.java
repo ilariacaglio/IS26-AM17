@@ -21,7 +21,7 @@ public class BuildingType6 extends BuildingCard {
         super(era, foodCost, bonusPoints);
     }
 
-    private static final Logger logger = Logger.getLogger(BuildingType2.class.getName());
+    private static final Logger logger = Logger.getLogger(BuildingType6.class.getName());
 
     @Override
     public int GetAdditionalFinalPoints(List<CharacterCard> characterCards) {
@@ -32,7 +32,7 @@ public class BuildingType6 extends BuildingCard {
                 .toList();
 
         // return the sum of bonus points ONCE (to get double points, count another time once)
-        int bonusPoints = builders.stream().mapToInt(Builder::getPointBonus).sum();;
+        int bonusPoints = builders.stream().mapToInt(Builder::getPointBonus).sum();
         logger.info("Doubling points from Builders: +" + bonusPoints + "PP");
         return bonusPoints;
     }

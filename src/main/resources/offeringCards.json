@@ -2,7 +2,7 @@
   {
     "minPlayers": 5,
     "orderLetter": "A",
-    "foodBonus": 2,
+    "foodBonus": 3,
     "numCardsUpper": 0,
     "numCardsLower": 0
   },

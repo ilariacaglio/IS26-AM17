@@ -17,14 +17,17 @@ public class PaintingEvent extends EventCard {
     private final Integer pointsMax;
     private final Integer numMax;
 
+    /// needed for Jackson
     public Integer getNumMax() {
         return numMax;
     }
 
+    /// needed for Jackson
     public Integer getPointsLow() {
         return pointsLow;
     }
 
+    /// needed for Jackson
     public Integer getPointsMax() {
         return pointsMax;
     }

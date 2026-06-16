@@ -2,15 +2,12 @@ package it.polimi.ingsw.am17.Client;
 
 import it.polimi.ingsw.am17.Client.RMI.ClientRMI;
 import it.polimi.ingsw.am17.Client.Socket.ClientSocket;
+import it.polimi.ingsw.am17.CommonInterfaces.LauncherUtility;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Launches a client.
@@ -30,20 +27,7 @@ public class ClientLauncher {
         boolean socket = argsList.contains("--socket");
         boolean debug = argsList.contains("--debug");
 
-        // logging configuration
-        Logger rootLogger = Logger.getLogger("");
-        // set default level higher than INFO to disable log printing
-        Level targetLevel = debug ? Level.ALL : Level.WARNING;
-        rootLogger.setLevel(targetLevel);
-        // set console handler logging level
-        for (Handler handler : rootLogger.getHandlers()) {
-            if (handler instanceof ConsoleHandler) {
-                handler.setLevel(Level.ALL);
-            }
-        }
-        if (debug) {
-            Logger.getLogger(ClientLauncher.class.getName()).info("Debug mode enabled: logs will be printed");
-        }
+        LauncherUtility.handleLoggingOption(debug);
 
         String host;
         if (argsList.contains("--host")) {

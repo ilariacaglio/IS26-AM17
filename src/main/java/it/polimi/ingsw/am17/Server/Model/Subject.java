@@ -8,9 +8,6 @@ import it.polimi.ingsw.am17.CommonInterfaces.VirtualClient;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -46,90 +43,109 @@ public abstract class Subject {
      */
     void notifyGameState(GameState era) {
         for (VirtualClient client : clients) {
-                try {
-                    client.updateGameState(era);
-                } catch (Exception e) {
-                    logger.severe("Failed to notify game state: " + e.getMessage());
-                }
+            try {
+                client.updateGameState(era);
+            } catch (Exception e) {
+                logger.severe("Failed to notify game state: " + e.getMessage());
+            }
         }
     }
 
+    /**
+     * Notifies new player queue to clients
+     */
     void notifyPlayerQueue(Queue<Player> orderedPlayer) {
         for (VirtualClient client : clients) {
-                try {
-                    client.updatePlayerQueue(orderedPlayer);
-                } catch (Exception e) {
-                    logger.severe("Failed to notify player queue" + e.getMessage());
-                }
+            try {
+                client.updatePlayerQueue(orderedPlayer);
+            } catch (Exception e) {
+                logger.severe("Failed to notify player queue" + e.getMessage());
+            }
         }
     }
 
+    /**
+     * Notifies that a player has picked an offering card to all the observers
+     */
     void notifyPlayerSelectOfferingCard(Player player, OfferingCard offeringCard){
         for (VirtualClient client : clients) {
-                try {
-                    client.updatePlayerSelectOfferingCard(player, offeringCard);
-                } catch (Exception e) {
-                    logger.severe("Failed to notify offering card selection: " + e.getMessage());
-                }
+            try {
+                client.updatePlayerSelectOfferingCard(player, offeringCard);
+            } catch (Exception e) {
+                logger.severe("Failed to notify offering card selection: " + e.getMessage());
+            }
         }
     }
 
+    /**
+     * Notifies that a player has picked tribe cards to all the observers
+     */
     void notifyPlayerSelectTribesCard(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards){
         for (VirtualClient client : clients) {
-                try {
-                    client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
-                } catch (Exception e) {
-                    logger.severe("Failed to notify tribes card selection: " + e.getMessage());
-                }
+            try {
+                client.updatePlayerSelectTribeCards(player, characterCards, buildingCards);
+            } catch (Exception e) {
+                logger.severe("Failed to notify tribes card selection: " + e.getMessage());
+            }
         }
     }
 
+    /**
+     * Notifies the end of the turn to all the observers
+     */
     void notifyEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         Queue<Player> newQueue = buildQueueWithoutPlayerCards(players);
         for (VirtualClient client : clients) {
-                try {
-                    client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
-                } catch (Exception e) {
-                    logger.severe("Failed to notify end turn: " + e.getMessage());
-                }
+            try {
+                client.updateEndTurn(newQueue, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
+            } catch (Exception e) {
+                logger.severe("Failed to notify end turn: " + e.getMessage());
+            }
         }
     }
 
+    /**
+     * Notifies the start of the game to all the observers
+     */
     void notifyStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                        List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards){
         for (VirtualClient client : clients) {
-                try {
-                    client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
-                } catch (Exception e) {
-                    logger.severe("Failed to notify game start: " + e.getMessage());
-                }
+            try {
+                client.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
+            } catch (Exception e) {
+                logger.severe("Failed to notify game start: " + e.getMessage());
+            }
         }
     }
 
+    /**
+     * Notifies the end of the game to all the observers
+     */
     void notifyEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
         Queue<Player> newQueue = buildQueueWithoutPlayerCards(orderedPlayers);
         for (VirtualClient client : clients) {
-                logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
-                try {
-                    client.updateEndGame(ranking, newQueue);
-
-                } catch (Exception e) {
-                    logger.severe("Failed to notify end game: " + e.getMessage());
-                }
+            logger.info("Calling notifyEndGame on client " + client.getClass().getSimpleName());
+            try {
+                client.updateEndGame(ranking, newQueue);
+            } catch (Exception e) {
+                logger.severe("Failed to notify end game: " + e.getMessage());
+            }
         }
         clients.clear();
     }
 
+    /**
+     * Notifies the game has ended due to the disconnection of a player to all the observers
+     */
     void notifyForceEndGame(String disconnectedPlayer) {
         for (VirtualClient client : clients) {
-                logger.info("Calling notifyForceEndGame on client " + client.getClass().getSimpleName());
-                try {
-                    client.updateForceEndGame(disconnectedPlayer);
-
-                } catch (Exception e) {
-                    logger.severe("Failed to notify end game: " + e.getMessage());
-                }
+            logger.info("Calling notifyForceEndGame on client " + client.getClass().getSimpleName());
+            try {
+                client.updateForceEndGame(disconnectedPlayer);
+            } catch (Exception e) {
+                logger.severe("Failed to notify end game: " + e.getMessage());
+            }
         }
         clients.clear();
     }

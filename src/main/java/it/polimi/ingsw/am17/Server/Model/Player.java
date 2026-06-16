@@ -35,7 +35,7 @@ public class Player implements Serializable {
             @JsonSubTypes.Type(value = Hunter.class, name = "hunter"),
             @JsonSubTypes.Type(value = Builder.class, name = "builder")
     })
-    private List<CharacterCard> characterCards;
+    private final List<CharacterCard> characterCards;
 
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
@@ -58,7 +58,7 @@ public class Player implements Serializable {
             @JsonSubTypes.Type(value = BuildingType13M.class, name = "building13M"),
             @JsonSubTypes.Type(value = BuildingType14.class, name = "building14")
     })
-    private List<BuildingCard> buildingCards;
+    private final List<BuildingCard> buildingCards;
 
     private static final Logger logger = Logger.getLogger(Player.class.getName());
 
@@ -150,10 +150,16 @@ public class Player implements Serializable {
         return buildingCards;
     }
 
+    /**
+     * Adds the passed PP to the player
+     */
     public void addPp(int quantity){
         this.pp+=quantity;
     }
 
+    /**
+     * Adds the passed food to the player
+     */
     public void addFood(int quantity) {
         int newAmount = food + quantity;
         logger.info("Player ["+ this.getNickname() +"] initial food: " + food + ". New quantity: " + quantity + ". New food amount: " + newAmount);
@@ -164,6 +170,9 @@ public class Player implements Serializable {
         logger.info("Food added successfully. ");
     }
 
+    /**
+     * Calculates the players points at the end of the game
+     */
     public void calculateFinalPoints(){
         // add pp of builders
         int pointsBuilders = characterCards.stream()
@@ -209,6 +218,9 @@ public class Player implements Serializable {
         }
     }
 
+    /**
+     * Adds the character card passed as parameter to the players (character) list
+     */
     public void addCharacter(CharacterCard card) {
         //if player has buildingType14 or buildingType10 (and all conditions from building are met add food)
         int foodBonusFromBuildings = 0;
@@ -222,15 +234,18 @@ public class Player implements Serializable {
         characterCards.add(card);
     }
 
+    /**
+     * Adds the building card passed as parameter to the players (building) cards list
+     */
     public void addBuilding(BuildingCard card) {
         buildingCards.add(card);
     }
 
 
     /**
-     * add cards to player (from playerAction)
-     * @param characterCards
-     * @param buildingCards
+     * Add cards to player (from playerAction)
+     * @param characterCards    the character cards picked by the player
+     * @param buildingCards     the building cards picked by the player
      */
     public void addCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
 
@@ -246,7 +261,7 @@ public class Player implements Serializable {
             }
         }
 
-        if(!canBuyBuidings(buildingCards))
+        if(!canBuyBuildings(buildingCards))
             throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD_BUILDINGS);
 
         for (BuildingCard card : buildingCards){
@@ -261,7 +276,10 @@ public class Player implements Serializable {
         }
     }
 
-    public boolean canBuyBuidings(List<BuildingCard> buildingsToBuy)
+    /**
+     * @return true if the player has enough food to buy the buildings in the list passed as parameter, false otherwise
+     */
+    public boolean canBuyBuildings(List<BuildingCard> buildingsToBuy)
     {
         int totalCost = 0;
         for (BuildingCard card : buildingsToBuy){
@@ -271,6 +289,9 @@ public class Player implements Serializable {
         return totalCost <= food;
     }
 
+    /**
+     * @return the calculated food cost of the building card passed as parameter
+     */
     public int calculateBuildingCost(BuildingCard card) {
         //sum of the food discount of every builder card
         int foodDiscount = characterCards.stream()
@@ -282,12 +303,18 @@ public class Player implements Serializable {
         return card.getFoodCost() - foodDiscount;
     }
 
+    /**
+     * @return the number od hunter in the players character cards list
+     */
     private int getNumberOfHunters() {
         return (int) characterCards.stream()
                 .filter(c->c.getCardType().equals(CardType.HUNTER))
                 .count();
     }
 
+    /**
+     * @return true if player has the buildingTypeTwo card, false otherwise
+     */
     public boolean hasBuilding2(){
         for(BuildingCard b : buildingCards){
            if(b.hasOneMoreMove())
@@ -296,6 +323,9 @@ public class Player implements Serializable {
         return false;
     }
 
+    /**
+     * @return the additional turn food bonus given to the player by picking BuildingType11 card
+     */
     public int addFoodToTurnFood()
     {
         // if the player has building type 11 has an additional food point
@@ -353,6 +383,10 @@ public class Player implements Serializable {
        }
    }
 
+    /**
+     * Calculates and adds the total food and PP the player earns due to the hunting event
+     * @param pointEarned   the PP given for each hunter by the event
+     */
    public void solveHuntingEvent(int pointEarned) {
        int totalFood=0;
        int totalPP=0;
@@ -377,6 +411,12 @@ public class Player implements Serializable {
                + totalPP + " points from HuntingEvent.");
    }
 
+    /**
+     * Calculates and adds the PP given to the player by the painting event
+     * @param numMax        the number of artists that allows the player to have the PP bonus
+     * @param pointsMax     the points earned for each artist
+     * @param pointsLow     the points lost if the player doesn't have enough artists
+     */
    public void solvePaintingEvent(int numMax, int pointsMax, int pointsLow){
        //count number of artists
        int numArtist = (int) characterCards.stream()
@@ -407,6 +447,9 @@ public class Player implements Serializable {
                + " food from buildings for PaintingEvent.");
    }
 
+    /**
+     * @return the total star points of the player, given by shamans and buildings
+     */
    public int calculateStarPoints() {
        int starBonus=0;
 
@@ -423,6 +466,9 @@ public class Player implements Serializable {
        return stars + starBonus;
    }
 
+    /**
+     * @return true if the player has rights to BuildingType8 bonus, false otherwise
+     */
    public boolean hasDoubleRitualEventPoints()
    {
        for(BuildingCard c: this.buildingCards){
@@ -432,6 +478,9 @@ public class Player implements Serializable {
        return false;
    }
 
+    /**
+     * @return true if the player has right to the ritual event shield provided by BuildingType12, false otherwise
+     */
    public boolean hasShieldFromRitualEvent(){
         for(BuildingCard c: this.buildingCards){
             if(c.isShieldedFromRitualEvent())
