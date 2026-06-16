@@ -56,7 +56,6 @@ public class GameView {
     }
 
     private void buildUI() {
-        setupWindow();
         root = new VBox(10);
 
         setUpBackground();
@@ -94,14 +93,6 @@ public class GameView {
                 lowerCardsBox, sendButtonBox, playerResourcesBox,
                 playerCardsContainer, spacer, playersButtonBox
         );
-    }
-
-    /**
-     * Expands window to full screen size
-     */
-    private void setupWindow() {
-        Stage stage = (Stage) mainGui.scene.getWindow();
-        stage.setMaximized(true);
     }
 
     /**

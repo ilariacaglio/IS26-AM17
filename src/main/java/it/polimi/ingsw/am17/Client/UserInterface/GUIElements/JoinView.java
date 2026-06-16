@@ -40,6 +40,7 @@ public class JoinView {
         TextField idField = new TextField();
         idField.setPromptText("INSERT GAME ID");
         idField.setPrefWidth(400);
+        idField.setMaxWidth(400);
         idField.setStyle("-fx-font-size: 16px; -fx-alignment: center;");
 
         // Join button
@@ -52,6 +53,8 @@ public class JoinView {
         gameList = new ListView<>();
         gameList.setMinHeight(120);
         gameList.setPrefHeight(120);
+        gameList.setPrefWidth(400);
+        gameList.setMaxWidth(400);
 
         // Listen for user clicks natively
         gameList.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {

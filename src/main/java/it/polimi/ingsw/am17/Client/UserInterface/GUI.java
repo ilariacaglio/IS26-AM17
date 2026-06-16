@@ -23,14 +23,10 @@ import java.util.List;
 /**
  * Starts and manages the JavaFX thread, the application's main stage and
  * scene changes between different screens (e.g. startup, lobby, game board ...).
- * Updates graphical components when a changed is notified by the model.
- * Forwards player actions to the network level using serverAdapter interface.
+ * Updates graphical components when a change is notified by the model.
+ * Forwards player actions to the network level using the serverAdapter interface.
  */
 public class GUI implements UI {
-
-    private final double START_WINDOW_WIDTH = 400;
-    private final double START_WINDOW_HEIGHT = 300;
-
     private final ServerAdapter serverAdapter;
     private ClientModel readOnlyModel;
     private Player localPlayer;
@@ -69,9 +65,10 @@ public class GUI implements UI {
             Stage stage = new Stage();
 
             StartView startView = new StartView(this, null);
-            scene = new Scene(startView.getRoot(), START_WINDOW_WIDTH, START_WINDOW_HEIGHT);
+            scene = new Scene(startView.getRoot());
             stage.setScene(scene);
             stage.setTitle("MESOS");//window name
+            stage.setMaximized(true);
             stage.setOnCloseRequest(_ -> {
                 Platform.exit();
                 System.exit(0);
@@ -103,7 +100,7 @@ public class GUI implements UI {
     }
 
     /**
-     * Display an alert when new era has started
+     * Display an alert when a new era has started
      */
     @Override
     public void updateInterfaceFromGameStateChange(){
@@ -140,7 +137,7 @@ public class GUI implements UI {
     }
 
     /**
-     * Shows an alert when game is ended due to the disconnection of a player or from the server
+     * Shows an alert when the game ends due to the disconnection of a player or from the server
      */
     @Override
     public void updateInterfaceFromForcedEndGame(String disconnectedReason){
@@ -252,7 +249,7 @@ public class GUI implements UI {
     }
 
     /**
-     * set root to the interface to select the number of player when creating a game
+     * set root to the interface to select the number of players when creating a game
      */
     public void showPlayerCountSelection(){
         PlayerCountSelectionView playerCountSelectionView = new PlayerCountSelectionView(this);
@@ -301,7 +298,7 @@ public class GUI implements UI {
 
     /**
      * create and save a local player
-     * @param player player to be set as local player
+     * @param player player to be set as the local player
      */
     public void createLocalPlayer(Player player){
         localPlayer = player;
@@ -345,7 +342,7 @@ public class GUI implements UI {
 
     /**
      * ask the server to create a game
-     * @param numPlayer number of player you want in the game
+     * @param numPlayer number of players you want in the game
      */
     public void createGame(int numPlayer) throws Exception {
         serverAdapter.createGame(localPlayer, numPlayer);
@@ -360,7 +357,7 @@ public class GUI implements UI {
     }
 
     /**
-     * ask the server to pick tribes card
+     * ask the server to pick tribe cards
      * @param characterCards character cards you want to pick
      * @param buildingCards building cards you want to pick
      */
