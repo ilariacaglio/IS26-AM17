@@ -20,7 +20,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -324,6 +323,10 @@ public class GameView {
      * call all other updates
      */
     public void updateGameElements() {
+        this.tribesSelected.clear();
+        this.buildingSelected.clear();
+        this.offeringSelected = null;
+
         // Update turn overlay visibility
         turnOverlay.setVisible(readOnlyModel.isPlayerTurn(localPlayer));
 
@@ -363,9 +366,9 @@ public class GameView {
             // Check if the card still exists in the game model
             // If it is NOT in the tribe row or NOT in the building row, remove it (return true)
             if (cardData.getIsBuilding()) {
-                return !readOnlyModel.getUpperBuildingRow().contains((BuildingCard) cardData);
+                return !readOnlyModel.getUpperBuildingRow().contains(cardData);
             } else {
-                return !readOnlyModel.getUpperTribeRow().contains((CharacterCard) cardData);
+                return !readOnlyModel.getUpperTribeRow().contains(cardData);
             }
         });
 
@@ -376,9 +379,9 @@ public class GameView {
             // Check if the card still exists in the game model
             // If it is NOT in the tribe row or NOT in the building row, remove it (return true)
             if (cardData.getIsBuilding()) {
-                return !readOnlyModel.getLowerBuildingRow().contains((BuildingCard) cardData);
+                return !readOnlyModel.getLowerBuildingRow().contains(cardData);
             } else {
-                return !readOnlyModel.getLowerTribeRow().contains((CharacterCard) cardData);
+                return !readOnlyModel.getLowerTribeRow().contains(cardData);
             }
         });
 
@@ -399,14 +402,16 @@ public class GameView {
                 cardGUI.setVisualSelection(false);
         }
         for(int i=0; i<offeringCardGUI.size(); i++){
-            CardGUI card = offeringCardGUI.get(i);
-            Player p = readOnlyModel.getOfferingCards().get(i).getPlayer();
-            if (p != null) {
-                card.updateTotem(p.getColor().getFxColor());
-                turnCard.removePlayerTotem(p.getColor());
-            } else {
-                // Optional: Reset to default border if no player owns it
-                card.updateTotem(javafx.scene.paint.Color.TRANSPARENT);
+            if (i < readOnlyModel.getOfferingCards().size()) {
+                CardGUI card = offeringCardGUI.get(i);
+                Player p = readOnlyModel.getOfferingCards().get(i).getPlayer();
+                if (p != null) {
+                    card.updateTotem(p.getColor().getFxColor());
+                    turnCard.removePlayerTotem(p.getColor());
+                } else {
+                    // Optional: Reset to default border if no player owns it
+                    card.updateTotem(javafx.scene.paint.Color.TRANSPARENT);
+                }
             }
         }
     }
@@ -498,7 +503,7 @@ public class GameView {
                 // Toggle the visual state
                 cardGUI.setVisualSelection(!cardGUI.isSelected());
 
-                tribesSelected((CharacterCard) card);
+                tribesSelected((CharacterCard) cardGUI.getUserData());
             });
         }
     }
@@ -521,7 +526,7 @@ public class GameView {
             cardGUI.setVisualSelection(!cardGUI.isSelected());
 
             // Handle the game logic
-            buildingSelected(card);
+            buildingSelected((BuildingCard) cardGUI.getUserData());
         });
     }
 
@@ -548,7 +553,7 @@ public class GameView {
                 return;
 
             // Handle the game logic
-            offeringSelected(card);
+            offeringSelected((OfferingCard) cardGUI.getUserData());
 
             // Toggle the visual state
             cardGUI.setVisualSelection(!cardGUI.isSelected());
