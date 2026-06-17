@@ -211,6 +211,7 @@ public class CLI implements UI {
     @Override
     public void updateInterfaceFromEndGame() {
         drawInterface();
+        resetLocalPlayer();
     }
 
     /**
@@ -220,6 +221,7 @@ public class CLI implements UI {
     public void updateInterfaceFromForcedEndGame(String disconnectedReason) {
         String errorMessage = "The game has ended due to disconnection of " + disconnectedReason;
         drawInterface(errorMessage, true);
+        resetLocalPlayer();
     }
 
     /**
@@ -844,6 +846,13 @@ public class CLI implements UI {
      */
     private void resetColors(){
         availableColors = Arrays.stream(Color.values()).toList();
+    }
+
+    /**
+     * Resets local players PP, food and cards
+     */
+    private void resetLocalPlayer(){
+        localPlayer = new Player(localPlayer.getNickname(), localPlayer.getColor());
     }
 
     /**
