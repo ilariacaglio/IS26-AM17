@@ -27,15 +27,13 @@ class PlayerTest {
     }
 
     @AfterEach
-    void tearDown() {
-}
+    void tearDown() {}
 
    @Test
     void initialPPAndFoodShouldBeZero() {
         assertEquals(0, player.getPp());
         assertEquals(0, player.getFood());
-
-}
+    }
 
     @Test
     void addFoodShouldNotGoUnderZero() {
