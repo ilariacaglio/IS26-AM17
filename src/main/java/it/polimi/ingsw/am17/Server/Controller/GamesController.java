@@ -222,6 +222,10 @@ public class GamesController implements ControllerInterface {
         try {
             // get uuid of the game from the client (mapping)
             UUID uuid = gameMapping.get(client);
+            if (uuid == null){
+                logger.info(client + " tried to close an already closed game.");
+                return;
+            }
 
             // get the game object from uuid to call the end game method
             Game game = getGameFromId(uuid);
