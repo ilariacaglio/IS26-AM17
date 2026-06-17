@@ -266,11 +266,7 @@ public class Player implements Serializable {
 
         for (BuildingCard card : buildingCards){
             int cost = calculateBuildingCost(card);
-            try {
-                addFood(-cost);
-            } catch (IllegalStateException e) {
-                throw new InvalidOperationException(ErrorType.INSUFFICIENT_FOOD_BUILDINGS);
-            }
+            addFood(-cost);
             addBuilding(card);
             logger.info("Player " + this.getNickname() + " paid " + cost + " for building: " + card);
         }
