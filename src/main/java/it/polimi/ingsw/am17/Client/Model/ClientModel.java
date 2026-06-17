@@ -451,20 +451,16 @@ public class ClientModel implements ClientModelInterface {
     @Override
     public void updateForcedEndGame(String disconnectedElement) {
         synchronized (this) {
-            // Resets all game rows, offering cards, ranking and player queue
+            // Resets all game rows, offering cards, ranking, player queue and game state
             setOrderedPlayers(new LinkedList<>());
             setOfferingCards(new ArrayList<>());
             setTribeCards(new ArrayList<>(), new ArrayList<>());
             setBuildingCards(new ArrayList<>(), new ArrayList<>());
             setRanking(new ArrayList<>());
+            gameState = GameState.NONE;
         }
 
         userInterface.updateInterfaceFromForcedEndGame(disconnectedElement);
-
-        // reset game state
-        synchronized (this){
-            gameState = GameState.NONE;
-        }
 
         logger.info("Game forcibly closed.");
     }
