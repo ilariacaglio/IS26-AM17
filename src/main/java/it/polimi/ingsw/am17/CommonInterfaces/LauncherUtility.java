@@ -11,9 +11,9 @@ public class LauncherUtility {
         // logging configuration
         Logger rootLogger = Logger.getLogger("");
 
-        // set default level higher than INFO to disable log printing
+        // set default level higher than INFO to disable log printing,
         // we used INFO level to print the majority of messages
-        Level targetLevel = debug ? Level.ALL : Level.WARNING;
+        Level targetLevel = debug ? Level.INFO : Level.WARNING;
         rootLogger.setLevel(targetLevel);
 
         // remove all existing handlers
