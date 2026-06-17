@@ -2,6 +2,7 @@
   <configuration default="false" name="Server" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am17.ServerLauncher" />
     <module name="am17" />
+    <option name="PROGRAM_PARAMETERS" value="--debug" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
