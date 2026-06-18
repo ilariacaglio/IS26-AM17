@@ -17,16 +17,17 @@ import java.util.logging.Logger;
  * Receives requests from the client via a ServerSocket/RMI and forwards it to the model.
  */
 public class GamesController implements ControllerInterface {
+    // Immutable data structure that contains client relations to a game and a player nickname
+    private record ClientSession(UUID gameId, String nickname) {}
+
     private final ConcurrentHashMap<UUID,Game> games;
-    private final ConcurrentHashMap<VirtualClient, UUID> gameMapping;
-    private final ConcurrentHashMap<VirtualClient, String> playerMapping; // string field is for nickname
+    private final ConcurrentHashMap<VirtualClient, ClientSession> clientSessions;
 
     private final static Logger logger = Logger.getLogger(GamesController.class.getName());
 
     public GamesController(){
         games = new ConcurrentHashMap<>();
-        gameMapping = new ConcurrentHashMap<>();
-        playerMapping = new ConcurrentHashMap<>();
+        clientSessions = new ConcurrentHashMap<>();
     }
 
     /**
@@ -70,12 +71,13 @@ public class GamesController implements ControllerInterface {
      * Signs up a client as an observer of a game (model).
      * @param client to be registered
      * @param gameId of the game
+     * @param nickname of the player linked to the client
      */
-    private void signUpAsObserver(VirtualClient client, UUID gameId) {
+    private void signUpAsObserver(VirtualClient client, UUID gameId, String nickname) {
         Game game = getGameFromId(gameId);
 
-        // add client to game mapping
-        gameMapping.put(client, gameId);
+        // add client to mapping
+        clientSessions.put(client, new ClientSession(gameId, nickname));
 
         synchronized (game) {
             game.attach(client);
@@ -85,11 +87,11 @@ public class GamesController implements ControllerInterface {
     /**
      * Removes a client from the game's (model) observer list.
      * @param client to be removed
-     * @param gameId of the game
      */
-    private void removeClientAsObserver(VirtualClient client, UUID gameId) {
-        Game game = getGameFromId(gameId);
-        gameMapping.remove(client);
+    private void removeClientAsObserver(VirtualClient client) {
+        UUID gameIdFromMapping = clientSessions.get(client).gameId();
+        Game game = games.get(gameIdFromMapping);
+        clientSessions.remove(client);
         synchronized (game){
             game.detach(client);
         }
@@ -113,16 +115,15 @@ public class GamesController implements ControllerInterface {
     /**
      * Removes client from observer list  and notifies error to the client
      * @param client                the client that made the join request
-     * @param gameId                the id of the game to be joined
      * @param observerAdded         if true, the client was added to the list as on observer of the game
      */
-    private void rollbackObserverAdded(VirtualClient client, UUID gameId, boolean observerAdded) {
+    private void rollbackObserverAdded(VirtualClient client, boolean observerAdded) {
         // N.B. we need to sign up the client before joining the player
         // so that it's notified from the addPlayer, if something goes wrong,
         // we remove it here.
         if (observerAdded) {
             try {
-                removeClientAsObserver(client, gameId);
+                removeClientAsObserver(client);
             } catch (Exception ex) {
                 logger.warning("Error removing client as observer: " + ex.getMessage());
             }
@@ -183,7 +184,7 @@ public class GamesController implements ControllerInterface {
             Game game = getGameFromId(gameId);
 
             // Sign up client as an observer
-            signUpAsObserver(client, gameId);
+            signUpAsObserver(client, gameId, player.getNickname());
             observerAdded = true;
 
             // Notify gameId to the client
@@ -197,18 +198,15 @@ public class GamesController implements ControllerInterface {
                 }
                 game.addPlayer(player);
             }
-
-            // add player to mapping
-            playerMapping.put(client, player.getNickname());
         } catch (InvalidOperationException e) {
             logger.info("Error joining game: " + e.getErrorType().getMessage());
-            rollbackObserverAdded(client,  gameId, observerAdded);
+            rollbackObserverAdded(client, observerAdded);
             notifyErrorToClient(client, e);
 
         } catch (Exception e) {
             String message = e.getMessage();
             logger.warning("Error joining game: " + message);
-            rollbackObserverAdded(client,  gameId, observerAdded);
+            rollbackObserverAdded(client, observerAdded);
             notifyErrorToClient(client, new InvalidOperationException(message));
         }
     }
@@ -221,35 +219,37 @@ public class GamesController implements ControllerInterface {
     public void closeGame(VirtualClient client) {
         try {
             // get uuid of the game from the client (mapping)
-            UUID uuid = gameMapping.get(client);
-            if (uuid == null){
+            ClientSession session = clientSessions.get(client);
+            if (session == null){
                 logger.info(client + " tried to close an already closed game.");
                 return;
             }
 
+            UUID uuid = session.gameId();
+            String nickname = session.nickname();
+
             // get the game object from uuid to call the end game method
             Game game = getGameFromId(uuid);
 
-            // get the nickname of the player
-            String nickname = playerMapping.get(client);
+            // Estraiamo i client da rimuovere prima di alterarli
+            List<VirtualClient> clientsToRemove = new ArrayList<>();
+            clientSessions.forEach((c, s) -> {
+                if (s.gameId().equals(uuid)) {
+                    clientsToRemove.add(c);
+                }
+            });
 
             synchronized (game) {
                 game.forceEndGame(nickname);
             }
 
             // remove client from the game's observer list
-            removeClientAsObserver(client, uuid);
+            removeClientAsObserver(client);
 
             // remove clients and game from maps
-            List<VirtualClient> clientsToRemove = new ArrayList<>();
-            for (Map.Entry<VirtualClient, UUID> entry : gameMapping.entrySet()) {
-                if (entry.getValue().equals(uuid)) {
-                    clientsToRemove.add(entry.getKey());
-                }
-            }
+            // Usiamo il metodo ripristinato per rimuoverli pulitamente
             for (VirtualClient c : clientsToRemove) {
-                gameMapping.remove(c);
-                playerMapping.remove(c);
+                removeClientAsObserver(c);
             }
 
             // remove game from id map
@@ -277,18 +277,15 @@ public class GamesController implements ControllerInterface {
     @Override
     public void pickOfferingCard(VirtualClient client, Character offeringCardLetter) {
         try {
-            // search for client nickname
-            String nickname = playerMapping.get(client);
-            // search for game id
-            UUID gameId = gameMapping.get(client);
+            ClientSession session = clientSessions.get(client);
 
             // retrieve game
-            Game game = getGameFromId(gameId);
+            Game game = getGameFromId(session.gameId());
 
-            logger.info(nickname + " wants to pick offering card " + offeringCardLetter + " in game " + gameId);
+            logger.info(session.nickname() + " wants to pick offering card " + offeringCardLetter + " in game " + session.gameId());
 
             synchronized (game) {
-                game.selectOfferingCard(nickname, offeringCardLetter);
+                game.selectOfferingCard(session.nickname(), offeringCardLetter);
             }
         }
         catch(InvalidOperationException e) {
@@ -311,16 +308,11 @@ public class GamesController implements ControllerInterface {
     @Override
     public void pickTribeCards(VirtualClient client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try {
-            // search for client nickname
-            String nickname = playerMapping.get(client);
-
-            // search for game id
-            UUID gameId = gameMapping.get(client);
-
-            logger.info(nickname + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + gameId);
-            Game game = getGameFromId(gameId);
+            ClientSession session = clientSessions.get(client);
+            logger.info(session.nickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + session.gameId());
+            Game game = getGameFromId(session.gameId());
             synchronized (game) {
-                game.pickTribeCards(nickname, characterCards, buildingCards);
+                game.pickTribeCards(session.nickname(), characterCards, buildingCards);
             }
         } catch (InvalidOperationException e) {
             logger.warning("Error calling game pickTribeCards: " + e.getMessage());
