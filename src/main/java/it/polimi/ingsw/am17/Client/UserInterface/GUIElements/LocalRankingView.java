@@ -11,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -35,27 +37,18 @@ public class LocalRankingView {
         root = new VBox(20);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
-        //background color
-        root.setStyle("-fx-background-color: #2c3e50;");
+        String encodedCss = Base64.getEncoder().encodeToString(getCustomCSS().getBytes(StandardCharsets.UTF_8));
+        root.getStylesheets().add("data:text/css;base64," + encodedCss);
+        root.getStyleClass().add("ranking-root");
         //title
-        Label rankingTitle = new Label("--- FINAL GAME RANKING ---");
-        rankingTitle.setStyle("""
-            -fx-text-fill: #ecf0f1;
-            -fx-font-size: 30px;
-            -fx-font-weight: bold;
-        """);
+        Label rankingTitle = new Label("FINAL GAME RANKING");
+        rankingTitle.getStyleClass().add("title-label");
         //ranking area
         VBox localRankingArea = new VBox(10);
         localRankingArea.setAlignment(Pos.CENTER);
-        localRankingArea.setMaxWidth(400);
-        localRankingArea.setPadding(new Insets(20));
-        localRankingArea.setStyle("""
-            -fx-background-color: #ecf0f1;
-            -fx-background-radius: 10px;
-            -fx-border-color: #bdc3c7;
-            -fx-border-radius: 10px;
-            -fx-border-width: 2px;
-        """);
+        localRankingArea.setMaxWidth(500);
+        localRankingArea.setPadding(new Insets(30));
+        localRankingArea.getStyleClass().add("ranking-container");
 
         //get players final order
         List<Player> sortedPlayers = game.getOrderedPlayers().stream()
@@ -68,13 +61,20 @@ public class LocalRankingView {
         for (Player player : sortedPlayers) {
 
             Label playerLabel = new Label(rank + "° place: " + player.getNickname() +
-                    " - Points: " + player.getPp());
+                    " | Points: " + player.getPp());
 
-            playerLabel.setStyle("""
-                -fx-font-size: 24px;
-                -fx-font-family: 'Consolas';
-                -fx-text-fill: #2c3e50;
-            """);
+            playerLabel.getStyleClass().add("player-label");
+            // special styles for the podium
+            if (rank == 1) {
+                playerLabel.getStyleClass().add("player-rank-1");
+            } else if (rank == 2) {
+                playerLabel.getStyleClass().add("player-rank-2");
+            } else if (rank == 3) {
+                playerLabel.getStyleClass().add("player-rank-3");
+            } else {
+                playerLabel.getStyleClass().add("player-rank-other");
+            }
+
             //center text within the label
             playerLabel.setMaxWidth(Double.MAX_VALUE);
             playerLabel.setAlignment(Pos.CENTER);
@@ -88,15 +88,79 @@ public class LocalRankingView {
 
         //button to global ranking interface
         Button goToGlobalRanking = new Button("GO TO GLOBAL RANKING");
-        goToGlobalRanking.setStyle("""
-            -fx-font-size: 18px;
-            -fx-font-weight: bold;
-            -fx-padding: 10px 20px;
-        """);
+        goToGlobalRanking.getStyleClass().add("action-button");
 
         goToGlobalRanking.setOnAction(_ -> mainGui.showGlobalInterface());
 
         root.getChildren().addAll(rankingTitle,localRankingArea, goToGlobalRanking);
+    }
+
+    /**
+     * @return the custom CSS for the local ranking view
+     */
+    private String getCustomCSS(){
+        return """
+            .ranking-root {
+                -fx-background-color: linear-gradient(to bottom, #141E30, #243B55);
+            }
+            .title-label {
+                -fx-text-fill: #f4dca6;
+                -fx-font-size: 42px;
+                -fx-font-weight: bold;
+                -fx-font-family: 'Verdana';
+                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 3);
+            }
+            .ranking-container {
+                -fx-background-color: rgba(255, 255, 255, 0.95);
+                -fx-background-radius: 15px;
+                -fx-border-color: #c76b22;
+                -fx-border-radius: 15px;
+                -fx-border-width: 3px;
+                -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 15, 0, 0, 5);
+            }
+            .player-label {
+                -fx-padding: 12px 25px;
+                -fx-background-radius: 8px;
+                -fx-font-size: 22px;
+                -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+                -fx-font-weight: bold;
+            }
+            .player-rank-1 {
+                -fx-background-color: linear-gradient(to right, #FFDF00, #D4AF37);
+                -fx-text-fill: #5c4000;
+            }
+            .player-rank-2 {
+                -fx-background-color: linear-gradient(to right, #E0E0E0, #9E9E9E);
+                -fx-text-fill: #2c3e50;
+            }
+            .player-rank-3 {
+                -fx-background-color: linear-gradient(to right, #CD7F32, #A0522D);
+                -fx-text-fill: #ffffff;
+            }
+            .player-rank-other {
+                -fx-background-color: #ecf0f1;
+                -fx-text-fill: #34495e;
+            }
+            .action-button {
+                -fx-background-color: linear-gradient(to bottom, #c76b22, #8e4713);
+                -fx-text-fill: #f4dca6;
+                -fx-font-size: 20px;
+                -fx-font-weight: bold;
+                -fx-padding: 12px 30px;
+                -fx-background-radius: 25px;
+                -fx-cursor: hand;
+                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+            }
+            .action-button:hover {
+                -fx-background-color: linear-gradient(to bottom, #d97f35, #a3561a);
+                -fx-text-fill: #ffffff;
+            }
+            .action-button:pressed {
+                -fx-background-color: #5c2c16;
+                -fx-translate-y: 2px;
+                -fx-effect: none;
+            }
+            """;
     }
 
     // The main GUI will call this to put it in the Scene
