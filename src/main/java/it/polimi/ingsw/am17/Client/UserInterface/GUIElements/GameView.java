@@ -22,7 +22,9 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -298,13 +300,45 @@ public class GameView {
      */
     private VBox createPersonalCardsBox() {
         playerCardsBox = new HBox(10);
+        playerCardsBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
 
         ScrollPane scrollPane = new ScrollPane(playerCardsBox);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setFitToHeight(true);
         scrollPane.setPannable(true);
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        String inlineScrollBarCss = """
+        .scroll-pane {
+            -fx-background: transparent;
+            -fx-background-color: transparent;
+        }
+        .scroll-pane .scroll-bar:horizontal {
+            -fx-background-color: transparent;
+            -fx-pref-height: 12px;
+        }
+        .scroll-pane .scroll-bar:horizontal .track {
+            -fx-background-color: rgba(255, 255, 255, 0.15);
+            -fx-background-radius: 10px;
+        }
+        .scroll-pane .scroll-bar:horizontal .thumb {
+            -fx-background-color: rgba(199, 107, 34, 0.8);
+            -fx-background-radius: 10px;
+        }
+        .scroll-pane .scroll-bar:horizontal .thumb:hover {
+            -fx-background-color: rgba(244, 220, 166, 0.9);
+        }
+        .scroll-pane .scroll-bar:horizontal .increment-button,
+        .scroll-pane .scroll-bar:horizontal .decrement-button {
+            -fx-opacity: 0;
+            -fx-pref-width: 0;
+            -fx-padding: 0;
+        }
+        """;
+
+        String encodedCss = Base64.getEncoder().encodeToString(inlineScrollBarCss.getBytes(StandardCharsets.UTF_8));
+        scrollPane.getStylesheets().add("data:text/css;base64," + encodedCss);
+        scrollPane.setMinHeight(CardGUI.getCardRectangleHeight() + 40);
 
         updateSelectedPlayer();
 
