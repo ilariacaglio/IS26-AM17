@@ -66,6 +66,21 @@ public class GUI implements UI {
 
             StartView startView = new StartView(this, null);
             scene = new Scene(startView.getRoot());
+
+            // make GUI look the same on Windows and MacOS
+            String osName = System.getProperty("os.name").toLowerCase();
+            String baseStyle = "-fx-font-family: 'Arial', 'Segoe UI', sans-serif; ";if (osName.contains("mac")) {
+                // Su Mac forziamo un font leggermente più piccolo per bilanciare il Retina display
+                baseStyle += "-fx-font-size: 13px;";
+            } else {
+                // Su Windows e Linux manteniamo una misura standard
+                baseStyle += "-fx-font-size: 14px;";
+            }
+
+            // Applichiamo questo stile alla radice dell'intera scena
+            scene.getRoot().setStyle(baseStyle);
+
+
             stage.setScene(scene);
             stage.setTitle("MESOS");//window name
             stage.setMaximized(true);
