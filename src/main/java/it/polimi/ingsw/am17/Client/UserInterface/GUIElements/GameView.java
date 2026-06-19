@@ -11,6 +11,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -95,7 +96,7 @@ public class GameView {
         root.getChildren().addAll(
                 turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox,
                 lowerCardsBox, sendButtonBox, playerResourcesBox,
-                playerCardsContainer, spacer, playersButtonBox
+                playerCardsContainer, playersButtonBox
         );
     }
 
