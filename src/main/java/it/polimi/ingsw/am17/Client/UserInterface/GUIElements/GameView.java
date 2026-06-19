@@ -58,6 +58,7 @@ public class GameView {
 
     private void buildUI() {
         root = new VBox(10);
+        root.setPadding(new javafx.geometry.Insets(10, 10, 40, 10));
 
         setUpBackground();
         createTurnOverlay();
