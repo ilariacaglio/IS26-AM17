@@ -8,6 +8,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.StrokeType;
+import javafx.stage.Screen;
 
 /**
  * Represents a game card inside the game view
@@ -18,11 +19,28 @@ public class CardGUI extends StackPane {
     private ImageView totemView; // Changed from Polygon to ImageView
     private boolean isSelected = false;
 
-    private static final double SCALE = 0.85;
-    private static final double CARD_WIDTH = 90 * SCALE;
-    private static final double CARD_HEIGHT = 130 * SCALE;
-    private static final double RECTANGLE_WIDTH = 100*SCALE;
-    private static final double RECTANGLE_HEIGHT = 140*SCALE;
+    private static final double SCALE;
+    private static final double CARD_WIDTH;
+    private static final double CARD_HEIGHT;
+    private static final double RECTANGLE_WIDTH;
+    private static final double RECTANGLE_HEIGHT;
+
+    // This static block calculates the scale factor based on the screen height
+    // and scales the card dimensions accordingly.
+    // It is executed only once when the game starts.
+    static {
+        // get the screen height
+        double screenHeight = Screen.getPrimary().getBounds().getHeight();
+
+        // Calculate the scale factor based on the screen height
+        SCALE = (screenHeight / 1080);
+
+        // Apply the scale factor to the card dimensions
+        RECTANGLE_WIDTH = 100 * SCALE;
+        RECTANGLE_HEIGHT = 140 * SCALE;
+        CARD_WIDTH = 90 * SCALE;
+        CARD_HEIGHT = 130 * SCALE;
+    }
 
     public CardGUI(String imagePath) {
         createGraphics(imagePath);
