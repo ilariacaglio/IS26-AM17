@@ -60,7 +60,7 @@ public class GameView {
         root = new VBox(ScreenScale.size(10));
         root.setPadding(new javafx.geometry.Insets(ScreenScale.size(10),
                 ScreenScale.size(10), ScreenScale.size(140),
-                ScreenScale.size(10)));
+                ScreenScale.size(40)));
 
         setUpBackground();
         createTurnOverlay();
