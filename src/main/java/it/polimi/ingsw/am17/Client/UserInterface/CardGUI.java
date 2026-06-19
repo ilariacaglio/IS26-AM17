@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
 
+import it.polimi.ingsw.am17.Client.UserInterface.GUIElements.ScreenScale;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
@@ -19,28 +20,10 @@ public class CardGUI extends StackPane {
     private ImageView totemView; // Changed from Polygon to ImageView
     private boolean isSelected = false;
 
-    private static final double SCALE;
-    private static final double CARD_WIDTH;
-    private static final double CARD_HEIGHT;
-    private static final double RECTANGLE_WIDTH;
-    private static final double RECTANGLE_HEIGHT;
-
-    // This static block calculates the scale factor based on the screen height
-    // and scales the card dimensions accordingly.
-    // It is executed only once when the game starts.
-    static {
-        // get the screen height
-        double screenHeight = Screen.getPrimary().getBounds().getHeight();
-
-        // Calculate the scale factor based on the screen height
-        SCALE = (screenHeight / 1080);
-
-        // Apply the scale factor to the card dimensions
-        RECTANGLE_WIDTH = 100 * SCALE;
-        RECTANGLE_HEIGHT = 140 * SCALE;
-        CARD_WIDTH = 90 * SCALE;
-        CARD_HEIGHT = 130 * SCALE;
-    }
+    private static final double CARD_WIDTH = ScreenScale.size(90);
+    private static final double CARD_HEIGHT = ScreenScale.size(130);
+    private static final double RECTANGLE_WIDTH = ScreenScale.size(100);
+    private static final double RECTANGLE_HEIGHT = ScreenScale.size(140);
 
     public CardGUI(String imagePath) {
         createGraphics(imagePath);
@@ -63,11 +46,11 @@ public class CardGUI extends StackPane {
     private void createGraphics(String imagePath) {
 
         border = new Rectangle(RECTANGLE_WIDTH, RECTANGLE_HEIGHT );
-        border.setArcWidth(15);
-        border.setArcHeight(15);
+        border.setArcWidth(ScreenScale.size(15));
+        border.setArcHeight(ScreenScale.size(15));
         border.setFill(Color.WHITE);
         border.setStroke(Color.BLACK);
-        border.setStrokeWidth(1);
+        border.setStrokeWidth(ScreenScale.size(1));
         this.getChildren().add(border);
 
         java.io.InputStream imageStream = getClass().getResourceAsStream(imagePath);
@@ -84,9 +67,9 @@ public class CardGUI extends StackPane {
             this.setMinSize(CARD_WIDTH, CARD_HEIGHT);
             this.setMaxSize(CARD_WIDTH, CARD_HEIGHT);
 
-            Rectangle clip = new Rectangle(90, 130);
-            clip.setArcWidth(12);
-            clip.setArcHeight(12);
+            Rectangle clip = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
+            clip.setArcWidth(ScreenScale.size(12));
+            clip.setArcHeight(ScreenScale.size(12));
             view.setClip(clip);
             this.getChildren().add(view);
         } else {
@@ -96,8 +79,8 @@ public class CardGUI extends StackPane {
         totemView = new ImageView();
 
         // Adjust these sizes to fit your specific PNG
-        totemView.setFitWidth(35);
-        totemView.setFitHeight(35);
+        totemView.setFitWidth(ScreenScale.size(35));
+        totemView.setFitHeight(ScreenScale.size(35));
         totemView.setPreserveRatio(true);
         totemView.setSmooth(true);
         totemView.setVisible(false); // Hidden by default
@@ -116,11 +99,11 @@ public class CardGUI extends StackPane {
         this.isSelected = selected;
         if (isSelected) {
             border.setStroke(Color.LIGHTBLUE);
-            border.setStrokeWidth(4);
+            border.setStrokeWidth(ScreenScale.size(4));
             border.setStrokeType(StrokeType.INSIDE);
         } else {
             border.setStroke(Color.BLACK);
-            border.setStrokeWidth(1);
+            border.setStrokeWidth(ScreenScale.size(1));
             border.setStrokeType(StrokeType.CENTERED);
         }
     }

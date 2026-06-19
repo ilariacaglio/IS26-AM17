@@ -16,19 +16,18 @@ public class TurnCardGUI extends StackPane {
     private final ImageView[] totemSlots; //saves the totem images
     List<it.polimi.ingsw.am17.Server.Model.Color> turnOrderColors;
 
-    private static final double SCALE = 0.85;
-    private static final double CARD_WIDTH = 90*SCALE;
-    private static final double CARD_HEIGHT = 130*SCALE;
+    private static final double CARD_WIDTH = ScreenScale.size(90);
+    private static final double CARD_HEIGHT = ScreenScale.size(130);
 
     public TurnCardGUI(String imagePath, int numSlots) {
         // init of the turn card and totem array
 
-        Rectangle border = new Rectangle(100*SCALE, 140*SCALE);
-        border.setArcWidth(15);
-        border.setArcHeight(15);
+        Rectangle border = new Rectangle(ScreenScale.size(100), ScreenScale.size(140));
+        border.setArcWidth(ScreenScale.size(15));
+        border.setArcHeight(ScreenScale.size(15));
         border.setFill(Color.WHITE);
         border.setStroke(Color.BLACK);
-        border.setStrokeWidth(1);
+        border.setStrokeWidth(ScreenScale.size(1));
         this.getChildren().add(border);
 
         if (imagePath != null) {
@@ -47,9 +46,9 @@ public class TurnCardGUI extends StackPane {
                 this.setMinSize(CARD_WIDTH, CARD_HEIGHT);
                 this.setMaxSize(CARD_WIDTH, CARD_HEIGHT);
 
-                Rectangle clip = new Rectangle(90, 130);
-                clip.setArcWidth(12);
-                clip.setArcHeight(12);
+                Rectangle clip = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
+                clip.setArcWidth(ScreenScale.size(12));
+                clip.setArcHeight(ScreenScale.size(12));
                 view.setClip(clip);
                 this.getChildren().add(view);
             } else {
@@ -64,8 +63,8 @@ public class TurnCardGUI extends StackPane {
 
         for (int i = 0; i < numSlots; i++) {
             totemSlots[i] = new ImageView();
-            totemSlots[i].setFitWidth(35);
-            totemSlots[i].setFitHeight(35);
+            totemSlots[i].setFitWidth(ScreenScale.size(35));
+            totemSlots[i].setFitHeight(ScreenScale.size(35));
             totemSlots[i].setPreserveRatio(true);
             totemSlots[i].setVisible(false);
 
@@ -81,10 +80,13 @@ public class TurnCardGUI extends StackPane {
      */
     private double[] calculateOffsetsFor(int numSlots) {
         return switch (numSlots) {
-            case 2 -> new double[]{-40, -20};
-            case 3 -> new double[]{-40, -20, 0};
-            case 4 -> new double[]{-40, -20, 0, 20};
-            case 5 -> new double[]{-50, -30, -10, 10, 30};
+            case 2 -> new double[]{-ScreenScale.size(40), -ScreenScale.size(20)};
+            case 3 -> new double[]{-ScreenScale.size(40), -ScreenScale.size(20), 0};
+            case 4 -> new double[]{-ScreenScale.size(40), -ScreenScale.size(20), 0,
+                    ScreenScale.size(20)};
+            case 5 -> new double[]{-ScreenScale.size(50), -ScreenScale.size(30),
+                    -ScreenScale.size(10), ScreenScale.size(10),
+                    ScreenScale.size(30)};
             default -> new double[numSlots];
         };
     }

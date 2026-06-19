@@ -34,8 +34,8 @@ public class LocalRankingView {
      * Generates the interface for the final ranking after the end of the game
      */
     private void buildUI() {
-        root = new VBox(20);
-        root.setPadding(new Insets(30));
+        root = new VBox(ScreenScale.size(20));
+        root.setPadding(new Insets(ScreenScale.size(30)));
         root.setAlignment(Pos.CENTER);
         String encodedCss = Base64.getEncoder().encodeToString(getCustomCSS().getBytes(StandardCharsets.UTF_8));
         root.getStylesheets().add("data:text/css;base64," + encodedCss);
@@ -44,10 +44,10 @@ public class LocalRankingView {
         Label rankingTitle = new Label("FINAL GAME RANKING");
         rankingTitle.getStyleClass().add("title-label");
         //ranking area
-        VBox localRankingArea = new VBox(10);
+        VBox localRankingArea = new VBox(ScreenScale.size(10));
         localRankingArea.setAlignment(Pos.CENTER);
-        localRankingArea.setMaxWidth(500);
-        localRankingArea.setPadding(new Insets(30));
+        localRankingArea.setMaxWidth(ScreenScale.size(500));
+        localRankingArea.setPadding(new Insets(ScreenScale.size(30)));
         localRankingArea.getStyleClass().add("ranking-container");
 
         //get players final order
@@ -100,67 +100,81 @@ public class LocalRankingView {
      */
     private String getCustomCSS(){
         return """
-            .ranking-root {
-                -fx-background-color: linear-gradient(to bottom, #141E30, #243B55);
-            }
-            .title-label {
-                -fx-text-fill: #f4dca6;
-                -fx-font-size: 42px;
-                -fx-font-weight: bold;
-                -fx-font-family: 'Verdana';
-                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 3);
-            }
-            .ranking-container {
-                -fx-background-color: rgba(255, 255, 255, 0.95);
-                -fx-background-radius: 15px;
-                -fx-border-color: #c76b22;
-                -fx-border-radius: 15px;
-                -fx-border-width: 3px;
-                -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 15, 0, 0, 5);
-            }
-            .player-label {
-                -fx-padding: 12px 25px;
-                -fx-background-radius: 8px;
-                -fx-font-size: 22px;
-                -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-                -fx-font-weight: bold;
-            }
-            .player-rank-1 {
-                -fx-background-color: linear-gradient(to right, #FFDF00, #D4AF37);
-                -fx-text-fill: #5c4000;
-            }
-            .player-rank-2 {
-                -fx-background-color: linear-gradient(to right, #E0E0E0, #9E9E9E);
-                -fx-text-fill: #2c3e50;
-            }
-            .player-rank-3 {
-                -fx-background-color: linear-gradient(to right, #CD7F32, #A0522D);
-                -fx-text-fill: #ffffff;
-            }
-            .player-rank-other {
-                -fx-background-color: #ecf0f1;
-                -fx-text-fill: #34495e;
-            }
-            .action-button {
-                -fx-background-color: linear-gradient(to bottom, #c76b22, #8e4713);
-                -fx-text-fill: #f4dca6;
-                -fx-font-size: 20px;
-                -fx-font-weight: bold;
-                -fx-padding: 12px 30px;
-                -fx-background-radius: 25px;
-                -fx-cursor: hand;
-                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
-            }
-            .action-button:hover {
-                -fx-background-color: linear-gradient(to bottom, #d97f35, #a3561a);
-                -fx-text-fill: #ffffff;
-            }
-            .action-button:pressed {
-                -fx-background-color: #5c2c16;
-                -fx-translate-y: 2px;
-                -fx-effect: none;
-            }
-            """;
+    .ranking-root {
+        -fx-background-color: linear-gradient(to bottom, #141E30, #243B55);
+    }
+    .title-label {
+        -fx-text-fill: #f4dca6;
+        -fx-font-size: %dpx;
+        -fx-font-weight: bold;
+        -fx-font-family: 'Verdana';
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 3);
+    }
+    .ranking-container {
+        -fx-background-color: rgba(255, 255, 255, 0.95);
+        -fx-background-radius: %dpx;
+        -fx-border-color: #c76b22;
+        -fx-border-radius: %dpx;
+        -fx-border-width: %dpx;
+        -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 15, 0, 0, 5);
+    }
+    .player-label {
+        -fx-padding: %dpx %dpx;
+        -fx-background-radius: %dpx;
+        -fx-font-size: %dpx;
+        -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        -fx-font-weight: bold;
+    }
+    .player-rank-1 {
+        -fx-background-color: linear-gradient(to right, #FFDF00, #D4AF37);
+        -fx-text-fill: #5c4000;
+    }
+    .player-rank-2 {
+        -fx-background-color: linear-gradient(to right, #E0E0E0, #9E9E9E);
+        -fx-text-fill: #2c3e50;
+    }
+    .player-rank-3 {
+        -fx-background-color: linear-gradient(to right, #CD7F32, #A0522D);
+        -fx-text-fill: #ffffff;
+    }
+    .player-rank-other {
+        -fx-background-color: #ecf0f1;
+        -fx-text-fill: #34495e;
+    }
+    .action-button {
+        -fx-background-color: linear-gradient(to bottom, #c76b22, #8e4713);
+        -fx-text-fill: #f4dca6;
+        -fx-font-size: %dpx;
+        -fx-font-weight: bold;
+        -fx-padding: %dpx %dpx;
+        -fx-background-radius: %dpx;
+        -fx-cursor: hand;
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+    }
+    .action-button:hover {
+        -fx-background-color: linear-gradient(to bottom, #d97f35, #a3561a);
+        -fx-text-fill: #ffffff;
+    }
+    .action-button:pressed {
+        -fx-background-color: #5c2c16;
+        -fx-translate-y: %dpx;
+        -fx-effect: none;
+    }
+    """.formatted(
+                ScreenScale.sizeInt(42),
+                ScreenScale.sizeInt(15),
+                ScreenScale.sizeInt(15),
+                ScreenScale.sizeInt(3),
+                ScreenScale.sizeInt(12),
+                ScreenScale.sizeInt(25),
+                ScreenScale.sizeInt(8),
+                ScreenScale.sizeInt(22),
+                ScreenScale.sizeInt(20),
+                ScreenScale.sizeInt(12),
+                ScreenScale.sizeInt(30),
+                ScreenScale.sizeInt(25),
+                ScreenScale.sizeInt(2)
+        );
     }
 
     // The main GUI will call this to put it in the Scene
