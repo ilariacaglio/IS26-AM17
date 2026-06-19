@@ -63,7 +63,7 @@ public class GamesController implements ControllerInterface {
     }
 
     /**
-     * Removea a game from the games map.
+     * Removes a game from the games map.
      * @param id game id
      */
     private void removeGameFromId(UUID id) throws NoSuchElementException {
@@ -184,7 +184,7 @@ public class GamesController implements ControllerInterface {
             synchronized (game) {
                 // check that the game exists before adding the player
                 // this check is necessary because the game can be removed from the map
-                // after the get request at line 189
+                // after the get request at line 174
                 if (!games.containsKey(gameId)) {
                     throw new InvalidOperationException(ErrorType.INVALID_GAME);
                 }
@@ -236,7 +236,7 @@ public class GamesController implements ControllerInterface {
     /**
      * Adds a player to the game with the specified gameId and registers the client as an observer.
      * When needed, it notifies errors to the client.
-     * This method is called by servers and does not contain any joinGame logic.
+     * This method is called by server classes and does not contain any joinGame logic.
      * @param client that makes the request.
      * @param gameId of the game to join.
      * @param player to add to the game.
@@ -286,7 +286,7 @@ public class GamesController implements ControllerInterface {
             synchronized (game) {
                 // check that the game exists before adding the player
                 // this check is necessary because the game can be removed from the map
-                // after the get request at line 273
+                // after the get request at line 280
                 if (!games.containsKey(uuid)) {
                     throw new InvalidOperationException(ErrorType.INVALID_GAME);
                 }
