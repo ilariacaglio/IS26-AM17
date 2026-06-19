@@ -18,19 +18,19 @@ import java.util.logging.Logger;
  */
 public class GamesController implements ControllerInterface {
     // record (immutable data) that contains the link between a gameId and a player nickname
-    private record ClientSession(UUID gameId, String nickname) {}
+    private record PlayerContext(UUID gameId, String nickname) {}
 
-    // hash map that contains all the games (started or in lobby)
+    // hash map that contains clients and links them to a game and a player nickname
+    private final ConcurrentHashMap<VirtualClient, PlayerContext> clientContexts;
+
+    // hash map that contains all the (started or in lobby) games
     private final ConcurrentHashMap<UUID,Game> games;
-
-    // hash map that contains client relations to a game and a player nickname
-    private final ConcurrentHashMap<VirtualClient, ClientSession> clientSessions;
 
     private final static Logger logger = Logger.getLogger(GamesController.class.getName());
 
     public GamesController(){
         games = new ConcurrentHashMap<>();
-        clientSessions = new ConcurrentHashMap<>();
+        clientContexts = new ConcurrentHashMap<>();
     }
 
     /**
@@ -63,7 +63,7 @@ public class GamesController implements ControllerInterface {
     }
 
     /**
-     * remove a game from the games map.
+     * Removea a game from the games map.
      * @param id game id
      */
     private void removeGameFromId(UUID id) throws NoSuchElementException {
@@ -71,15 +71,14 @@ public class GamesController implements ControllerInterface {
     }
 
     /**
-     * Adds the clients data into the session map and signs up the client as an observer of a game (model).
+     * Adds the clients data into the context map and signs up the client as an observer of a game (model).
      * @param client to be registered
      * @param gameId of the game
      * @param nickname of the player linked to the client
      */
-    // todo: check name
-    private void addClientData(VirtualClient client, UUID gameId, String nickname){
+    private void registerClient(VirtualClient client, UUID gameId, String nickname){
         // add client to mapping
-        clientSessions.put(client, new ClientSession(gameId, nickname));
+        clientContexts.put(client, new PlayerContext(gameId, nickname));
         signUpAsObserver(client, gameId);
     }
 
@@ -96,13 +95,13 @@ public class GamesController implements ControllerInterface {
     }
 
     /**
-     * Removes a client from the game's observer list and from the client's session map.
+     * Removes a client from the game's observer list and from the client's context map.
      * @param client to be removed
      */
-    private void removeClientsData(VirtualClient client) {
+    private void unregisterClient(VirtualClient client) {
         removeClientAsObserver(client);
         // remove clients data from mapping
-        clientSessions.remove(client);
+        clientContexts.remove(client);
     }
 
     /**
@@ -110,10 +109,20 @@ public class GamesController implements ControllerInterface {
      * @param client to be removed
      */
     private void removeClientAsObserver(VirtualClient client) {
-        UUID gameIdFromMapping = clientSessions.get(client).gameId();
-        Game game = games.get(gameIdFromMapping);
-        synchronized (game){
-            game.detach(client);
+        PlayerContext context = clientContexts.get(client);
+
+        // if the client is not bound to a game and a player, the game is already closed
+        if (context == null) {
+            // do nothing, return early
+            return;
+        }
+
+        Game game = games.get(context.gameId());
+        // check the game exists before synchronizing
+        if (game != null) {
+            synchronized (game){
+                game.detach(client);
+            }
         }
     }
 
@@ -137,17 +146,54 @@ public class GamesController implements ControllerInterface {
      * @param client                the client that made the join request
      * @param dataAdded             if true, the client was added to the maps and as an observer.
      */
-    // TODO: change this name
-    private void rollbackClientsDataAdded(VirtualClient client, boolean dataAdded) {
+    private void revertClientRegistration(VirtualClient client, boolean dataAdded) {
         // N.B. we need to sign up the client before joining the player
         // so that it's notified from the addPlayer, if something goes wrong,
         // we remove it here.
         if (dataAdded) {
             try {
-                removeClientsData(client);
+                unregisterClient(client);
             } catch (Exception ex) {
                 logger.warning("Error removing client's data: " + ex.getMessage());
             }
+        }
+    }
+
+    /**
+     * Adds a player to the game with the specified gameId and registers the client as an observer.
+     * This is a utility method called by both createGame and joinGame, contains the joinGame logic.
+     * @param client to send the gameId.
+     * @param gameId of the game to join.
+     * @param player to add to the game.
+     */
+    private void handleJoinGame(VirtualClient client, UUID gameId, Player player) throws Exception {
+        // sign if client is added as an observer
+        boolean observerAdded = false;
+        try {
+            // retrieve game
+            Game game = getGameFromId(gameId);
+
+            // Put client in the game's observer list and add the gameId to the client's context
+            registerClient(client, gameId, player.getNickname());
+            observerAdded = true;
+
+            // Notify gameId to the client
+            client.updateGameId(gameId);
+
+            // Add player to the game
+            synchronized (game) {
+                // check that the game exists before adding the player
+                // this check is necessary because the game can be removed from the map
+                // after the get request at line 189
+                if (!games.containsKey(gameId)) {
+                    throw new InvalidOperationException(ErrorType.INVALID_GAME);
+                }
+                game.addPlayer(player);
+            }
+        } catch (Exception e) {
+            revertClientRegistration(client, observerAdded);
+            // re-throw exception to caller to notify the error to the client
+            throw e;
         }
     }
 
@@ -174,7 +220,7 @@ public class GamesController implements ControllerInterface {
             addGame(game);
 
             // add player to the game
-            joinGame(client, id, player);
+            handleJoinGame(client, id, player);
         }
         catch (InvalidOperationException e) {
             logger.info("Error creating game: " + e.getErrorType().getMessage());
@@ -189,48 +235,25 @@ public class GamesController implements ControllerInterface {
 
     /**
      * Adds a player to the game with the specified gameId and registers the client as an observer.
-     * @param client to send the gameId.
+     * When needed, it notifies errors to the client.
+     * This method is called by servers and does not contain any joinGame logic.
+     * @param client that makes the request.
      * @param gameId of the game to join.
      * @param player to add to the game.
      */
-    // TODO: check this
     @Override
     public void joinGame(VirtualClient client, UUID gameId, Player player) {
         logger.info("Client " + client.getClass().getSimpleName() + " wants to join game with id " + gameId + " as player " + player.getNickname());
-
-        // sign if client is added as an observer
-        boolean observerAdded = false;
-
         try {
-            // retrieve game
-            Game game = getGameFromId(gameId);
+            handleJoinGame(client, gameId, player);
 
-            // Put client in the game's observer list and add the gameId to the client's session
-            addClientData(client, gameId, player.getNickname());
-            observerAdded = true;
-
-            // Notify gameId to the client
-            client.updateGameId(gameId);
-
-            // Add player to the game
-            synchronized (game) {
-                // check that the game exists before adding the player
-                // this check is necessary because the game can be removed from the map
-                // after the get request at line 189
-                if (!games.containsKey(gameId)) {
-                    throw new InvalidOperationException(ErrorType.INVALID_GAME);
-                }
-                game.addPlayer(player);
-            }
         } catch (InvalidOperationException e) {
             logger.info("Error joining game: " + e.getErrorType().getMessage());
-            rollbackClientsDataAdded(client, observerAdded);
             notifyErrorToClient(client, e);
 
         } catch (Exception e) {
             String message = e.getMessage();
             logger.warning("Error joining game: " + message);
-            rollbackClientsDataAdded(client, observerAdded);
             notifyErrorToClient(client, new InvalidOperationException(message));
         }
     }
@@ -239,52 +262,56 @@ public class GamesController implements ControllerInterface {
      * Closes a game (also when a player disconnects [unexpectedly]).
      * @param client client generating the request.
      */
-    // TODO: check this
     @Override
     public void closeGame(VirtualClient client) {
         try {
             // get game and player data from the map
-            ClientSession session = clientSessions.get(client);
-            if (session == null){
-                logger.info(client + " tried to close an already closed game.");
+            PlayerContext context = clientContexts.get(client);
+            if (context == null){
+                logger.info("Client " + client.getClass().getSimpleName() + " disconnected without an active context.");
                 return;
             }
 
-            // get game id and player nickname from the session
-            UUID uuid = session.gameId();
-            String nickname = session.nickname();
+            // get game id and player nickname from the context
+            UUID uuid = context.gameId();
+            String nickname = context.nickname();
 
             // get the game object from uuid to call the end game method
             Game game = getGameFromId(uuid);
 
-            // Get all the clients related to the game
-            List<VirtualClient> clientsToRemove = new ArrayList<>();
-            clientSessions.forEach((c, s) -> {
-                if (s.gameId().equals(uuid)) {
-                    clientsToRemove.add(c);
-                }
-            });
+            // remove client's data before calling forceEndGame to avoid network errors when notifying through observer pattern
+            unregisterClient(client);
 
             // close the game
             synchronized (game) {
+                // check that the game exists before adding the player
+                // this check is necessary because the game can be removed from the map
+                // after the get request at line 273
                 if (!games.containsKey(uuid)) {
                     throw new InvalidOperationException(ErrorType.INVALID_GAME);
                 }
                 game.forceEndGame(nickname);
             }
 
+            // Get all the clients related to the game
+            List<VirtualClient> clientsToRemove = clientContexts.entrySet().stream()
+                    .filter(entry -> entry.getValue().gameId().equals(uuid))
+                    .map(Map.Entry::getKey)
+                    .toList();
+
             // remove all the clients from the game's observer list and maps
             for (VirtualClient c : clientsToRemove) {
-                removeClientsData(c);
+                unregisterClient(c);
             }
 
             // remove game from id map
             removeGameFromId(uuid);
         }
         catch (InvalidOperationException e) {
-            logger.warning("Error calling forceEndGame: " +  e.getErrorType().getMessage());
-            // notify error only if game isn't already closed
-            if(!e.getErrorType().equals(ErrorType.INVALID_GAME)){
+            if (e.getErrorType() == ErrorType.INVALID_GAME) {
+                logger.warning("Error calling forceEndGame: game is already closed");
+            } else {
+                logger.warning("Error calling forceEndGame: " + e.getErrorType().getMessage());
                 notifyErrorToClient(client, e);
             }
         }
@@ -303,15 +330,15 @@ public class GamesController implements ControllerInterface {
     @Override
     public void pickOfferingCard(VirtualClient client, Character offeringCardLetter) {
         try {
-            ClientSession session = clientSessions.get(client);
+            PlayerContext context = clientContexts.get(client);
 
             // retrieve game
-            Game game = getGameFromId(session.gameId());
+            Game game = getGameFromId(context.gameId());
 
-            logger.info(session.nickname() + " wants to pick offering card " + offeringCardLetter + " in game " + session.gameId());
+            logger.info(context.nickname() + " wants to pick offering card " + offeringCardLetter + " in game " + context.gameId());
 
             synchronized (game) {
-                game.selectOfferingCard(session.nickname(), offeringCardLetter);
+                game.selectOfferingCard(context.nickname(), offeringCardLetter);
             }
         }
         catch(InvalidOperationException e) {
@@ -334,11 +361,11 @@ public class GamesController implements ControllerInterface {
     @Override
     public void pickTribeCards(VirtualClient client, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         try {
-            ClientSession session = clientSessions.get(client);
-            logger.info(session.nickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + session.gameId());
-            Game game = getGameFromId(session.gameId());
+            PlayerContext context = clientContexts.get(client);
+            logger.info(context.nickname() + " wants to pick tribe cards " + characterCards + " and " + buildingCards + " in game " + context.gameId());
+            Game game = getGameFromId(context.gameId());
             synchronized (game) {
-                game.pickTribeCards(session.nickname(), characterCards, buildingCards);
+                game.pickTribeCards(context.nickname(), characterCards, buildingCards);
             }
         } catch (InvalidOperationException e) {
             logger.warning("Error calling game pickTribeCards: " + e.getMessage());
@@ -354,7 +381,7 @@ public class GamesController implements ControllerInterface {
 
     /**
      * Sends an update to the client with the list of open games.
-     * @param client to send the update.
+     * @param client to send the update to.
      */
     @Override
     public void getGamesList(VirtualClient client) {
