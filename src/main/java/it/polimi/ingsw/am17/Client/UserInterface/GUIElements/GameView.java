@@ -22,7 +22,9 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -156,6 +158,7 @@ public class GameView {
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
+            -fx-effect: dropshadow(gaussian, black, 4, 0.8, 0, 0);
         """);
         HBox localPlayerNameBox = new HBox(10);
         localPlayerNameBox.getChildren().add(localPlayerName);
@@ -265,20 +268,26 @@ public class GameView {
         otherScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
         for(Player p : readOnlyModel.getOrderedPlayers()){
-            Button playerButton = new Button(p.getNickname());
+            Button playerButton = new Button();
             String colorName = p.getColor().name().toLowerCase();
 
+            Label buttonText = new Label(p.getNickname());
+            buttonText.setStyle("""
+                -fx-text-fill: %s;
+                -fx-effect: dropshadow(gaussian, black, 4, 0.4, 0, 0);
+            """.formatted(colorName));
+            playerButton.setGraphic(buttonText);
+
             playerButton.setStyle("""
-                -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%%, #c3cfe2 100%%);
+                -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%, #c3cfe2 100%);
                 -fx-background-radius: 25;
                 -fx-padding: 12px 30px;
                 -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
-                -fx-text-fill: %s;
                 -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
                 -fx-font-weight: bold;
                 -fx-font-size: 18px;
                 -fx-cursor: hand;
-            """.formatted(colorName));
+            """);
 
             playersCardsBox.getChildren().add(playerButton);
             StackPane.setAlignment(playersCardsBox, Pos.BOTTOM_CENTER);
@@ -298,13 +307,45 @@ public class GameView {
      */
     private VBox createPersonalCardsBox() {
         playerCardsBox = new HBox(10);
+        playerCardsBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
 
         ScrollPane scrollPane = new ScrollPane(playerCardsBox);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setFitToHeight(true);
         scrollPane.setPannable(true);
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        String inlineScrollBarCss = """
+        .scroll-pane {
+            -fx-background: transparent;
+            -fx-background-color: transparent;
+        }
+        .scroll-pane .scroll-bar:horizontal {
+            -fx-background-color: transparent;
+            -fx-pref-height: 12px;
+        }
+        .scroll-pane .scroll-bar:horizontal .track {
+            -fx-background-color: rgba(255, 255, 255, 0.15);
+            -fx-background-radius: 10px;
+        }
+        .scroll-pane .scroll-bar:horizontal .thumb {
+            -fx-background-color: rgba(199, 107, 34, 0.8);
+            -fx-background-radius: 10px;
+        }
+        .scroll-pane .scroll-bar:horizontal .thumb:hover {
+            -fx-background-color: rgba(244, 220, 166, 0.9);
+        }
+        .scroll-pane .scroll-bar:horizontal .increment-button,
+        .scroll-pane .scroll-bar:horizontal .decrement-button {
+            -fx-opacity: 0;
+            -fx-pref-width: 0;
+            -fx-padding: 0;
+        }
+        """;
+
+        String encodedCss = Base64.getEncoder().encodeToString(inlineScrollBarCss.getBytes(StandardCharsets.UTF_8));
+        scrollPane.getStylesheets().add("data:text/css;base64," + encodedCss);
+        scrollPane.setMinHeight(CardGUI.getCardRectangleHeight() + 40);
 
         updateSelectedPlayer();
 
@@ -503,7 +544,7 @@ public class GameView {
                 // Toggle the visual state
                 cardGUI.setVisualSelection(!cardGUI.isSelected());
 
-                tribesSelected((CharacterCard) cardGUI.getUserData());
+                tribesSelected((CharacterCard) card);
             });
         }
     }
@@ -511,7 +552,7 @@ public class GameView {
     /**
      * set the action from click on building card
      */
-    private void setOnMouseClickForBuilding(CardGUI cardGUI, BuildingCard card ) {
+    private void setOnMouseClickForBuilding(CardGUI cardGUI, BuildingCard card) {
         cardGUI.setOnMouseClicked(_ -> {
             if (!readOnlyModel.isPlayerTurn(localPlayer)) {
                 showWaitTurnAlert(); // The main GUI handles the alert, not the card!
@@ -526,7 +567,7 @@ public class GameView {
             cardGUI.setVisualSelection(!cardGUI.isSelected());
 
             // Handle the game logic
-            buildingSelected((BuildingCard) cardGUI.getUserData());
+            buildingSelected(card);
         });
     }
 
@@ -553,7 +594,7 @@ public class GameView {
                 return;
 
             // Handle the game logic
-            offeringSelected((OfferingCard) cardGUI.getUserData());
+            offeringSelected(card);
 
             // Toggle the visual state
             cardGUI.setVisualSelection(!cardGUI.isSelected());
@@ -641,18 +682,21 @@ public class GameView {
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
+            -fx-effect: dropshadow(gaussian, black, 4, 0.8, 0, 0);
         """);
         Label food = new Label("Food: " + selectedPlayer.getFood());
         food.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
+            -fx-effect: dropshadow(gaussian, black, 4, 0.8, 0, 0);
         """);
         Label points = new Label("Points: " + selectedPlayer.getPp());
         points.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
             -fx-font-size: 30px;
+            -fx-effect: dropshadow(gaussian, black, 4, 0.8, 0, 0);
         """);
         if(playerResourcesBox != null) {
             playerResourcesBox.getChildren().clear();

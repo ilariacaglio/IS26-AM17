@@ -16,13 +16,14 @@ public class TurnCardGUI extends StackPane {
     private final ImageView[] totemSlots; //saves the totem images
     List<it.polimi.ingsw.am17.Server.Model.Color> turnOrderColors;
 
-    private static final int CARD_WIDTH = 90;
-    private static final int CARD_HEIGHT = 130;
+    private static final double SCALE = 0.85;
+    private static final double CARD_WIDTH = 90*SCALE;
+    private static final double CARD_HEIGHT = 130*SCALE;
 
     public TurnCardGUI(String imagePath, int numSlots) {
         // init of the turn card and totem array
 
-        Rectangle border = new Rectangle(100, 140);
+        Rectangle border = new Rectangle(100*SCALE, 140*SCALE);
         border.setArcWidth(15);
         border.setArcHeight(15);
         border.setFill(Color.WHITE);

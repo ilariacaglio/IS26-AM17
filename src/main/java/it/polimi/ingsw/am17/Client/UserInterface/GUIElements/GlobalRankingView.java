@@ -9,10 +9,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -35,33 +37,25 @@ public class GlobalRankingView {
         root = new VBox(20);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.TOP_CENTER);
-        //background color
-        root.setStyle("-fx-background-color: #2c3e50;");
+        String encodedCss = Base64.getEncoder().encodeToString(getCustomCSS().getBytes(StandardCharsets.UTF_8));
+        root.getStylesheets().add("data:text/css;base64," + encodedCss);
+        root.getStyleClass().add("ranking-root");
         //title
-        Label globalRankingTitle = new Label("\n--- YOUR POSITION IN GLOBAL RANKING ---");
-        globalRankingTitle.setStyle("""
-            -fx-text-fill: #ecf0f1;
-            -fx-font-size: 30px;
-            -fx-font-weight: bold;
-        """);
-        //ranking area
-        TextArea globalRankingArea = new TextArea();
+        Label globalRankingTitle = new Label("GLOBAL RANKING");
+        globalRankingTitle.getStyleClass().add("title-label");
 
-        globalRankingArea.setEditable(false);
-        globalRankingArea.setWrapText(true);
+        // Ranking area container
+        VBox rankingContainer = new VBox(20);
+        rankingContainer.setAlignment(Pos.CENTER);
+        rankingContainer.setMaxWidth(600);
+        rankingContainer.setPadding(new Insets(20));
+        rankingContainer.getStyleClass().add("ranking-container");
 
-        globalRankingArea.setStyle("""
-            -fx-font-size: 18px;
-            -fx-control-inner-background: #f4f4f4;
-            -fx-font-family: 'Consolas';
-        """);
-        //fill ranking
         List<RankingEntry> globalRanking = game.getRanking();
 
-        StringBuilder globalRankingText = new StringBuilder();
-
         if (!globalRanking.isEmpty()) {
-            globalRankingText.append("--- YOUR POSITION IN GLOBAL RANKING ---\n\n");
+
+            // Display local player data
             RankingEntry userEntry = globalRanking.stream()
                     .filter(e -> e.getGameId().equals(game.getGameId())
                             && e.getNickname().equals(localPlayer.getNickname()))
@@ -70,52 +64,168 @@ public class GlobalRankingView {
 
             if (userEntry != null) {
                 int pos = globalRanking.indexOf(userEntry) + 1;
-
-                globalRankingText.append(pos)
-                        .append(")\t")
-                        .append(userEntry.getNickname())
-                        .append("\t")
-                        .append(userEntry.getFinalPoints())
-                        .append("\n\n");
-            } else {
-                globalRankingText.append("Player data not found!\n\n");
+                Label userLabel = new Label("YOUR POSITION: " + pos + "°  |  " + userEntry.getNickname() + "  |  Points: " + userEntry.getFinalPoints());
+                userLabel.getStyleClass().addAll("player-label", "user-highlight");
+                userLabel.setMaxWidth(Double.MAX_VALUE);
+                userLabel.setAlignment(Pos.CENTER);
+                rankingContainer.getChildren().add(userLabel);
             }
 
-            // complete global ranking
-            globalRankingText.append("--- GLOBAL RANKING ---\n");
-            globalRankingText.append("N.\tNICKNAME\t\tSCORE\n");
+            Label separator = new Label("───────────────────────────────────");
+            separator.setStyle("-fx-text-fill: #bdc3c7; -fx-font-weight: bold;");
+            rankingContainer.getChildren().add(separator);
+
+            // Global ranking display
+            VBox listContainer = new VBox(10);
+            listContainer.setAlignment(Pos.TOP_CENTER);
 
             int rank = 1;
-
             for (RankingEntry entry : globalRanking) {
+                Label entryLabel = new Label(rank + "° Place: " + entry.getNickname() + "  |  Points: " + entry.getFinalPoints());
+                entryLabel.getStyleClass().add("player-label");
 
-                globalRankingText.append(rank)
-                        .append(")\t")
-                        .append(entry.getNickname())
-                        .append("\t\t")
-                        .append(entry.getFinalPoints())
-                        .append("\n");
+                // Highlight podium
+                if (rank == 1) entryLabel.getStyleClass().add("player-rank-1");
+                else if (rank == 2) entryLabel.getStyleClass().add("player-rank-2");
+                else if (rank == 3) entryLabel.getStyleClass().add("player-rank-3");
+                else entryLabel.getStyleClass().add("player-rank-other");
+
+                entryLabel.setMaxWidth(Double.MAX_VALUE);
+                entryLabel.setAlignment(Pos.CENTER);
+                listContainer.getChildren().add(entryLabel);
 
                 rank++;
             }
+
+            // Display list inside scroll pane
+            ScrollPane scrollPane = new ScrollPane(listContainer);
+            scrollPane.getStyleClass().add("pretty-scroll-pane");
+            scrollPane.setFitToWidth(true);
+            scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+            VBox.setVgrow(scrollPane, Priority.ALWAYS);
+            rankingContainer.getChildren().add(scrollPane);
+        } else {
+            Label noDataLabel = new Label("No ranking data available yet!");
+            noDataLabel.getStyleClass().add("player-label");
+            rankingContainer.getChildren().add(noDataLabel);
         }
 
-        globalRankingArea.setText(globalRankingText.toString());
-
-        VBox.setVgrow(globalRankingArea, Priority.ALWAYS);
+        VBox.setVgrow(rankingContainer, Priority.ALWAYS);
 
 
         //button to global ranking interface
         Button goBackButton = new Button("GO BACK");
-        goBackButton.setStyle("""
-            -fx-font-size: 18px;
-            -fx-font-weight: bold;
-            -fx-padding: 10px 20px;
-        """);
+        goBackButton.getStyleClass().add("action-button");
         //go back to start page
         goBackButton.setOnAction(_ -> mainGui.showStartInterface());
 
-        root.getChildren().addAll(globalRankingTitle, globalRankingArea, goBackButton);
+        root.getChildren().addAll(globalRankingTitle, rankingContainer, goBackButton);
+    }
+
+    /**
+     * @return the custom CSS for the global ranking view
+     */
+    private String getCustomCSS(){
+        return """
+            .ranking-root {
+                -fx-background-color: linear-gradient(to bottom, #141E30, #243B55);
+            }
+            .title-label {
+                -fx-text-fill: #f4dca6;
+                -fx-font-size: 36px;
+                -fx-font-weight: bold;
+                -fx-font-family: 'Verdana';
+                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 3);
+            }
+            .ranking-container {
+                -fx-background-color: rgba(255, 255, 255, 0.95);
+                -fx-background-radius: 15px;
+                -fx-border-color: #c76b22;
+                -fx-border-radius: 15px;
+                -fx-border-width: 3px;
+                -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 15, 0, 0, 5);
+            }
+            .player-label {
+                -fx-padding: 12px 25px;
+                -fx-background-radius: 8px;
+                -fx-font-size: 20px;
+                -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+                -fx-font-weight: bold;
+            }
+            .player-rank-1 {
+                -fx-background-color: linear-gradient(to right, #FFDF00, #D4AF37);
+                -fx-text-fill: #5c4000;
+            }
+            .player-rank-2 {
+                -fx-background-color: linear-gradient(to right, #E0E0E0, #9E9E9E);
+                -fx-text-fill: #2c3e50;
+            }
+            .player-rank-3 {
+                -fx-background-color: linear-gradient(to right, #CD7F32, #A0522D);
+                -fx-text-fill: #ffffff;
+            }
+            .player-rank-other {
+                -fx-background-color: #ecf0f1;
+                -fx-text-fill: #34495e;
+            }
+            .user-highlight {
+                -fx-background-color: #c76b22;
+                -fx-text-fill: #ffffff;
+                -fx-border-color: #8e4713;
+                -fx-border-width: 2px;
+                -fx-border-radius: 8px;
+                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+            }
+            .action-button {
+                -fx-background-color: linear-gradient(to bottom, #c76b22, #8e4713);
+                -fx-text-fill: #f4dca6;
+                -fx-font-size: 20px;
+                -fx-font-weight: bold;
+                -fx-padding: 12px 30px;
+                -fx-background-radius: 25px;
+                -fx-cursor: hand;
+                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+            }
+            .action-button:hover {
+                -fx-background-color: linear-gradient(to bottom, #d97f35, #a3561a);
+                -fx-text-fill: #ffffff;
+            }
+            .action-button:pressed {
+                -fx-background-color: #5c2c16;
+                -fx-translate-y: 2px;
+                -fx-effect: none;
+            }
+            .pretty-scroll-pane {
+                -fx-background: transparent;
+                -fx-background-color: transparent;
+            }
+            .pretty-scroll-pane .viewport {
+                -fx-background-color: transparent;
+            }
+            .pretty-scroll-pane .scroll-bar:vertical {
+                -fx-background-color: transparent;
+                -fx-pref-width: 12px;
+            }
+            .pretty-scroll-pane .scroll-bar:vertical .track {
+                -fx-background-color: rgba(0, 0, 0, 0.1);
+                -fx-background-radius: 10px;
+            }
+            .pretty-scroll-pane .scroll-bar:vertical .thumb {
+                -fx-background-color: rgba(199, 107, 34, 0.8);
+                -fx-background-radius: 10px;
+            }
+            .pretty-scroll-pane .scroll-bar:vertical .thumb:hover {
+                -fx-background-color: rgba(244, 220, 166, 0.9);
+            }
+            .pretty-scroll-pane .scroll-bar:vertical .increment-button,
+            .pretty-scroll-pane .scroll-bar:vertical .decrement-button {
+                -fx-opacity: 0;
+                -fx-pref-height: 0;
+                -fx-padding: 0;
+            }
+            """;
     }
 
     // The main GUI will call this to put it in the Scene

@@ -18,8 +18,11 @@ public class CardGUI extends StackPane {
     private ImageView totemView; // Changed from Polygon to ImageView
     private boolean isSelected = false;
 
-    private static final int CARD_WIDTH = 90;
-    private static final int CARD_HEIGHT = 130;
+    private static final double SCALE = 0.85;
+    private static final double CARD_WIDTH = 90 * SCALE;
+    private static final double CARD_HEIGHT = 130 * SCALE;
+    private static final double RECTANGLE_WIDTH = 100*SCALE;
+    private static final double RECTANGLE_HEIGHT = 140*SCALE;
 
     public CardGUI(String imagePath) {
         createGraphics(imagePath);
@@ -34,12 +37,14 @@ public class CardGUI extends StackPane {
         return isSelected;
     }
 
+    public static double getCardRectangleHeight() {return RECTANGLE_HEIGHT;}
+
     /**
      * Creates the structure of the card by drawing a rectangle and adding the image (passed as parameter) to it.
      */
     private void createGraphics(String imagePath) {
 
-        border = new Rectangle(100, 140);
+        border = new Rectangle(RECTANGLE_WIDTH, RECTANGLE_HEIGHT );
         border.setArcWidth(15);
         border.setArcHeight(15);
         border.setFill(Color.WHITE);
