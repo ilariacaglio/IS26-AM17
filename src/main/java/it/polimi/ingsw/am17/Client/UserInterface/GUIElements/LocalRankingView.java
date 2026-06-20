@@ -47,6 +47,7 @@ public class LocalRankingView {
         VBox localRankingArea = new VBox(ScreenScale.size(10));
         localRankingArea.setAlignment(Pos.CENTER);
         localRankingArea.setMaxWidth(ScreenScale.size(500));
+        localRankingArea.setMaxHeight(ScreenScale.size(650));
         localRankingArea.setPadding(new Insets(ScreenScale.size(30)));
         localRankingArea.getStyleClass().add("ranking-container");
 
@@ -83,8 +84,6 @@ public class LocalRankingView {
 
             rank++;
         }
-
-        VBox.setVgrow(localRankingArea, Priority.ALWAYS);
 
         //button to global ranking interface
         Button goToGlobalRanking = new Button("GO TO GLOBAL RANKING");

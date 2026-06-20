@@ -48,6 +48,7 @@ public class GlobalRankingView {
         VBox rankingContainer = new VBox(ScreenScale.size(20));
         rankingContainer.setAlignment(Pos.CENTER);
         rankingContainer.setMaxWidth(ScreenScale.size(600));
+        rankingContainer.setMaxHeight(ScreenScale.size(650));
         rankingContainer.setPadding(new Insets(ScreenScale.size(20)));
         rankingContainer.getStyleClass().add("ranking-container");
 

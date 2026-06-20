@@ -334,8 +334,8 @@ public class GameView {
      */
     private VBox createPersonalCardsBox() {
         playerCardsBox = new HBox(ScreenScale.size(10));
-        playerCardsBox.setPadding(new javafx.geometry.Insets(ScreenScale.size(10),
-                ScreenScale.size(10), ScreenScale.size(10),
+        playerCardsBox.setPadding(new javafx.geometry.Insets(ScreenScale.size(5),
+                ScreenScale.size(10), ScreenScale.size(5),
                 ScreenScale.size(10)));
 
         ScrollPane scrollPane = new ScrollPane(playerCardsBox);
@@ -378,7 +378,7 @@ public class GameView {
 
         String encodedCss = Base64.getEncoder().encodeToString(inlineScrollBarCss.getBytes(StandardCharsets.UTF_8));
         scrollPane.getStylesheets().add("data:text/css;base64," + encodedCss);
-        scrollPane.setMinHeight(CardGUI.getCardRectangleHeight() + 40);
+        scrollPane.setMinHeight(CardGUI.getCardRectangleHeight()+ScreenScale.size(5));
 
         updateSelectedPlayer();
 
