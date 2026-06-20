@@ -8,6 +8,8 @@
 | `--portSocket <port>` | Specifies the port dedicated to Socket communication. | `24312`                                     |
 | `--debug`             | Raise logging level.                                  | -                                           |
 
+*Important:* ensure .env file is in the same directory as the .jar file to connect to hosted PostgreSQL database.
+
 ### Example
 `java -jar /path/to/am17-server.jar --host 192.168.1.100 --portRMI 1099 --portSocket 24312 --debug`
 
