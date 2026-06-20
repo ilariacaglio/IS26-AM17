@@ -25,15 +25,15 @@ public class PlayerCountSelectionView {
     }
 
     private void buildUI() {
-        root = new VBox(20);
+        root = new VBox(ScreenScale.size(20));
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #243b55;");
 
         //ask how many player the user wants
         Label title = new Label("NUMBER OF PLAYER?");
-        title.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
+        title.setStyle("-fx-text-fill: white; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(20)));
 
-        HBox options = new HBox(15);
+        HBox options = new HBox(ScreenScale.size(15));
         options.setAlignment(Pos.CENTER);
 
         //create waiting overlay
@@ -59,8 +59,8 @@ public class PlayerCountSelectionView {
      */
     private Button createChoiceButton(int i, VBox waitingOverlay, HBox options) {
         Button btn = new Button(String.valueOf(i));
-        btn.setPrefSize(60, 60);
-        btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: 18px; -fx-font-weight: bold;");
+        btn.setPrefSize(ScreenScale.size(60), ScreenScale.size(60));
+        btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(18)));
 
         btn.setOnAction(_ -> {
             // Prevent spam clicks if they click the active button again
@@ -94,23 +94,23 @@ public class PlayerCountSelectionView {
      */
     public VBox createWaitingOverlay() {
         // create the container
-        VBox overlay = new VBox(10); // 10px spacing
+        VBox overlay = new VBox(ScreenScale.size(10)); // 10px spacing
         overlay.setAlignment(Pos.CENTER);
 
         // Modify Background: Semi-transparent black/grey
         overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
 
         // Add 10 pixels of padding at the top
-        overlay.setPadding(new Insets(10, 0, 0, 0));
+        overlay.setPadding(new Insets(ScreenScale.size(10), 0, 0, 0));
 
         // Add loading circle
         ProgressIndicator progress = new ProgressIndicator();
-        progress.setPrefSize(60, 60);
+        progress.setPrefSize(ScreenScale.size(60), ScreenScale.size(60));
         progress.setStyle("-fx-progress-color: white;");
 
         //add text
         Label text = new Label("Waiting for other players...");
-        text.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        text.setStyle("-fx-text-fill: white; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(18)));
 
         overlay.getChildren().addAll(progress, text);
 

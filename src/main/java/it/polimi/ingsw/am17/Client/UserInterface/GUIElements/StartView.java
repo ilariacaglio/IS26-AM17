@@ -27,16 +27,15 @@ public class StartView {
     }
 
     private void buildUI() {
-        root = new VBox(15);
-        root.setPadding(new Insets(20));
+        root = new VBox(ScreenScale.size(15));
+        root.setPadding(new Insets(ScreenScale.size(20)));
         root.setAlignment(Pos.CENTER);
 
         Label title = new Label("!!!WELCOME TO MESOS!!!");
-        title.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
-
+        title.setStyle("-fx-font-weight: bold; -fx-font-size: %dpx;".formatted(ScreenScale.sizeInt(18)));
         GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(15);
+        grid.setHgap(ScreenScale.size(10));
+        grid.setVgap(ScreenScale.size(15));
         grid.setAlignment(Pos.CENTER);
 
         //ask for nickname
@@ -64,7 +63,7 @@ public class StartView {
 
     private Button getStartButton(TextField nicknameField, ComboBox<Color> colorPicker) {
         Button startButton = new Button("START ADVENTURE");
-        startButton.setPrefWidth(200);
+        startButton.setPrefWidth(ScreenScale.size(200));
 
         startButton.setOnAction(_ -> {
             String name = nicknameField.getText();

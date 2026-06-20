@@ -63,7 +63,6 @@ public class GUI implements UI {
     public void start() {
         Runnable startFX = () -> {
             Stage stage = new Stage();
-
             StartView startView = new StartView(this, null);
             scene = new Scene(startView.getRoot());
             stage.setScene(scene);
