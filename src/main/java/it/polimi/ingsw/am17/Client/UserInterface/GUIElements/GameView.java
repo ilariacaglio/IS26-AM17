@@ -378,7 +378,7 @@ public class GameView {
 
         String encodedCss = Base64.getEncoder().encodeToString(inlineScrollBarCss.getBytes(StandardCharsets.UTF_8));
         scrollPane.getStylesheets().add("data:text/css;base64," + encodedCss);
-        scrollPane.setMinHeight(CardGUI.getCardRectangleHeight() + ScreenScale.size(40));
+        scrollPane.setMinHeight(CardGUI.getCardRectangleHeight() + 40);
 
         updateSelectedPlayer();
 

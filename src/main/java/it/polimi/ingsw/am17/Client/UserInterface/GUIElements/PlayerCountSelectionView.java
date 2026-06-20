@@ -60,7 +60,7 @@ public class PlayerCountSelectionView {
     private Button createChoiceButton(int i, VBox waitingOverlay, HBox options) {
         Button btn = new Button(String.valueOf(i));
         btn.setPrefSize(ScreenScale.size(60), ScreenScale.size(60));
-        btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(16)));
+        btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(18)));
 
         btn.setOnAction(_ -> {
             // Prevent spam clicks if they click the active button again
