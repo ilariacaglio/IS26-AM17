@@ -96,7 +96,7 @@ public class GameView {
         root.getChildren().addAll(
                 turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox,
                 lowerCardsBox, sendButtonBox, playerResourcesBox,
-                playerCardsContainer, playersButtonBox
+                playerCardsContainer,spacer, playersButtonBox
         );
     }
 
