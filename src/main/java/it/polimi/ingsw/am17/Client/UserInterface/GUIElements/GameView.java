@@ -11,6 +11,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.Player;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -57,7 +58,10 @@ public class GameView {
     }
 
     private void buildUI() {
-        root = new VBox(10);
+        root = new VBox(ScreenScale.size(10));
+        root.setPadding(new javafx.geometry.Insets(ScreenScale.size(10),
+                ScreenScale.size(10), ScreenScale.size(40),
+                ScreenScale.size(10)));
 
         setUpBackground();
         createTurnOverlay();
@@ -65,13 +69,13 @@ public class GameView {
         HBox localPlayerNameBox = createLocalPlayerBox();
 
         // Upper cards
-        upperCardsBox = new HBox(10);
+        upperCardsBox = new HBox(ScreenScale.size(10));
         upperCardsBox.setAlignment(Pos.CENTER);
 
         HBox offeringCardBox = createOfferingCardBox();
 
         // Lower cards
-        lowerCardsBox = new HBox(10);
+        lowerCardsBox = new HBox(ScreenScale.size(10));
         lowerCardsBox.setAlignment(Pos.CENTER);
 
         HBox sendButtonBox = createSendButtonBox();
@@ -81,7 +85,7 @@ public class GameView {
         VBox playerCardsContainer = createPersonalCardsBox();
 
         // Player resources
-        playerResourcesBox = new HBox(10);
+        playerResourcesBox = new HBox(ScreenScale.size(10));
         createPlayerCardLabel();
 
         // Create a blank region to act as a spring/spacer
@@ -92,7 +96,7 @@ public class GameView {
         root.getChildren().addAll(
                 turnOverlay, localPlayerNameBox, upperCardsBox, offeringCardBox,
                 lowerCardsBox, sendButtonBox, playerResourcesBox,
-                playerCardsContainer, spacer, playersButtonBox
+                playerCardsContainer,spacer, playersButtonBox
         );
     }
 
@@ -112,7 +116,8 @@ public class GameView {
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
-                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false,
+                        false, true, true)
         );
 
         root.setBackground(new Background(bgImage));
@@ -127,21 +132,28 @@ public class GameView {
 
         Label turnText = new Label("IT'S YOUR TURN!");
         turnText.setStyle("""
-            -fx-background-color: rgba(0, 0, 0, 0.75);
-            -fx-background-radius: 15px;
-            -fx-padding: 5px 40px;
-            -fx-border-color: #c76b22;
-            -fx-border-radius: 15px;
-            -fx-border-width: 2px;
-            -fx-text-fill: #f4dca6;
-            -fx-font-weight: bold;
-            -fx-font-size: 36px;
-            -fx-font-family: 'Verdana';
-            """);
+        -fx-background-color: rgba(0, 0, 0, 0.75);
+        -fx-background-radius: %dpx;
+        -fx-padding: %dpx %dpx;
+        -fx-border-color: #c76b22;
+        -fx-border-radius: %dpx;
+        -fx-border-width: %dpx;
+        -fx-text-fill: #f4dca6;
+        -fx-font-weight: bold;
+        -fx-font-size: %dpx;
+        -fx-font-family: 'Verdana';
+        """.formatted(
+                    ScreenScale.sizeInt(15),
+                    ScreenScale.sizeInt(5),
+                    ScreenScale.sizeInt(40),
+                    ScreenScale.sizeInt(15),
+                    ScreenScale.sizeInt(2),
+                    ScreenScale.sizeInt(36)
+            ));
 
         DropShadow textShadow = new DropShadow();
-        textShadow.setRadius(5.0);
-        textShadow.setOffsetY(3.0);
+        textShadow.setRadius(ScreenScale.size(5));
+        textShadow.setOffsetY(ScreenScale.size(3));
         textShadow.setColor(javafx.scene.paint.Color.color(0, 0, 0, 0.8));
         turnText.setEffect(textShadow);
 
@@ -157,10 +169,13 @@ public class GameView {
         localPlayerName.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
-            -fx-font-size: 30px;
-            -fx-effect: dropshadow(gaussian, black, 4, 0.8, 0, 0);
-        """);
-        HBox localPlayerNameBox = new HBox(10);
+            -fx-font-size: %dpx;
+            -fx-effect: dropshadow(gaussian, black, %d, 0.8, 0, 0);
+        """.formatted(
+                        ScreenScale.sizeInt(30),
+                        ScreenScale.sizeInt(4)
+                ));
+        HBox localPlayerNameBox = new HBox(ScreenScale.size(10));
         localPlayerNameBox.getChildren().add(localPlayerName);
         return localPlayerNameBox;
     }
@@ -169,7 +184,7 @@ public class GameView {
      * Creates box for turn order card and offering cards
      */
     private HBox createOfferingCardBox() {
-        HBox offeringBox = new HBox(20);
+        HBox offeringBox = new HBox(ScreenScale.size(20));
         offeringBox.setAlignment(Pos.CENTER);
 
         // Turn Card first
@@ -201,11 +216,16 @@ public class GameView {
             -fx-background-color: #5c2c16;
             -fx-text-fill: white;
             -fx-font-weight: bold;
-            -fx-background-radius: 5px;
+            -fx-background-radius: %dpx;
             -fx-cursor: hand;
-            -fx-font-size: 16px;
-            -fx-padding: 10px 20px;
-            """);
+            -fx-font-size: %dpx;
+            -fx-padding: %dpx %dpx;
+            """.formatted(
+                        ScreenScale.sizeInt(5),
+                        ScreenScale.sizeInt(16),
+                        ScreenScale.sizeInt(10),
+                        ScreenScale.sizeInt(20)
+                ));
 
         sendButton.setOnAction(_ -> handleSendAction());
 
@@ -255,10 +275,10 @@ public class GameView {
      * Creates the box containing other players' buttons and their cards
      */
     private VBox createOtherPlayersBox() {
-        HBox playersCardsBox = new HBox(10);
+        HBox playersCardsBox = new HBox(ScreenScale.size(10));
         playersCardsBox.setAlignment(Pos.CENTER);
 
-        HBox showCardsBox = new HBox(10);
+        HBox showCardsBox = new HBox(ScreenScale.size(10));
 
         ScrollPane otherScrollPane = new ScrollPane(showCardsBox);
         otherScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -274,20 +294,27 @@ public class GameView {
             Label buttonText = new Label(p.getNickname());
             buttonText.setStyle("""
                 -fx-text-fill: %s;
-                -fx-effect: dropshadow(gaussian, black, 4, 0.4, 0, 0);
-            """.formatted(colorName));
+                -fx-effect: dropshadow(gaussian, black, %d, 0.4, 0, 0);
+                """.formatted(colorName, ScreenScale.sizeInt(4)));
             playerButton.setGraphic(buttonText);
 
             playerButton.setStyle("""
-                -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%, #c3cfe2 100%);
-                -fx-background-radius: 25;
-                -fx-padding: 12px 30px;
-                -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
+                -fx-background-color: linear-gradient(to bottom, #f5f7fa 0%%, #c3cfe2 100%%);
+                -fx-background-radius: %d;
+                -fx-padding: %dpx %dpx;
+                -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), %d, 0, 0, %d);
                 -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
                 -fx-font-weight: bold;
-                -fx-font-size: 18px;
+                -fx-font-size: %dpx;
                 -fx-cursor: hand;
-            """);
+            """.formatted(
+                    ScreenScale.sizeInt(25),
+                    ScreenScale.sizeInt(12),
+                    ScreenScale.sizeInt(30),
+                    ScreenScale.sizeInt(10),
+                    ScreenScale.sizeInt(4),
+                    ScreenScale.sizeInt(18)
+            ));
 
             playersCardsBox.getChildren().add(playerButton);
             StackPane.setAlignment(playersCardsBox, Pos.BOTTOM_CENTER);
@@ -299,15 +326,17 @@ public class GameView {
             });
         }
 
-        return new VBox(10, playersCardsBox, otherScrollPane);
+        return new VBox(ScreenScale.size(10), playersCardsBox, otherScrollPane);
     }
 
     /**
      * Creates the box containing the personal cards of the selected player
      */
     private VBox createPersonalCardsBox() {
-        playerCardsBox = new HBox(10);
-        playerCardsBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+        playerCardsBox = new HBox(ScreenScale.size(10));
+        playerCardsBox.setPadding(new javafx.geometry.Insets(ScreenScale.size(5),
+                ScreenScale.size(10), ScreenScale.size(5),
+                ScreenScale.size(10)));
 
         ScrollPane scrollPane = new ScrollPane(playerCardsBox);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -322,15 +351,15 @@ public class GameView {
         }
         .scroll-pane .scroll-bar:horizontal {
             -fx-background-color: transparent;
-            -fx-pref-height: 12px;
+            -fx-pref-height: %dpx;
         }
         .scroll-pane .scroll-bar:horizontal .track {
             -fx-background-color: rgba(255, 255, 255, 0.15);
-            -fx-background-radius: 10px;
+            -fx-background-radius: %dpx;
         }
         .scroll-pane .scroll-bar:horizontal .thumb {
             -fx-background-color: rgba(199, 107, 34, 0.8);
-            -fx-background-radius: 10px;
+            -fx-background-radius: %dpx;
         }
         .scroll-pane .scroll-bar:horizontal .thumb:hover {
             -fx-background-color: rgba(244, 220, 166, 0.9);
@@ -341,15 +370,19 @@ public class GameView {
             -fx-pref-width: 0;
             -fx-padding: 0;
         }
-        """;
+        """.formatted(
+                ScreenScale.sizeInt(12),
+                ScreenScale.sizeInt(10),
+                ScreenScale.sizeInt(10)
+        );
 
         String encodedCss = Base64.getEncoder().encodeToString(inlineScrollBarCss.getBytes(StandardCharsets.UTF_8));
         scrollPane.getStylesheets().add("data:text/css;base64," + encodedCss);
-        scrollPane.setMinHeight(CardGUI.getCardRectangleHeight() + 40);
+        scrollPane.setMinHeight(CardGUI.getCardRectangleHeight()+ScreenScale.size(5));
 
         updateSelectedPlayer();
 
-        return new VBox(10, scrollPane);
+        return new VBox(ScreenScale.size(10), scrollPane);
     }
 
     /**
@@ -681,23 +714,32 @@ public class GameView {
         name.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
-            -fx-font-size: 30px;
-            -fx-effect: dropshadow(gaussian, black, 4, 0.8, 0, 0);
-        """);
+            -fx-font-size: %dpx;
+            -fx-effect: dropshadow(gaussian, black, %d, 0.8, 0, 0);
+        """.formatted(
+                ScreenScale.sizeInt(30),
+                ScreenScale.sizeInt(4)
+        ));
         Label food = new Label("Food: " + selectedPlayer.getFood());
         food.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
-            -fx-font-size: 30px;
-            -fx-effect: dropshadow(gaussian, black, 4, 0.8, 0, 0);
-        """);
+            -fx-font-size: %dpx;
+            -fx-effect: dropshadow(gaussian, black, %d, 0.8, 0, 0);
+        """.formatted(
+                ScreenScale.sizeInt(30),
+                ScreenScale.sizeInt(4)
+        ));
         Label points = new Label("Points: " + selectedPlayer.getPp());
         points.setStyle("""
             -fx-text-fill: white;
             -fx-font-weight: bold;
-            -fx-font-size: 30px;
-            -fx-effect: dropshadow(gaussian, black, 4, 0.8, 0, 0);
-        """);
+            -fx-font-size: %dpx;
+            -fx-effect: dropshadow(gaussian, black, %d, 0.8, 0, 0);
+        """.formatted(
+                ScreenScale.sizeInt(30),
+                ScreenScale.sizeInt(4)
+        ));
         if(playerResourcesBox != null) {
             playerResourcesBox.getChildren().clear();
             playerResourcesBox.getChildren().addAll(name, points, food);

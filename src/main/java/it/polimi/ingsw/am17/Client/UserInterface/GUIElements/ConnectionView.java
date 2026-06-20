@@ -22,9 +22,9 @@ public class ConnectionView {
     }
 
     private void buildUI() {
-        root = new VBox(25); // Increased spacing between elements
+        root = new VBox(ScreenScale.size(25)); // Increased spacing between elements
         root.setAlignment(Pos.CENTER); // Centered menu
-        root.setPadding(new Insets(50));
+        root.setPadding(new Insets(ScreenScale.size(50)));
 
         //create Buttons
         Button createGameButton = new Button("CREATE GAME");
@@ -34,15 +34,17 @@ public class ConnectionView {
 
         // Apply style and width to all
         for (Button b : new Button[]{createGameButton, joinGameButton, backButton, exitButton}) {
-            b.setPrefWidth(250);
+            b.setPrefWidth(ScreenScale.size(250));
             b.setCursor(Cursor.HAND);
         }
 
         Label title = new Label("MESOS GAME");
-        title.setStyle("-fx-font-size: 30px; -fx-font-family: 'Arial Black';");
+        title.setStyle("-fx-font-size: %dpx; -fx-font-family: 'Arial Black';".formatted(
+                ScreenScale.sizeInt(30)
+        ));
 
         // Use a VBox for the buttons so they stack vertically (standard for game menus)
-        VBox buttonContainer = new VBox(15, createGameButton, joinGameButton, backButton, exitButton);
+        VBox buttonContainer = new VBox(ScreenScale.size(15), createGameButton, joinGameButton, backButton, exitButton);
         buttonContainer.setAlignment(Pos.CENTER);
 
         createGameButton.setOnAction(_ -> mainGui.showPlayerCountSelection());

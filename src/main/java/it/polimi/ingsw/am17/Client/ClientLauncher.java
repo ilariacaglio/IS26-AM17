@@ -14,7 +14,7 @@ import java.util.List;
  * Use --host to specify the host.
  * Use --portRMI to specify the port for RMI.
  * Use --portSocket to specify the port for Socket.
- * Use --debug to raise logging level.
+ * Use --debug to raise the logging level.
  * Use --socket to use socket communication (instead or RMI).
  * Use --gui to launch a graphical interface.
  */
@@ -26,6 +26,10 @@ public class ClientLauncher {
         boolean gui = argsList.contains("--gui");
         boolean socket = argsList.contains("--socket");
         boolean debug = argsList.contains("--debug");
+
+        if (gui) {
+            handleOSGUIScale();
+        }
 
         LauncherUtility.handleLoggingOption(debug);
 
@@ -57,6 +61,23 @@ public class ClientLauncher {
             new ClientSocket(host, portSocket, gui);
         } else {
             new ClientRMI(host,portRMI, "MesosRMIServer", gui);
+        }
+    }
+
+    /**
+     * Sets the scale of the GUI to 100% on Windows.
+     * If the OS is not Windows, this method does nothing.
+     */
+    private static void handleOSGUIScale() {
+        // Retrieve the operating system name
+        String osName = System.getProperty("os.name").toLowerCase();
+
+        // Check if the OS is Windows
+        if (osName.contains("win")) {
+            // Force the Windows UI scale to 1.0 (100%)
+            System.setProperty("glass.win.uiScale", "1.0");
+            // Disable JavaFX High-DPI support to prevent anomalous scaling
+            System.setProperty("prism.allowhidpi", "false");
         }
     }
 }

@@ -28,20 +28,21 @@ public class JoinView {
     }
 
     private void buildUI() {
-        root = new VBox(10);
+        root = new VBox(ScreenScale.size(10));
         root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(15));
+        root.setPadding(new Insets(ScreenScale.size(15)));
         root.setStyle("-fx-background-color: #243b55;");
 
         Label title = new Label("CHOOSE A GAME");
-        title.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
+        title.setStyle("-fx-text-fill: white; -fx-font-size: %dpx; -fx-font-weight: bold;"
+                .formatted(ScreenScale.sizeInt(20)));
 
         // Field to type GameID
         TextField idField = new TextField();
         idField.setPromptText("INSERT GAME ID");
-        idField.setPrefWidth(400);
-        idField.setMaxWidth(400);
-        idField.setStyle("-fx-font-size: 16px; -fx-alignment: center;");
+        idField.setPrefWidth(ScreenScale.size(400));
+        idField.setMaxWidth(ScreenScale.size(400));
+        idField.setStyle("-fx-font-size: %dpx; -fx-alignment: center;".formatted(ScreenScale.sizeInt(16)));
 
         // Join button
         Button joinBtn = getJoinBtn(idField);
@@ -51,21 +52,21 @@ public class JoinView {
 
         // Create a ListView instead of a TextArea
         gameList = new ListView<>();
-        gameList.setMinHeight(120);
-        gameList.setPrefHeight(120);
-        gameList.setPrefWidth(400);
-        gameList.setMaxWidth(400);
+        gameList.setMinHeight(ScreenScale.size(120));
+        gameList.setPrefHeight(ScreenScale.size(120));
+        gameList.setPrefWidth(ScreenScale.size(400));
+        gameList.setMaxWidth(ScreenScale.size(400));
 
         // Listen for user clicks natively
         gameList.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 // Automatically populate the text field when an item is clicked
                 idField.setText(newValue.toString());
-                idField.setStyle("-fx-font-size: 16px; -fx-alignment: center;"); // Reset border in case of previous error
+                idField.setStyle("-fx-font-size: %dpx; -fx-alignment: center;".formatted(ScreenScale.sizeInt(16))); // Reset border in case of previous error
             }
         });
 
-        HBox idGame = new HBox(10);
+        HBox idGame = new HBox(ScreenScale.size(10));
         idGame.getChildren().addAll(idField, joinBtn);
 
         updateGameList(listOfGames);
@@ -75,7 +76,7 @@ public class JoinView {
 
     private Button getJoinBtn(TextField idField) {
         Button joinBtn = new Button("JOIN");
-        joinBtn.setPrefWidth(400);
+        joinBtn.setPrefWidth(ScreenScale.size(400));
         joinBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
 
         joinBtn.setOnAction(_ -> {
@@ -84,7 +85,7 @@ public class JoinView {
                 try {
                     mainGui.joinGame(UUID.fromString(gameID));
                 } catch (Exception ex) {
-                    idField.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+                    idField.setStyle("-fx-border-color: red; -fx-border-width: %dpx;".formatted(ScreenScale.sizeInt(2)));
                     System.err.println("Error in join: " + ex.getMessage());
                 }
             }
