@@ -95,9 +95,10 @@ public class SharedModelLogic {
                                        boolean isPickOCPhase, List<OfferingCard> offeringCards, OfferingCard building2OC) {
         if (!isPickOCPhase){
             // if is pick tribe cards phase
-            // if all the players have picked their cards check if localPlayer has buildingType2
-            if (noPlayerInOfferingCards(offeringCards) && building2OC.getPlayer() != null && playerToCheck.hasBuilding2())
-                return true;
+            // if all the players have picked their cards and buildingType2OC has a player,
+            // that player should have the turn
+            if (noPlayerInOfferingCards(offeringCards) && building2OC.getPlayer() != null)
+                return playerToCheck.hasBuilding2();
         }
 
         // default check
