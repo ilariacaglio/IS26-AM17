@@ -95,8 +95,8 @@ public class SharedModelLogic {
                                        boolean isPickOCPhase, List<OfferingCard> offeringCards, OfferingCard building2OC) {
         if (!isPickOCPhase){
             // if is pick tribe cards phase
-            // if all the players have picked their cards and buildingType2OC has a player,
-            // that player should have the turn
+            // If all standard turns are completed and the Building 2 extra turn is booked,
+            // restrict the current turn exclusively to the Building 2 owner.
             if (noPlayerInOfferingCards(offeringCards) && building2OC.getPlayer() != null)
                 return playerToCheck.hasBuilding2();
         }
@@ -115,15 +115,6 @@ public class SharedModelLogic {
     private static boolean isPlayerHeadInQueue(Player playerToCheck, Queue<Player> orderedPlayers){
         logger.info("Checking if it is " + playerToCheck.getNickname() + "'s turn");
         return playerToCheck.equals(orderedPlayers.peek());
-    }
-
-    /**
-     * @param offeringCards             the offering card list
-     * @param building2OfferingCard     the offering card linked to BuildingType2 extra move
-     * @return true if building effect is used, false otherwise
-     */
-    private static boolean isBuilding2EffectUsed(List<OfferingCard> offeringCards, OfferingCard building2OfferingCard){
-        return noPlayerInOfferingCards(offeringCards) && building2OfferingCard.getPlayer()==null;
     }
 
     /**
