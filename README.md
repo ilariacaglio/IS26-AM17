@@ -1,4 +1,12 @@
-## Server options
+## Prova finale di Ingeneria del Software
+### Funzionalità implementate
+Sono state implementate le seguenti funzionalità:
+- Regole complete;
+- Interfaccia testuale e GUI;
+- Comunicazione di rete con RMI e Socket;
+- 2 funzionalità aggiuntive: classifica partite su DB e partite multiple.
+
+### Server options
 
 | Options               | Description                                           | Default                                     |
 |:----------------------|:------------------------------------------------------|:--------------------------------------------|
@@ -10,12 +18,12 @@
 
 *Important:* ensure .env file is in the same directory as the .jar file to connect to hosted PostgreSQL database.
 
-### Example
+#### Example
 `java -jar /path/to/am17-server.jar --host 192.168.1.100 --portRMI 1099 --portSocket 24312 --debug`
 
 ---
 
-## Client options
+### Client options
 
 | Options               | Description                                    | Default     |
 |:----------------------|:-----------------------------------------------|:------------|
@@ -26,7 +34,7 @@
 | `--gui`               | Launch the Graphical User Interface (GUI).     | CLI         |
 | `--debug`             | Raise logging level.                           | -           |
 
-### Example
+#### Example
 
 Example Client Execution (CLI via RMI):
 `java -jar /path/to/am17-client.jar --host 192.168.1.100`
