@@ -27,20 +27,23 @@ public class StartView {
     }
 
     private void buildUI() {
-        root = new VBox(ScreenScale.size(15));
-        root.setPadding(new Insets(ScreenScale.size(20)));
+        root = new VBox(ScreenScale.size(25));
+        root.setPadding(new Insets(ScreenScale.size(40)));
         root.setAlignment(Pos.CENTER);
 
         Label title = new Label("!!!WELCOME TO MESOS!!!");
-        title.setStyle("-fx-font-weight: bold; -fx-font-size: %dpx;".formatted(ScreenScale.sizeInt(18)));
+        title.setStyle("-fx-font-weight: bold; -fx-font-size: %dpx;".formatted(ScreenScale.sizeInt(36)));
         GridPane grid = new GridPane();
-        grid.setHgap(ScreenScale.size(10));
-        grid.setVgap(ScreenScale.size(15));
+        grid.setHgap(ScreenScale.size(15));
+        grid.setVgap(ScreenScale.size(20));
         grid.setAlignment(Pos.CENTER);
 
         //ask for nickname
         TextField nicknameField = new TextField();
         nicknameField.setPromptText("Enter nickname...");
+        nicknameField.setStyle("-fx-font-size: %dpx;".formatted(ScreenScale.sizeInt(16)));
+        nicknameField.setPrefWidth(ScreenScale.size(200));
+
 
         //ask for color
         ComboBox<Color> colorPicker = new ComboBox<>();
@@ -49,6 +52,8 @@ public class StartView {
         else
             colorPicker.getItems().setAll(availableColors);
         colorPicker.setValue(Color.values()[0]);
+        colorPicker.setStyle("-fx-font-size: %dpx;".formatted(ScreenScale.sizeInt(16)));
+        colorPicker.setPrefWidth(ScreenScale.size(200));
 
         grid.add(new Label("Nickname:"), 0, 0);
         grid.add(nicknameField, 1, 0);
@@ -63,14 +68,22 @@ public class StartView {
 
     private Button getStartButton(TextField nicknameField, ComboBox<Color> colorPicker) {
         Button startButton = new Button("START ADVENTURE");
-        startButton.setPrefWidth(ScreenScale.size(200));
+        startButton.setPrefWidth(ScreenScale.size(250));
+        startButton.setStyle("-fx-font-weight: bold; -fx-font-size: %dpx; -fx-padding: %dpx %dpx;".formatted(
+                ScreenScale.sizeInt(18),
+                ScreenScale.sizeInt(12),
+                ScreenScale.sizeInt(20)
+        ));
 
         startButton.setOnAction(_ -> {
             String name = nicknameField.getText();
             Color color = colorPicker.getValue();
 
             if (name.trim().isEmpty()) {
-                nicknameField.setStyle("-fx-border-color: red;");
+                nicknameField.setStyle("-fx-border-color: red; -fx-border-width: %dpx; -fx-font-size: %dpx;".formatted(
+                        ScreenScale.sizeInt(2),
+                        ScreenScale.sizeInt(16)
+                ));
                 return;
             }
 

@@ -3,6 +3,7 @@ package it.polimi.ingsw.am17.Client.UserInterface.GUIElements;
 import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -25,15 +26,16 @@ public class PlayerCountSelectionView {
     }
 
     private void buildUI() {
-        root = new VBox(ScreenScale.size(20));
+        root = new VBox(ScreenScale.size(30));
         root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(ScreenScale.size(40)));
         root.setStyle("-fx-background-color: #243b55;");
 
         //ask how many player the user wants
         Label title = new Label("NUMBER OF PLAYER?");
-        title.setStyle("-fx-text-fill: white; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(20)));
+        title.setStyle("-fx-text-fill: white; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(36)));
 
-        HBox options = new HBox(ScreenScale.size(15));
+        HBox options = new HBox(ScreenScale.size(20));
         options.setAlignment(Pos.CENTER);
 
         //create waiting overlay
@@ -46,6 +48,13 @@ public class PlayerCountSelectionView {
         }
 
         backButton = new Button("Back");
+        backButton.setPrefWidth(ScreenScale.size(250));
+        backButton.setCursor(Cursor.HAND);
+        backButton.setStyle("-fx-font-weight: bold; -fx-font-size: %dpx; -fx-padding: %dpx %dpx;".formatted(
+                ScreenScale.sizeInt(18),
+                ScreenScale.sizeInt(12),
+                ScreenScale.sizeInt(20)
+        ));
         backButton.setOnAction(_ -> {
             if (isWaiting) return; // Prevent clicking Back if already waiting
             mainGui.showConnectionInterface();
@@ -59,8 +68,8 @@ public class PlayerCountSelectionView {
      */
     private Button createChoiceButton(int i, VBox waitingOverlay, HBox options) {
         Button btn = new Button(String.valueOf(i));
-        btn.setPrefSize(ScreenScale.size(60), ScreenScale.size(60));
-        btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(18)));
+        btn.setPrefSize(ScreenScale.size(80), ScreenScale.size(80));
+        btn.setStyle("-fx-background-color: #ecf0f1; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(24)));
 
         btn.setOnAction(_ -> {
             // Prevent spam clicks if they click the active button again
@@ -94,23 +103,23 @@ public class PlayerCountSelectionView {
      */
     public VBox createWaitingOverlay() {
         // create the container
-        VBox overlay = new VBox(ScreenScale.size(10)); // 10px spacing
+        VBox overlay = new VBox(ScreenScale.size(15)); // 10px spacing
         overlay.setAlignment(Pos.CENTER);
 
         // Modify Background: Semi-transparent black/grey
-        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7); -fx-background-radius: %dpx;".formatted(ScreenScale.sizeInt(15)));
 
         // Add 10 pixels of padding at the top
-        overlay.setPadding(new Insets(ScreenScale.size(10), 0, 0, 0));
+        overlay.setPadding(new Insets(ScreenScale.size(20), 0, 0, 0));
 
         // Add loading circle
         ProgressIndicator progress = new ProgressIndicator();
-        progress.setPrefSize(ScreenScale.size(60), ScreenScale.size(60));
+        progress.setPrefSize(ScreenScale.size(80), ScreenScale.size(80));
         progress.setStyle("-fx-progress-color: white;");
 
         //add text
         Label text = new Label("Waiting for other players...");
-        text.setStyle("-fx-text-fill: white; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(18)));
+        text.setStyle("-fx-text-fill: white; -fx-font-size: %dpx; -fx-font-weight: bold;".formatted(ScreenScale.sizeInt(24)));
 
         overlay.getChildren().addAll(progress, text);
 

@@ -36,11 +36,16 @@ public class ConnectionView {
         for (Button b : new Button[]{createGameButton, joinGameButton, backButton, exitButton}) {
             b.setPrefWidth(ScreenScale.size(250));
             b.setCursor(Cursor.HAND);
+            b.setStyle("-fx-font-weight: bold; -fx-font-size: %dpx; -fx-padding: %dpx %dpx;".formatted(
+                    ScreenScale.sizeInt(18),
+                    ScreenScale.sizeInt(12),
+                    ScreenScale.sizeInt(20)
+            ));
         }
 
         Label title = new Label("MESOS GAME");
-        title.setStyle("-fx-font-size: %dpx; -fx-font-family: 'Arial Black';".formatted(
-                ScreenScale.sizeInt(30)
+        title.setStyle("-fx-font-weight: bold; -fx-font-size: %dpx; -fx-font-family: 'Arial Black';".formatted(
+                ScreenScale.sizeInt(48)
         ));
 
         // Use a VBox for the buttons so they stack vertically (standard for game menus)
