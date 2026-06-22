@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>/home/kerbless/IS26-AM17/src</OriginalElement>
+  <nodes>
+    <node x="5484.502750629284" y="2349.1135791929464">it.polimi.ingsw.am17.Client.UserInterface.UI</node>
+    <node x="3706.4830742591653" y="995.2658283136129">it.polimi.ingsw.am17.CommonInterfaces.VirtualClient</node>
+    <node x="5224.39974710501" y="2313.0035383375716">it.polimi.ingsw.am17.Model.TribesDeckTest</node>
+    <node x="2143.404319784523" y="2105.892640342731">it.polimi.ingsw.am17.Client.Socket.ClientSocket</node>
+    <node x="444.7636148192835" y="2301.093347322162">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType14</node>
+    <node x="8364.683356685917" y="2116.286009473484">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.PlayerCountSelectionView</node>
+    <node x="8176.6223845999275" y="1877.7813147885201">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard</node>
+    <node x="5843.2680252738" y="2748.8011431580508">it.polimi.ingsw.am17.CommonInterfaces.ColorException</node>
+    <node x="4479.069882894259" y="2335.943811515148">it.polimi.ingsw.am17.HelloController</node>
+    <node x="6289.784421517409" y="2374.338996036127">it.polimi.ingsw.am17.Server.Model.GameCard.GameCard</node>
+    <node x="7023.632804246706" y="2463.27665328085">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType8</node>
+    <node x="4742.40050706138" y="2465.244120898614">it.polimi.ingsw.am17.Server.Controller.ControllerInterface</node>
+    <node x="5487.001064578304" y="1628.0060238511546">it.polimi.ingsw.am17.Client.UserInterface.GUI</node>
+    <node x="7332.454219990264" y="1684.7437130115243">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard</node>
+    <node x="4378.466493830838" y="1156.8237701827122">it.polimi.ingsw.am17.Client.Model.ClientModel</node>
+    <node x="6758.434556296539" y="1695.2003728589164">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType1</node>
+    <node x="3259.2480170334024" y="886.2028555487002">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.StartView</node>
+    <node x="8342.06973947113" y="2317.687878902923">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent</node>
+    <node x="5153.469088976268" y="2057.7751688240155">it.polimi.ingsw.am17.Model.GameTest</node>
+    <node x="1267.5448514076597" y="1891.3001226919491">it.polimi.ingsw.am17.Model.GameCard.BuildingCardTest</node>
+    <node x="2347.7683439382527" y="2643.369229592923">it.polimi.ingsw.am17.Model.GameCard.BuildingType4Test</node>
+    <node x="7263.93585699869" y="1919.88979152687">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType2</node>
+    <node x="1021.8521913666598" y="2490.7743396174255">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType9</node>
+    <node x="6667.504855742763" y="2294.5305369951843">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType4</node>
+    <node x="8117.306975296717" y="2572.8076492533337">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Hunter</node>
+    <node x="8682.856022793392" y="2308.47200436083">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.PaintingEvent</node>
+    <node x="6531.529581576576" y="2703.9268187829616">it.polimi.ingsw.am17.CommonInterfaces.LauncherUtility</node>
+    <node x="4705.708928892121" y="781.49519315333">it.polimi.ingsw.am17.Server.RMI.VirtualClientRMI</node>
+    <node x="3138.805292664644" y="1795.1256132469755">it.polimi.ingsw.am17.Server.Model.Decks.TribesDeck</node>
+    <node x="405.9768077904562" y="1812.4515975617835">it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI</node>
+    <node x="5252.656980420668" y="2529.785241326941">it.polimi.ingsw.am17.Model.GameCard.RitualEventTest</node>
+    <node x="7171.313946334476" y="2631.7928457860135">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.InventorIconType</node>
+    <node x="4884.289314465277" y="2223.5227822450643">it.polimi.ingsw.am17.CommonInterfaces.ErrorType</node>
+    <node x="3877.1693097030006" y="1767.5168151188172">it.polimi.ingsw.am17.Client.ServerAdapter</node>
+    <node x="1888.1604963314699" y="2120.600281202935">it.polimi.ingsw.am17.Model.GameCard.BuildingType6Test</node>
+    <node x="5428.761351504284" y="1043.7790279277601">it.polimi.ingsw.am17.Client.RMI.ClientRMI</node>
+    <node x="4050.431062490789" y="1348.0942400397967">it.polimi.ingsw.am17.Server.Model.Decks.BuildingDeck</node>
+    <node x="2908.520132976332" y="2207.08222480873">it.polimi.ingsw.am17.HelloApplication</node>
+    <node x="6223.374274703926" y="1800.3164507186434">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard</node>
+    <node x="3025.532081216742" y="2333.6921852318887">it.polimi.ingsw.am17.Client.Model.ClientModelInterface</node>
+    <node x="1634.0475297527782" y="2009.0379865402947">it.polimi.ingsw.am17.Model.DatabasePingTest</node>
+    <node x="2550.0643963751527" y="538.7046514520266">it.polimi.ingsw.am17.Server.Model.GameState</node>
+    <node x="2666.0669205371005" y="2337.20775715517">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.TurnCardGUI</node>
+    <node x="4255.630088552192" y="988.5708797115946">it.polimi.ingsw.am17.Server.Model.Color</node>
+    <node x="7552.473403498053" y="1900.134677064507">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard</node>
+    <node x="7554.042852779839" y="2078.246822155469">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder</node>
+    <node x="7857.018327302566" y="1997.8719806843171">it.polimi.ingsw.am17.Model.GameCard.BuildingType13MTest</node>
+    <node x="4952.782753504878" y="2711.928295368715">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Inventor</node>
+    <node x="6012.137923714937" y="2535.184535275788">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType10</node>
+    <node x="2254.005530979459" y="1298.3895022082306">it.polimi.ingsw.am17.Server.Model.Subject</node>
+    <node x="5331.4581537631975" y="2769.5967009708647">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType7</node>
+    <node x="3515.716557436767" y="1378.250788485088">it.polimi.ingsw.am17.Server.Socket.VirtualClientSocket</node>
+    <node x="8441.06242876113" y="2606.5685866755543">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.GlobalRankingView</node>
+    <node x="3271.3113803228403" y="1244.7993147880347">it.polimi.ingsw.am17.Model.PlayerTest</node>
+    <node x="1249.7300500071635" y="2323.58052608914">it.polimi.ingsw.am17.Model.GameCard.BuildingType14Test</node>
+    <node x="3480.744052847361" y="1790.4093284617682">it.polimi.ingsw.am17.Client.ClientLauncher</node>
+    <node x="2693.4104995101807" y="2744.380028413576">it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard</node>
+    <node x="1901.2624914665716" y="1777.647922755626">it.polimi.ingsw.am17.Server.Utility.RankingEntry</node>
+    <node x="1974.9162963183965" y="309.4638281029695">it.polimi.ingsw.am17.Server.Model.Game</node>
+    <node x="4594.703569816698" y="2703.3692204913">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Shaman</node>
+    <node x="3156.652266462233" y="2133.2508791602977">it.polimi.ingsw.am17.Model.BuildingDeckTest</node>
+    <node x="6546.84363167227" y="2511.771610042473">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType5</node>
+    <node x="8559.694582793396" y="1858.3333104726219">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.HuntingEvent</node>
+    <node x="1110.8055457036526" y="2108.076448214984">it.polimi.ingsw.am17.ServerLauncher</node>
+    <node x="1889.826207196903" y="2643.0443784250488">it.polimi.ingsw.am17.Server.Utility.DatabaseManager</node>
+    <node x="7087.797275188578" y="2179.465146324029">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType11</node>
+    <node x="4065.4110590324385" y="2523.5698879001807">it.polimi.ingsw.am17.Server.Controller.GamesController</node>
+    <node x="8076.399658235255" y="2320.857640597465">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Artist</node>
+    <node x="802.5009926567534" y="2114.877652038481">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.LocalRankingView</node>
+    <node x="4901.629984534928" y="1409.5504569408913">it.polimi.ingsw.am17.Server.RMI.ClientRMIWrapper</node>
+    <node x="2784.746845217378" y="798.9762916773207">it.polimi.ingsw.am17.CommonInterfaces.Message</node>
+    <node x="7815.1730970861945" y="2316.2343117283053">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Binder</node>
+    <node x="2365.4357769048643" y="1873.2580633424227">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType</node>
+    <node x="6196.305022019343" y="2831.036990902233">it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException</node>
+    <node x="6600.293950037837" y="2828.685002219741">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType3M</node>
+    <node x="1839.5073889551472" y="2322.2549172099602">it.polimi.ingsw.am17.Model.GameCard.BuildingType3MTest</node>
+    <node x="6870.246671209519" y="2680.7713039038113">it.polimi.ingsw.am17.Server.Socket.ServerSocketMultiplexer</node>
+    <node x="7780.705834910896" y="1640.5236251457993">it.polimi.ingsw.am17.Client.Socket.VirtualServerSocket</node>
+    <node x="-112.50788268399992" y="2247.657374695572">it.polimi.ingsw.am17.Server.RMI.ServerRMI</node>
+    <node x="2843.6240890017707" y="-13.328153241759765">it.polimi.ingsw.am17.Server.Model.Player</node>
+    <node x="3933.937689030693" y="2226.8217198284356">it.polimi.ingsw.am17.CommonInterfaces.VirtualServer</node>
+    <node x="5049.155049425372" y="2988.5316331017048">it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic</node>
+    <node x="3196.2637589311494" y="1509.3685228626723">it.polimi.ingsw.am17.Client.UserInterface.CardGUI</node>
+    <node x="5923.891080177011" y="2985.991963921946">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType6</node>
+    <node x="1568.5571055266912" y="1892.6670944670188">it.polimi.ingsw.am17.Model.GameCard.BuildingType5Test</node>
+    <node x="1457.6813364558825" y="2134.7940143860756">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType12</node>
+    <node x="5966.576218988558" y="355.3511801412542">it.polimi.ingsw.am17.Client.UserInterface.CLI</node>
+    <node x="167.49157860120795" y="2090.8612992976527">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.ConnectionView</node>
+    <node x="2656.5329742527983" y="1795.42521160908">it.polimi.ingsw.am17.Server.Utility.CardParser</node>
+    <node x="1378.0373985733509" y="2015.1504906125751">it.polimi.ingsw.am17.Model.GameCard.BuildingType7Test</node>
+    <node x="984.7005198914094" y="2345.6375753342227">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.ScreenScale</node>
+    <node x="3785.0870879404843" y="2548.9387000541115">it.polimi.ingsw.am17.Model.GameCard.BuildingType10Test</node>
+    <node x="3424.985146779685" y="2010.0002135775603">it.polimi.ingsw.am17.Server.Socket.ServerSocketSingle</node>
+    <node x="-126.91306644217889" y="2070.597968913996">it.polimi.ingsw.am17.CommonInterfaces.MessageType</node>
+    <node x="2444.9390351043903" y="1038.6319135940498">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.JoinView</node>
+    <node x="8028.323888180248" y="2086.7623533541773">it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.FoodEvent</node>
+    <node x="1764.7255445979804" y="1053.9172065510159">it.polimi.ingsw.am17.Client.UserInterface.GUIElements.GameView</node>
+    <node x="6809.932235079872" y="1925.7678795866857">it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType13M</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="it.polimi.ingsw.am17.Client.Model.ClientModel" target="it.polimi.ingsw.am17.Client.Model.ClientModelInterface" relationship="REALIZATION">
+      <point x="-143.39661093657878" y="502.5" />
+      <point x="4461.569882894259" y="2479.6921852318887" />
+      <point x="226.49999999999977" y="0.0" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.RMI.ClientRMIWrapper" target="it.polimi.ingsw.am17.CommonInterfaces.VirtualClient" relationship="REALIZATION">
+      <point x="1.546507201055647E-5" y="-169.0004569408913" />
+      <point x="5128.13" y="1139.324" />
+      <point x="4263.13" y="1139.324" />
+      <point x="4263.13" y="1318.0" />
+      <point x="3932.983" y="1318.0" />
+      <point x="-7.425916510328534E-5" y="146.0001716863871" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.HuntingEvent" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard" relationship="GENERALIZATION">
+      <point x="6.488417206604936" y="76.99968952737814" />
+      <point x="8704.183" y="2278.0" />
+      <point x="8321.824" y="2278.0" />
+      <point x="7.201615400072114" y="42.49968521147986" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard" relationship="GENERALIZATION">
+      <point x="-4.0349805294681573E-4" y="-53.99967706450704" />
+      <point x="7649.473" y="1870.0" />
+      <point x="7457.5" y="1870.0" />
+      <point x="23.04578000973561" y="77.00028698847564" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Controller.GamesController" target="it.polimi.ingsw.am17.Server.Controller.ControllerInterface" relationship="REALIZATION">
+      <point x="224.0" y="-150.32576700156687" />
+      <point x="-224.0" y="0.0" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard" relationship="GENERALIZATION">
+      <point x="-138.0003845999272" y="-3.147885201428835E-4" />
+      <point x="7795.0" y="1920.281" />
+      <point x="7795.0" y="1870.0" />
+      <point x="7457.5" y="1870.0" />
+      <point x="23.04578000973561" y="77.00028698847564" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Client.Socket.ClientSocket" target="it.polimi.ingsw.am17.Client.ServerAdapter" relationship="REALIZATION">
+      <point x="-21.968319784522805" y="-237.99964034273074" />
+      <point x="2347.936" y="1763.0" />
+      <point x="3702.244" y="1763.0" />
+      <point x="3702.244" y="1856.017" />
+      <point x="-220.00030970300077" y="1.8488118277559806E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Artist" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard" relationship="GENERALIZATION">
+      <point x="-69.09265823525493" y="31.000359402534855" />
+      <point x="8099.807" y="2798.0" />
+      <point x="7795.0" y="2798.0" />
+      <point x="7795.0" y="1954.135" />
+      <point x="96.99959650194705" y="3.2293549296014135E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Model.GameCard.BuildingType3MTest" target="it.polimi.ingsw.am17.Model.GameCard.BuildingCardTest" relationship="GENERALIZATION">
+      <point x="-3.8895514717296464E-4" y="-13.999917209960245" />
+      <point x="1944.507" y="2283.0" />
+      <point x="1844.548" y="2283.0" />
+      <point x="1844.548" y="1965.0" />
+      <point x="1359.045" y="1965.0" />
+      <point x="1.4859234030240032E-4" y="13.999877308050884" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.CommonInterfaces.ColorException" target="it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException" relationship="GENERALIZATION">
+      <point x="0.0" y="31.0" />
+      <point x="5969.2680252738" y="2873.536990902233" />
+      <point x="-127.0" y="0.0" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Client.RMI.ClientRMI" target="it.polimi.ingsw.am17.Server.RMI.VirtualClientRMI" relationship="REALIZATION">
+      <point x="-226.5" y="-230.5" />
+      <point x="226.5" y="112.28383477443015" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType1" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="-145.5025562965393" y="53.99962714108365" />
+      <point x="6792.432" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType2" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="16.861143001309756" y="54.00020847312979" />
+      <point x="7393.297" y="2433.0" />
+      <point x="6509.0" y="2433.0" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType4" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="1.442572374799056E-4" y="54.00046300481563" />
+      <point x="6847.005" y="2433.0" />
+      <point x="6509.0" y="2433.0" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType5" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="3.68327730029705E-4" y="-53.99961004247302" />
+      <point x="6753.844" y="2486.0" />
+      <point x="6509.0" y="2486.0" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Shaman" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard" relationship="GENERALIZATION">
+      <point x="4.3018330234190216E-4" y="76.99977950869993" />
+      <point x="4691.204" y="3321.032" />
+      <point x="7228.5" y="3321.032" />
+      <point x="7228.5" y="2798.0" />
+      <point x="7795.0" y="2798.0" />
+      <point x="7795.0" y="1954.135" />
+      <point x="96.99959650194705" y="3.2293549296014135E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType6" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="179.4999198229889" y="3.607805388128327E-5" />
+      <point x="6509.0" y="3039.992" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType7" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="-1.537631978862919E-4" y="-65.49970097086452" />
+      <point x="5541.958" y="2719.428" />
+      <point x="5994.638" y="2719.428" />
+      <point x="5994.638" y="2486.0" />
+      <point x="6509.0" y="2486.0" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Model.GameCard.BuildingType7Test" target="it.polimi.ingsw.am17.Model.GameCard.BuildingCardTest" relationship="GENERALIZATION">
+      <point x="-3.9857335076476375E-4" y="-14.000490612575163" />
+      <point x="1475.537" y="1965.0" />
+      <point x="1359.045" y="1965.0" />
+      <point x="1.4859234030240032E-4" y="13.999877308050884" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType8" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="1.957532940650708E-4" y="-53.999653280849884" />
+      <point x="7166.133" y="2433.0" />
+      <point x="6509.0" y="2433.0" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType9" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="-1.9136665972041556E-4" y="53.99966038257435" />
+      <point x="1145.852" y="3053.88" />
+      <point x="4282.911" y="3053.88" />
+      <point x="4282.911" y="2933.5370000000003" />
+      <point x="6509.0" y="2933.5370000000003" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Client.UserInterface.GUI" target="it.polimi.ingsw.am17.Client.UserInterface.UI" relationship="REALIZATION">
+      <point x="233.49993542169614" y="-2.3851154509202388E-5" />
+      <point x="5977.0" y="1958.006" />
+      <point x="5977.0" y="2518.114" />
+      <point x="233.50024937071612" y="4.208070536151354E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard" relationship="GENERALIZATION">
+      <point x="2.605288700578967E-4" y="-88.49987890292277" />
+      <point x="8480.07" y="2278.0" />
+      <point x="8321.824" y="2278.0" />
+      <point x="7.201615400072114" y="42.49968521147986" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Model.GameCard.BuildingType14Test" target="it.polimi.ingsw.am17.Model.GameCard.BuildingCardTest" relationship="GENERALIZATION">
+      <point x="-5.00071634697008E-5" y="-13.999526089139977" />
+      <point x="1351.23" y="2283.0" />
+      <point x="1844.548" y="2283.0" />
+      <point x="1844.548" y="1965.0" />
+      <point x="1359.045" y="1965.0" />
+      <point x="1.4859234030240032E-4" y="13.999877308050884" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" target="it.polimi.ingsw.am17.Server.Model.GameCard.GameCard" relationship="GENERALIZATION">
+      <point x="236.99972529607385" y="-4.507186433784227E-4" />
+      <point x="6777.432" y="2015.316" />
+      <point x="6777.432" y="1870.0" />
+      <point x="7142.5" y="1870.0" />
+      <point x="7142.5" y="1667.244" />
+      <point x="6205.874" y="1667.244" />
+      <point x="6205.874" y="2416.839" />
+      <point x="-95.50042151740945" y="3.963873155043984E-6" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Client.Socket.VirtualServerSocket" target="it.polimi.ingsw.am17.CommonInterfaces.VirtualServer" relationship="REALIZATION">
+      <point x="1.650891044846503E-4" y="-88.49962514579938" />
+      <point x="8004.706" y="1610.506" />
+      <point x="5387.13" y="1610.506" />
+      <point x="5387.13" y="1900.05" />
+      <point x="4848.966" y="1900.05" />
+      <point x="4848.966" y="2206.0" />
+      <point x="4157.938" y="2206.0" />
+      <point x="3.1096930706553394E-4" y="-88.49971982843533" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Model.GameCard.BuildingType5Test" target="it.polimi.ingsw.am17.Model.GameCard.BuildingCardTest" relationship="GENERALIZATION">
+      <point x="-1.0552669124308522E-4" y="13.99990553298116" />
+      <point x="1666.057" y="1965.0" />
+      <point x="1359.045" y="1965.0" />
+      <point x="1.4859234030240032E-4" y="13.999877308050884" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Client.RMI.ClientRMI" target="it.polimi.ingsw.am17.Client.ServerAdapter" relationship="REALIZATION">
+      <point x="-3.515042835715576E-4" y="-238.00002792776013" />
+      <point x="5655.261" y="763.995" />
+      <point x="3142.2470000000003" y="763.995" />
+      <point x="3142.2470000000003" y="1763.0" />
+      <point x="3702.244" y="1763.0" />
+      <point x="3702.244" y="1856.017" />
+      <point x="-220.00030970300077" y="1.8488118277559806E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Socket.ServerSocketSingle" target="it.polimi.ingsw.am17.CommonInterfaces.VirtualServer" relationship="REALIZATION">
+      <point x="223.99985322031534" y="-2.1357756031648023E-4" />
+      <point x="4334.669" y="2133.0" />
+      <point x="4334.669" y="2206.0" />
+      <point x="4157.938" y="2206.0" />
+      <point x="3.1096930706553394E-4" y="-88.49971982843533" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Hunter" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard" relationship="GENERALIZATION">
+      <point x="2.4703283088456374E-5" y="77.0003507466663" />
+      <point x="8213.807" y="2798.0" />
+      <point x="7795.0" y="2798.0" />
+      <point x="7795.0" y="1954.135" />
+      <point x="96.99959650194705" y="3.2293549296014135E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Binder" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard" relationship="GENERALIZATION">
+      <point x="-92.50009708619473" y="-3.117283052915809E-4" />
+      <point x="7795.0" y="2347.234" />
+      <point x="7795.0" y="1954.135" />
+      <point x="96.99959650194705" y="3.2293549296014135E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.Game" target="it.polimi.ingsw.am17.Server.Model.Subject" relationship="GENERALIZATION">
+      <point x="56.089234661062164" y="330.0" />
+      <point x="-227.5" y="-146.0" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Client.UserInterface.CLI" target="it.polimi.ingsw.am17.Client.UserInterface.UI" relationship="REALIZATION">
+      <point x="12.797781011441657" y="605.9998198587458" />
+      <point x="6230.874" y="1595.506" />
+      <point x="5977.0" y="1595.506" />
+      <point x="5977.0" y="2518.114" />
+      <point x="233.50024937071612" y="4.208070536151354E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType13M" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="-2.3507987225457327E-4" y="88.50012041331422" />
+      <point x="7006.432" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard" target="it.polimi.ingsw.am17.Server.Model.GameCard.GameCard" relationship="GENERALIZATION">
+      <point x="-2.1999026466801297E-4" y="77.00028698847564" />
+      <point x="7434.454" y="1870.0" />
+      <point x="7142.5" y="1870.0" />
+      <point x="7142.5" y="1667.244" />
+      <point x="6205.874" y="1667.244" />
+      <point x="6205.874" y="2416.839" />
+      <point x="-95.50042151740945" y="3.963873155043984E-6" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Inventor" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard" relationship="GENERALIZATION">
+      <point x="-29.627753504877546" y="76.99970463128511" />
+      <point x="5031.655000000001" y="3321.032" />
+      <point x="7228.5" y="3321.032" />
+      <point x="7228.5" y="2798.0" />
+      <point x="7795.0" y="2798.0" />
+      <point x="7795.0" y="1954.135" />
+      <point x="96.99959650194705" y="3.2293549296014135E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Builder" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard" relationship="GENERALIZATION">
+      <point x="110.00014722016022" y="1.778445310378629E-4" />
+      <point x="7795.0" y="2166.747" />
+      <point x="7795.0" y="1954.135" />
+      <point x="96.99959650194705" y="3.2293549296014135E-4" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI" target="it.polimi.ingsw.am17.CommonInterfaces.VirtualServer" relationship="INTERFACE_GENERALIZATION">
+      <point x="-202.7131929711727" y="111.5" />
+      <point x="427.2636148192835" y="3068.88" />
+      <point x="4047.9110590324385" y="3068.88" />
+      <point x="-110.02662999825452" y="88.5" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Model.GameCard.BuildingType6Test" target="it.polimi.ingsw.am17.Model.GameCard.BuildingCardTest" relationship="GENERALIZATION">
+      <point x="-4.963314700034971E-4" y="13.999718797065043" />
+      <point x="1985.6599999999999" y="2283.0" />
+      <point x="1844.548" y="2283.0" />
+      <point x="1844.548" y="1965.0" />
+      <point x="1359.045" y="1965.0" />
+      <point x="1.4859234030240032E-4" y="13.999877308050884" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType3M" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="-179.49995003783715" y="-2.2197409634827636E-6" />
+      <point x="6509.0" y="2928.685" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.RMI.VirtualClientRMI" target="it.polimi.ingsw.am17.CommonInterfaces.VirtualClient" relationship="INTERFACE_GENERALIZATION">
+      <point x="-226.5" y="0.0" />
+      <point x="3932.9830742591653" y="938.99519315333" />
+      <point x="0.0" y="-146.0" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Client.Socket.ClientSocket" target="it.polimi.ingsw.am17.CommonInterfaces.VirtualClient" relationship="REALIZATION">
+      <point x="226.49968021547716" y="-27.700640342730708" />
+      <point x="3905.485" y="2316.192" />
+      <point x="3905.485" y="2092.5" />
+      <point x="4334.669" y="2092.5" />
+      <point x="4334.669" y="1318.0" />
+      <point x="3932.983" y="1318.0" />
+      <point x="-7.425916510328534E-5" y="146.0001716863871" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.FoodEvent" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard" relationship="GENERALIZATION">
+      <point x="1.1181975150975632E-4" y="76.99964664582285" />
+      <point x="8166.324" y="2278.0" />
+      <point x="8321.824" y="2278.0" />
+      <point x="7.201615400072114" y="42.49968521147986" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Model.GameCard.BuildingType4Test" target="it.polimi.ingsw.am17.Model.GameCard.BuildingCardTest" relationship="GENERALIZATION">
+      <point x="-3.439382526266854E-4" y="-42.50022959292289" />
+      <point x="2480.768" y="2616.274" />
+      <point x="1671.0" y="2616.274" />
+      <point x="1671.0" y="2283.0" />
+      <point x="1844.548" y="2283.0" />
+      <point x="1844.548" y="1965.0" />
+      <point x="1359.045" y="1965.0" />
+      <point x="1.4859234030240032E-4" y="13.999877308050884" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType14" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="3.851807165347054E-4" y="76.99965267783807" />
+      <point x="681.764" y="3053.88" />
+      <point x="4282.911" y="3053.88" />
+      <point x="4282.911" y="2933.5370000000003" />
+      <point x="6509.0" y="2933.5370000000003" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.RMI.ServerRMI" target="it.polimi.ingsw.am17.Client.RMI.VirtualServerRMI" relationship="REALIZATION">
+      <point x="0.0" y="-134.5" />
+      <point x="125.49211731600008" y="1923.9515975617835" />
+      <point x="-224.0" y="0.0" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.PaintingEvent" target="it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.EventCard" relationship="GENERALIZATION">
+      <point x="-2.279339332744712E-5" y="-100.00000436082985" />
+      <point x="8820.856" y="2278.0" />
+      <point x="8321.824" y="2278.0" />
+      <point x="7.201615400072114" y="42.49968521147986" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Socket.VirtualClientSocket" target="it.polimi.ingsw.am17.CommonInterfaces.VirtualClient" relationship="REALIZATION">
+      <point x="4.4256323326408165E-4" y="-145.99978848508783" />
+      <point x="3742.217" y="1318.0" />
+      <point x="3932.983" y="1318.0" />
+      <point x="-7.425916510328534E-5" y="146.0001716863871" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType12" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="-3.364558826319808E-4" y="53.999985613924366" />
+      <point x="1595.681" y="3053.88" />
+      <point x="4282.911" y="3053.88" />
+      <point x="4282.911" y="2933.5370000000003" />
+      <point x="6509.0" y="2933.5370000000003" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType11" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="-2.751885785983177E-4" y="53.99985367597111" />
+      <point x="7231.797" y="2433.0" />
+      <point x="6509.0" y="2433.0" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+    <edge source="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType10" target="it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard" relationship="GENERALIZATION">
+      <point x="237.0000762850632" y="4.6472421183807455E-4" />
+      <point x="6509.0" y="2589.185" />
+      <point x="6509.0" y="2263.0" />
+      <point x="6460.374" y="2263.0" />
+      <point x="-2.7470392615214223E-4" y="214.99954928135662" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.08697562047001976" showDependencies="false" x="4426.0" y="1664.0000000000005" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>Project Files</SCOPE>
+  <VISIBILITY>public</VISIBILITY>
+</Diagram>
+
