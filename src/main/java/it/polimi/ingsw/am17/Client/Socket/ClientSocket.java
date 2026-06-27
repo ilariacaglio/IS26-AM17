@@ -94,8 +94,21 @@ public class ClientSocket implements VirtualClient, ServerAdapter {
             }
         });
 
-        // create a heartbeat thread to ping the new client
-        heartbeater.scheduleAtFixedRate(() -> {
+        // Todo: remove null when gui
+        UI userInterface = null;
+        if(gui) {
+            // TODO: gui
+        } else {
+            userInterface = new CLI(server,this);
+        }
+
+        model = new ClientModel(userInterface);
+        userInterface.setModel(model); // TODO: circular!! Update with granular UI updates
+        model.startInterface();  // note: not threaded
+    }
+
+    private Runnable pinger(Socket socket) {
+        return () -> {
             try {
                 logger.finer("Sending heartbeat to socket: " + socket.getRemoteSocketAddress());
                 new Message(MessageType.HEARTBEAT).send(socket);
