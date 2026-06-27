@@ -1,15 +1,18 @@
 package it.polimi.ingsw.am17.Client.RMI;
 
-import it.polimi.ingsw.am17.Client.ClientInterface;
+import it.polimi.ingsw.am17.Client.ServerAdapter;
 import it.polimi.ingsw.am17.Client.UserInterface.CLI;
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
+import it.polimi.ingsw.am17.Client.UserInterface.GUI;
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
-import it.polimi.ingsw.am17.Server.RMI.VirtualViewRMI;
+import it.polimi.ingsw.am17.Server.RMI.VirtualClientRMI;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.rmi.NotBoundException;
@@ -18,112 +21,251 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Level;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
-public class ClientRMI extends UnicastRemoteObject implements VirtualViewRMI, ClientInterface {
-    private VirtualServerRMI server;
-    private ClientModel model;
-
+/**
+ * Sets up the RMI connection with the server.
+ * Receives requests from the server to update the ClientModel.
+ */
+public class ClientRMI extends UnicastRemoteObject implements VirtualClientRMI, ServerAdapter {
     private final static Logger logger = Logger.getLogger(ClientRMI.class.getName());
 
-    public ClientRMI() throws RemoteException {
-        super();
-    }
+    ScheduledExecutorService heartbeater = Executors.newSingleThreadScheduledExecutor();
+    int failedHeartbeats = 0;
+    ScheduledExecutorService heartwatcher = Executors.newSingleThreadScheduledExecutor();
+    long lastHeartbeatReceived = System.currentTimeMillis();
 
-    public void start(String ip, boolean graphic) throws RemoteException, NotBoundException {
-        final String serverName = "MesosRMIServer";
+    private final ExecutorService remoteRMICallService = Executors.newCachedThreadPool();
+    private final ClientModel model;
+    private final VirtualServerRMI server;
 
-        Registry registry = LocateRegistry.getRegistry(ip, 1099);
-        this.server = (VirtualServerRMI) registry.lookup(serverName);
-        // Todo: remove null when gui
-        UI userInterface = null;
+    public ClientRMI(String ip, int port, String serverName, boolean graphic) throws RemoteException, NotBoundException {
+        super();  // needed for UnicastRemoteObject
+
+        // Set up the RMI registry
+        Registry registry = LocateRegistry.getRegistry(ip, port);
+        server = (VirtualServerRMI) registry.lookup(serverName);
+        server.connect(this);
+        logger.info("RMI Client connected to server " + serverName);
+
+        // launch a thread to ping the server every second
+        heartbeater.scheduleAtFixedRate(() -> {
+            try {
+                logger.fine("Pinging server");
+                server.ping(this);
+                failedHeartbeats = 0;
+            } catch (RemoteException e) {
+                logger.warning("Failed sending heartbeat to server: " + serverName + " with error: " + e.getMessage());
+                failedHeartbeats++;
+                if (failedHeartbeats > 3) {
+                    logger.severe("Too many failed heartbeats, server considered dead.");
+                    onServerDisconnection();
+                }
+            }
+        }, 1, 1, java.util.concurrent.TimeUnit.SECONDS);
+
+        // create a heartbeat watcher
+        heartwatcher.scheduleAtFixedRate(() -> {
+            long now = System.currentTimeMillis();
+            long diff = now - lastHeartbeatReceived;
+
+            if (diff > 5000) {
+                logger.severe("No heartbeat received in " + diff + "ms, server considered dead.");
+                onServerDisconnection();
+            }
+        }, 10, 5, TimeUnit.SECONDS);
+
+        // model and ui init
+        UI userInterface;
         if(graphic){
-            // TODO: gui
+            userInterface = new GUI(this);
         }
         else {
-            userInterface = new CLI(server,this);
+            userInterface = new CLI(this);
         }
-        this.server.connect(this);
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(pinger(server, executor), 1, 1, java.util.concurrent.TimeUnit.SECONDS);
         this.model = new ClientModel(userInterface);
         userInterface.setModel(model);
         this.model.startInterface();
     }
 
-    private Runnable pinger(VirtualServerRMI server, ScheduledExecutorService executor) {
-        return () -> {
-            logger.setLevel(Level.FINER);
-            logger.fine("Starting heartbeat thread.");
-
-            try {
-                server.ping();
-                logger.finer("Server pinged");
-            } catch (RemoteException e) {
-                logger.severe("Server disconnected! " + server);
-                executor.shutdown();
-                System.exit(1); // TODO review status, ok exiting here?
-            }
-        };
+    /**
+     * Manages a server disconnection by stopping the heartbeat thread and exiting the program.
+     */
+    private void onServerDisconnection() {
+        logger.severe("Server disconnected, shutting down.");
+        heartbeater.shutdownNow();
+        heartwatcher.shutdownNow();
+        model.updateForcedEndGame("Server " + server.getClass() );
+        System.exit(1);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
-    public void updateEra(int era) throws RemoteException {
+    public void updateGameState(GameState gameState) throws RemoteException {
         // call model to update era
-        model.setCurrentEra(era);
+        model.updateGameState(gameState);
     }
 
+    /**
+     * Allows a server to ping the client.
+     * @throws RemoteException remotely called!
+     */
+    @Override
+    public void ping() throws RemoteException {
+        logger.finer("Received ping");
+        lastHeartbeatReceived = System.currentTimeMillis();
+    }
+
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updatePlayerQueue(Queue<Player> orderedPlayers) throws RemoteException {
         model.updatePlayerQueue(orderedPlayers);
     }
 
-    @Override
-    public void ping() {
-
-    }
-
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateGameId(UUID gameId) throws RemoteException {
-        model.setGameId(gameId);
+        model.updateGameId(gameId);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateGamesIdList(List<UUID> gameIdsList) throws RemoteException {
-        model.setGameIdList(gameIdsList);
+        model.updateGameIdList(gameIdsList);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
                                 List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) throws RemoteException {
         model.updateStartGame(players, upperRow, lowerRow, upperBuildingRow, lowerBuildingRow, offeringCards);
     }
 
-    @Override
-    public void notifyEndGame() throws RemoteException {
-        model.updateGameEndedByUser();
-    }
-
-    @Override
-    public void updateRanking(List<RankingEntry> ranking) throws RemoteException {
-        model.updateRanking(ranking);
-    }
-
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow, List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) throws RemoteException {
         model.updateEndTurn(players,upperRow,lowerRow,upperBuildingRow,lowerBuildingRow);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) throws RemoteException {
         model.updatePlayerSelectOfferingCard(player,offeringCard);
     }
 
+    /**
+     * Forwarded to the model.
+     * @throws RemoteException remotely called!
+     */
     @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> tribesCards, List<BuildingCard> buildingCards) throws RemoteException {
         model.updatePlayerSelectTribeCards(player,tribesCards,buildingCards);
+    }
+
+    @Override
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) throws RemoteException {
+        model.updateEndGame(ranking, orderedPlayers);
+    }
+
+    @Override
+    public void updateForceEndGame(String disconnectedPlayer) throws RemoteException {
+        model.updateForcedEndGame("Player " + disconnectedPlayer);
+    }
+
+    /**
+     * Forwarded to the model
+     * @throws RemoteException  remotely called!
+     */
+    @Override
+    public void updateError(InvalidOperationException exception) throws RemoteException {
+        model.updateError(exception);
+    }
+
+    @Override
+    public void getGamesList() {
+        remoteRMICallService.submit(()->{
+            try {
+                server.getGamesList(this);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void createGame(Player player, int numPlayers) {
+        remoteRMICallService.submit(()->{
+            try {
+                server.createGame(this, player, numPlayers);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void closeGame() {
+        remoteRMICallService.submit(()->{
+            try {
+                server.closeGame(this);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void joinGame(UUID gameId, Player player) {
+        remoteRMICallService.submit(()->{
+            try {
+                server.joinGame(this, gameId, player);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void pickOfferingCard(Character offeringCardLetter) {
+        remoteRMICallService.submit(()->{
+            try {
+                server.pickOfferingCard(this, offeringCardLetter);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void pickTribeCards(List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        remoteRMICallService.submit(()->{
+            try {
+                server.pickTribeCards(this, characterCards, buildingCards);
+            } catch (Exception e) {
+                System.out.println("Network error: " + e.getMessage());
+            }
+        });
     }
 }

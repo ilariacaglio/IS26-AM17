@@ -2,6 +2,7 @@ package it.polimi.ingsw.am17.Model.GameCard;
 
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingType10;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,70 +17,68 @@ class BuildingType10Test {
     @BeforeEach
     void setUp() {
         buildingType10 = new BuildingType10();
-
-
     }
 
     @Test
-    void TestFoodBonusInventor3() {
+    void TestFoodBonusInventor_TwoInventorsWithSameIcon() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(2, 2, InventorIconType.CANOE,null);
-        CharacterCard B = new Inventor(3, 2,InventorIconType.CANOE, null);
+        CharacterCard A = new Inventor(GameState.ERA2, 2, InventorIconType.CANOE,null);
+        CharacterCard B = new Inventor(GameState.ERA3, 2,InventorIconType.CANOE, null);
         cards.add(A);
 
-        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
+        int result = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first and second if are true (Inventor, same icon)
-        assertEquals(3,risultato);
+        assertEquals(3,result);
     }
 
     @Test
-    void TestFoodBonusInventor0() {
+    void TestFoodBonusInventor_NoFoodBonus() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(2, 2,InventorIconType.IDOL, null);
-        CharacterCard B = new Inventor(3, 2,InventorIconType.BREAD, null);
+        CharacterCard A = new Inventor(GameState.ERA2, 2,InventorIconType.IDOL, null);
+        CharacterCard B = new Inventor(GameState.ERA3, 2,InventorIconType.BREAD, null);
         cards.add(A);
 
-        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
+        int result = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first if is true,second if is false (Inventor, no same icon)
-        assertEquals(0,risultato);
+        assertEquals(0,result);
 
     }
 
     @Test
-    void TestFoodBonus0() {
+    void TestFoodBonus_InventorAndArtist() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(2, 2,InventorIconType.CANOE, null);
-        CharacterCard B = new Artist(3, 2, null);
+        CharacterCard A = new Inventor(GameState.ERA2, 2,InventorIconType.CANOE, null);
+        CharacterCard B = new Artist(GameState.ERA3, 2, null);
         cards.add(A);
 
-        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
+        int result = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first if is false, we don't enter in second if (no Inventor)
-        assertEquals(0,risultato);
+        assertEquals(0,result);
     }
 
     @Test
-    void TestFoodBonusListaVuotaInventor() {
+    void TestFoodBonusEmptyListInventor() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard A = new Inventor(3, 2,InventorIconType.BREAD, null);
+        CharacterCard A = new Inventor(GameState.ERA3, 2,InventorIconType.BREAD, null);
 
-        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, A);
+        int result = buildingType10.GetFoodBonusFromCardAcquisition(cards, A);
         //first if is true, but list is void (Inventor)
-        assertEquals(0,risultato);
+        assertEquals(0,result);
     }
 
     @Test
-    void TestFoodBonusListaVuotaNoInventor() {
+    void TestFoodBonusEmptyListNoInventor() {
         List<CharacterCard> cards = new ArrayList<>();
 
-        CharacterCard B = new Shaman(2, 2, 2, null);
+        CharacterCard B = new Shaman(GameState.ERA2, 2, 2, null);
 
-        int risultato = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
+        int result = buildingType10.GetFoodBonusFromCardAcquisition(cards, B);
         //first if is false and list is void (no Inventor)
-        assertEquals(0,risultato);
+        assertEquals(0,result);
     }
 
 

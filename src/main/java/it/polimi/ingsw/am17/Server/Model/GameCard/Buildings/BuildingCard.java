@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.GameCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,7 +16,7 @@ public class BuildingCard extends GameCard implements Serializable {
 
     @JsonCreator
     public BuildingCard(
-            @JsonProperty("era") Integer era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("foodCost") Integer foodCost,
             @JsonProperty("bonusPoints") Integer bonusPoints) {
         super(true, era);
@@ -28,18 +29,31 @@ public class BuildingCard extends GameCard implements Serializable {
     }
     public Integer getBonusPoints() { return bonusPoints; }
 
-    // effects implemented
+    // end game
     public int GetAdditionalFinalPoints(List<CharacterCard> characterCards) { return 0; }
+
+    // events
     public int GetFoodDiscountInFoodEvent(List<CharacterCard> characterCards) { return 0; }
-    public int AddFoodPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: HuntingEvent
-    public int AddFoodPerArtistInPaintingEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: PaintingEvent
-    public int GetFoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) { return 0; } // CardEffect
-    public int GetFoodBonusFromTurnOrder() { return 0; } // TurnEffect
+    public int AddFoodPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; }
+    public int AddFoodPerArtistInPaintingEvent(List<CharacterCard> characterCards) { return 0; }
     public int AddPointPerHunterInHuntingEvent(List<CharacterCard> characterCards) { return 0; }
-    public int GiveBonusStarInRitualEvent(List<CharacterCard> characterCards) { return 0; } // EventEffect: returns true if a
-    public boolean isShieldedFromRitualEvent() { return false; } // EventEffect: returns true if a player should not lose points from rituals
+    public int GiveBonusStarInRitualEvent() { return 0; } // EventEffect: returns true if a
+
+    /**
+     * @return true if a player should not lose points from ritual events.
+     */
+    public boolean isShieldedFromRitualEvent() { return false; }
+    public boolean hasDoubleRitualEventPoints() { return false; }
+
+    // card acquisition
+    public int GetFoodBonusFromCardAcquisition(List<CharacterCard> characterCards, CharacterCard newCard) { return 0; }
+
+    // turn order
+    /** When (and only when!) you get food from the turn order card, get additional food.
+     * @return additional amount of food that should be given.
+     */
+    public int GetMoreFoodFromTurnOrderCard() { return 0; } // TurnEffect
     public boolean hasOneMoreMove() { return false; }
-    public boolean hasDoubleRitualEventPoints() { return false; } // Tribes effect
 
     @Override
     public boolean equals(Object o) {
@@ -58,4 +72,9 @@ public class BuildingCard extends GameCard implements Serializable {
     public String toString() {
         return "[" + foodCost + "F " + bonusPoints + "BP";
     }
+
+    public String getImagePath(){
+        return "";
+    }
+
 }

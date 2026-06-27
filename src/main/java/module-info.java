@@ -8,10 +8,13 @@ module it.polimi.ingsw.am17 {
     requires java.logging;
     requires io.github.cdimascio.dotenv.java;
     requires java.sql;
+    requires javafx.graphics;
+    requires java.desktop;
 
     // Add this line to allow RMI to access your client interfaces
     exports it.polimi.ingsw.am17.Client.RMI to java.rmi;
 
+    exports it.polimi.ingsw.am17.Server.Controller;
     // If your Server-side RMI interfaces are in a different package, export that too
     exports it.polimi.ingsw.am17.Server.RMI to java.rmi;
     opens it.polimi.ingsw.am17.Server.Model to tools.jackson.databind;
@@ -32,6 +35,7 @@ module it.polimi.ingsw.am17 {
     opens it.polimi.ingsw.am17.Server.Model.GameCard to tools.jackson.databind;
     exports it.polimi.ingsw.am17.Server.Model.Decks;
     opens it.polimi.ingsw.am17.Server.Model.Decks to tools.jackson.databind;
+    opens it.polimi.ingsw.am17.Client.UserInterface to javafx.graphics;
     exports it.polimi.ingsw.am17.Server.Utility;
     opens it.polimi.ingsw.am17.Server.Utility to tools.jackson.databind;
 }

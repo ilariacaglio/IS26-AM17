@@ -1,21 +1,21 @@
 [
   {
     "Final": false,
-    "era": 3,
+    "era": "era3",
     "pointsLow": 2,
     "pointsMax": 3,
     "numMax": 3
   },
   {
     "Final": false,
-    "era": 2,
+    "era": "era2",
     "pointsLow": 2,
     "pointsMax": 2,
     "numMax": 2
   },
   {
     "Final": false,
-    "era": 1,
+    "era": "era1",
     "pointsLow": 2,
     "pointsMax": 1,
     "numMax": 1

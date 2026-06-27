@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class CharacterCard extends TribesCard {
-    private Integer minPlayers;
+    private final Integer minPlayers;
 
     public Integer getMinPlayers() {
         return minPlayers;
@@ -17,7 +18,7 @@ public class CharacterCard extends TribesCard {
 
     @JsonCreator
     public CharacterCard(
-            @JsonProperty("era") Integer era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("minPlayers") Integer minPlayers,
             @JsonProperty("cardType") CardType cardType,
             @JsonProperty("id") UUID id) {

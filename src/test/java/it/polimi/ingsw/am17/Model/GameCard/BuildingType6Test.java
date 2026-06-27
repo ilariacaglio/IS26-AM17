@@ -15,19 +15,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class BuildingType6Test extends BuildingCardTest{
     BuildingType6 building;
     Random r = new Random();
-    @BeforeEach
+
     /**
      * Generate a BuildingType6 with random value and stores the value of pointsFromEachCharacter
      */
+    @BeforeEach
     void setup()
     {
         building = new BuildingType6();
     }
-    @Test
+
     /**
      * Run test of FinalPoints with different list of card generated randomly
      * and check the return value is correct
      */
+    @Test
     void TestGetAdditionalFinalPoints()
     {
         for (int i = 0; i < 5; i++) {

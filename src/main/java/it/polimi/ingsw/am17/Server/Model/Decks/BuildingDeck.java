@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am17.Server.Model.Decks;
 
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.*;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,9 @@ public class BuildingDeck {
         buildEra3Deck(numPlayers);
     }
 
+    /**
+     * Builds era 1 building deck basing on given numPlayers
+     */
     private void buildEra1Deck(int numPlayers){
         List<BuildingCard> temp = new ArrayList<>();
         //singleton building cards
@@ -31,8 +35,8 @@ public class BuildingDeck {
         temp.add(new BuildingType11());
         temp.add(new BuildingType12());
         temp.add(new BuildingType14());
-        //parse from json and add cards 13M
-        temp.addAll(buildingCard13MParser(1));
+        //parse from Json and add cards 13M
+        temp.addAll(buildingCard13MParser(GameState.ERA1));
         //shuffle collection
         Collections.shuffle(temp);
         //add the right number of cards based on numPlayer
@@ -44,6 +48,9 @@ public class BuildingDeck {
         }
     }
 
+    /**
+     * Builds era 2 building deck basing on given numPlayers
+     */
     private void buildEra2Deck(int numPlayers){
         List<BuildingCard> temp = new ArrayList<>();
         //singleton building cards
@@ -53,8 +60,8 @@ public class BuildingDeck {
         temp.add(new BuildingType7());
         temp.add(new BuildingType8());
         temp.add(new BuildingType9());
-        //parse from json and add cards 13M
-        temp.addAll(buildingCard13MParser(2));
+        //parse from Json and add cards 13M
+        temp.addAll(buildingCard13MParser(GameState.ERA2));
         //shuffle collection
         Collections.shuffle(temp);
         //add the right number of cards based on numPlayer
@@ -66,12 +73,15 @@ public class BuildingDeck {
         }
     }
 
+    /**
+     * Builds era 3 building deck basing on given numPlayers
+     */
     private void buildEra3Deck(int numPlayers){
         List<BuildingCard> temp = new ArrayList<>();
         //singleton building cards
         temp.add(new BuildingType1());
         temp.add(new BuildingType2());
-        //parse from json and add cards 3M
+        //parse from Json and add cards 3M
         temp.addAll(buildingCard3MParser());
         //shuffle collection
         Collections.shuffle(temp);
@@ -87,14 +97,23 @@ public class BuildingDeck {
         }
     }
 
+    /**
+     * @return the list of building cards of era 1
+     */
     public List<BuildingCard> drawAllEra1(){
         return Collections.unmodifiableList(buildingCardsEra1);
     }
 
+    /**
+     * @return the list of building cards of era 2
+     */
     public List<BuildingCard> drawAllEra2(){
         return Collections.unmodifiableList(buildingCardsEra2);
     }
 
+    /**
+     * @return the list of building cards of era 3
+     */
     public List<BuildingCard> drawAllEra3(){
         return Collections.unmodifiableList(buildingCardsEra3);
     }

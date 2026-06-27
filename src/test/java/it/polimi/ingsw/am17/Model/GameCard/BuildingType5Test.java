@@ -13,19 +13,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class BuildingType5Test extends BuildingCardTest{
     BuildingType5 building;
     Random r = new Random();
-    @BeforeEach
+
     /**
      * Generate a BuildingType5
      */
+    @BeforeEach
     void setup()
     {
         building = new BuildingType5();
     }
-    @Test
+
     /**
      * Run test of FoodBonus with different list of card generated randomly
      * and check the return value is correct
      */
+    @Test
     void FoodBonusTest()
     {
         for (int i = 0; i < 5; i++) {

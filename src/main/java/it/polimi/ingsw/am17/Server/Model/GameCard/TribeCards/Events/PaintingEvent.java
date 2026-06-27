@@ -3,25 +3,31 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.Objects;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class PaintingEvent extends EventCard {
+    private static final Logger logger = Logger.getLogger(PaintingEvent.class.getName());
     private final Integer pointsLow;
     private final Integer pointsMax;
     private final Integer numMax;
 
+    /// needed for Jackson
     public Integer getNumMax() {
         return numMax;
     }
 
+    /// needed for Jackson
     public Integer getPointsLow() {
         return pointsLow;
     }
 
+    /// needed for Jackson
     public Integer getPointsMax() {
         return pointsMax;
     }
@@ -32,7 +38,7 @@ public class PaintingEvent extends EventCard {
             @JsonProperty("pointsMax") Integer pointsMax,
             @JsonProperty("numMax") Integer numMax,
             @JsonProperty("Final") Boolean Final,
-            @JsonProperty("era") Integer era,
+            @JsonProperty("era") GameState era,
             @JsonProperty("id") UUID id) {
         super(Final, era, CardType.PAINTING_EVENT, id);
         this.pointsLow = pointsLow;
@@ -42,9 +48,14 @@ public class PaintingEvent extends EventCard {
 
     @Override
     public void computeScore(Queue<Player> list) {
+        logger.info("Solving PaintingEvent. ");
         for (Player player : list) {
             player.solvePaintingEvent(numMax, pointsMax, pointsLow);
+
+            logger.info("Player " + player.getNickname() + " has " + player.getFood() + " food "
+                    + player.getPp() + " points after Painting Event");
         }
+        logger.info("PaintingEvent solved. ");
     }
 
     @Override
@@ -58,5 +69,10 @@ public class PaintingEvent extends EventCard {
     @Override
     public int hashCode() {
         return Objects.hash(pointsLow, pointsMax, numMax);
+    }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Events/painting_event_"+ pointsLow +"PP_"+pointsMax+"PP_"+numMax+".png";
     }
 }

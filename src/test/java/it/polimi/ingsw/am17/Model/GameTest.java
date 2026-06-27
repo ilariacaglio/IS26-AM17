@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am17.Model;
 
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 import it.polimi.ingsw.am17.Server.Model.Color;
 import it.polimi.ingsw.am17.Server.Model.Game;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
@@ -8,6 +9,7 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.Binder;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -31,13 +33,13 @@ public class GameTest {
     @Test
     void testGameCreation_0players(){
         // test exception when given invalid number of players
-        assertThrows(IllegalArgumentException.class, () -> new Game(id, 0));
+        assertThrows(InvalidOperationException.class, () -> new Game(id, 0));
     }
 
     @Test
     void testGameCreation_6players(){
         // test exception when given invalid number of players
-        assertThrows(IllegalArgumentException.class, () -> new Game(id, 6));
+        assertThrows(InvalidOperationException.class, () -> new Game(id, 6));
     }
 
     @Test
@@ -68,7 +70,7 @@ public class GameTest {
         assertEquals(3, game.getPlayersList().size());
         // check the game has started
         //check current era updated to 1
-        assertEquals(1, game.getCurrentEra());
+        assertEquals(GameState.ERA1, game.getGameState());
         //check size of upper and lower tribe rows
         assertEquals(4, game.getLowerRow().size());
         assertEquals(7, game.getUpperRow().size());
@@ -88,30 +90,47 @@ public class GameTest {
         // add player to game
         game.addPlayer(p);
         // check duplicate player
-        assertThrows(IllegalStateException.class, () -> game.addPlayer(p));
+        assertThrows(InvalidOperationException.class, () -> game.addPlayer(p));
     }
 
     @Nested
     class GameStarted{
+        /**
+         * Sets each player into an offering card.
+         * The first player gets the first offering card and so on
+         */
         private void setOfferingCardToPlayers(){
+            // get players list
+            List<Player> players = game.getPlayersList();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             // every player picks an offering card
-            for (int i = 0; i < numPlayers; i++) {
-                game.selectOfferingCard(game.getCurrentPlayer(), offeringCardList.get(i));
+            int i = 0;
+            for(Player p : players){
+                game.selectOfferingCard(p.getNickname(),offeringCardList.get(i).getOrderLetter());
+                i++;
             }
         }
 
+        /**
+         * Sets the current player into the offering card specified with index parameter
+         */
         private void setFirstPlayerToOffering(int index){
             game.getOfferingCards().get(index).setPlayer(game.getCurrentPlayer());
         }
 
+        /**
+         * @return  a player different from the one that has the right to do a turn action
+         */
         private Player pickWrongPlayer(){
             return game.getPlayersList().stream()
                     .filter(p -> !p.equals(game.getCurrentPlayer()))
                     .toList().getFirst();
         }
 
+        /**
+         * @return the offering card with the lowest letter that has a player
+         */
         private OfferingCard getCurrentOfferingCard(){
             return game.getOfferingCards().stream()
                     .filter(card -> card.getPlayer() != null)
@@ -119,6 +138,9 @@ public class GameTest {
                     .orElse(null);
         }
 
+        /**
+         * @return the specified amount of character cards that are in the lower row
+         */
         private List<CharacterCard> extractLowerCharacters(int amount) {
             return game.getLowerRow().stream()
                     .filter(c -> c.getCardType().isCharacter())
@@ -127,6 +149,9 @@ public class GameTest {
                     .toList();
         }
 
+        /**
+         * @return the specified amount of character cards that are in the upper row
+         */
         private List<CharacterCard> extractUpperCharacters(int amount) {
             return game.getUpperRow().stream()
                     .filter(c -> c.getCardType().isCharacter())
@@ -135,12 +160,18 @@ public class GameTest {
                     .toList();
         }
 
+        /**
+         * @return the specified amount of building cards that are in the upper row
+         */
         private List<BuildingCard> extractUpperBuildings(int amount) {
             return game.getUpperBuildingRow().stream()
                     .limit(amount)
                     .toList();
         }
 
+        /**
+         * @return the specified amount of building cards that are in the lower row
+         */
         private List<BuildingCard> extractLowerBuildings(int amount) {
             return game.getLowerBuildingRow().stream()
                     .limit(amount)
@@ -159,9 +190,12 @@ public class GameTest {
         @Test
         void testAddPlayer_Exception() {
             //this checks both started and overflow cases
-            assertThrows(IllegalStateException.class, () -> game.addPlayer(new Player("player4", Color.BLUE)));
+            assertThrows(InvalidOperationException.class, () -> game.addPlayer(new Player("player4", Color.BLUE)));
         }
 
+        /**
+         * This test checks the shift of the cards when round ends
+         */
         @Test
         void testEndRound_Normal() {
             List<TribesCard> oldUpperRow = new ArrayList<>(game.getUpperRow());
@@ -173,6 +207,9 @@ public class GameTest {
             assertEquals(7, game.getUpperRow().size());
         }
 
+        /**
+         * This test checks the shift of the building cards when era 2 starts
+         */
         @Test
         void testEndRound_ChangeEra_2() {
             // play 2 rounds
@@ -180,11 +217,11 @@ public class GameTest {
             game.endRound();
             //get upper building row value
             List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
-            assertEquals(1, game.getCurrentEra());
+            assertEquals(GameState.ERA1, game.getGameState());
             //play one more round
             game.endRound();
             // check era changed to 2
-            assertEquals(2, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             // check the building rows
             assertEquals(oldUpperBuildingRow.size(), game.getLowerBuildingRow().size());
             assertTrue(oldUpperBuildingRow.containsAll(game.getLowerBuildingRow()));
@@ -192,6 +229,9 @@ public class GameTest {
             assertFalse(game.getUpperBuildingRow().isEmpty());
         }
 
+        /**
+         * This test checks the shift of the building cards when era 3 starts
+         */
         @Test
         void testEndRound_ChangeEra_3() {
             //play turns
@@ -200,10 +240,10 @@ public class GameTest {
             }
             //get upper building row value
             List<BuildingCard> oldUpperBuildingRow = new ArrayList<>(game.getUpperBuildingRow());
-            assertEquals(2, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             game.endRound();
             // check era changed to 3
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA3, game.getGameState());
             // check the building rows
             assertEquals(oldUpperBuildingRow.size(), game.getLowerBuildingRow().size());
             assertTrue(oldUpperBuildingRow.containsAll(game.getLowerBuildingRow()));
@@ -216,30 +256,31 @@ public class GameTest {
             //play turns
             game.endRound();
             game.endRound();
-            assertEquals(1, game.getCurrentEra());
+            assertEquals(GameState.ERA1, game.getGameState());
             game.endRound();
-            assertEquals(2, game.getCurrentEra());
-            game.endRound();
-            game.endRound();
-            assertEquals(2, game.getCurrentEra());
-            game.endRound();
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
             game.endRound();
             game.endRound();
-            assertEquals(3, game.getCurrentEra());
+            assertEquals(GameState.ERA2, game.getGameState());
+            game.endRound();
+            assertEquals(GameState.ERA3, game.getGameState());
+            game.endRound();
+            game.endRound();
+            assertEquals(GameState.ERA3, game.getGameState());
             game.endRound();
             game.endRound();
             //check if the game has ended
-            assertEquals(-1, game.getCurrentEra());
+            assertEquals(GameState.ENDED, game.getGameState());
         }
 
         @Test
         void testSelectOfferingCard_TurnError() {
             // game starts
-            Player wrongPlayer = pickWrongPlayer();
+            String wrongPlayerNickname = pickWrongPlayer().getNickname();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
-            assertThrows(IllegalStateException.class, () -> game.selectOfferingCard(wrongPlayer, offeringCardList.getFirst()));
+            assertThrows(InvalidOperationException.class,
+                    () -> game.selectOfferingCard(wrongPlayerNickname, offeringCardList.getFirst().getOrderLetter()));
         }
 
         @Test
@@ -249,7 +290,7 @@ public class GameTest {
             // get the current player before the method picks another one
             Player currentPlayer = game.getCurrentPlayer();
             //call method
-            game.selectOfferingCard(currentPlayer, offeringCardList.getFirst());
+            game.selectOfferingCard(currentPlayer.getNickname(), offeringCardList.getFirst().getOrderLetter());
             assertEquals(currentPlayer, offeringCardList.getFirst().getPlayer());
         }
 
@@ -260,19 +301,23 @@ public class GameTest {
             // get the current player before the method picks another one
             Player currentPlayer = game.getCurrentPlayer();
             // call method
-            game.selectOfferingCard(currentPlayer, offeringCardList.getFirst());
+            game.selectOfferingCard(currentPlayer.getNickname(), offeringCardList.getFirst().getOrderLetter());
             // test card already picked error
             Player finalCurrentPlayer = game.getCurrentPlayer();
-            assertThrows(IllegalStateException.class, () -> game.selectOfferingCard(finalCurrentPlayer, offeringCardList.getFirst()));
+            assertThrows(InvalidOperationException.class,
+                    () -> game.selectOfferingCard(
+                            finalCurrentPlayer.getNickname(),
+                            offeringCardList.getFirst().getOrderLetter()));
             // test card null error
-            assertThrows(IllegalStateException.class, () -> game.selectOfferingCard(finalCurrentPlayer, null));
+            assertThrows(InvalidOperationException.class,
+                    () -> game.selectOfferingCard(finalCurrentPlayer.getNickname(), null));
         }
 
         @Test
         void testSelectOfferingCard_CardNotFound(){
             // test offering card not if offeringCardList
-            assertThrows(IllegalStateException.class, () -> game.selectOfferingCard(game.getCurrentPlayer(),
-                    new OfferingCard(5,'A',0,0,0)));
+            assertThrows(InvalidOperationException.class,
+                    () -> game.selectOfferingCard(game.getCurrentPlayer().getNickname(), 'M'));
         }
 
         @Test
@@ -286,27 +331,27 @@ public class GameTest {
         }
 
         @Test
-        void testPlayerAction_PlayerError() {
+        void testTribeCardsSelection_PlayerError() {
             setFirstPlayerToOffering(0);
             //the wrong player tries to select cards
             Player wrongPlayer = pickWrongPlayer();
-            assertThrows(IllegalStateException.class,
-                    () -> game.pickTribeCards(wrongPlayer, Collections.emptyList(), Collections.emptyList()));
+            assertThrows(InvalidOperationException.class,
+                    () -> game.pickTribeCards(wrongPlayer.getNickname(), Collections.emptyList(), Collections.emptyList()));
         }
 
         @Test
-        void testPlayerAction_ValidateErrorCharacterLower() {
+        void testTribeCardsSelection_ValidateErrorCharacterLower() {
             //the first player picks the offering card with index 0: 1 card from lower row
             setFirstPlayerToOffering(0);
             // the player selects some upper cards instead of lower ones
             int lowerSize = game.getOfferingCards().getFirst().getNumCardsLower();
             List<CharacterCard> characterList = new ArrayList<>(extractUpperCharacters(lowerSize));
             assertThrows(RuntimeException.class,
-                    () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
+                    () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(), characterList, Collections.emptyList()));
         }
 
         @Test
-        void testPlayerAction_ValidateErrorCharacterUpper() {
+        void testTribeCardsSelection_ValidateErrorCharacterUpper() {
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             //the first player picks the offering card with index 1: 1 card from upper row
@@ -316,13 +361,13 @@ public class GameTest {
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(upperSize));
             assertThrows(RuntimeException.class,
                     () -> game.pickTribeCards(
-                            offeringCardList.get(1).getPlayer(),
+                            offeringCardList.get(1).getPlayer().getNickname(),
                             characterList,
                             Collections.emptyList()));
         }
 
         @Test
-        void testPlayerAction_ValidateErrorBuildingLower() {
+        void testTribeCardsSelection_ValidateErrorBuildingLower() {
             // play 3 turns to populate lower building row
             for (int i=0; i<3; i++){
                 game.endRound();
@@ -333,11 +378,11 @@ public class GameTest {
             // the player selects some upper cards instead of lower ones
             List<BuildingCard> buildingList = new ArrayList<>(extractUpperBuildings(lowerSize));
             assertThrows(RuntimeException.class,
-                    () -> game.pickTribeCards(game.getCurrentPlayer(), Collections.emptyList(), buildingList));
+                    () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(), Collections.emptyList(), buildingList));
         }
 
         @Test
-        void testPlayerAction_ValidateErrorBuildingUpper() {
+        void testTribeCardsSelection_ValidateErrorBuildingUpper() {
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             // the player picks offering card with index 1: 1 card from upper row
             setFirstPlayerToOffering(1);
@@ -346,13 +391,13 @@ public class GameTest {
             List<BuildingCard> buildingList = new ArrayList<>(extractLowerBuildings(upperSize));
             assertThrows(RuntimeException.class,
                         () -> game.pickTribeCards(
-                                offeringCardList.get(1).getPlayer(),
+                                offeringCardList.get(1).getPlayer().getNickname(),
                                 Collections.emptyList(),
                                 buildingList));
         }
 
         @Test
-        void testPlayerAction_ValidateErrorNumber(){
+        void testTribeCardsSelection_ValidateErrorNumber(){
             // offering card with index 3: 1 card from upper row and 1 card from building row
             setFirstPlayerToOffering(3);
             List<BuildingCard> buildingList = new ArrayList<>();
@@ -364,21 +409,21 @@ public class GameTest {
             }
             //select the wrong number of lower cards
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(wrongNumLower));
-            assertThrows(RuntimeException.class, () -> game.pickTribeCards(game.getCurrentPlayer(),characterList, buildingList));
+            assertThrows(RuntimeException.class, () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(),characterList, buildingList));
         }
 
         @Test
-        void testPlayerAction_CardNotFound(){
+        void testTribeCardsSelection_CardNotFound(){
             // offering card 0: 1 card from lower row
             setFirstPlayerToOffering(0);
             List<CharacterCard> characterList = new ArrayList<>();
             // add a random card to list
-            characterList.add(new Binder(2,4, null));
-            assertThrows(RuntimeException.class, () -> game.pickTribeCards(game.getCurrentPlayer(), characterList, Collections.emptyList()));
+            characterList.add(new Binder(GameState.ERA2,4, null));
+            assertThrows(RuntimeException.class, () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(), characterList, Collections.emptyList()));
         }
 
         @Test
-        void testPlayerAction_FoodError(){
+        void testTribeCardsSelection_FoodError(){
             // the player selects offering card with index 1: 1 card from the upper row
             setFirstPlayerToOffering(1);
             List<BuildingCard> buildingList = new ArrayList<>();
@@ -391,12 +436,12 @@ public class GameTest {
             if(!game.getUpperBuildingRow().isEmpty()) {
                 buildingList.addAll(extractUpperBuildings(numUpper));
             }
-            assertThrows(IllegalStateException.class,
-                    () -> game.pickTribeCards(game.getCurrentPlayer(), Collections.emptyList(), buildingList));
+            assertThrows(InvalidOperationException.class,
+                    () -> game.pickTribeCards(game.getCurrentPlayer().getNickname(), Collections.emptyList(), buildingList));
         }
 
         @Test
-        void testPlayerAction_Normal(){
+        void testTribeCardsSelection_Normal(){
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
             // the player selects offering card with index 0: 1 card from the lower row
@@ -404,7 +449,7 @@ public class GameTest {
             // the player picks cards from the lower row
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(offeringCardList.getFirst().getNumCardsLower()));
             // call method
-            game.pickTribeCards(game.getCurrentPlayer(),characterList,Collections.emptyList());
+            game.pickTribeCards(game.getCurrentPlayer().getNickname(),characterList,Collections.emptyList());
             // check that the offering card has null in the player field
             assertNull(offeringCardList.getFirst().getPlayer());
             // check that the game row do not contain the selected cards
@@ -413,7 +458,7 @@ public class GameTest {
 
         // turn simulation without building type 2 card
         @Test
-        void testPlayerAction_NormalTurn(){
+        void testMultipleTribeCardsSelection_NormalTurn(){
             setOfferingCardToPlayers();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
@@ -422,7 +467,7 @@ public class GameTest {
             // selection from lower row
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(offeringCardList.getFirst().getNumCardsLower()));
             // call method for the first time to check character
-            game.pickTribeCards(game.getCurrentPlayer(),characterList,Collections.emptyList());
+            game.pickTribeCards(game.getCurrentPlayer().getNickname(),characterList,Collections.emptyList());
             // check that the player is removed from the offering card
             assertNull(offeringCardList.getFirst().getPlayer());
             // check that the game rows do not contain the selected cards
@@ -436,7 +481,7 @@ public class GameTest {
             // add food to buy building
             nextPlayer.addFood(10);
             // call method for testing
-            game.pickTribeCards(nextPlayer,Collections.emptyList(),buildingList);
+            game.pickTribeCards(nextPlayer.getNickname(),Collections.emptyList(),buildingList);
             // check that the player is removed from the offering card
             assertNull(offeringCardList.get(1).getPlayer());
             // check that the game rows do not contain the selected cards
@@ -449,7 +494,7 @@ public class GameTest {
             // selection from lower row
             characterList.addAll(extractLowerCharacters(offeringCardList.get(2).getNumCardsLower()));
             // call method
-            game.pickTribeCards(nextPlayer,characterList,Collections.emptyList());
+            game.pickTribeCards(nextPlayer.getNickname(),characterList,Collections.emptyList());
             // asserts
             assertNull(offeringCardList.get(2).getPlayer());
             assertTrue(Collections.disjoint(game.getLowerRow(), characterList));
@@ -459,7 +504,7 @@ public class GameTest {
 
         // turn simulation with building type 2 card
         @Test
-        void testPlayerAction_BuildingType2Turn(){
+        void testMultipleTribeCardsSelection_BuildingType2Turn(){
             setOfferingCardToPlayers();
             // get offering card list
             List<OfferingCard> offeringCardList = game.getOfferingCards();
@@ -468,7 +513,7 @@ public class GameTest {
             // selection from lower row
             List<CharacterCard> characterList = new ArrayList<>(extractLowerCharacters(offeringCardList.getFirst().getNumCardsLower()));
             // call method for the first time to check character
-            game.pickTribeCards(game.getCurrentPlayer(),characterList,Collections.emptyList());
+            game.pickTribeCards(game.getCurrentPlayer().getNickname(),characterList,Collections.emptyList());
             // check that the player is removed from the offering card
             assertNull(offeringCardList.getFirst().getPlayer());
             // check that the game rows do not contain the selected cards
@@ -482,7 +527,7 @@ public class GameTest {
             // add food to buy building
             nextPlayer.addFood(10);
             // call method for testing
-            game.pickTribeCards(nextPlayer,Collections.emptyList(),buildingList);
+            game.pickTribeCards(nextPlayer.getNickname(),Collections.emptyList(),buildingList);
             // check that the player is removed from the offering card
             assertNull(offeringCardList.get(1).getPlayer());
             // check that the game rows do not contain the selected cards
@@ -497,14 +542,14 @@ public class GameTest {
             // insert building type 2 into player
             nextPlayer.addBuilding(new BuildingType2());
             // call method
-            game.pickTribeCards(nextPlayer,characterList,Collections.emptyList());
+            game.pickTribeCards(nextPlayer.getNickname(),characterList,Collections.emptyList());
             // asserts
             assertNull(offeringCardList.get(2).getPlayer());
             assertTrue(Collections.disjoint(game.getLowerRow(), characterList));
             // the player can pick another card from the upper row
             characterList.clear();
             characterList.addAll(extractUpperCharacters(1));
-            game.pickTribeCards(nextPlayer,characterList,Collections.emptyList());
+            game.pickTribeCards(nextPlayer.getNickname(),characterList,Collections.emptyList());
             assertTrue(Collections.disjoint(game.getUpperRow(), characterList));
         }
     }

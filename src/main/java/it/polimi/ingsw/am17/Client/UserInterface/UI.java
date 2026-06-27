@@ -1,16 +1,26 @@
 package it.polimi.ingsw.am17.Client.UserInterface;
+
 import it.polimi.ingsw.am17.Client.Model.ClientModel;
-import it.polimi.ingsw.am17.Server.Model.Player;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
 
-import java.util.UUID;
-
+/**
+ * Interface exposed by the CLI/GUI and used by ClientModel
+ */
 public interface UI {
     void start();
-    void drawInterface(ClientModel game, String errorMessage);
-    void printGameId(UUID gameId);
-    void printEra();
-    void printGamesList();
-    void setLocalPlayer();
-    Player getLocalPlayer();
     void setModel(ClientModel model);
+
+    // updateInterface methods notify the UI of changes in the model so it can react accordingly
+    // (observer-like pattern)
+    void updateInterfaceFromGameIdChange();
+    void updateInterfaceFromGameIdListChange();
+    void updateInterfaceFromGameStateChange();
+    void updateInterfaceFromPlayerQueueChange();
+    void updateInterfaceFromPlayerSelectOfferingCard();
+    void updateInterfaceFromPlayerSelectTribeCards();
+    void updateInterfaceFromEndTurn();
+    void updateInterfaceFromStartGame();
+    void updateInterfaceFromEndGame();
+    void updateInterfaceFromForcedEndGame(String disconnectedReason);
+    void updateInterfaceFromErrorMessage(InvalidOperationException exception);
 }

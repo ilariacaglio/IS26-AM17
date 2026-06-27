@@ -3,27 +3,32 @@ package it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.CardType;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 
 import java.util.Objects;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class RitualEvent extends EventCard {
+    private static final Logger logger = Logger.getLogger(RitualEvent.class.getName());
     private final Integer pointMax;
     private final Integer pointMin;
 
+    /// needed for Jackson
     public Integer getPointMax() {
         return pointMax;
     }
 
+    /// needed for Jackson
     public Integer getPointMin() {
         return pointMin;
     }
 
     @JsonCreator
     public RitualEvent(@JsonProperty("Final") Boolean Final,
-                       @JsonProperty("era") Integer era,
+                       @JsonProperty("era") GameState era,
                        @JsonProperty("pointMax") Integer pointMax,
                        @JsonProperty("pointMin") Integer pointMin,
                        @JsonProperty("id") UUID id){
@@ -33,6 +38,7 @@ public class RitualEvent extends EventCard {
     }
     @Override
     public void computeScore(Queue<Player> list){
+        logger.info("Solving RitualEvent. ");
         //array for counting stars of each player
         int[] stars = new int[list.size()];
         //counting stars icon for each player
@@ -87,7 +93,11 @@ public class RitualEvent extends EventCard {
                 }
             }
             j++;
+            logger.info("Player " + player.getNickname() + " has "
+                    + player.getFood() + " food "
+                    + player.getPp() + " points after Ritual Event");
         }
+        logger.info("RitualEvent solved. ");
     }
 
     @Override
@@ -101,5 +111,10 @@ public class RitualEvent extends EventCard {
     @Override
     public int hashCode() {
         return Objects.hash(pointMax, pointMin);
+    }
+
+    @Override
+    public String getImagePath() {
+        return "/Images/Events/ritual_event_"+pointMax+"PP_"+pointMin+"PP.png";
     }
 }

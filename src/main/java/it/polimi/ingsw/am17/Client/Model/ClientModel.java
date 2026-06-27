@@ -1,51 +1,51 @@
 package it.polimi.ingsw.am17.Client.Model;
 
 import it.polimi.ingsw.am17.Client.UserInterface.UI;
+import it.polimi.ingsw.am17.CommonInterfaces.ErrorType;
+import it.polimi.ingsw.am17.CommonInterfaces.InvalidOperationException;
+import it.polimi.ingsw.am17.CommonInterfaces.SharedModelLogic;
 import it.polimi.ingsw.am17.Server.Model.GameCard.Buildings.BuildingCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.CharacterCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.TribesCard;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import it.polimi.ingsw.am17.Server.Model.Player;
 import it.polimi.ingsw.am17.Server.Utility.RankingEntry;
 
 import java.util.*;
 import java.util.logging.Logger;
 
-public class ClientModel {
+public class ClientModel implements ClientModelInterface {
+
     private static final Logger logger = Logger.getLogger(ClientModel.class.getName());
-
+    private static final String TURN_CARD_IMAGE_PATH = "/Images/TurnOrderCard/turnOrderCard_";
     private final UI userInterface;
-
-    private UUID id;
-    private int numPlayers;
-    private int currentEra;
-    private boolean isPickOCPhase;
-
-    private List<UUID> gamesIdList;
-
-    private final Queue<Player> orderedPlayer;
-
-    private List<OfferingCard> offeringCards;
-
+    private final Queue<Player> orderedPlayers;
     private final List<TribesCard> upperRow;
     private final List<TribesCard> lowerRow;
-
     private final List<BuildingCard> upperBuildingRow;
     private final List<BuildingCard> lowerBuildingRow;
-
     private final List<RankingEntry> ranking;
+    private final OfferingCard buildingTwoOfferingCard;
+    private UUID id;
+    private int numPlayers;
+    private GameState gameState;
+    private boolean isPickOCPhase;
+    private List<UUID> gamesIdList;
+    private List<OfferingCard> offeringCards;
 
     public ClientModel (UI userInterface) {
         this.userInterface = userInterface;
-        currentEra = -1;
+        gameState = GameState.NONE;
         gamesIdList = new ArrayList<>();
-        orderedPlayer = new LinkedList<>();
+        orderedPlayers = new LinkedList<>();
         offeringCards = new ArrayList<>();
         upperRow = new ArrayList<>();
         lowerRow = new ArrayList<>();
         upperBuildingRow = new ArrayList<>();
         lowerBuildingRow  = new ArrayList<>();
         ranking = new ArrayList<>();
+        buildingTwoOfferingCard = new OfferingCard(2, 'Z', 0, 1, 0);
     }
 
     /**
@@ -55,346 +55,431 @@ public class ClientModel {
         this.userInterface.start();
     }
 
-    /**
-     * Sets field gameId and displays it on the screen.
-     * @param id    the value to be set
-     */
-    public void setGameId(UUID id) {
-        this.id = id;
-        // UI communication
-        userInterface.printGameId(id);
-    }
+    /* GETTER AND SETTERS */
 
-    public UUID getGameId() {
+    public synchronized UUID getGameId() {
         return id;
     }
 
-    public void setNumPlayers(int numPlayers) {
-        this.numPlayers = numPlayers;
+    /**
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setGameId(UUID gameId) {
+        this.id = gameId;
     }
 
-    public int getNumPlayers() {
+    public synchronized int getNumPlayers() {
         return numPlayers;
     }
 
     /**
-     * Sets currentEra field and displays it on the screen
-     * @param currentEra    the value to be set
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
      */
-    public void setCurrentEra(int currentEra){
-        this.currentEra = currentEra;
-        // UI communication
-        userInterface.printEra();
+    private void setNumPlayers(int numPlayers) {
+        this.numPlayers = numPlayers;
     }
 
-    public int getCurrentEra(){
-        return currentEra;
+    public synchronized GameState getGameState(){
+        return gameState;
     }
 
-    public boolean isPickOCPhase() {
+    /**
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setGameState(GameState gameState){
+            this.gameState = gameState;
+    }
+
+    public synchronized boolean isPickOCPhase() {
         return isPickOCPhase;
     }
 
-    public void setPickOCPhase(boolean value) {
+    /**
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setPickOCPhase(boolean value) {
         isPickOCPhase = value;
     }
 
-    public void setOrderedPlayers(Queue<Player> orderedPlayers){
-        this.orderedPlayer.clear();
-        this.orderedPlayer.addAll(orderedPlayers);
-        userInterface.setLocalPlayer();
-    }
-
-    public List<Player> getOrderedPlayers(){
-        return Collections.unmodifiableCollection(orderedPlayer).stream().toList();
+    public synchronized List<Player> getOrderedPlayers(){
+        return Collections.unmodifiableCollection(orderedPlayers).stream().toList();
     }
 
     /**
-     * Replaces the player in the queue managing turn order with the value passed as parameter.
-     * @param player    the player to be set
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
      */
-    public void setPlayerInQueue(Player player){
-        List<Player> players = new ArrayList<>(orderedPlayer);
-        players.replaceAll(p -> p.equals(player) ? player : p);
-        orderedPlayer.clear();
-        orderedPlayer.addAll(players);
-        Player lastPlayer = orderedPlayer.poll();
-        orderedPlayer.add(lastPlayer);
-        userInterface.setLocalPlayer();
+    private void setOrderedPlayers(Queue<Player> orderedPlayers){
+        this.orderedPlayers.clear();
+        this.orderedPlayers.addAll(orderedPlayers);
     }
 
-    public void setOfferingCards(List<OfferingCard> offeringCards){
-        this.offeringCards = offeringCards;
+    public synchronized List<TribesCard> getUpperTribeRow(){
+        return Collections.unmodifiableList(upperRow);
+    }
+    public synchronized List<TribesCard> getLowerTribeRow(){
+        return Collections.unmodifiableList(lowerRow);
     }
 
     /**
-     * Sets tribe upper and lower row
-     * @param upperRow  the new list to be set
-     * @param lowerRow  the new list to be set
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
      */
-    public void setTribeCards(List<TribesCard> upperRow, List<TribesCard> lowerRow){
+    private void setTribeCards(List<TribesCard> upperRow, List<TribesCard> lowerRow){
         this.upperRow.clear();
         this.upperRow.addAll(upperRow);
         this.lowerRow.clear();
         this.lowerRow.addAll(lowerRow);
     }
 
-    public List<TribesCard> getUpperTribeRow(){
-        return Collections.unmodifiableList(upperRow);
+    public synchronized List<BuildingCard> getUpperBuildingRow() {
+        return Collections.unmodifiableList(upperBuildingRow);
     }
-
-    public List<TribesCard> getLowerTribeRow(){
-        return Collections.unmodifiableList(lowerRow);
-    }
-
-    /**
-     * Removes all the cards in the param from upper and lower tribe rows
-     * @param tribeCards    the cards to be removed.
-     */
-    public void removeTribeCards(List<CharacterCard> tribeCards){
-        upperRow.removeAll(tribeCards);
-        lowerRow.removeAll(tribeCards);
+    public synchronized List<BuildingCard> getLowerBuildingRow() {
+        return Collections.unmodifiableList(lowerBuildingRow);
     }
 
     /**
-     * Sets building upper and lower row
-     * @param upperBuildingRow  the new list to be set
-     * @param lowerBuildingRow  the new list to be set
+     * Setter method of ClientModel
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
      */
-    public void setBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
+    private void setBuildingCards(List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow){
         this.upperBuildingRow.clear();
         this.upperBuildingRow.addAll(upperBuildingRow);
         this.lowerBuildingRow.clear();
         if (lowerBuildingRow != null) this.lowerBuildingRow.addAll(lowerBuildingRow);
     }
 
-    public List<BuildingCard> getLowerBuildingRow(){
-        return Collections.unmodifiableList(lowerBuildingRow);
-    }
-
-    public List<BuildingCard> getUpperBuildingRow(){
-        return Collections.unmodifiableList(upperBuildingRow);
-    }
-
-    /**
-     * Removes all the cards in the param from upper and lower building rows
-     * @param buildingCards    the cards to be removed.
-     */
-    public void removeBuildingCards(List<BuildingCard> buildingCards){
-        upperBuildingRow.removeAll(buildingCards);
-        lowerBuildingRow.removeAll(buildingCards);
-    }
-
-    /**
-     * sets gameIdList value and displays it on the screen
-     * @param gamesIdList   the value to be set
-     */
-    public void setGameIdList(List<UUID> gamesIdList){
-        this.gamesIdList = new  ArrayList<>(gamesIdList);
-        userInterface.printGamesList();
-    }
-
-    public List<UUID> getGamesIdList(){
+    public synchronized List<UUID> getGamesIdList(){
         return Collections.unmodifiableList(gamesIdList);
     }
 
+    public synchronized List<OfferingCard> getOfferingCards(){
+        return Collections.unmodifiableList(offeringCards);
+    }
+
+    private void setOfferingCards(List<OfferingCard> offeringCards){
+        this.offeringCards = offeringCards;
+    }
+
+    public synchronized OfferingCard getBuildingTwoOfferingCard() {
+        return buildingTwoOfferingCard;
+    }
+
     /**
-     * Searches for the player into players list and returns player object
-     * @param player    the player to look for
-     * @return          the player object in player collection
+     * Sets to null the player field of the offering card with letter A.
      */
-    public Player getPlayerFromList(Player player)
+    private void setNullOfferingCardAPlayer() {
+        offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
+                .findFirst().ifPresent(card -> card.setPlayer(null));
+    }
+
+    public synchronized String getTURN_CARD_IMAGE_PATH() {
+        return TURN_CARD_IMAGE_PATH + numPlayers + ".png";
+    }
+
+    public synchronized List<RankingEntry> getRanking(){
+        return Collections.unmodifiableList(ranking);
+    }
+
+    private void setRanking (List<RankingEntry> ranking) {
+        this.ranking.clear();
+        this.ranking.addAll(ranking);
+    }
+
+    /**
+     * Sets player to offering card.
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
+     */
+    private void setPlayerInOfferingCard(OfferingCard offeringCard, Player player){
+        offeringCards.stream()
+                .filter(o -> o.equals(offeringCard))
+                .findFirst()
+                .ifPresent(o -> o.setPlayer(player));
+    }
+
+    /* UTILITY METHODS */
+
+    /**
+     * Looks up for the given player from the players (queue).
+     * N.B. one of the few redundant synchronized
+     * @param player    the player to look for
+     * @return          given player or null if not found
+     */
+    public synchronized Player findPlayer(Player player)
     {
-        return orderedPlayer.stream()
-            .filter(p -> p.equals(player))
-            .findFirst().orElse(null);
+        return orderedPlayers.stream()
+                .filter(p -> p.equals(player))
+                .findFirst().orElse(null);
     }
 
     /**
      * Sets player to offering card.
      * If the player is the last to select, ends the offering card selection phase.
+     * Here, if the offering card with letter A has a player it is set to null to emulate its turn action (not allowed to pick tribe cards)
+     * This method is not synchronized! Should only be called within synchronized blocks of changes.
      * @param offeringCard  offering card value
      * @param player        player to be set into offering card
      */
-    public void setPlayerOfferingCard(OfferingCard offeringCard, Player player)
+    private void handleOfferingCardSelection(OfferingCard offeringCard, Player player)
     {
-        offeringCards.stream()
-                .filter(o -> o.equals(offeringCard))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(player));
-        if(everyPlayerInOfferingCard()) {
+        setPlayerInOfferingCard(offeringCard, player);
+        if(SharedModelLogic.isEveryPlayerInOfferingCard(orderedPlayers, offeringCards)) {
             setPickOCPhase(false);
             setNullOfferingCardAPlayer();
         }
     }
 
     /**
-     * Removes player from currently assigned offering card.
-     * @param player the player already present into the offering card field
+     * @return true if it is the local player's turn, false otherwise.
      */
-    public void removePlayerFromOfferingCard(Player player){
-        offeringCards.stream()
-                .filter(o -> o.getPlayer()!= null && o.getPlayer().equals(player))
-                .findFirst()
-                .ifPresent(o -> o.setPlayer(null));
-    }
-
-    public List<OfferingCard> getOfferingCards(){
-        return Collections.unmodifiableList(offeringCards);
-    }
-
-    /**
-     * @return true if every player of the game is into an offering card, false otherwise
-     */
-    public boolean everyPlayerInOfferingCard(){
-        for(Player p : orderedPlayer){
-            OfferingCard oc = offeringCards.stream()
-                    .filter(c-> c.getPlayer()!= null && c.getPlayer().equals(p))
-                    .findFirst().orElse(null);
-            if(oc == null)
-                return false;
-        }
-        return true;
-    }
-
-    /**
-     * Sets to null the player field of the offering card with letter A.
-     */
-    public void setNullOfferingCardAPlayer() {
-        offeringCards.stream().filter(card -> card.getOrderLetter()=='A' && card.getPlayer()!=null)
-                .findFirst().ifPresent(card -> card.setPlayer(null));
-    }
-
-    /**
-     * Checks if it is the turn of the local player.
-     * @return true if it is players turn, false otherwise.
-     */
-    public boolean isPlayerTurn(){
-        if(currentEra<1)
+    public synchronized boolean isPlayerTurn(Player localPlayer) {
+        //make sure local player is updated
+        localPlayer = findPlayer(localPlayer);
+        // if the game hasn't started it is not the players turn
+        if(!gameState.isGameStarted())
             return false;
-        return userInterface.getLocalPlayer().equals(orderedPlayer.peek());
-    }
 
-    public void setRanking (List<RankingEntry> ranking) {
-        this.ranking.clear();
-        this.ranking.addAll(ranking);
-    }
-
-    public List<RankingEntry> getRanking(){
-        return Collections.unmodifiableList(ranking);
+        return SharedModelLogic.isPlayerTurn(localPlayer, orderedPlayers, isPickOCPhase,
+                offeringCards, buildingTwoOfferingCard);
     }
 
     /**
-     * Updates players in queue and displays it to screen
-     * @param playerQueue   the value to be set
+     * Calls the SharedModelLogic validation for pickTribeCards action.
+     * @param characterCards    The list of the picked character cards.
+     * @param buildingCards     The list of the picked building cards.
      */
-    public void updatePlayerQueue(Queue<Player> playerQueue) {
-        setOrderedPlayers(playerQueue);
-        // UI communication
-        userInterface.drawInterface(this,null);
+    public synchronized void  validateTribeCardsTurnAction(Player localPlayer, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
+        //make sure local player is updated
+        localPlayer = findPlayer(localPlayer);
+
+        SharedModelLogic.validateTribesCardTurnAction(localPlayer, orderedPlayers,
+                offeringCards, buildingTwoOfferingCard, characterCards, buildingCards,
+                upperRow, lowerRow, upperBuildingRow, lowerBuildingRow);
     }
 
     /**
-     * Sets model params to new values when game starts and displays it to screen.
-     * @param players               the players queue value to be set.
-     * @param upperRow              the upper tribe row value to be set.
-     * @param lowerRow              the lower tribe row value to be set.
-     * @param upperBuildingRow      the upper building row value to be set.
-     * @param lowerBuildingRow      the lower building row value to be set.
-     * @param offeringCards         the offering cards value to be set.
+     * Calls the SharedModelLogic validation for pickOfferingCard action.
+     * @param offeringCardLetter    The letter of the picked offering card.
      */
-    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow,  List<OfferingCard> offeringCards) {
-
-        setCurrentEra(1);
-        setNumPlayers(players.size());
-        setOrderedPlayers(players);
-        setTribeCards(upperRow, lowerRow);
-        setBuildingCards(upperBuildingRow, lowerBuildingRow);
-        setOfferingCards(offeringCards);
-        setPickOCPhase(true);
-
-        userInterface.drawInterface(this,null);
+    public synchronized void validateOfferingCardTurnAction(Player localPlayer, Character offeringCardLetter){
+        SharedModelLogic.validateOfferingCardTurnAction(offeringCardLetter, localPlayer,
+                offeringCards, orderedPlayers);
     }
 
 
+    /* UPDATE METHODS */
+
     /**
-     * Sets model params to new values when turn ends and displays it to screen.
-     * @param players               the players queue value to be set.
-     * @param upperRow              the upper tribe row value to be set.
-     * @param lowerRow              the lower tribe row value to be set.
-     * @param upperBuildingRow      the upper building row value to be set.
-     * @param lowerBuildingRow      the lower building row value to be set.
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
      */
-    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
-                                     List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
-        for(Player player : players) {
-            // update player PP and food in player queue
-            updatePlayerValue(getPlayerFromList(player), player);
+    @Override
+    public void updateGameId(UUID gameId) {
+        synchronized (this) {
+            setGameId(gameId);
+            setGameState(GameState.LOBBY);
         }
-        setBuildingCards(upperBuildingRow, lowerBuildingRow);
-        setTribeCards(upperRow, lowerRow);
-        setPickOCPhase(true);
 
-        userInterface.drawInterface(this,null);
+        userInterface.updateInterfaceFromGameIdChange();
     }
 
     /**
-     * Updates PP and food of the old player with values from the new player
-     * @param oldP  the outdated value of the player
-     * @param newP  the new value of the player
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
      */
-    private static void updatePlayerValue(Player oldP, Player newP) {
-        oldP.addPp(newP.getPp()- oldP.getPp());
-        oldP.addFood(newP.getFood() - oldP.getFood());
+    @Override
+    public void updateGameIdList(List<UUID> gamesIdList){
+        synchronized (this) {
+            this.gamesIdList = new  ArrayList<>(gamesIdList);
+        }
+
+        userInterface.updateInterfaceFromGameIdListChange();
     }
 
     /**
-     * Updates offering cards list when a player selects one and displays it to screen.
-     * @param player            the player that picks the offering card
-     * @param offeringCard      the offering card picked
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
      */
+    @Override
+    public void updateGameState(GameState gameState) {
+        synchronized (this) {
+            setGameState(gameState);
+        }
+
+        userInterface.updateInterfaceFromGameStateChange();
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    @Override
+    public void updatePlayerQueue(Queue<Player> playerQueue) {
+        synchronized (this) {
+            setOrderedPlayers(playerQueue);
+        }
+
+        userInterface.updateInterfaceFromPlayerQueueChange();
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    @Override
     public void updatePlayerSelectOfferingCard(Player player, OfferingCard offeringCard) {
-        setPlayerOfferingCard(offeringCard, player);
-        userInterface.drawInterface(this,null);
+        synchronized (this) {
+            handleOfferingCardSelection(offeringCard, player);
+        }
+
+        userInterface.updateInterfaceFromPlayerSelectOfferingCard();
     }
 
     /**
-     * Updates player cards and rows when player picks cards and displays it to screen.
-     * @param player            the player that picked the cards
-     * @param characterCards    the character cards picked by the player
-     * @param buildingCards     the building cards picked by the player
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     * @param player player with the cards picked already inside
+     * @param characterCards list of character cards picked by player
+     * @param buildingCards list of building cards picked by player
      */
+    @Override
     public void updatePlayerSelectTribeCards(Player player, List<CharacterCard> characterCards, List<BuildingCard> buildingCards) {
         logger.info(characterCards.toString() + " " + buildingCards.toString());
-        setPlayerInQueue(player);
-        removePlayerFromOfferingCard(player);
-        removeTribeCards(characterCards);
-        removeBuildingCards(buildingCards);
-        userInterface.drawInterface(this,null);
+
+        synchronized (this) {
+            // update player data (pp and food plus already the cards)
+            // cards in parameters are used later to remove them from rows
+            List<Player> players = new ArrayList<>(orderedPlayers);
+            players.replaceAll(p -> p.equals(player) ? player : p);
+            orderedPlayers.clear();
+            orderedPlayers.addAll(players);
+
+            SharedModelLogic.handleOfferingCardsAndPlayersQueue(player, offeringCards, buildingTwoOfferingCard,orderedPlayers);
+
+            // remove selected cards from rows
+            upperRow.removeAll(characterCards);
+            lowerRow.removeAll(characterCards);
+            upperBuildingRow.removeAll(buildingCards);
+            lowerBuildingRow.removeAll(buildingCards);
+        }
+
+        userInterface.updateInterfaceFromPlayerSelectTribeCards();
     }
 
     /**
-     * Updates ranking field and displays it to screen.
-     * @param ranking   the value to be set
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
      */
-    public void updateRanking(List<RankingEntry> ranking) {
-        setRanking(ranking);
-        userInterface.drawInterface(this,null);
+    @Override
+    public void updateEndTurn(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                              List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow) {
+        synchronized (this) {
+            // here players is the players queue stripped of cards
+            // because at the end of the turn only PP and food values change.
+            for(Player passedPlayer : players) {
+                // update player PP and food in player queue
+                Player localPlayer = findPlayer(passedPlayer);
+                localPlayer.addPp(passedPlayer.getPp() - localPlayer.getPp());
+                localPlayer.addFood(passedPlayer.getFood() - localPlayer.getFood());
+            }
+            setBuildingCards(upperBuildingRow, lowerBuildingRow);
+            setTribeCards(upperRow, lowerRow);
+            setPickOCPhase(true);
+        }
+
+        userInterface.updateInterfaceFromEndTurn();
     }
 
     /**
-     * Updates era value when a user disconnects and displays it to the screen
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
      */
-    public void updateGameEndedByUser() {
-        // setGameId(null); // TODO: does not work, breaks RMI communication?!
-        currentEra = -1; // TODO: -2 for aborted game? This works anyways
-        setOrderedPlayers(new LinkedList<>());
-        setOfferingCards(new ArrayList<>());
-        setTribeCards(new ArrayList<>(), new ArrayList<>());
-        setBuildingCards(new ArrayList<>(), new ArrayList<>());
-        setRanking(new ArrayList<>());
+    @Override
+    public void updateStartGame(Queue<Player> players, List<TribesCard> upperRow, List<TribesCard> lowerRow,
+                                List<BuildingCard> upperBuildingRow, List<BuildingCard> lowerBuildingRow, List<OfferingCard> offeringCards) {
+        synchronized (this) {
+            setGameState(GameState.ERA1);
+            setNumPlayers(players.size());
+            setOrderedPlayers(players);
+            setTribeCards(upperRow, lowerRow);
+            setBuildingCards(upperBuildingRow, lowerBuildingRow);
+            setOfferingCards(offeringCards);
+            setPickOCPhase(true);
+        }
+
+        userInterface.updateInterfaceFromStartGame();
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     */
+    @Override
+    public void updateEndGame(List<RankingEntry> ranking, Queue<Player> orderedPlayers) {
+
+        // set game state to ended
+        synchronized (this) {
+            gameState = GameState.ENDED;
+
+            // set global ranking
+            setRanking(ranking);
+
+            // set local ranking
+            setOrderedPlayers(orderedPlayers);
+        }
+
+        userInterface.updateInterfaceFromEndGame();
+
+        // reset game state
+        synchronized (this) {
+            gameState = GameState.NONE;
+        }
+
         logger.info("Game closed.");
-        // TODO: notify user interface that the game has ended due to the disconnection of player with "nickname"
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     * @param disconnectedElement passed to the UI.
+     */
+    @Override
+    public void updateForcedEndGame(String disconnectedElement) {
+        synchronized (this) {
+            // Resets all game rows, offering cards, ranking, player queue and game state
+            setOrderedPlayers(new LinkedList<>());
+            setOfferingCards(new ArrayList<>());
+            setTribeCards(new ArrayList<>(), new ArrayList<>());
+            setBuildingCards(new ArrayList<>(), new ArrayList<>());
+            setRanking(new ArrayList<>());
+            gameState = GameState.NONE;
+        }
+
+        userInterface.updateInterfaceFromForcedEndGame(disconnectedElement);
+
+        logger.info("Game forcibly closed.");
+    }
+
+    /**
+     * Update method: changes the local state on a synchronized block
+     * and sends an updateInterface to the UI.
+     * @param exception which is passed to the UI.
+     */
+    @Override
+    public void updateError(InvalidOperationException exception) {
+        // change game state in case the error occurred while joining a game
+        ErrorType type = exception.getErrorType();
+        if (type == ErrorType.DUPLICATE_COLOR || type == ErrorType.DUPLICATE_NICKNAME) {
+            synchronized (this) {
+                gameState = GameState.NONE;
+            }
+        }
+
+        userInterface.updateInterfaceFromErrorMessage(exception);
     }
 }

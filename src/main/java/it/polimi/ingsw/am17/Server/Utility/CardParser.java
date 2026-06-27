@@ -8,14 +8,22 @@ import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.PaintingEven
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Events.RitualEvent;
 import it.polimi.ingsw.am17.Server.Model.GameCard.TribeCards.Characters.*;
 import it.polimi.ingsw.am17.Server.Model.GameCard.OfferingCard;
+import it.polimi.ingsw.am17.Server.Model.GameState;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class that parses data from resources json files
+ */
 public class CardParser {
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * @return  the offering card list for the game with given numPlayers
+     */
     public static List<OfferingCard> loadOfferingCards(int numPlayers){
         try{
             var cardList = mapper.readValue(CardParser.class.getResourceAsStream("/offeringCards.json"), new TypeReference<List<OfferingCard>>() {});
@@ -28,15 +36,21 @@ public class CardParser {
         }
     }
 
+    /**
+     * @return  the buildingType3M cards parsed by json resource file
+     */
     public static List<BuildingType3M> buildingCard3MParser(){
         try {
-            return mapper.readValue(CardParser.class.getResourceAsStream("/buildingType3M.json"), new TypeReference<List<BuildingType3M>>() {});
+            return mapper.readValue(CardParser.class.getResourceAsStream("/buildingType3M.json"), new TypeReference<>() {});
         } catch(Exception ex) {
             throw new RuntimeException("Error while loading building 3M cards", ex);
         }
     }
 
-    public static List<BuildingType13M> buildingCard13MParser(int era){
+    /**
+     * @return  the buildingType13M cards parsed by json resource file
+     */
+    public static List<BuildingType13M> buildingCard13MParser(GameState era){
         try {
             var buildingList =  mapper.readValue(CardParser.class.getResourceAsStream("/buildingType13M.json"), new TypeReference<List<BuildingType13M>>() {});
             return buildingList.stream()
@@ -47,9 +61,15 @@ public class CardParser {
         }
     }
 
+    /**
+     * @return  the artist cards list for the game. The list size is related to the given value of numPlayers.
+     */
     public static List<Artist> artistsParser(int numPlayers){
         try {
-            List<Artist> list = mapper.readValue(CardParser.class.getResourceAsStream("/Artist.json"), new TypeReference<ArrayList<Artist>>() {});
+            List<Artist> list = mapper.readValue(
+                    CardParser.class.getResourceAsStream("/Artist.json"),
+                    new TypeReference<ArrayList<Artist>>() {}
+            );
             return list.stream().filter(c->numPlayers >= c.getMinPlayers()).toList();
         }
         catch(Exception ex) {
@@ -57,6 +77,9 @@ public class CardParser {
         }
     }
 
+    /**
+     * @return  the binder cards list for the game. The list size is related to the given value of numPlayers.
+     */
     public static List<Binder> bindersParser (int numPlayers){
         try {
             List<Binder> list = mapper.readValue(CardParser.class.getResourceAsStream("/Binder.json"), new TypeReference<ArrayList<Binder>>() {});
@@ -67,6 +90,9 @@ public class CardParser {
         }
     }
 
+    /**
+     * @return  the builder cards list for the game. The list size is related to the given value of numPlayers.
+     */
     public static List<Builder> buildersParser(int numPlayers){
         try {
             List<Builder> list = mapper.readValue(CardParser.class.getResourceAsStream("/Builder.json"), new TypeReference<ArrayList<Builder>>() {});
@@ -77,6 +103,9 @@ public class CardParser {
         }
     }
 
+    /**
+     * @return  the hunter cards list for the game. The list size is related to the given value of numPlayers.
+     */
     public static List<Hunter> huntersParser(int numPlayers){
         try {
             List<Hunter> list = mapper.readValue(CardParser.class.getResourceAsStream("/Hunter.json"), new TypeReference<ArrayList<Hunter>>() {});
@@ -87,6 +116,9 @@ public class CardParser {
         }
     }
 
+    /**
+     * @return  the inventor cards list for the game. The list size is related to the given value of numPlayers.
+     */
     public static List<Inventor> inventorParser(int numPlayers){
         try {
             List<Inventor> list = mapper.readValue(CardParser.class.getResourceAsStream("/Inventor.json"), new TypeReference<ArrayList<Inventor>>() {});
@@ -97,6 +129,9 @@ public class CardParser {
         }
     }
 
+    /**
+     * @return  the shaman cards list for the game. The list size is related to the given value of numPlayers.
+     */
     public static List<Shaman> shamansParser(int numPlayers){
         try {
             List<Shaman> list = mapper.readValue(CardParser.class.getResourceAsStream("/Shaman.json"), new TypeReference<ArrayList<Shaman>>() {});
@@ -107,7 +142,10 @@ public class CardParser {
         }
     }
 
-    public static List<FoodEvent> foodEventParser(int numPlayers){
+    /**
+     * @return  the food event cards list for the game
+     */
+    public static List<FoodEvent> foodEventParser(){
         try {
             return mapper.readValue(CardParser.class.getResourceAsStream("/FoodEvent.json"), new TypeReference<ArrayList<FoodEvent>>() {});
         }
@@ -116,7 +154,10 @@ public class CardParser {
         }
     }
 
-    public static List<HuntingEvent> huntingEventParser(int numPlayers){
+    /**
+     * @return  the hunting event cards list for the game
+     */
+    public static List<HuntingEvent> huntingEventParser(){
         try {
             return mapper.readValue(CardParser.class.getResourceAsStream("/HuntingEvent.json"), new TypeReference<ArrayList<HuntingEvent>>() {});
         }
@@ -125,7 +166,10 @@ public class CardParser {
         }
     }
 
-    public static List<PaintingEvent> paintingEventParser(int numPlayers){
+    /**
+     * @return  the painting event cards list for the game
+     */
+    public static List<PaintingEvent> paintingEventParser(){
         try {
             return mapper.readValue(CardParser.class.getResourceAsStream("/PaintingEvent.json"), new TypeReference<ArrayList<PaintingEvent>>() {});
         }
@@ -134,7 +178,10 @@ public class CardParser {
         }
     }
 
-    public static List<RitualEvent> ritualEventParser(int numPlayers){
+    /**
+     * @return  the ritual event cards list for the game
+     */
+    public static List<RitualEvent> ritualEventParser(){
         try {
             return mapper.readValue(CardParser.class.getResourceAsStream("/RitualEvent.json"), new TypeReference<ArrayList<RitualEvent>>() {});
         }
